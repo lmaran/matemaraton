@@ -1,6 +1,6 @@
-﻿[ ![Codeship Status for lmaran/scoala21](https://app.codeship.com/projects/2c9c2f60-f011-0136-cd75-5e31742c7b6e/status?branch=master)](https://app.codeship.com/projects/320210)
+﻿[![Codeship Status for lmaran/matemaraton](https://app.codeship.com/projects/42434900-9840-0137-ec8c-6a75a8ae90f8/status?branch=master)](https://app.codeship.com/projects/357740)
 
-# MateMaraton1
+# MateMaraton
 
 ## Development
 
