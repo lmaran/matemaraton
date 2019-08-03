@@ -1,0 +1,38 @@
+<div class="container-fluid">
+
+    <h1>Creaza cont nou</h1>
+
+    <form method="post" action="/login" class="form-horizontal" novalidate>
+
+        <div id="emailFg" class="form-group has-feedback">
+            <label class="col-md-2 control-label required">Email</label>
+            <div class="col-md-4">
+                <input type="email" name="email" class="form-control" value="{{email}}"
+                    {{#unless email}}autofocus{{/unless}} />
+                <p id="emailErr" class="help-block" </p> </div> </div> <div id="pswFg" class="form-group">
+                    <label class="col-md-2 control-label required">Parola </label>
+                    <div class="col-md-4">
+                        <input type="password" name="password" class="form-control" autocomplete="off"
+                            {{#if email}}autofocus{{/if}} />
+                        <p class="text-muted" style="margin-bottom:0">Adauga o parola de minim 6 caractere.</p>
+                        <p id="pswErr" class="help-block" </p> </div> </div> <div class="form-group">
+                            <div class="col-md-10 col-md-offset-2">
+                                <button type="submit" class="btn btn-primary"> <span
+                                        class="glyphicon glyphicon-floppy-disk"></span> Salveaza</button>
+                            </div>
+                    </div>
+
+    </form>
+
+    <!--<p>
+        Ti-ai uitat parola? <a href="/resetpassword">Cere o noua parola!</a>
+    </p>-->
+    <!--<p>
+        Nu ai inca un cont? <a href="/register">Inregistreaza-te!</a>
+    </p>-->
+
+</div>
+
+{{#section 'script'}}
+<script src="/views/user/register.js"></script>
+{{/section}}

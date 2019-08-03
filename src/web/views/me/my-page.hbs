@@ -1,0 +1,82 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="#">Acasa</a></li>
+    {{!-- <li class="breadcrumb-item"><a href="/parinti">Parinti</a></li> --}}
+    <li class="breadcrumb-item active" aria-current="page">Pagina mea</li>
+  </ol>
+</nav>
+
+<h1>{{parent.lastName}} {{parent.firstName}}</h1>
+
+{{!-- <h5 class="mt-4">Profil:</h5>
+<div class="ml-5">
+    <span class="font-weight-bold">Nume:</span> {{parent.firstName}} {{parent.lastName}} <button type="button" class="btn btn-link">modifica nume</button>
+</div>
+<div class="ml-5"><span class="font-weight-bold">Email:</span> {{parent.email}} 
+    <button type="button" class="btn btn-link">
+        {{#if parent.email}}modifica email{{else}}adauga email{{/if}}
+    </button></div>
+<div class="ml-5"><span class="font-weight-bold">Tel. (WhatsApp):</span> {{parent.phone}}
+    <button type="button" class="btn btn-link">
+        {{#if parent.phone}}modifica telefon{{else}}adauga telefon{{/if}}
+    </button></div>
+</div> --}}
+
+{{!-- <div class="container">
+  <div class="row">
+    <div class="col">
+      1 of 2
+    </div>
+    <div class="col">
+      2 of 2
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      1 of 3
+    </div>
+    <div class="col">
+      2 of 3
+    </div>
+    <div class="col">
+      3 of 3
+    </div>
+  </div>
+</div> --}}
+
+<h5 class="mt-4">Parinte/tutor pt. elevii:</h5>
+
+<ul>
+  {{#each parent.students }}
+  <li class="mt-1">
+    <a href="/elevi/{{id}}">{{lastName}} {{firstName}}</a>
+    {{#if kinship}}
+    (in calitate de <span class="font-weight-bold">{{kinship}}</span>)
+    {{/if}}
+  </li>
+  {{/each}}
+</ul>
+
+{{!-- <h3 class="font-weight-light">Profesor {{teacher.degree}}{{#if teacher.holder}}, titular{{/if}}</h3>
+<h4 class="font-weight-light">{{teacher.subject}}</h4>
+
+{{#if (eq teacher.area "Invatamant primar")}}
+<h5 class="mt-4">Clasa la care preda:
+    {{#if teacherClass}}
+    <a href="/clase/{{teacherClass.id}}">{{teacherClass.name}}</a>
+    {{/if}}
+</h5>
+{{else}}
+<h5 class="mt-4">Clase la care preda:</h5>
+
+<h5 class="font-weight-light">
+    {{#each uniqueClasses }}
+    <a href="/clase/{{id}}">{{name}}</a>{{#unless @last}}<span class="mr-2">,</span>{{/unless}}
+    {{/each}}
+</h5>
+
+<h5 class="mt-4">Zile in care preda:<span></span></h5>
+<h5 class="font-weight-light">
+    <a href="/profesori/{{teacher._id}}/orar">Orar</a>
+</h5>
+{{/if}} --}}
