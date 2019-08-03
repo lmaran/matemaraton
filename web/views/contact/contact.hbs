@@ -1,0 +1,30 @@
+<p><i class="fas fa-home"></i> Timișoara, Simion Bărnuțiu, 9</p>
+<p><i class="fas fa-phone"></i> 0256 208 318 (tel/fax)</p>
+<p><i class="fas fa-envelope"></i> scoala21tm@yahoo.com</p>
+<p><i class="fas fa-info-circle"></i> program secretariat: L-V (11-13)</p>
+<p><i class="fas fa-user-tie"></i> audiente director: L (12-14), J (9-11)</p>
+
+<div style="width:100%; height:400px;" id="mapCT" class="google-map"></div>
+
+<p class="text-muted mt-3">Un site dezvoltat de voluntari: prof. Daniela Maran, ing. Lucian Maran</p>
+
+{{#section 'script'}}
+<script>
+    function initMap() {
+        var myLatLng = { lat: 45.763142, lng: 21.249558 };
+        var map = new google.maps.Map(document.getElementById('mapCT'), {
+            center: myLatLng,
+            scrollwheel: false,
+            zoom: 16
+        });
+        var marker = new google.maps.Marker({
+            map: map,
+            position: myLatLng,
+            title: 'Scoala Gimnaziala \'Vicentiu Babes\' nr.21'
+        });
+    }
+</script>
+<script async defer
+    src='//maps.googleapis.com/maps/api/js?key=AIzaSyD6xK-AizMittXaPXgteIh3F3mS5XXbxoA&&callback=initMap'
+    type="text/javascript"></script>
+{{/section}}

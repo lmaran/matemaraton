@@ -1,0 +1,39 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        {{!-- <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li> --}}
+        <li class="breadcrumb-item"><a href="#">Acasa</i></a></li>
+        <li class="breadcrumb-item"><a href="/prezenta/grupe/{{student.crtGrade}}-{{student.crtGroup}}">Prezenta:
+                {{student.crtGrade}}-{{student.crtGroup}}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{student.shortName}}</li>
+    </ol>
+</nav>
+
+
+<h1>Prezenta</h1>
+<h2>{{student.shortName}}</h2>
+<h3 class="mb-5">Clasa a {{student.crtGrade}}-a, {{student.crtGroup}}</h3>
+
+
+{{#each presences}}
+<div class="mb-1">
+    <span style="display:inline-block; width:100px">{{dateAsString}}</span>
+    {{#if noCourse}}
+    <span class="text-muted"> - {{noCourseReason}}</span>
+    {{else}}
+
+    <span style="display:inline-block; width:80px">- Curs {{course}}:</span>
+    {{#if isPresent}} <span class="font-weight-bold">prezent</span>
+    {{else}}
+
+    <span class="font-weight-bold text-danger">absent</span>
+    {{/if}}
+
+    {{/if}}
+</div>
+{{/each}}
+
+<hr />
+<p class="mb-5">
+    <span class="font-weight-bold">Total prezente:</span> {{totalPresences}} din {{totalCourses}}
+    ({{totalPresencesAsPercent}}%)
+</p>

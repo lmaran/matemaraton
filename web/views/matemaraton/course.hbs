@@ -1,0 +1,36 @@
+<style>
+    .hidePresence {
+        display: none;
+    }
+
+    .hideStudent {
+        display: none;
+    }
+</style>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        {{!-- <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li> --}}
+        <li class="breadcrumb-item"><a href="#">Acasa</i></a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/grupe/{{course.grade}}-{{course.groupName}}">Cursuri:
+                {{course.grade}}-{{course.groupName}}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">curs {{course.course}}</li>
+    </ol>
+</nav>
+
+<h1>Curs {{course.course}} <span class="font-weight-light text-secondary"> - {{course.dateAsString}}</span></h1>
+<h2 class="mb-5">Clasa a {{course.grade}}-a, {{course.groupName}}</h2>
+
+
+{{!-- <h3 class="mt-5" {{#if noCourse}} class="text-muted" {{/if}}>{{course.dateAsString}}</h3> --}}
+
+
+
+<div>{{course.description}}</div>
+
+{{#each course.images}}
+<p>{{course.description}}</p>
+<img src={{url}} class="img-fluid" alt="">
+{{/each}}
+<br>
+<br>
