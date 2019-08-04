@@ -4,6 +4,7 @@ const router = express.Router();
 const homeController = require("./controllers/home.controller");
 const meController = require("./controllers/me.controller");
 const matemaratonController = require("../web/controllers/matemaraton.controller");
+const problemController = require("../web/controllers/problem.controller");
 
 const contactController = require("./controllers/contact.controller");
 const pageController = require("./controllers/page.controller");
@@ -42,6 +43,9 @@ router.get("/contact", contactController.getContact);
 
 // pages
 router.get("/:pageId", pageController.getPage);
+
+// problems
+router.get("/probleme/:id", problemController.getProblem);
 
 router.get("/:pageId/asdfgh", pageController.getPage2);
 
