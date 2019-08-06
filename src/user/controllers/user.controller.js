@@ -1,13 +1,19 @@
-const userService = require("./userService");
-const userService2 = require("./user.service");
-const userValidator = require("./userValidator");
+const cookie = require("cookie");
+
+const userService = require("../services/userService");
+const userService2 = require("../services/user.service");
+const userValidator = require("../userValidator");
+
+const passport = require("passport");
+// Passport Configuration (once)
+require("../passportConfig");
 
 // const passport = require("passport");
 const config = require("../../shared/config");
 // const jwt = require("jsonwebtoken");
 const uuid = require("uuid");
 // const customerEmployeeService = require("../customerEmployee/customerEmployeeService");
-const auth = require("./login/loginService");
+const auth = require("../services/loginService");
 const emailService = require("../../shared/helpers/emailService");
 
 const validationError = function(res, err) {
@@ -300,6 +306,48 @@ exports.checkEmail = function(req, res) {
             res.send(false);
         }
     });
+};
+
+exports.authenticate = function(req, res, next) {
+    // auth with custom callback: http://passportjs.org/docs/authenticate
+    passport.authenticate("local", function(err, user, info) {
+        // console.log("asd2");
+        const error = err || info;
+        // console.log(error);
+        if (error) return res.status(401).json(error);
+        if (!user) return res.status(404).json({ message: "Something went wrong, please try again." });
+
+        const token = auth.signToken(user._id, user.role);
+
+        const userProfile = {
+            //exclude sensitive info
+            name: user.name,
+            email: user.email,
+            role: user.role
+        };
+
+        auth.setCookies(req, res, token, userProfile);
+
+        if (req.is("json")) {
+            // http://expressjs.com/api.html#req.is
+            res.json(userProfile); // for requests that come from client-side (Angular)
+        } else res.redirect("/"); // for requests that come from server-side (Jade)
+    })(req, res, next);
+};
+
+exports.logout = function(req, res) {
+    // http://expressjs.com/api.html#res.clearCookie
+    //res.clearCookie('access_token', { path: '/' });
+    //res.clearCookie('user', { path: '/' });
+
+    const c1 = cookie.serialize("access_token", "", { path: "/", expires: new Date(1) });
+    const c2 = cookie.serialize("XSRF-TOKEN", "", { path: "/", expires: new Date(1) });
+    const c3 = cookie.serialize("user", "", { path: "/", expires: new Date(1) });
+
+    // http://www.connecto.io/blog/nodejs-express-how-to-set-multiple-cookies-in-the-same-response-object/
+    res.header("Set-Cookie", [c1, c2, c3]); // array of cookies http://expressjs.com/api.html#res.set
+
+    res.redirect("/");
 };
 
 function handleError(res, err) {

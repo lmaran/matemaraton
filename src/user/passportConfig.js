@@ -1,14 +1,14 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
-const userService = require("../../userService");
-const userService2 = require("../../user.service");
+const userService = require("./services/userService");
+const userService2 = require("./services/user.service");
 
 const strategy = new LocalStrategy(
     {
         usernameField: "email", // the name of fields that we send at login
         passwordField: "password"
     },
-    async function (email, password, done) {
+    async function(email, password, done) {
         let user;
         try {
             user = await userService2.getOneByEmail(email);
@@ -30,7 +30,6 @@ const strategy = new LocalStrategy(
         // console.log(user);
 
         return done(null, user);
-
     }
 );
 

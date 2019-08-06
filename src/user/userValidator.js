@@ -1,5 +1,5 @@
 (function(userValidator) {
-    const userService = require("./userService");
+    const userService = require("./services/userService");
     const async = require("async");
     const validator = require("validator");
     const _ = require("lodash");

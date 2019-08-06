@@ -1,9 +1,9 @@
 // const passport = require("passport");
-const config = require("../../../shared/config");
+const config = require("../../shared/config");
 const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt"); // Middleware that validates JsonWebTokens and sets req.user to be used by later middleware
 const compose = require("composable-middleware"); // Treat a sequence of middleware as middleware.
-const userService = require("../userService");
+const userService = require("./userService");
 const validateJwt = expressJwt({ secret: config.secrets.session });
 const cookie = require("cookie");
 
