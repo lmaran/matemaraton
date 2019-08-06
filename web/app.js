@@ -6,7 +6,7 @@ const path = require("path");
 const exphbs = require("express-handlebars");
 
 const routes = require("./routes");
-const auth = require("../shared/user/login/loginService");
+const auth = require("../user/services/loginService");
 const handlebarHelpers = require("../shared/helpers/handlebar.helper");
 const setContext = require("../shared/middlewares/setContext.middleware").setContext;
 
