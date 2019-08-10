@@ -1,9 +1,7 @@
 // const passport = require("passport");
 const config = require("../../shared/config");
 const jwt = require("jsonwebtoken");
-const expressJwt = require("express-jwt"); // Middleware that validates JsonWebTokens and sets req.user to be used by later middleware
 const userService = require("./userService");
-const validateJwt = expressJwt({ secret: config.secrets.session });
 const cookie = require("cookie");
 
 /**
@@ -15,43 +13,6 @@ function isAuthenticated() {
     return function(req, res, next) {
         if (req.user) next();
         else return res.status(401).send("Unauthorized");
-    };
-}
-
-function addUserIfExist() {
-    return async function(req, res, next) {
-        // Validate jwt
-        if (req.cookies && req.cookies.access_token) {
-            req.headers.authorization = "Bearer " + req.cookies.access_token;
-            // validateJwt(req, res, next);
-
-            console.log(111);
-
-            // Attach user to request
-            if (req.user) {
-                console.log(222);
-                try {
-                    const user = await userService.getByIdWithoutPsw2(req.user._id);
-                    console.log(333);
-                    if (user) {
-                        console.log(444);
-                        if (user.role.indexOf("admin") > -1) user.isAdmin = true; //add this property for navbar
-                        if (user.role.indexOf("partner") > -1) user.isPartner = true; //add this property for navbar
-                        req.user = user;
-                    }
-                    console.log(555);
-                    next();
-                } catch (error) {
-                    next(error);
-                }
-            } else {
-                console.log(666);
-                next();
-            }
-        } else {
-            console.log(777);
-            next();
-        }
     };
 }
 
@@ -124,6 +85,5 @@ module.exports = {
     hasRole: hasRole,
     signToken: signToken,
     //setTokenCookie: setTokenCookie,
-    setCookies: setCookies,
-    addUserIfExist: addUserIfExist
+    setCookies: setCookies
 };

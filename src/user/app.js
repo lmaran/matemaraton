@@ -1,13 +1,9 @@
-const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
-const passport = require("passport");
 const express = require("express");
 const path = require("path");
 const exphbs = require("express-handlebars");
 
 const routes = require("./routes");
-const auth = require("./services/loginService");
-const auth2 = require("./middlewares/auth");
 const handlebarHelpers = require("../shared/helpers/handlebar.helper");
 const setContext = require("../shared/middlewares/setContext.middleware").setContext;
 
@@ -30,12 +26,7 @@ app.engine(
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cookieParser()); // Parse Cookie header and populate req.cookies with an object
-app.use(passport.initialize());
 
-app.use(auth2.addUserIfExist2);
-
-app.use(auth.addUserIfExist());
 app.use(setContext); // adds requestId, tokenCode and other properties to the request object
 
 app.use("/", routes);
