@@ -1,10 +1,7 @@
 // const passport = require("passport");
 const config = require("../../shared/config");
 const jwt = require("jsonwebtoken");
-const expressJwt = require("express-jwt"); // Middleware that validates JsonWebTokens and sets req.user to be used by later middleware
-const compose = require("composable-middleware"); // Treat a sequence of middleware as middleware.
 const userService = require("./userService");
-const validateJwt = expressJwt({ secret: config.secrets.session });
 const cookie = require("cookie");
 
 /**
@@ -19,64 +16,21 @@ function isAuthenticated() {
     };
 }
 
-function addUserIfExist() {
-    // console.log(111);
-    return (
-        compose()
-            // Validate jwt
-            .use(function(req, res, next) {
-                // allow access_token to be passed through query parameter as well
-                // if (req.query && req.query.hasOwnProperty('access_token')) {
-                //     req.headers.authorization = 'Bearer ' + req.query.access_token;
-                // };
-
-                if (req.cookies && req.cookies.access_token) {
-                    req.headers.authorization = "Bearer " + req.cookies.access_token;
-                    validateJwt(req, res, next);
-                } else next();
-            })
-            // Attach user to request
-            .use(async (req, res, next) => {
-                // console.log(222);
-                if (req.user) {
-                    // console.log(req.user);
-
-                    try {
-                        const user = await userService.getByIdWithoutPsw2(req.user._id);
-                        // console.log(2222);
-
-                        // console.log(user);
-                        if (user) {
-                            if (user.role.indexOf("admin") > -1) user.isAdmin = true; //add this property for navbar
-                            if (user.role.indexOf("partner") > -1) user.isPartner = true; //add this property for navbar
-                            req.user = user;
-                        }
-                        next();
-                    } catch (error) {
-                        next(error);
-                    }
-                } else {
-                    next();
-                }
-            })
-    );
-}
-
 /**
  * Checks if the user role meets the minimum requirements of the route
  */
 function hasRole(roleRequired) {
     if (!roleRequired) throw new Error("Required role needs to be set");
 
-    return compose()
-        .use(isAuthenticated())
-        .use(function meetsRequirements(req, res, next) {
-            if (config.userRoles.indexOf(req.user.role) >= config.userRoles.indexOf(roleRequired)) {
-                next();
-            } else {
-                res.status(403).send("Forbidden");
-            }
-        });
+    // return compose()
+    //     .use(isAuthenticated())
+    //     .use(function meetsRequirements(req, res, next) {
+    //         if (config.userRoles.indexOf(req.user.role) >= config.userRoles.indexOf(roleRequired)) {
+    //             next();
+    //         } else {
+    //             res.status(403).send("Forbidden");
+    //         }
+    //     });
 }
 
 /**
@@ -131,6 +85,5 @@ module.exports = {
     hasRole: hasRole,
     signToken: signToken,
     //setTokenCookie: setTokenCookie,
-    setCookies: setCookies,
-    addUserIfExist: addUserIfExist
+    setCookies: setCookies
 };
