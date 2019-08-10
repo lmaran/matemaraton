@@ -7,6 +7,7 @@ const exphbs = require("express-handlebars");
 
 const routes = require("./routes");
 const auth = require("./services/loginService");
+const auth2 = require("./middlewares/auth");
 const handlebarHelpers = require("../shared/helpers/handlebar.helper");
 const setContext = require("../shared/middlewares/setContext.middleware").setContext;
 
@@ -32,13 +33,10 @@ app.use(bodyParser.json());
 app.use(cookieParser()); // Parse Cookie header and populate req.cookies with an object
 app.use(passport.initialize());
 
+app.use(auth2.addUserIfExist2);
+
 app.use(auth.addUserIfExist());
 app.use(setContext); // adds requestId, tokenCode and other properties to the request object
-
-// routes for static files
-app.use(express.static(path.join(__dirname, "../shared/public")));
-app.use("/views", express.static(path.join(__dirname, "views")));
-app.use("/scripts/lit-html", express.static(path.join(__dirname, "../../node_modules/lit-html")));
 
 app.use("/", routes);
 

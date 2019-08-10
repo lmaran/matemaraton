@@ -35,11 +35,6 @@ app.use(passport.initialize());
 app.use(auth.addUserIfExist());
 app.use(setContext); // adds requestId, tokenCode and other properties to the request object
 
-// routes for static files
-app.use(express.static(path.join(__dirname, "../shared/public")));
-app.use("/views", express.static(path.join(__dirname, "views")));
-app.use("/scripts/lit-html", express.static(path.join(__dirname, "../../node_modules/lit-html")));
-
 app.use("/", routes);
 
 module.exports = app;
