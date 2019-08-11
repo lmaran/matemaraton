@@ -1,9 +1,9 @@
 const jwt = require("jsonwebtoken");
 const config = require("../../shared/config");
-const userService = require("../../user/services/userService");
+const userService = require("../../user/services/user.service");
 
 exports.addUserIfExist = async (req, res, next) => {
-    // depends on "cookie-parser"
+    // this middleware depends on "cookie-parser"
     if (req.cookies && req.cookies.access_token) {
         const token = req.cookies.access_token;
         const secret = config.secrets.session;
