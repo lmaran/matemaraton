@@ -127,18 +127,18 @@ if 2 similar sections are used, the last one will override the first one --}}
 
             {{#unless user.activationToken}} {{!do not display this part during user activation}}
             <ul class='navbar-nav ml-auto'>
-                {{#if user}}
-                {{#if user.isAdmin}}
+                {{#if @root.user}}
+                {{#if @root.user.isAdmin}}
                 <li class="nav-item"><a class="nav-link" href='/admin'>Admin</a></li>
                 {{/if}}
-                {{#if user.isPartner}}
+                {{#if @root.user.isPartner}}
                 <li class="nav-item"><a class="nav-link" href='/admin'>Admin</a></li>
                 {{/if}}
                 <li class="nav-item dropdown">
                     <a class='nav-link dropdown-toggle' href="#" id="navbarDropdown2" role="button"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <!--<img src='//www.gravatar.com/avatar/6f137572059f8c0f23363e8678d7a795' width="20" height="20">-->
-                        {{user.name}}
+                        {{@root.user.name}}
                         {{!-- <b class='caret'></b> --}}
                     </a>
                     {{!-- <ul class="dropdown-menu">
@@ -152,7 +152,7 @@ if 2 similar sections are used, the last one will override the first one --}}
                 </li>
                 {{else}}
                 <li class="nav-item">
-                    <a class="nav-link" href='/register'>Cont nou</a>
+                    <a class="nav-link" href='/signup'>Cont nou</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href='/login'>Login</a>

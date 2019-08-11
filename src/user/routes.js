@@ -2,19 +2,20 @@ const express = require("express");
 const router = express.Router();
 
 const userController = require("./controllers/user.controller");
-const auth = require("./services/loginService");
+const isAuthenticated = require("./middlewares/isAuthenticated.middleware").isAuthenticated;
 
-router.post("/login/", userController.authenticate);
-router.get("/logout", auth.isAuthenticated(), userController.logout);
+router.get("/login", userController.getLogin);
+router.post("/login/", userController.postLogin);
+
+router.get("/logout", isAuthenticated, userController.logout);
+
+router.get("/signup", userController.getSignup);
+router.post("/signup", userController.postSignup);
+
 // app.get('/me', auth.isAuthenticated(), require('./user/userController').me);
-router.post("/me/changepassword", auth.isAuthenticated(), userController.changePassword);
-router.get("/login", function(req, res) {
-    res.render("user/login");
-});
-router.get("/register", function(req, res) {
-    res.render("user/register", { email: req.query.email });
-});
-router.get("/changePassword", auth.isAuthenticated(), function(req, res) {
+router.post("/me/changepassword", isAuthenticated, userController.changePassword);
+
+router.get("/changePassword", isAuthenticated, function(req, res) {
     res.render("user/changePassword", { user: req.user });
 });
 

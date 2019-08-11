@@ -7,6 +7,8 @@ const routes = require("./routes");
 const handlebarHelpers = require("../shared/helpers/handlebar.helper");
 const setContext = require("../shared/middlewares/setContext.middleware").setContext;
 
+require("./config/passport"); // init passport
+
 const app = express();
 
 // view engine setup
