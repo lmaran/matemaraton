@@ -69,13 +69,6 @@
         });
     };
 
-    exports.getByIdWithoutPsw2 = async id => {
-        const db = await mongoHelper.getDb();
-        id = mongoHelper.normalizedId(id);
-        const user = await db.collection("users").findOne({ _id: id }, { salt: 0, hashedPassword: 0 });
-        return user;
-    };
-
     userService.makeSalt = function() {
         return crypto.randomBytes(16).toString("base64");
     };
