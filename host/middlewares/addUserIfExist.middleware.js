@@ -19,6 +19,7 @@ exports.addUserIfExist = async (req, res, next) => {
                 const userId = jwtPayload._id; // jwtPayload = {_id, iat, exp}
                 try {
                     req.user = await userService.getByIdWithoutPsw2(userId);
+                    res.locals.user = req.user;
                     next();
                 } catch (error) {
                     next(error);
