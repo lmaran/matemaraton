@@ -66,7 +66,19 @@ exports.getSignup = (req, res) => {
 exports.postSignup = function(req, res) {
     const user = req.body;
 
-    console.log(user);
+    // console.log(user);
+
+    const data = { email: req.query.email };
+    const errors = [{ msg: "This is a test2!" }];
+
+    if (user.email == "aaa") {
+        // res.redirect(422, "/signup", { success, errors });
+        res.render("account/signup", { data, errors });
+        return;
+        // return res.status(422).json(errors);
+    } else {
+        res.send("ok");
+    }
 
     // res.send(req.user);
     // return false;
