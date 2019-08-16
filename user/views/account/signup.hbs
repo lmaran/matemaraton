@@ -2,6 +2,13 @@
 
     <h1>Creaza cont nou</h1>
 
+    {{toJSON errors}}
+    {{# if errors }}
+    {{# each errors }}
+    <p class="alert alert-danger">{{ this.msg }}</p>
+    {{/each}}
+    {{/if}}
+
     <form method="post" action="/signup" class="form-horizontal" novalidate>
 
         <div id="emailFg" class="form-group has-feedback">
