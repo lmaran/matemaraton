@@ -2,11 +2,11 @@
 
 Alege ce campuri trebuie sa contina mesajul de eroare
 
-## Alternativele luate in considerare:
+## Alternativele luate in considerare
 
 ### 1. Format propriu, bazat pe ce folosesc Facebook, Google etc
 
--   asta am folosit la precedentul proiect (CT)
+- asta am folosit la precedentul proiect (CT)
 Exemplu:
 
 ```json
@@ -48,17 +48,17 @@ Content-Type: application/vnd.api+json
 
 ### 3. Format standard: [rfc 7807](https://tools.ietf.org/html/rfc7807)
 
--   specificatii: [rfc 7807](https://tools.ietf.org/html/rfc7807)
--   este un format standard, in forma finala
--   [Http-problem](https://github.com/PDMLab/http-problem) - librarie Node.js care te ajuta sa produci raspunsuri http compatibile cu acest standard
--   pare cea mai moderna alegere
--   .Net Core 2.1 a introdus suport pt. asta. Detalii [aici](https://codeopinion.com/http-api-problem-details-in-asp-net-core/) sau [aici](https://www.alexdresko.com/2018/06/01/what-is-asp-net-core-2-1-api-problem-details-rfc-7807/)
--   articole in care se face referire la acest standard:
-    -   05-2018: [https://blog.restcase.com/rest-api-error-handling-problem-details-response/]
-    -   04-2019: [https://apisyouwonthate.com/blog/]creating-good-api-errors-in-rest-graphql-and-grpc
-    -   02-2018: [https://apisyouwonthate.com/blog/the-many-amazing-uses-of-json-schema-client-side-validation]
-    -   ???: [http://work.haufegroup.io/api-style-guide/error-handling/error-handling.html]
-    -   07-2017: [https://www.codementor.io/amandeepmidha/good-user-experience-and-api-success-both-require-clarity-in-api-responses-ag3m6764z]
+- specificatii: [rfc 7807](https://tools.ietf.org/html/rfc7807)
+- este un format standard, in forma finala
+- [Http-problem](https://github.com/PDMLab/http-problem) - librarie Node.js care te ajuta sa produci raspunsuri http compatibile cu acest standard
+- pare cea mai moderna alegere
+- .Net Core 2.1 a introdus suport pt. asta. Detalii [aici](https://codeopinion.com/http-api-problem-details-in-asp-net-core/) sau [aici](https://www.alexdresko.com/2018/06/01/what-is-asp-net-core-2-1-api-problem-details-rfc-7807/)
+- articole in care se face referire la acest standard:
+  - 05-2018: [<https://blog.restcase.com/rest-api-error-handling-problem-details-response/]>
+  - 04-2019: [<https://apisyouwonthate.com/blog/]creating-good-api-errors-in-rest-graphql-and-grpc>
+  - 02-2018: [<https://apisyouwonthate.com/blog/the-many-amazing-uses-of-json-schema-client-side-validation]>
+  - ???: [<http://work.haufegroup.io/api-style-guide/error-handling/error-handling.html]>
+  - 07-2017: [<https://www.codementor.io/amandeepmidha/good-user-experience-and-api-success-both-require-clarity-in-api-responses-ag3m6764z]>
 
 Mesajul are urmatoarea structura (si poate fi extins):
 
@@ -95,6 +95,7 @@ Content-Language: en
     ]
 }
 ```
+
 Exemplu 2:
 
 HTTP/1.1 403 Forbidden
@@ -125,7 +126,6 @@ Exemplu 3:
 }``
 ```
 
-
 ## Rezultatul deciziei
 
 Aleg rfc 7807, pentru ca este un standard conceput special pt. acest scop (si singurul), cu o notorietate in crestere.
@@ -139,6 +139,7 @@ Exemple concrete:
     "status": 404
 }
 ```
+
 ```json
 {
     "type": "https://example.net/validation-error",
