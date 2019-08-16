@@ -7,7 +7,7 @@ const config = require("../../shared/config");
 const uuid = require("uuid");
 const emailService = require("../../shared/helpers/emailService");
 
-const validationError = function(res, err) {
+const validationError = function (res, err) {
     return res.status(422).json(err);
 };
 
@@ -16,10 +16,10 @@ exports.getLogin = (req, res) => {
     else res.render("user/login");
 };
 
-exports.postLogin = function(req, res, next) {
+exports.postLogin = function (req, res, next) {
     // auth with custom callback: http://passportjs.org/docs/authenticate
 
-    passport.authenticate("local", function(err, user, info) {
+    passport.authenticate("local", function (err, user, info) {
         // console.log("asd2");
         const error = err || info;
         // console.log(error);
@@ -59,11 +59,15 @@ exports.logout = (req, res) => {
 
 exports.getSignup = (req, res) => {
     if (req.user) res.redirect("/");
-    else res.render("account/signup", { email: req.query.email });
+    else {
+        const data = { email: req.query.email };
+        const errors = [];
+        res.render("account/signup", { data, errors });
+    }
 };
 // res.render("user/register", { email: req.query.email });
 
-exports.postSignup = function(req, res) {
+exports.postSignup = function (req, res) {
     const user = req.body;
 
     // console.log(user);
@@ -94,7 +98,7 @@ exports.postSignup = function(req, res) {
     }
     //user.status = 'waitingToBeActivated';
 
-    userService.create(user, function(err, response) {
+    userService.create(user, function (err, response) {
         if (err) {
             return handleError(res, err);
         }
@@ -132,17 +136,17 @@ exports.postSignup = function(req, res) {
 /**
  * Get a single user
  */
-exports.getById = function(req, res, next) {
+exports.getById = function (req, res, next) {
     const userId = req.params.id;
 
-    userService.getByIdWithoutPsw(userId, function(err, user) {
+    userService.getByIdWithoutPsw(userId, function (err, user) {
         if (err) return next(err);
         if (!user) return res.status(401).send("Unauthorized");
         res.json(user);
     });
 };
 
-exports.update = function(req, res) {
+exports.update = function (req, res) {
     const user = req.body;
 
     user.modifiedBy = req.user.name;
@@ -151,7 +155,7 @@ exports.update = function(req, res) {
         user.email = user.email.toLowerCase();
     }
 
-    userService.updatePartial(user, function(err, response) {
+    userService.updatePartial(user, function (err, response) {
         // replacing the entire object will delete the psw+salt
         if (err) {
             return handleError(res, err);
@@ -168,9 +172,9 @@ exports.update = function(req, res) {
  * Deletes a user
  * restriction: 'admin'
  */
-exports.remove = function(req, res) {
+exports.remove = function (req, res) {
     const id = req.params.id;
-    userService.remove(id, function(err) {
+    userService.remove(id, function (err) {
         if (err) {
             return handleError(res, err);
         }
@@ -204,9 +208,9 @@ exports.changePassword = async (req, res) => {
 /**
  * Get my info
  */
-exports.me = function(req, res, next) {
+exports.me = function (req, res, next) {
     const userId = req.user._id.toString();
-    userService.getByIdWithoutPsw(userId, function(err, user) {
+    userService.getByIdWithoutPsw(userId, function (err, user) {
         // don't ever give out the password or salt
         if (err) return next(err);
         if (!user) return res.status(401).send("Unauthorized");
@@ -217,15 +221,15 @@ exports.me = function(req, res, next) {
 /**
  * Authentication callback
  */
-exports.authCallback = function(req, res) {
+exports.authCallback = function (req, res) {
     res.redirect("/");
 };
 
-exports.saveActivationData = function(req, res) {
+exports.saveActivationData = function (req, res) {
     const userId = req.params.id;
     const psw = req.body.password;
 
-    userService.getOneById(userId, function(err, user) {
+    userService.getOneById(userId, function (err, user) {
         user.salt = userService.makeSalt();
         user.hashedPassword = userService.encryptPassword(psw, user.salt);
         delete user.activationToken;
@@ -233,7 +237,7 @@ exports.saveActivationData = function(req, res) {
         user.modifiedBy = user.name;
         user.modifiedOn = new Date();
 
-        userService.update(user, function(err) {
+        userService.update(user, function (err) {
             if (err) return validationError(res, err);
 
             // keep user as authenticated
@@ -253,11 +257,11 @@ exports.saveActivationData = function(req, res) {
     });
 };
 
-exports.activateUser = function(req, res, next) {
+exports.activateUser = function (req, res, next) {
     const userId = req.params.id;
     const activationToken = req.query.activationToken;
 
-    userService.getByIdWithoutPsw(userId, function(err, user) {
+    userService.getByIdWithoutPsw(userId, function (err, user) {
         if (err) return next(err);
         if (!user) return res.status(400).send("Link incorect sau expirat (utilizator negasit).");
         if (user.activationToken !== activationToken) return res.status(400).send("Acest cont a fost deja activat.");
@@ -269,10 +273,10 @@ exports.activateUser = function(req, res, next) {
     });
 };
 
-exports.checkEmail = function(req, res) {
+exports.checkEmail = function (req, res) {
     const email = req.params.email;
 
-    userService.getByValue("email", email, null, function(err, user) {
+    userService.getByValue("email", email, null, function (err, user) {
         if (err) {
             return handleError(res, err);
         }

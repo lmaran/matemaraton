@@ -7,7 +7,7 @@ Alege ce campuri trebuie sa contina mesajul de eroare
 ### 1. Format propriu, bazat pe ce folosesc Facebook, Google etc
 
 -   asta am folosit la precedentul proiect (CT)
--   Ex:
+Exemplu:
 
 ```json
 {
@@ -23,8 +23,6 @@ Alege ce campuri trebuie sa contina mesajul de eroare
 ```
 
 ### 2. Format standard: [JSON:api:error](https://jsonapi.org/format/#errors)
-
--   [Specificatii ](https://jsonapi.org/format/#error-objects)
 
 Exemplu:
 
@@ -62,18 +60,14 @@ Content-Type: application/vnd.api+json
     -   ???: [http://work.haufegroup.io/api-style-guide/error-handling/error-handling.html]
     -   07-2017: [https://www.codementor.io/amandeepmidha/good-user-experience-and-api-success-both-require-clarity-in-api-responses-ag3m6764z]
 
-## Rezultatul deciziei
-
-Aleg rfc 7807, pentru ca este un standard conceput special pt. acest scop, cu o notorietate in crestere.
-
-Mesajul va avea urm. structura:
+Mesajul are urmatoarea structura (si poate fi extins):
 
 ```json
 {
     "type": "(string) - a URL to a document describing the error condition (optional, and 'about:blank' is assumed if none is provided",
     "title": "string) - a short, human-readable title for the general error type; the title should not change for given types.",
-    "detail": "(string) - a human-readable description of the specific error.",
     "status": "(number) - conveying the HTTP status code; this is so that all information is in one place, but also to correct for changes in the status code due to the usage of proxy servers",
+    "detail": "(string) - a human-readable description of the specific error.",
     "instance": "(string) - This optional key may be present, with a unique URI for the specific error; this will often point to an error log for that specific response."
 }
 ```
@@ -101,20 +95,7 @@ Content-Language: en
     ]
 }
 ```
-
 Exemplu 2:
-
-```json
-{
-    "type": "https://example.com/problems/request-parameters-missing",
-    "title": "required parameters are missing",
-    "detail": "The parameters: limit, date were not provided",
-    "limit_parameter_format": "number",
-    "date_parameter_format": "YYYY-mm-ddThh:mm-ss"
-}``
-```
-
-Exemplu 3:
 
 HTTP/1.1 403 Forbidden
 Content-Type: application/problem+json
@@ -131,3 +112,46 @@ Content-Language: en
     "accounts": ["/account/12345", "/account/67890"]
 }
 ```
+
+Exemplu 3:
+
+```json
+{
+    "type": "https://example.com/problems/request-parameters-missing",
+    "title": "required parameters are missing",
+    "detail": "The parameters: limit, date were not provided",
+    "limit_parameter_format": "number",
+    "date_parameter_format": "YYYY-mm-ddThh:mm-ss"
+}``
+```
+
+
+## Rezultatul deciziei
+
+Aleg rfc 7807, pentru ca este un standard conceput special pt. acest scop (si singurul), cu o notorietate in crestere.
+
+Exemple concrete:
+
+```json
+{
+    "type": "https://example.com/problems/page-not-found",
+    "title": "Pagina negasita",
+    "status": 404
+}
+```
+```json
+{
+    "type": "https://example.net/validation-error",
+    "title": "Cerere invalida",
+    "status": 422,
+    "invalid-params": [
+        {
+            "name": "age",
+            "reason": "trebuie sa fie un numar intreg"
+        },
+        {
+            "name": "color",
+            "reason": "trebuie sa fie 'verde', 'rosu' or 'albastru'"
+        }
+    ]
+}
