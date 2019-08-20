@@ -339,7 +339,7 @@ function setCookies(req, res, token, userProfile) {
  * Returns a jwt token signed by the app secret
  */
 function signToken(id) {
-    return jwt.sign({ _id: id }, config.secrets.session, { expiresIn: 60 * 60 * 24 * 365 }); // in seconds
+    return jwt.sign({ _id: id }, config.session_secret, { expiresIn: 60 * 60 * 24 * 365 }); // in seconds
 }
 
 /**

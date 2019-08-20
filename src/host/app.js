@@ -12,7 +12,7 @@ const mongoHelper = require("../shared/helpers/mongo.helper");
 
 const app = express();
 
-const mongoClientAsPromise = mongoHelper.init();
+const mongoClientAsPromise = mongoHelper.getClientAsPromise();
 
 // routes for static files; in prod set NGINX to serve them
 // app.use("/", express.static(path.join(__dirname, "../public"), { maxAge: 31557600000 })); // one year in milliseconds
