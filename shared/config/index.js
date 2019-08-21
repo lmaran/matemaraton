@@ -10,11 +10,9 @@ const envConfig = require(`./${env}`);
 const common = {
     env,
     port: process.env.PORT || 1416,
-    mongo: {
-        uri: process.env.MONGO_URI,
-        dbName: process.env.MONGO_DB_NAME,
-        options: { useNewUrlParser: true }
-    },
+    mongo_url: process.env.MONGO_URI,
+    mongo_dbName: process.env.MONGO_DB_NAME,
+    session_secret: process.env.SESSION_SECRET,
     rollbarToken: process.env.ROLLBAR_TOKEN,
     logglyToken: process.env.LOGGLY_TOKEN,
     logglySubdomain: process.env.LOGGLY_SUBDOMAIN,
@@ -32,11 +30,6 @@ const common = {
             headers: process.env.HTTP_LOG_DETAILS_RESPONSE_HEADERS || false,
             body: process.env.HTTP_LOG_DETAILS_RESPONSE_BODY || false
         }
-    },
-
-    // Secret for session, you will want to change this and make it an environment variable
-    secrets: {
-        session: "node-fullstack-secret"
     },
 
     // List of user roles
@@ -59,7 +52,6 @@ const merge = (target, source) => {
 };
 
 // merge the two config objects
-// const config = { ...common, ...envConfig }; // ok, but not recursively
 const config = merge(common, envConfig);
 
 module.exports = config;

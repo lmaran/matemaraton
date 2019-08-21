@@ -2,16 +2,17 @@
 
     <h1>Creaza cont nou</h1>
 
-    {{!-- {{toJSON errors}}
-    {{toJSON data}} --}}
+    {{!-- <p>{{toJSON errors}}</p> --}}
+    {{!-- <p>{{toJSON data}}</p> --}}
 
     <form method="post" action="/signup" novalidate onsubmit="saveBtn.disabled = true; return true;">
         <div class="form-group row">
             <label for="email" class="col-md-3 col-form-label required">Email</label>
             <div class="col-md-7">
-                <input type="email2" name="email" id="email" class="form-control {{#if errors.email}}is-invalid {{/if}}"
-                    value="{{data.email}}" {{#unless email}}autofocus{{/unless}} />
-                <div class="invalid-feedback">{{errors.email}}</div>
+                <input type="email2" name="email" id="email"
+                    class="form-control {{#if data.email.msg}}is-invalid {{/if}}" value="{{data.email.val}}"
+                    {{#if data.email.hasAutofocus}}autofocus {{/if}} />
+                <div class=" invalid-feedback">{{data.email.msg}}</div>
             </div>
         </div>
 
@@ -19,9 +20,10 @@
             <label for="password" class="col-md-3 col-form-label required">Parola</label>
             <div class="col-md-7">
                 <input type="password" name="password" id="password"
-                    class="form-control {{#if errors.password}}is-invalid {{/if}}" {{#if email}}autofocus{{/if}} />
+                    class="form-control {{#if data.password.msg}}is-invalid {{/if}}"
+                    {{#if data.password.hasAutofocus}}autofocus {{/if}} />
                 <p class="text-muted" style="margin-bottom:0">Minim 6 caractere.</p>
-                <div class="invalid-feedback">{{errors.password}}</div>
+                <div class="invalid-feedback">{{data.password.msg}}</div>
             </div>
         </div>
 
@@ -29,8 +31,8 @@
             <label for="confirmPassword" class="col-md-3 col-form-label required">Confirma parola</label>
             <div class="col-md-7">
                 <input type="password" name="confirmPassword" id="confirmPassword"
-                    class="form-control {{#if errors.confirmPassword}}is-invalid {{/if}}">
-                <div class="invalid-feedback">{{errors.confirmPassword}}</div>
+                    class="form-control {{#if data.confirmPassword.msg}}is-invalid {{/if}}">
+                <div class="invalid-feedback">{{data.confirmPassword.msg}}</div>
             </div>
         </div>
 

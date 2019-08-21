@@ -6,7 +6,7 @@ exports.addUserIfExist = async (req, res, next) => {
     // this middleware depends on "cookie-parser"
     if (req.cookies && req.cookies.access_token) {
         const token = req.cookies.access_token;
-        const secret = config.secrets.session;
+        const secret = config.session_secret;
         const options = {};
 
         jwt.verify(token, secret, options, async function(err, jwtPayload) {
