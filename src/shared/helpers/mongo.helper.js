@@ -1,3 +1,6 @@
+// in this case we have two connections: one for session, one for the regular interactions
+// see also: https://stackoverflow.com/questions/41364072/running-an-async-function-before-express-js-start
+
 const config = require("../config");
 const mongodb = require("mongodb");
 
@@ -19,17 +22,12 @@ let _clientAsPromise;
 
     // about parameters: https://stackoverflow.com/a/57547013
     const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
-
-    try {
-        _clientAsPromise = client.connect();
-        return _clientAsPromise;
-    } catch (error) {
-        throw new Error(error);
-    }
+    _clientAsPromise = client.connect();
 })();
 
 exports.getDb = async () => {
     try {
+        // console.log(_clientAsPromise);
         if (!_db) {
             const client = await _clientAsPromise;
             _db = client.db(dbName);
