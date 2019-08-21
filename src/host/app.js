@@ -3,6 +3,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
+const flash = require("express-flash");
 const addUserIfExist = require("./middlewares/addUserIfExist.middleware").addUserIfExist;
 
 const user = require("../user/app");
@@ -31,6 +32,8 @@ app.use(
         store: new MongoStore({ clientPromise: mongoClientAsPromise })
     })
 );
+app.use(flash());
+
 app.use(cookieParser()); // Parse Cookie header and populate req.cookies with an object
 app.use(addUserIfExist); // verify jwt token and populate req.user (depends on "cookie-parser")
 

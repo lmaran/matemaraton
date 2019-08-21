@@ -7,6 +7,7 @@ const passport = require("passport");
 const config = require("../../shared/config");
 const uuid = require("uuid");
 const emailService = require("../../shared/helpers/emailService");
+const arrayHelper = require("../../shared/helpers/array.helper");
 
 const validationError = function(res, err) {
     return res.status(422).json(err);
@@ -63,23 +64,72 @@ exports.getSignup = (req, res) => {
         return res.redirect("/");
     }
 
-    const data = { email: req.query.email };
-    const errors = [];
+    let data = {};
+    const errors = req.flash("validationErrors");
+
+    if (errors.length) {
+        // redirect from POST (with errors)
+        data = arrayHelper.arrayToObject(errors, "field");
+        if (data.email.msg) data.email.hasAutofocus = true;
+        else data.password.hasAutofocus = true;
+    } else if (req.query.email) {
+        // new page with email (from url)
+        data.email = { val: req.query.email };
+        data.password = { hasAutofocus: true };
+    } else {
+        // clean, new page
+        data.email = { hasAutofocus: true };
+    }
+
+    // const isFocusOnEmail = data.email && (emailRecord.msg || !emailRecord.val);
+    // if (isFocusOnEmail) {
+    //     errors.forEach(x => {
+    //         if (x.type === "email") x.hasAutofocus = true;
+    //         else x.hasAutofocus = false;
+    //     });
+    // } else {
+    //     errors.forEach(x => {
+    //         if (x.type === "password") x.hasAutofocus = true;
+    //         else x.hasAutofocus = false;
+    //     });
+    // }
+
     res.render("account/signup", { data, errors });
 };
-// res.render("user/register", { email: req.query.email });
 
-exports.postSignup = async function(req, res, next) {
+exports.postSignup = async function(req, res) {
     const { email, password, confirmPassword } = req.body;
 
-    const errors = await validateSignup(email, password, confirmPassword);
-    const data = {};
+    const validationErrors = [];
+
+    const [emailMsg, passwordMsg, confirmPasswordMsg] = await Promise.all([
+        await getEmailError(email),
+        await getPasswordError(password),
+        await getConfirmPasswordError(password, confirmPassword)
+    ]);
+
+    if (emailMsg) validationErrors.push({ field: "email", msg: emailMsg });
+    if (passwordMsg) validationErrors.push({ field: "password", msg: passwordMsg });
+    if (confirmPasswordMsg) validationErrors.push({ field: "confirmPassword", msg: confirmPasswordMsg });
 
     // if (Object.getOwnPropertyNames(errors).length !== 0) {
-    if (errors.hasErrors) {
-        data.email = email; // resend the original values
-        data.password = password;
-        return res.render("account/signup", { data, errors });
+    if (validationErrors.length) {
+        // add also the initial values
+        let emailFound = false;
+        validationErrors.forEach(x => {
+            if (x.field === "email") {
+                x.val = email;
+                emailFound = true;
+            }
+        });
+
+        if (!emailFound) {
+            validationErrors.push({ field: "email", val: email });
+        }
+
+        req.flash("validationErrors", validationErrors);
+
+        return res.redirect("/signup");
     } else {
         // return res.send("ok");
         return res.redirect("/");
@@ -342,74 +392,27 @@ function signToken(id) {
     return jwt.sign({ _id: id }, config.session_secret, { expiresIn: 60 * 60 * 24 * 365 }); // in seconds
 }
 
-/**
- * Checks if the user role meets the minimum requirements of the route
- */
-function hasRole(roleRequired) {
-    if (!roleRequired) throw new Error("Required role needs to be set");
-
-    // return compose()
-    //     .use(isAuthenticated())
-    //     .use(function meetsRequirements(req, res, next) {
-    //         if (config.userRoles.indexOf(req.user.role) >= config.userRoles.indexOf(roleRequired)) {
-    //             next();
-    //         } else {
-    //             res.status(403).send("Forbidden");
-    //         }
-    //     });
-}
-
-const validateSignup = async (email, password, confirmPassword) => {
-    const errors = {};
-
-    errors["email"] = await getEmailError(email);
-    errors["password"] = await getPasswordError(password);
-    errors["confirmPassword"] = await getConfirmPasswordError(password, confirmPassword);
-
-    errors.hasErrors = Object.values(errors).some(x => x);
-
-    // console.log(errors);
-    // console.log(errors.hasErrors);
-    return errors;
-};
-
 const getEmailError = async email => {
-    if (validator.isEmpty(email)) {
-        return "Camp obligatoriu.";
-    }
-    if (!validator.isLength(email, { max: 50 })) {
-        return "Maxim 50 caractere.";
-    }
-    if (!validator.isEmail(email)) {
-        return "Email invalid.";
-    }
+    if (validator.isEmpty(email)) return "Camp obligatoriu.";
+    if (!validator.isLength(email, { max: 50 })) return "Maxim 50 caractere.";
+    if (!validator.isEmail(email)) return "Email invalid.";
+
     const normalizedEmail = validator.normalizeEmail(email, { gmail_remove_dots: false });
     const found = await userService.getOneByEmail(normalizedEmail);
-    if (!found) {
-        return "Email necunoscut.";
-    }
+    if (!found) return "Email necunoscut.";
+
     return null;
 };
 
 const getPasswordError = async password => {
-    if (validator.isEmpty(password)) {
-        return "Camp obligatoriu.";
-    }
-    if (!validator.isLength(password, { min: 6 })) {
-        return "Minim 6 caractere.";
-    }
-    if (!validator.isLength(password, { max: 8 })) {
-        return "Maxim 50 caractere.";
-    }
+    if (validator.isEmpty(password)) return "Camp obligatoriu.";
+    if (!validator.isLength(password, { min: 6 })) return "Minim 6 caractere.";
+    if (!validator.isLength(password, { max: 50 })) return "Maxim 50 caractere.";
     return null;
 };
 
 const getConfirmPasswordError = async (password, confirmPassword) => {
-    if (validator.isEmpty(confirmPassword)) {
-        return "Camp obligatoriu.";
-    }
-    if (confirmPassword !== password) {
-        return "Parolele nu coincid.";
-    }
+    if (validator.isEmpty(confirmPassword)) return "Camp obligatoriu.";
+    if (confirmPassword !== password) return "Parolele nu coincid.";
     return null;
 };
