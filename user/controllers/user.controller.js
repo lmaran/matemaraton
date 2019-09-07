@@ -399,7 +399,7 @@ const getEmailError = async email => {
 
     const normalizedEmail = validator.normalizeEmail(email, { gmail_remove_dots: false });
     const found = await userService.getOneByEmail(normalizedEmail);
-    if (!found) return "Email necunoscut.";
+    if (found) return "Exista deja un cont cu acest email.";
 
     return null;
 };

@@ -22,7 +22,7 @@
                 <input type="password" name="password" id="password"
                     class="form-control {{#if data.password.msg}}is-invalid {{/if}}"
                     {{#if data.password.hasAutofocus}}autofocus {{/if}} />
-                <p class="text-muted" style="margin-bottom:0">Minim 6 caractere.</p>
+                <p class="text-muted mb-0">Minim 6 caractere.</p>
                 <div class="invalid-feedback">{{data.password.msg}}</div>
             </div>
         </div>
@@ -75,12 +75,12 @@
 
     </form> --}}
 
-    <!--<p>
-        Ti-ai uitat parola? <a href="/resetpassword">Cere o noua parola!</a>
-    </p>-->
-    <!--<p>
-        Nu ai inca un cont? <a href="/register">Inregistreaza-te!</a>
-    </p>-->
+    <div class="form-group row">
+        <div class="col-md-7 offset-md-3">
+            Ti-ai uitat parola? <a href="/resetpassword">Reseteaza parola.</a>
+        </div>
+    </div>
+
 
 </div>
 
