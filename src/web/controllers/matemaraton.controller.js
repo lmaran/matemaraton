@@ -31,7 +31,7 @@ exports.getMatemaraton = async (req, res, next) => {
         const data = {
             ctx: req.ctx
         };
-        res.render("matemaraton/matemaraton", data);
+        res.render("home", data);
     }
 };
 

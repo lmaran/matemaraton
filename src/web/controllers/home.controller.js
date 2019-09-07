@@ -3,6 +3,6 @@ exports.getHomePage = async (req, res) => {
     //     ctx: req.ctx,
     // };
     // res.render("home", data);
-    console.log(res.locals);
+    // console.log(res.locals);
     res.render("home");
 };
