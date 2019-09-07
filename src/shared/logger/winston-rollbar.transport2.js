@@ -7,7 +7,7 @@
 
 const winston = require("winston");
 const rollbar = require("rollbar");
-const cycle = require("cycle");
+// const cycle = require("cycle");
 
 exports.Rollbar = winston.transports.Rollbar = class extends winston.Transport {
     constructor(opts = {}) {
@@ -94,8 +94,8 @@ exports.Rollbar = winston.transports.Rollbar = class extends winston.Transport {
 
             this.performLogging(level, error, req, meta, cb);
         } else {
-            const custom = typeof meta === "object" ? cycle.decycle(meta) : meta;
-            this.performLogging(level, msg, req, custom, cb);
+            // const custom = typeof meta === "object" ? cycle.decycle(meta) : meta;
+            // this.performLogging(level, msg, req, custom, cb);
         }
     }
 };
