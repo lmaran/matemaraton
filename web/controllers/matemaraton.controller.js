@@ -31,7 +31,7 @@ exports.getMatemaraton = async (req, res, next) => {
         const data = {
             ctx: req.ctx
         };
-        res.render("matemaraton/matemaraton", data);
+        res.render("home", data);
     }
 };
 
@@ -69,10 +69,25 @@ exports.getPresencePerGroup = async (req, res, next) => {
 
     const [grade, groupName] = groupId.split("-");
 
-    const [presencePerGroups, students] = await Promise.all([
+    let presencePerGroups = null;
+    let students = null;
+    [presencePerGroups, students] = await Promise.all([
         await matemaratonService.getPresencePerGroup(period, grade, groupName),
         await matemaratonService.getStudentsPerGrade(period, grade)
     ]);
+
+    students = students.map(x => {
+        let shortName = x.shortFirstName || x.firstName;
+        if (x.lastName) {
+            shortName = `${shortName} ${x.lastName.charAt(0)}.`; // Vali M.
+        }
+        return {
+            _id: x._id,
+            grade: x.grade,
+            class: x.class,
+            shortName
+        };
+    });
 
     const studentsObj = arrayHelper.arrayToObject(students, "_id");
 
@@ -131,7 +146,7 @@ exports.getPresencePerGroup = async (req, res, next) => {
         totalCourses,
         totalStudents: presencePerStudents.length
     };
-    //res.send(data);
+    // res.send(data);
     res.render("matemaraton/presence-per-group", data);
 };
 
@@ -162,6 +177,11 @@ exports.getPresencePerStudent = async (req, res, next) => {
     if (!edition || !student) {
         const err = new PageNotFound(`Pagina negasita: ${req.method} ${req.url}`);
         return next(err);
+    }
+
+    student.shortName = student.shortFirstName || student.firstName;
+    if (student.lastName) {
+        student.shortName = `${student.shortName} ${student.lastName.charAt(0)}.`; // Vali M.
     }
 
     const period = edition.period; // 201819
