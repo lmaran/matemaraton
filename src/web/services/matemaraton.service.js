@@ -3,7 +3,7 @@ const { ObjectID } = require("mongodb");
 
 const collection = "presence";
 const coursesCollection = "courses";
-const studentsCollection = "students";
+const studentsCollection = "persons";
 const editionsCollection = "editions";
 
 exports.getPresencePerGroup = async (period, grade, groupName) => {
@@ -69,7 +69,15 @@ exports.getStudentsPerGrade = async (period, grade) => {
         .aggregate([
             { $match: { "grades.period": period, "grades.grade": grade } },
             { $unwind: "$grades" },
-            { $project: { shortName: 1, grade: "$grades.grade", class: "$grades.class" } }
+            {
+                $project: {
+                    firstName: 1,
+                    lastName: 1,
+                    shortFirstName: 1,
+                    grade: "$grades.grade",
+                    class: "$grades.class"
+                }
+            }
         ])
         .toArray();
 };
