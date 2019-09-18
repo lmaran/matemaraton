@@ -31,6 +31,7 @@ router.get("/:pageId", pageController.getPage);
 
 // problems
 router.get("/probleme/:id", problemController.getProblem);
+router.post("/probleme", problemController.createProblem);
 
 router.get("/:pageId/asdfgh", pageController.getPage2);
 
