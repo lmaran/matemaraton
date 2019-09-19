@@ -2,5 +2,7 @@
     "editor.formatOnSave": true,
     "eslint.autoFixOnSave": false,
     "eslint.alwaysShowStatus": true,
-    "workbench.tree.indent": 15
+    "workbench.tree.indent": 15,
+    "editor.minimap.enabled": false,
+    "markdown-pdf.displayHeaderFooter": false
 }

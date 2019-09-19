@@ -74,7 +74,9 @@ exports.createProblem = async (req, res) => {
     const katex = require("katex");
 
     const tm = require("markdown-it-texmath").use(katex);
-    const md = require("markdown-it")().use(tm, { delimiters: "dollars", macros: { "\\RR": "\\mathbb{R}" } });
+    const md = require("markdown-it")({
+        // breaks: true // Convert '\n' in paragraphs into <br>
+    }).use(tm, { delimiters: "dollars", macros: { "\\RR": "\\mathbb{R}" } });
     data.strKatex = md.render(data.str);
 
     const md2 = require("markdown-it")();
