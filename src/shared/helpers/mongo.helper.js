@@ -6,14 +6,14 @@ const mongodb = require("mongodb");
 
 const MongoClient = mongodb.MongoClient;
 const dbName = config.mongo_dbName;
-const url = config.mongo_url;
+const uri = config.mongo_uri;
 
 let _db;
 let _clientAsPromise;
 
 // https://mongodb.github.io/node-mongodb-native/3.3/reference/ecmascriptnext/connecting/
 (() => {
-    if (!url) {
+    if (!uri) {
         throw new Error("Nu este definit un connection string pentru Mongo.");
     }
     if (!dbName) {
@@ -21,7 +21,7 @@ let _clientAsPromise;
     }
 
     // about parameters: https://stackoverflow.com/a/57547013
-    const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
     _clientAsPromise = client.connect();
 })();
 

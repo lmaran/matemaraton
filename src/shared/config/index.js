@@ -10,7 +10,7 @@ const envConfig = require(`./${env}`);
 const common = {
     env,
     port: process.env.PORT || 1416,
-    mongo_url: process.env.MONGO_URI,
+    mongo_uri: process.env.MONGO_URI,
     mongo_dbName: process.env.MONGO_DB_NAME,
     session_secret: process.env.SESSION_SECRET,
     rollbarToken: process.env.ROLLBAR_TOKEN,

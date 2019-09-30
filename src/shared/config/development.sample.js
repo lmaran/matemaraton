@@ -3,7 +3,7 @@ const LogLevel = constants.LogLevel;
 const LogDetail = constants.LogDetail;
 
 const config = {
-    mongo_url: "mongodb://localhost/matemaraton-dev",
+    mongo_uri: "mongodb://localhost/matemaraton-dev",
     mongo_dbName: "matemaraton-dev",
     session_secret: "node-fullstack-secret",
     rollbarToken: "<rollbarToken>",
