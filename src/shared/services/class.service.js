@@ -3,24 +3,24 @@ const { ObjectID } = require("mongodb");
 
 const collection = "classes";
 
-exports.getAll = async () => {
-    const db = await mongoHelper.getDb();
-    return await db
-        .collection(collection)
-        .find()
-        .sort({ grade: -1, name: 1 })
-        .toArray();
-};
+// exports.getAll = async () => {
+//     const db = await mongoHelper.getDb();
+//     return db
+//         .collection(collection)
+//         .find()
+//         .sort({ grade: -1, name: 1 })
+//         .toArray();
+// };
 
 exports.getOneById = async id => {
     const db = await mongoHelper.getDb();
-    return await db.collection(collection).findOne({ _id: new ObjectID(id) });
+    return db.collection(collection).findOne({ _id: new ObjectID(id) });
 };
 
-exports.getPrimaryClassForTeacher = async teacherId => {
-    const db = await mongoHelper.getDb();
-    return await db.collection(collection).findOne({ "classTeacher.id": teacherId.toString() });
-};
+// exports.getPrimaryClassForTeacher = async teacherId => {
+//     const db = await mongoHelper.getDb();
+//     return db.collection(collection).findOne({ "classTeacher.id": teacherId.toString() });
+// };
 
 // exports.insertOne = async teacher => {
 //     const db = await mongoHelper.getDb();

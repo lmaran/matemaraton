@@ -5,6 +5,7 @@ const homeController = require("./controllers/home.controller");
 const meController = require("./controllers/me.controller");
 const matemaratonController = require("../web/controllers/matemaraton.controller");
 const problemController = require("../web/controllers/problem.controller");
+const classController = require("./controllers/class.controller");
 
 const contactController = require("./controllers/contact.controller");
 const pageController = require("./controllers/page.controller");
@@ -14,6 +15,9 @@ router.get("/", homeController.getHomePage);
 
 // my page
 router.get("/pagina-mea", meController.getMyPage);
+
+// class
+router.get("/clase/:classId", classController.getClass);
 
 // router.get("/matemaraton/:edition", matemaratonController.getEditionHomepage);
 router.get("/:edition?/prezenta/grupe/:groupId", matemaratonController.getPresencePerGroup);
