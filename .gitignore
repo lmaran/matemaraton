@@ -1,4 +1,4 @@
-src/shared/config/development.ts
+src/config/development.js
 node_modules
 dist
 

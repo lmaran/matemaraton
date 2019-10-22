@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
-const config = require("../../shared/config");
-const userService = require("../../user/services/user.service");
+const config = require("../config");
+const userService = require("../services/user.service");
 
 exports.addUserIfExist = async (req, res, next) => {
     // this middleware depends on "cookie-parser"

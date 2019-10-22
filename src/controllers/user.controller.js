@@ -4,10 +4,10 @@ const validator = require("validator");
 const authHelper = require("../helpers/auth.helper");
 const userService = require("../services/user.service");
 const passport = require("passport");
-const config = require("../../shared/config");
-const uuid = require("uuid");
-const emailService = require("../../shared/helpers/emailService");
-const arrayHelper = require("../../shared/helpers/array.helper");
+const config = require("../config");
+// const uuid = require("uuid");
+// const emailService = require("../helpers/emailService");
+const arrayHelper = require("../helpers/array.helper");
 
 const validationError = function(res, err) {
     return res.status(422).json(err);
@@ -140,60 +140,60 @@ exports.postSignup = async function(req, res) {
     //     return res.redirect("/signup");
     // }
 
-    const user = req.body;
+    // const user = req.body;
 
-    // console.log(user);
+    // // console.log(user);
 
-    // const data = { email: req.query.email };
-    //const errors2 = [{ msg: "This is a test2!" }];
+    // // const data = { email: req.query.email };
+    // //const errors2 = [{ msg: "This is a test2!" }];
 
-    // res.send(req.user);
-    // return false;
+    // // res.send(req.user);
+    // // return false;
 
-    user.isActive = true;
-    user.provider = "local";
-    user.role = "admin";
-    // user.createdBy = req.user.name;
-    user.createdOn = new Date();
-    // user.activationToken = uuid.v4();
-    if (user.email) {
-        user.email = user.email.toLowerCase();
-    }
-    //user.status = 'waitingToBeActivated';
+    // user.isActive = true;
+    // user.provider = "local";
+    // user.role = "admin";
+    // // user.createdBy = req.user.name;
+    // user.createdOn = new Date();
+    // // user.activationToken = uuid.v4();
+    // if (user.email) {
+    //     user.email = user.email.toLowerCase();
+    // }
+    // //user.status = 'waitingToBeActivated';
 
-    userService.create(user, function(err, response) {
-        if (err) {
-            return handleError(res, err);
-        }
-        res.status(201).json(response.ops[0]);
+    // userService.create(user, function(err, response) {
+    //     if (err) {
+    //         return handleError(res, err);
+    //     }
+    //     res.status(201).json(response.ops[0]);
 
-        // // send an email with an activationLink
-        // const from = user.email;
-        // const subject = "Activare cont";
+    //     // // send an email with an activationLink
+    //     // const from = user.email;
+    //     // const subject = "Activare cont";
 
-        // let tpl = "";
-        // tpl += '<p style="margin-bottom:30px;">Buna <strong>' + user.name + "</strong>,</p>";
-        // tpl += user.createdBy + " ti-a creat un cont de acces in aplicatie. ";
-        // tpl += "Pentru activarea acestuia, te rog sa folosesti link-ul de mai jos:";
-        // tpl +=
-        //     '<p><a href="' +
-        //     config.externalUrl +
-        //     "/activate/" +
-        //     user._id +
-        //     "?activationToken=" +
-        //     user.activationToken +
-        //     '">Activare cont</a></p>';
-        // tpl += '<p style="margin-top:30px">Acest email a fost generat automat.</p>';
+    //     // let tpl = "";
+    //     // tpl += '<p style="margin-bottom:30px;">Buna <strong>' + user.name + "</strong>,</p>";
+    //     // tpl += user.createdBy + " ti-a creat un cont de acces in aplicatie. ";
+    //     // tpl += "Pentru activarea acestuia, te rog sa folosesti link-ul de mai jos:";
+    //     // tpl +=
+    //     //     '<p><a href="' +
+    //     //     config.externalUrl +
+    //     //     "/activate/" +
+    //     //     user._id +
+    //     //     "?activationToken=" +
+    //     //     user.activationToken +
+    //     //     '">Activare cont</a></p>';
+    //     // tpl += '<p style="margin-top:30px">Acest email a fost generat automat.</p>';
 
-        // emailService.sendEmail(from, subject, tpl).then(
-        //     function(result) {
-        //         //res.status(201).json(response.ops[0]);
-        //     },
-        //     function(err) {
-        //         //handleError(res, err)
-        //     }
-        // );
-    });
+    //     // emailService.sendEmail(from, subject, tpl).then(
+    //     //     function(result) {
+    //     //         //res.status(201).json(response.ops[0]);
+    //     //     },
+    //     //     function(err) {
+    //     //         //handleError(res, err)
+    //     //     }
+    //     // );
+    // });
 };
 
 /**

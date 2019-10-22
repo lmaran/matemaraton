@@ -1,4 +1,4 @@
-const parentService = require("../../shared/services/parent.service");
+const parentService = require("../services/parent.service");
 
 exports.getMyPage = async (req, res) => {
     const user = req.ctx && req.ctx.user;

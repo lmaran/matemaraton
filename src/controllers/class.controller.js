@@ -1,4 +1,4 @@
-const classService = require("../../shared/services/class.service");
+const classService = require("../services/class.service");
 
 exports.getClass = async (req, res) => {
     const classId = req.params.classId;

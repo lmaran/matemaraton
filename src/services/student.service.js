@@ -1,4 +1,4 @@
-const mongoHelper = require("../../shared/helpers/mongo.helper");
+const mongoHelper = require("../helpers/mongo.helper");
 const { ObjectID } = require("mongodb");
 
 const collection = "students";

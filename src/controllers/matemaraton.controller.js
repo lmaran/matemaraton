@@ -1,7 +1,7 @@
 const matemaratonService = require("../services/matemaraton.service");
-const { PageNotFound } = require("../../shared/errors/all.errors");
-const dateTimeHelper = require("../../shared/helpers/date-time.helper");
-const arrayHelper = require("../../shared/helpers/array.helper");
+const { PageNotFound } = require("../errors/all.errors");
+const dateTimeHelper = require("../helpers/date-time.helper");
+const arrayHelper = require("../helpers/array.helper");
 
 exports.getTrainingProgramForENSimulation = async (req, res) => {
     const data = {

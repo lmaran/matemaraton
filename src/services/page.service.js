@@ -1,4 +1,4 @@
-const mongoHelper = require("../../shared/helpers/mongo.helper");
+const mongoHelper = require("../helpers/mongo.helper");
 
 const collection = "pages";
 

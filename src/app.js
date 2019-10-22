@@ -1,24 +1,46 @@
+const bodyParser = require("body-parser");
 const express = require("express");
 const path = require("path");
+const exphbs = require("express-handlebars");
+
+const routes = require("./routes");
+const handlebarHelpers = require("./helpers/handlebar.helper");
+const setContext = require("./middlewares/setContext.middleware").setContext;
+
+require("./config/passport"); // init passport
+
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
 const flash = require("express-flash");
 const addUserIfExist = require("./middlewares/addUserIfExist.middleware").addUserIfExist;
 
-const user = require("../user/app");
-const api = require("../api/app");
-const web = require("../web/app");
-const mongoHelper = require("../shared/helpers/mongo.helper");
+const mongoHelper = require("./helpers/mongo.helper");
 
 const app = express();
+
+// view engine setup
+app.set("view engine", ".hbs");
+app.set("views", path.join(__dirname, "/views"));
+app.engine(
+    ".hbs",
+    exphbs({
+        defaultLayout: "main",
+        extname: ".hbs",
+
+        helpers: handlebarHelpers
+    })
+);
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 const mongoClientAsPromise = mongoHelper.getClientAsPromise();
 
 // routes for static files; in prod set NGINX to serve them
 // app.use("/", express.static(path.join(__dirname, "../public"), { maxAge: 31557600000 })); // one year in milliseconds
-app.use("/", express.static(path.join(__dirname, "../public")));
-app.use("/lib/lit-html", express.static(path.join(__dirname, "../../node_modules/lit-html")));
+app.use("/", express.static(path.join(__dirname, "./public")));
+app.use("/lib/lit-html", express.static(path.join(__dirname, "../node_modules/lit-html")));
 
 app.get("/check", function(req, res) {
     res.send("matemaraton-" + (process.env.DEPLOYMENT_SLOT || "noslot") + "-" + process.env.NODE_ENV);
@@ -37,16 +59,19 @@ app.use(flash());
 app.use(cookieParser()); // Parse Cookie header and populate req.cookies with an object
 app.use(addUserIfExist); // verify jwt token and populate req.user (depends on "cookie-parser")
 
-app.use("/api", api);
-app.use("/", user);
-app.use("/", web);
+app.use(setContext); // adds requestId, tokenCode and other properties to the request object
 
-app.use((req, res, next) => {
+// app.use("/", user);
+
+// app.use("/", web);
+app.use("/", routes);
+
+app.use((req, res) => {
     res.status(404).send("Sorry can't find that!");
 });
 
-app.use((err, req, res, next) => {
-    console.error(err.stack);
+app.use((err, req, res) => {
+    // console.error(err.stack);
     res.status(500).send("Something broke!");
 });
 

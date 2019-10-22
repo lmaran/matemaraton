@@ -1,10 +1,10 @@
 const path = require("path");
-const pageService = require("../../shared/services/page.service");
+const pageService = require("../services/page.service");
 const marked = require("marked");
 const fs = require("fs");
 const { promisify } = require("util");
 const readFileAsync = promisify(fs.readFile);
-const { PageNotFound } = require("../../shared/errors/all.errors");
+const { PageNotFound } = require("../errors/all.errors");
 
 exports.getPage = async (req, res, next) => {
     const routeWhitelist = [
