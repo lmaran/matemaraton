@@ -1,6 +1,6 @@
-const app = require("./host/app");
+const app = require("./app");
 const http = require("http");
-const config = require("./shared/config");
+const config = require("./config");
 
 app.set("port", config.port);
 
@@ -14,7 +14,7 @@ function onError(error) {
     if (error.syscall !== "listen") {
         throw error;
     }
-    console.log(error);
+    // console.log(error);
     switch (error.code) {
         case "EACCES":
             process.exit(1);

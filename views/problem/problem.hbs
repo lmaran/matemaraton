@@ -1,0 +1,46 @@
+{{!-- <form id="question-txt">
+    <textarea>{{{p1}}}</textarea>
+</form> --}}
+
+
+<textarea id="question-txt" rows="15" cols="150"></textarea>
+
+<button id="submit-btn">Submit</button>
+
+
+
+
+<p>
+    <div style="font-weight: bold">Katex:</div>
+    <div id="result-div-katex" style="font-family: KaTeX_Main; font-size: 1.1em"></div>
+</p>
+
+<p style="margin-top: 100px">
+    <div style="font-weight: bold">Original:</div>
+    <div id="result-div-original"></div>
+</p>
+
+<p>
+    <div style="font-weight: bold">Original formatted:</div>
+    <textarea id="result-div-original-formatted" rows="10" cols="150"></textarea>
+</p>
+
+
+
+{{!-- <script>
+    document.addEventListener("DOMContentLoaded", function (event) {
+        // DOM is loaded and ready
+    });
+</script> --}}
+
+{{!-- Q{{problemId}}.
+{{{p1}}}
+{{{p2}}}
+{{{p3}}}
+{{{p4}}}
+{{{p5}}}
+{{{p6}}} --}}
+
+{{#section 'script'}}
+<script type="module" src="/js/question/main.js"></script>
+{{/section}}
