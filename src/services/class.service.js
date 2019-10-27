@@ -1,40 +1,9 @@
 const mongoHelper = require("../helpers/mongo.helper");
 const { ObjectID } = require("mongodb");
 
-const collection = "classes";
+const classesCollection = "classes";
 
-// exports.getAll = async () => {
-//     const db = await mongoHelper.getDb();
-//     return db
-//         .collection(collection)
-//         .find()
-//         .sort({ grade: -1, name: 1 })
-//         .toArray();
-// };
-
-exports.getOneById = async id => {
+exports.getClassById = async id => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).findOne({ _id: new ObjectID(id) });
+    return db.collection(classesCollection).findOne({ _id: new ObjectID(id) });
 };
-
-// exports.getPrimaryClassForTeacher = async teacherId => {
-//     const db = await mongoHelper.getDb();
-//     return db.collection(collection).findOne({ "classTeacher.id": teacherId.toString() });
-// };
-
-// exports.insertOne = async teacher => {
-//     const db = await mongoHelper.getDb();
-//     return await db.collection(collection).insertOne(teacher);
-// };
-
-// exports.updateOne = async teacher => {
-//     const db = await mongoHelper.getDb();
-//     teacher._id = mongoHelper.normalizedId(teacher._id);
-//     return await db.collection(collection).updateOne({ _id: teacher._id }, teacher);
-// };
-
-// exports.deleteOneById = async id => {
-//     const db = await mongoHelper.getDb();
-//     id = mongoHelper.normalizedId(id);
-//     return await db.collection(collection).deleteOne({ _id: id });
-// };

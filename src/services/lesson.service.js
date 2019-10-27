@@ -4,7 +4,7 @@ const collection = "lessons";
 
 exports.getLessonsForClass = async classId => {
     const db = await mongoHelper.getDb();
-    return await db
+    return db
         .collection(collection)
         .find({ "class.id": classId.toString() })
         .sort({ subjectOrderInGradebook: 1 })
@@ -13,7 +13,7 @@ exports.getLessonsForClass = async classId => {
 
 exports.getLessonsForTeacher = async (teacherId, academicYear) => {
     const db = await mongoHelper.getDb();
-    return await db
+    return db
         .collection(collection)
         .find({ academicYear: academicYear, "teacher.id": teacherId })
         .sort({ "class.name": 1 })

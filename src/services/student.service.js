@@ -5,12 +5,12 @@ const collection = "students";
 
 exports.getOneById = async id => {
     const db = await mongoHelper.getDb();
-    return await db.collection("students").findOne({ _id: new ObjectID(id) });
+    return db.collection("students").findOne({ _id: new ObjectID(id) });
 };
 
 exports.getAll = async () => {
     const db = await mongoHelper.getDb();
-    return await db
+    return db
         .collection(collection)
         .find()
         .toArray();
@@ -19,7 +19,7 @@ exports.getAll = async () => {
 exports.getStudentsByIds = async ids => {
     const idsAsObjectID = ids.map(x => new ObjectID(x));
     const db = await mongoHelper.getDb();
-    return await db
+    return db
         .collection(collection)
         .find({ _id: { $in: idsAsObjectID } })
         .sort({ lastName: 1 })
@@ -28,7 +28,7 @@ exports.getStudentsByIds = async ids => {
 
 exports.getAllFromSiiir = async () => {
     const db = await mongoHelper.getDb();
-    return await db
+    return db
         .collection("siiir-elevi")
         .find({ "STATUS ELEV": "Situaţie şcolară deschisă" })
         .project({
@@ -48,10 +48,10 @@ exports.getAllFromSiiir = async () => {
 
 exports.insertMany = async students => {
     const db = await mongoHelper.getDb();
-    return await db.collection(collection).insertMany(students);
+    return db.collection(collection).insertMany(students);
 };
 
 exports.insertOne = async student => {
     const db = await mongoHelper.getDb();
-    return await db.collection(collection).insertOne(student);
+    return db.collection(collection).insertOne(student);
 };
