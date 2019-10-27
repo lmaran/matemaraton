@@ -5,12 +5,12 @@ const collection = "parents";
 
 exports.getOneById = async id => {
     const db = await mongoHelper.getDb();
-    return await db.collection(collection).findOne({ _id: new ObjectID(id) });
+    return db.collection(collection).findOne({ _id: new ObjectID(id) });
 };
 
 exports.getAll = async () => {
     const db = await mongoHelper.getDb();
-    return await db
+    return db
         .collection(collection)
         .find()
         .toArray();
@@ -18,5 +18,5 @@ exports.getAll = async () => {
 
 exports.insertOne = async parent => {
     const db = await mongoHelper.getDb();
-    return await db.collection(collection).insertOne(parent);
+    return db.collection(collection).insertOne(parent);
 };

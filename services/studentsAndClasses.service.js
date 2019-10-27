@@ -24,12 +24,12 @@ exports.getStudentsIdsPerClass = async classId => {
 
 exports.getStudentAndClassByStudentIdAndYear = async (studentId, academicYear) => {
     const db = await mongoHelper.getDb();
-    return await db.collection(collection).findOne({ "student.id": studentId, academicYear });
+    return db.collection(collection).findOne({ "student.id": studentId, academicYear });
 };
 
 exports.insertManyStudentsPerClass = async studentsPerClass => {
     const db = await mongoHelper.getDb();
-    return await db.collection("studentsPerClass").insertMany(studentsPerClass);
+    return db.collection("studentsPerClass").insertMany(studentsPerClass);
 };
 
 // exports.getStudentsPerClass = async classId => {

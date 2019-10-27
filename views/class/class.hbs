@@ -1,0 +1,24 @@
+<style>
+    .hidePresence {
+        display: none;
+    }
+
+    .hideStudent {
+        display: none;
+    }
+</style>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasa</i></a></li>
+        <li class="breadcrumb-item active" aria-current="page">Prezenta: {{class.grade}}-{{class.name}}</li>
+    </ol>
+</nav>
+
+<h1>Clasa a {{class.grade}}-a, {{class.name}}</h1>
+{{!-- <h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2> --}}
+
+<ul>
+    <li><a href="/clase/{{class._id}}/prezenta">Prezenta</a></li>
+
+</ul>

@@ -4,7 +4,7 @@ const collection = "staffMembers";
 
 exports.getAll = async () => {
     const db = await mongoHelper.getDb();
-    const staff = await db
+    const staff = db
         .collection(collection)
         .find()
         .toArray();

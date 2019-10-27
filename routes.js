@@ -11,15 +11,23 @@ const contactController = require("./controllers/contact.controller");
 const pageController = require("./controllers/page.controller");
 const userController = require("./controllers/user.controller");
 const isAuthenticated = require("./middlewares/isAuthenticated.middleware").isAuthenticated;
+const presenceController = require("./controllers/presence.controller");
+// const upgradeOperationController = require("./controllers/upgrade-operation.controller");
 
 // home
 router.get("/", homeController.getHomePage);
+
+// uncomment this route in order to make upgrade operations
+// router.get("/upgrade-operation", upgradeOperationController.moveSchoolClassNameFromStudentToPerson);
 
 // my page
 router.get("/pagina-mea", meController.getMyPage);
 
 // class
 router.get("/clase/:classId", classController.getClass);
+
+// presence
+router.get("/clase/:classId/prezenta", presenceController.getPresenceForClass);
 
 // router.get("/matemaraton/:edition", matemaratonController.getEditionHomepage);
 router.get("/:edition?/prezenta/grupe/:groupId", matemaratonController.getPresencePerGroup);
@@ -31,9 +39,6 @@ router.get("/:edition?", matemaratonController.getMatemaraton);
 
 // contact
 router.get("/contact", contactController.getContact);
-
-// pages
-router.get("/:pageId", pageController.getPage);
 
 // problems
 router.get("/probleme/:id", problemController.getProblem);
@@ -56,5 +61,8 @@ router.post("/user/me/changepassword", isAuthenticated, userController.changePas
 router.get("/user/changePassword", isAuthenticated, function(req, res) {
     res.render("user/changePassword", { user: req.user });
 });
+
+// pages
+router.get("/:pageId", pageController.getPage);
 
 module.exports = router;
