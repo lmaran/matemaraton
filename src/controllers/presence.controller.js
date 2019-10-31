@@ -84,6 +84,16 @@ exports.getPresenceForClass = async (req, res) => {
         }
     });
 
+    // apply a presenceCredit (if exists). E.g. Some students have additional presences from another class
+    if (cls.presenceCredits) {
+        cls.presenceCredits.forEach(presenceCredit => {
+            const student = studentsObj[presenceCredit.studentId];
+            if (student) {
+                student.totalPresences = (student.totalPresences || 0) + (presenceCredit.presenceCreditAmt || 0);
+            }
+        });
+    }
+
     const studentsInClass = cls.studentsIds
         .reduce((acc, studentId) => {
             const student = studentsObj[studentId];
