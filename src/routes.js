@@ -27,7 +27,8 @@ router.get("/pagina-mea", meController.getMyPage);
 router.get("/clase/:classId", classController.getClass);
 
 // presence
-router.get("/clase/:classId/prezenta", presenceController.getPresenceForClass);
+router.get("/clase/:classId/prezenta", presenceController.getPresencePerClass);
+router.get("/elevi/:studentId/prezenta", presenceController.getPresencePerStudent);
 
 // router.get("/matemaraton/:edition", matemaratonController.getEditionHomepage);
 router.get("/:edition?/prezenta/grupe/:groupId", matemaratonController.getPresencePerGroup);

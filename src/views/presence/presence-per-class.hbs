@@ -33,7 +33,7 @@
 
     <ul>
         {{#each students}}
-        <li><a href="/prezenta/elevi/{{_id}}">{{shortName}}</a>
+        <li><a href="/elevi/{{_id}}/prezenta">{{shortName}}</a>
             {{#if gradeAndLetter}}
             ({{gradeAndLetter}})
             {{/if}}
@@ -58,7 +58,7 @@
 
 {{#each studentsInClass}}
 <div {{#if (gt @index 7)}} class="toggle-student hideStudent" {{/if}}>
-    <a href="/prezenta/elevi/{{_id}}">{{shortName}}</a>
+    <a href="/elevi/{{_id}}/prezenta">{{shortName}}</a>
     {{#if gradeAndLetter}} ({{gradeAndLetter}}){{/if}} - prezente: {{totalPresences}} din
     {{../totalActiveCourses}} ({{totalPresencesAsPercent}}%)
     <div class="progress mb-2">

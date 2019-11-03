@@ -12,6 +12,14 @@ exports.getCoursesByClassId = async classId => {
         .toArray();
 };
 
+exports.getCoursesByClassIdAndStudentId = async (classId, studentId) => {
+    const db = await mongoHelper.getDb();
+    return db
+        .collection(coursesCollection)
+        .find({ "class.id": classId, studentsIds: studentId })
+        .toArray();
+};
+
 exports.bulkWriteCourses = async mongoOps => {
     const db = await mongoHelper.getDb();
     return db.collection(coursesCollection).bulkWrite(mongoOps, { ordered: false });
