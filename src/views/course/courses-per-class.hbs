@@ -1,0 +1,82 @@
+<style>
+    .hidePresence {
+        display: none;
+    }
+
+    .hideStudent {
+        display: none;
+    }
+</style>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        {{!-- <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li> --}}
+        <li class="breadcrumb-item"><a href="/">Acasa</i></a></li>
+        <li class="breadcrumb-item active" aria-current="page">Cursuri: {{class.grade}}-{{class.name}}</li>
+    </ol>
+</nav>
+
+<h1>Cursuri</h1>
+<h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2>
+
+
+{{#each courses}}
+<div {{#if (gt @index 2)}} class="toggle-presence hidePresence" {{/if}}>
+
+    <h3 class="mt-5" {{#if noCourse}} class="text-muted" {{/if}}>{{#if course}}<a href="/cursuri/{{_id}}">Curs
+            {{course}}</a>
+        {{/if}} <span class="font-weight-light text-secondary2"> - {{dateAsString}}</span> </h3>
+
+    {{#if noCourse}}
+    <p style="padding-left:40px;" class="text-muted">Nu s-a tinut curs ({{noCourseReason}})</p>
+    {{/if}}
+
+
+    <div class2="ml-5">
+        <div>{{description}}</div>
+
+        {{#each images}}
+        <p>{{description}}</p>
+        <img src={{url}} class="img-fluid" alt="">
+        {{/each}}
+    </div>
+</div>
+{{/each}}
+{{#if (gt totalCourses 3)}}
+<a class="toggle-presence" href="#" style="font-size:1.2rem; vertical-align: bottom;">Vezi toate cursurile <i
+        class="fas fa-angle-double-right"></i></a>
+<a class="toggle-presence hidePresence" href="#" style="font-size:1.2rem; vertical-align: bottom;"><i
+        class="fas fa-angle-double-left"></i> Vezi doar primele cursuri </a>
+{{/if}}
+<br>
+<br>
+<br>
+
+
+{{#section 'script-after'}}
+<script>
+    (function () {
+        // DOM ready
+        $(function () {
+            // elements
+            var togglePresencesElem = $("a.toggle-presence");
+            var toggleStudentsElem = $("a.toggle-student");
+
+            // events
+            togglePresencesElem.click(togglePresences);
+            toggleStudentsElem.click(toggleStudents);
+        });
+
+        var togglePresences = function () {
+            event.preventDefault();
+            $(".toggle-presence").toggleClass("hidePresence");
+        }
+
+        var toggleStudents = function () {
+            event.preventDefault();
+            $(".toggle-student").toggleClass("hideStudent");
+        }
+
+    }())
+</script>
+{{/section}}

@@ -12,6 +12,7 @@ const pageController = require("./controllers/page.controller");
 const userController = require("./controllers/user.controller");
 const isAuthenticated = require("./middlewares/isAuthenticated.middleware").isAuthenticated;
 const presenceController = require("./controllers/presence.controller");
+const courseController = require("./controllers/course.controller");
 // const upgradeOperationController = require("./controllers/upgrade-operation.controller");
 
 // home
@@ -29,6 +30,9 @@ router.get("/clase/:classId", classController.getClass);
 // presence
 router.get("/clase/:classId/prezenta", presenceController.getPresencePerClass);
 router.get("/elevi/:studentId/prezenta", presenceController.getPresencePerStudent);
+
+// courses
+router.get("/clase/:classId/cursuri", courseController.getCoursesPerClass);
 
 // router.get("/matemaraton/:edition", matemaratonController.getEditionHomepage);
 // router.get("/:edition?/prezenta/grupe/:groupId", matemaratonController.getPresencePerGroup);
