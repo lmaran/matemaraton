@@ -2,19 +2,19 @@
     <ol class="breadcrumb">
         {{!-- <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="#">Acasa</i></a></li>
-        <li class="breadcrumb-item"><a href="/prezenta/grupe/{{student.crtGrade}}-{{student.crtGroup}}">Prezenta:
-                {{student.crtGrade}}-{{student.crtGroup}}</a></li>
+        <li class="breadcrumb-item"><a href="/clase/{{class._id}}/prezenta">Prezenta:
+                {{class.grade}}-{{class.name}}</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{student.shortName}}</li>
     </ol>
 </nav>
 
 
 <h1>Prezenta</h1>
-<h2>{{student.shortName}}</h2>
-<h3 class="mb-5">Clasa a {{student.crtGrade}}-a, {{student.crtGroup}}</h3>
+<h2>{{student.shortName}} ({{student.gradeAndLetter}})</h2>
+<h3 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h3>
 
 
-{{#each presences}}
+{{#each courses}}
 <div class="mb-1">
     <span style="display:inline-block; width:100px">{{dateAsString}}</span>
     {{#if noCourse}}

@@ -32,25 +32,19 @@ exports.getPresencePerClass = async (req, res) => {
     // get details for each student
     let students = await personService.getPersonsByIds(allUniqueStudentsIds);
 
-    students = students.map(x => {
+    students = students.map(student => {
         // add "shortName" (e.g.  "Vali M.")
-        const shortFirstName = x.shortFirstName || x.firstName;
-        const lastName = x.lastName || "";
-        x.shortName = `${shortFirstName} ${lastName.charAt(0)}.`;
+        student.shortName = getShortNameForStudent(student);
 
         // add "gradeAndLetter" (e.g.  "8A")
-        const actualStudentAcademicYearInfo = x.academicYearRelatedInfo && x.academicYearRelatedInfo[academicYear];
-        if (actualStudentAcademicYearInfo) {
-            x.gradeAndLetter = `${actualStudentAcademicYearInfo.grade}${actualStudentAcademicYearInfo.classLetter}`;
-        }
-
-        return x;
+        student.gradeAndLetter = getGradeAndLetterForStudent(student, academicYear);
+        return student;
     });
 
     const studentsObj = arrayHelper.arrayToObject(students, "_id") || {};
 
-    // count presences for each student in class
-    // we have to count presences in a separate loop, otherwise cannot sort students by presence
+    // count the presences for each student in class
+    // we have to count the presences in a separate loop, otherwise cannot sort students by presence
     courses.forEach(course => {
         if (course.studentsIds) {
             course.studentsIds.forEach(studentId => {
@@ -116,152 +110,68 @@ exports.getPresencePerClass = async (req, res) => {
 
 exports.getPresencePerStudent = async (req, res) => {
     const studentId = req.params.studentId;
-    const academicYear = "201920";
+    let academicYear = "201920";
 
-    const [student, cls] = await Promise.all([
+    let student = null;
+    let cls = null;
+    [student, cls] = await Promise.all([
         await personService.getPersonById(studentId),
         await classService.getClassByStudentId(academicYear, studentId)
     ]);
 
-    const studentWithPresenceCredit = cls.presenceCredits && cls.presenceCredits.find(x => x.studentId === studentId);
-    //let classIdForCredit = null;
+    if (!cls && student.academicYearRelatedInfo) {
+        // maybe a graduated student
+        const academicYears = Object.keys(student.academicYearRelatedInfo);
+        // overwrite the existing class and academicYear
+        if (academicYears.length > 0) {
+            academicYear = academicYears.sort()[0];
+            cls = await classService.getClassByStudentId(academicYear, studentId);
+        }
+    }
+
+    // add "shortName" (e.g.  "Vali M.")
+    student.shortName = getShortNameForStudent(student);
+    // add "gradeAndLetter" (e.g.  "8A")
+    student.gradeAndLetter = getGradeAndLetterForStudent(student, academicYear);
+
+    // check if the student has a presenceCredit (from another class)
+    const presenceCredit = cls.presenceCredits && cls.presenceCredits.find(x => x.studentId === studentId);
     let coursesForCredit = null;
-    if (studentWithPresenceCredit) {
-        // classIdForCredit = await classService.getClassById(studentWithPresenceCredit.classIdForCredit);
+    if (presenceCredit) {
         coursesForCredit = await courseService.getCoursesByClassIdAndStudentId(
-            studentWithPresenceCredit.classIdForCredit,
+            presenceCredit.classIdForCredit,
             studentId
         );
     }
 
     const courses = await courseService.getCoursesByClassId(cls._id.toString());
 
-    // for each course add presence status
+    // for each course add presence status and count the presences
+    let totalCourses = 0;
+    let totalPresences = 0;
     courses.forEach(course => {
+        totalCourses += 1;
+        course.dateAsString = dateTimeHelper.getStringFromStringNoDay(course.date);
         if (course.studentsIds && course.studentsIds.includes(studentId)) {
             course.isPresent = true;
+            totalPresences += 1;
         } else {
-            const courseForCredit = coursesForCredit.find(x => x.date === course.date);
-            if (courseForCredit && courseForCredit.studentsIds && courseForCredit.studentsIds.includes(studentId)) {
-                // course = courseForCredit;
-                course.isPresent = true;
-                // overwrite course
-                course.course = courseForCredit.course; // course number
-                course.description = courseForCredit.description;
-                courses.images = courseForCredit.images;
-                course.class = courseForCredit.class;
+            // check if, in the same day, the student has a presenceCredit from another class
+            if (coursesForCredit) {
+                const courseForCredit = coursesForCredit.find(x => x.date === course.date);
+                if (courseForCredit && courseForCredit.studentsIds && courseForCredit.studentsIds.includes(studentId)) {
+                    course.isPresent = true;
+                    totalPresences += 1;
+                    // overwrite course
+                    course.course = courseForCredit.course; // course number
+                    course.description = courseForCredit.description;
+                    courses.images = courseForCredit.images;
+                    course.class = courseForCredit.class;
+                    course.studentsIds = courseForCredit.studentsIds;
+                }
             }
         }
     });
-
-    //const academicYear = cls.academicYear;
-
-    const data = {
-        student,
-        cls,
-        studentWithPresenceCredit,
-        coursesForCredit,
-        courses
-    };
-    res.send(data);
-    //res.render("presence/presence-per-class", data);
-};
-
-exports.getPresencePerStudent2 = async (req, res, next) => {
-    // get edition (and its associated period); edition = {period:'201819', edition:'2', ...}
-    const editionName = req.params.edition; // "edition-2"
-    const studentId = req.params.studentId;
-    let edition = null;
-    let student = null;
-    if (editionName) {
-        const editionSegments = editionName.split("-");
-        if (editionSegments.length !== 2) {
-            const err = new PageNotFound(`Pagina negasita: ${req.method} ${req.url}`);
-            return next(err);
-        } else {
-            [edition, student] = await Promise.all([
-                await matemaratonService.getSelectedEdition(editionSegments[1]),
-                await matemaratonService.getOneById(studentId)
-            ]);
-        }
-    } else {
-        [edition, student] = await Promise.all([
-            await matemaratonService.getCurrentEdition(),
-            await matemaratonService.getOneById(studentId)
-        ]);
-    }
-
-    if (!edition || !student) {
-        const err = new PageNotFound(`Pagina negasita: ${req.method} ${req.url}`);
-        return next(err);
-    }
-
-    student.shortName = student.shortFirstName || student.firstName;
-    if (student.lastName) {
-        student.shortName = `${student.shortName} ${student.lastName.charAt(0)}.`; // Vali M.
-    }
-
-    const period = edition.period; // 201819
-
-    const periodInfo = student.grades.find(x => x.period === period);
-
-    student.crtGrade = periodInfo.grade;
-    student.crtClass = periodInfo.class;
-    student.crtGroup = periodInfo.group;
-
-    const presencePerGrade = await matemaratonService.getPresencePerGrade(period, periodInfo.grade);
-
-    let totalCourses = 0;
-    let totalPresences = 0;
-    const presencesObj = presencePerGrade
-        .map(x => {
-            // let isPresent = false;
-            const result = {
-                date: x.date,
-                grade: x.grade,
-                groupName: x.groupName,
-                course: x.course
-            };
-            if (x.noCourse) {
-                result.noCourse = x.noCourse;
-                result.noCourseReason = x.noCourseReason;
-            } else {
-                result.isPresent = x.students.some(x => x === studentId);
-            }
-            return result;
-        })
-        // group by day
-        .reduce((acc, crt) => {
-            const key = crt.date;
-            if (acc[key]) {
-                // if exists and is present, overwrite it
-                if (crt.isPresent && !acc[key].isPresent) {
-                    acc[key].isPresent = true;
-                    // acc[key].groupName = crt.groupName;
-                    totalPresences += 1;
-                }
-            } else {
-                // copy (part of the) original object
-                acc[key] = {
-                    date: crt.date,
-                    dateAsString: dateTimeHelper.getStringFromStringNoDay(crt.date)
-                };
-
-                if (crt.noCourse) {
-                    acc[key].noCourse = crt.noCourse;
-                    acc[key].noCourseReason = crt.noCourseReason;
-                } else {
-                    acc[key].course = crt.course;
-                    // acc[key].groupName = crt.groupName;
-                    totalCourses += 1;
-                    if (crt.isPresent) {
-                        acc[key].isPresent = true;
-                        totalPresences += 1;
-                    }
-                }
-            }
-            return acc;
-        }, {});
 
     let totalPresencesAsPercent = 0;
     if (totalCourses) {
@@ -270,14 +180,14 @@ exports.getPresencePerStudent2 = async (req, res, next) => {
 
     const data = {
         student,
-        presences: arrayHelper.objectToArray(presencesObj),
+        class: cls,
+        courses,
         totalCourses,
         totalPresences,
         totalPresencesAsPercent
     };
-
     //res.send(data);
-    res.render("matemaraton/presence-per-student", data);
+    res.render("presence/presence-per-student", data);
 };
 
 // sort student by 'totalPresences' (desc), then by 'shortName' (asc); https://flaviocopes.com/how-to-sort-array-of-objects-by-property-javascript/
@@ -289,3 +199,19 @@ const sortByPresence = (a, b) =>
             ? 1
             : -1
         : 1;
+
+const getShortNameForStudent = student => {
+    const shortFirstName = student.shortFirstName || student.firstName;
+    const lastName = student.lastName || "";
+    return `${shortFirstName} ${lastName.charAt(0)}.`;
+};
+
+const getGradeAndLetterForStudent = (student, academicYear) => {
+    let gradeAndLetter = "";
+    const actualStudentAcademicYearInfo =
+        student.academicYearRelatedInfo && student.academicYearRelatedInfo[academicYear];
+    if (actualStudentAcademicYearInfo) {
+        gradeAndLetter = `${actualStudentAcademicYearInfo.grade}${actualStudentAcademicYearInfo.classLetter}`;
+    }
+    return gradeAndLetter;
+};
