@@ -11,7 +11,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasa</i></a></li>
-        <li class="breadcrumb-item active" aria-current="page">Prezenta: {{class.grade}}-{{class.name}}</li>
+        <li class="breadcrumb-item active" aria-current="page">Clasa: {{class.grade}}-{{class.name}}</li>
     </ol>
 </nav>
 
@@ -19,6 +19,9 @@
 {{!-- <h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2> --}}
 
 <ul>
+    <li><a href="/clase/{{class._id}}/elevi">Elevi</a></li>
     <li><a href="/clase/{{class._id}}/prezenta">Prezenta</a></li>
+    <li><a href="/clase/{{class._id}}/cursuri">Cursuri <span class="text-muted">(poze de pe tabla)</span></a></li>
+    <li>Teme <span class="text-muted">(in curand)</span> </li>
 
 </ul>

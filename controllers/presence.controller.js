@@ -3,8 +3,9 @@ const personService = require("../services/person.service");
 const classService = require("../services/class.service");
 const dateTimeHelper = require("../helpers/date-time.helper");
 const arrayHelper = require("../helpers/array.helper");
+const studentHelper = require("../helpers/student.helper");
 
-exports.getPresenceForClass = async (req, res) => {
+exports.getPresencePerClass = async (req, res) => {
     const classId = req.params.classId;
 
     const [cls, courses] = await Promise.all([
@@ -32,25 +33,19 @@ exports.getPresenceForClass = async (req, res) => {
     // get details for each student
     let students = await personService.getPersonsByIds(allUniqueStudentsIds);
 
-    students = students.map(x => {
+    students = students.map(student => {
         // add "shortName" (e.g.  "Vali M.")
-        const shortFirstName = x.shortFirstName || x.firstName;
-        const lastName = x.lastName || "";
-        x.shortName = `${shortFirstName} ${lastName.charAt(0)}.`;
+        student.shortName = studentHelper.getShortNameForStudent(student);
 
         // add "gradeAndLetter" (e.g.  "8A")
-        const actualStudentAcademicYearInfo = x.academicYearRelatedInfo && x.academicYearRelatedInfo[academicYear];
-        if (actualStudentAcademicYearInfo) {
-            x.gradeAndLetter = `${actualStudentAcademicYearInfo.grade}${actualStudentAcademicYearInfo.classLetter}`;
-        }
-
-        return x;
+        student.gradeAndLetter = studentHelper.getGradeAndLetterForStudent(student, academicYear);
+        return student;
     });
 
     const studentsObj = arrayHelper.arrayToObject(students, "_id") || {};
 
-    // count presences for each student in class
-    // we have to count presences in a separate loop, otherwise cannot sort students by presence
+    // count the presences for each student in class
+    // we have to count the presences in a separate loop, otherwise cannot sort students by presence
     courses.forEach(course => {
         if (course.studentsIds) {
             course.studentsIds.forEach(studentId => {
@@ -62,6 +57,16 @@ exports.getPresenceForClass = async (req, res) => {
         }
         course.dateAsString = dateTimeHelper.getStringFromStringNoDay(course.date);
     });
+
+    // apply a presenceCredit (if exists). E.g. Some students have additional presences from another class
+    if (cls.presenceCredits) {
+        cls.presenceCredits.forEach(presenceCredit => {
+            const student = studentsObj[presenceCredit.studentId];
+            if (student) {
+                student.totalPresences = (student.totalPresences || 0) + (presenceCredit.presenceCreditAmt || 0);
+            }
+        });
+    }
 
     const totalActiveCourses = courses.filter(x => !x.noCourse).length; // ignore vacations etc
 
@@ -100,8 +105,90 @@ exports.getPresenceForClass = async (req, res) => {
         totalActiveCourses,
         courses
     };
-    // res.send(data);
+    //res.send(data);
     res.render("presence/presence-per-class", data);
+};
+
+exports.getPresencePerStudent = async (req, res) => {
+    const studentId = req.params.studentId;
+    let academicYear = "201920";
+
+    let student = null;
+    let cls = null;
+    [student, cls] = await Promise.all([
+        await personService.getPersonById(studentId),
+        await classService.getClassByStudentId(academicYear, studentId)
+    ]);
+
+    if (!cls && student.academicYearRelatedInfo) {
+        // maybe a graduated student
+        const academicYears = Object.keys(student.academicYearRelatedInfo);
+        // overwrite the existing class and academicYear
+        if (academicYears.length > 0) {
+            academicYear = academicYears.sort()[0];
+            cls = await classService.getClassByStudentId(academicYear, studentId);
+        }
+    }
+
+    // add "shortName" (e.g.  "Vali M.")
+    student.shortName = studentHelper.getShortNameForStudent(student);
+    // add "gradeAndLetter" (e.g.  "8A")
+    student.gradeAndLetter = studentHelper.getGradeAndLetterForStudent(student, academicYear);
+
+    // check if the student has a presenceCredit (from another class)
+    const presenceCredit = cls.presenceCredits && cls.presenceCredits.find(x => x.studentId === studentId);
+    let coursesForCredit = null;
+    if (presenceCredit) {
+        coursesForCredit = await courseService.getCoursesByClassIdAndStudentId(
+            presenceCredit.classIdForCredit,
+            studentId
+        );
+    }
+
+    const courses = await courseService.getCoursesByClassId(cls._id.toString());
+
+    // for each course add presence status and count the presences
+    let totalCourses = 0;
+    let totalPresences = 0;
+    courses.forEach(course => {
+        totalCourses += 1;
+        course.dateAsString = dateTimeHelper.getStringFromStringNoDay(course.date);
+        if (course.studentsIds && course.studentsIds.includes(studentId)) {
+            course.isPresent = true;
+            totalPresences += 1;
+        } else {
+            // check if, in the same day, the student has a presenceCredit from another class
+            if (coursesForCredit) {
+                const courseForCredit = coursesForCredit.find(x => x.date === course.date);
+                if (courseForCredit && courseForCredit.studentsIds && courseForCredit.studentsIds.includes(studentId)) {
+                    course.isPresent = true;
+                    totalPresences += 1;
+                    // overwrite course
+                    course.course = courseForCredit.course; // course number
+                    course.description = courseForCredit.description;
+                    courses.images = courseForCredit.images;
+                    course.class = courseForCredit.class;
+                    course.studentsIds = courseForCredit.studentsIds;
+                }
+            }
+        }
+    });
+
+    let totalPresencesAsPercent = 0;
+    if (totalCourses) {
+        totalPresencesAsPercent = Math.round((totalPresences * 100) / totalCourses);
+    }
+
+    const data = {
+        student,
+        class: cls,
+        courses,
+        totalCourses,
+        totalPresences,
+        totalPresencesAsPercent
+    };
+    //res.send(data);
+    res.render("presence/presence-per-student", data);
 };
 
 // sort student by 'totalPresences' (desc), then by 'shortName' (asc); https://flaviocopes.com/how-to-sort-array-of-objects-by-property-javascript/

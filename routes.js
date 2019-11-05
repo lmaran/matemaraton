@@ -6,12 +6,14 @@ const meController = require("./controllers/me.controller");
 const matemaratonController = require("./controllers/matemaraton.controller");
 const problemController = require("./controllers/problem.controller");
 const classController = require("./controllers/class.controller");
+const studentController = require("./controllers/student.controller");
 
 const contactController = require("./controllers/contact.controller");
 const pageController = require("./controllers/page.controller");
 const userController = require("./controllers/user.controller");
 const isAuthenticated = require("./middlewares/isAuthenticated.middleware").isAuthenticated;
 const presenceController = require("./controllers/presence.controller");
+const courseController = require("./controllers/course.controller");
 // const upgradeOperationController = require("./controllers/upgrade-operation.controller");
 
 // home
@@ -27,14 +29,22 @@ router.get("/pagina-mea", meController.getMyPage);
 router.get("/clase/:classId", classController.getClass);
 
 // presence
-router.get("/clase/:classId/prezenta", presenceController.getPresenceForClass);
+router.get("/clase/:classId/prezenta", presenceController.getPresencePerClass);
+router.get("/elevi/:studentId/prezenta", presenceController.getPresencePerStudent);
+
+// courses
+router.get("/clase/:classId/cursuri", courseController.getCoursesPerClass);
+router.get("/cursuri/:courseId", courseController.getCourse);
+
+// students
+router.get("/clase/:classId/elevi", studentController.getStudentsPerClass);
 
 // router.get("/matemaraton/:edition", matemaratonController.getEditionHomepage);
-router.get("/:edition?/prezenta/grupe/:groupId", matemaratonController.getPresencePerGroup);
-router.get("/:edition?/prezenta/elevi/:studentId", matemaratonController.getPresencePerStudent);
-router.get("/:edition?/pregatire-simulare-en", matemaratonController.getTrainingProgramForENSimulation);
-router.get("/:edition?/cursuri/grupe/:groupId", matemaratonController.getCoursesPerGroup);
-router.get("/:edition?/cursuri/:courseId", matemaratonController.getCourse);
+// router.get("/:edition?/prezenta/grupe/:groupId", matemaratonController.getPresencePerGroup);
+// router.get("/:edition?/prezenta/elevi/:studentId", matemaratonController.getPresencePerStudent);
+// router.get("/:edition?/pregatire-simulare-en", matemaratonController.getTrainingProgramForENSimulation);
+// router.get("/:edition?/cursuri/grupe/:groupId", matemaratonController.getCoursesPerGroup);
+// router.get("/:edition?/cursuri/:courseId", matemaratonController.getCourse);
 router.get("/:edition?", matemaratonController.getMatemaraton);
 
 // contact

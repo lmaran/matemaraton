@@ -3,7 +3,7 @@ const { ObjectID } = require("mongodb");
 
 const personsCollection = "persons";
 
-exports.getOneById = async id => {
+exports.getPersonById = async id => {
     const db = await mongoHelper.getDb();
     return db.collection(personsCollection).findOne({ _id: new ObjectID(id) });
 };
