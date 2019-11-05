@@ -1,9 +1,10 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         {{!-- <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li> --}}
-        <li class="breadcrumb-item"><a href="#">Acasa</i></a></li>
-        <li class="breadcrumb-item"><a href="/clase/{{class._id}}/prezenta">Prezenta:
+        <li class="breadcrumb-item"><a href="/">Acasa</i></a></li>
+        <li class="breadcrumb-item"><a href="/clase/{{class._id}}">Clasa:
                 {{class.grade}}-{{class.name}}</a></li>
+        <li class="breadcrumb-item"><a href="/clase/{{class._id}}/prezenta">Prezenta</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{student.shortName}}</li>
     </ol>
 </nav>

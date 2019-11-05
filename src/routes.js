@@ -33,6 +33,7 @@ router.get("/elevi/:studentId/prezenta", presenceController.getPresencePerStuden
 
 // courses
 router.get("/clase/:classId/cursuri", courseController.getCoursesPerClass);
+router.get("/cursuri/:courseId", courseController.getCourse);
 
 // router.get("/matemaraton/:edition", matemaratonController.getEditionHomepage);
 // router.get("/:edition?/prezenta/grupe/:groupId", matemaratonController.getPresencePerGroup);

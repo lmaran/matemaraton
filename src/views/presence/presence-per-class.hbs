@@ -11,7 +11,9 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasa</i></a></li>
-        <li class="breadcrumb-item active" aria-current="page">Prezenta: {{class.grade}}-{{class.name}}</li>
+        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">Clasa:
+                {{class.grade}}-{{class.name}}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Prezenta</li>
     </ol>
 </nav>
 
@@ -25,7 +27,8 @@
 {{#each courses}}
 <div {{#if (gt @index 2)}} class="toggle-presence hidePresence" {{/if}}>
 
-    <h3 {{#if noCourse}} class="text-muted" {{/if}}>{{dateAsString}} {{#if course}}- curs {{course}} {{/if}}</h3>
+    <h3 {{#if noCourse}} class="text-muted" {{/if}}>{{dateAsString}} {{#if course}}- <a href="/cursuri/{{_id}}">curs
+            {{course}}</a> {{/if}}</h3>
 
     {{#if noCourse}}
     <p style="padding-left:40px;" class="text-muted">Nu s-a tinut curs ({{noCourseReason}})</p>
