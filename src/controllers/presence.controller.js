@@ -3,6 +3,7 @@ const personService = require("../services/person.service");
 const classService = require("../services/class.service");
 const dateTimeHelper = require("../helpers/date-time.helper");
 const arrayHelper = require("../helpers/array.helper");
+const studentHelper = require("../helpers/student.helper");
 
 exports.getPresencePerClass = async (req, res) => {
     const classId = req.params.classId;
@@ -34,10 +35,10 @@ exports.getPresencePerClass = async (req, res) => {
 
     students = students.map(student => {
         // add "shortName" (e.g.  "Vali M.")
-        student.shortName = getShortNameForStudent(student);
+        student.shortName = studentHelper.getShortNameForStudent(student);
 
         // add "gradeAndLetter" (e.g.  "8A")
-        student.gradeAndLetter = getGradeAndLetterForStudent(student, academicYear);
+        student.gradeAndLetter = studentHelper.getGradeAndLetterForStudent(student, academicYear);
         return student;
     });
 
@@ -130,9 +131,9 @@ exports.getPresencePerStudent = async (req, res) => {
     }
 
     // add "shortName" (e.g.  "Vali M.")
-    student.shortName = getShortNameForStudent(student);
+    student.shortName = studentHelper.getShortNameForStudent(student);
     // add "gradeAndLetter" (e.g.  "8A")
-    student.gradeAndLetter = getGradeAndLetterForStudent(student, academicYear);
+    student.gradeAndLetter = studentHelper.getGradeAndLetterForStudent(student, academicYear);
 
     // check if the student has a presenceCredit (from another class)
     const presenceCredit = cls.presenceCredits && cls.presenceCredits.find(x => x.studentId === studentId);
@@ -199,19 +200,3 @@ const sortByPresence = (a, b) =>
             ? 1
             : -1
         : 1;
-
-const getShortNameForStudent = student => {
-    const shortFirstName = student.shortFirstName || student.firstName;
-    const lastName = student.lastName || "";
-    return `${shortFirstName} ${lastName.charAt(0)}.`;
-};
-
-const getGradeAndLetterForStudent = (student, academicYear) => {
-    let gradeAndLetter = "";
-    const actualStudentAcademicYearInfo =
-        student.academicYearRelatedInfo && student.academicYearRelatedInfo[academicYear];
-    if (actualStudentAcademicYearInfo) {
-        gradeAndLetter = `${actualStudentAcademicYearInfo.grade}${actualStudentAcademicYearInfo.classLetter}`;
-    }
-    return gradeAndLetter;
-};

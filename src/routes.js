@@ -6,6 +6,7 @@ const meController = require("./controllers/me.controller");
 const matemaratonController = require("./controllers/matemaraton.controller");
 const problemController = require("./controllers/problem.controller");
 const classController = require("./controllers/class.controller");
+const studentController = require("./controllers/student.controller");
 
 const contactController = require("./controllers/contact.controller");
 const pageController = require("./controllers/page.controller");
@@ -34,6 +35,9 @@ router.get("/elevi/:studentId/prezenta", presenceController.getPresencePerStuden
 // courses
 router.get("/clase/:classId/cursuri", courseController.getCoursesPerClass);
 router.get("/cursuri/:courseId", courseController.getCourse);
+
+// students
+router.get("/clase/:classId/elevi", studentController.getStudentsPerClass);
 
 // router.get("/matemaraton/:edition", matemaratonController.getEditionHomepage);
 // router.get("/:edition?/prezenta/grupe/:groupId", matemaratonController.getPresencePerGroup);

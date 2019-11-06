@@ -12,7 +12,11 @@
     <ol class="breadcrumb">
         {{!-- <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasa</i></a></li>
-        <li class="breadcrumb-item active" aria-current="page">Cursuri: {{class.grade}}-{{class.name}}</li>
+
+        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">Clasa:
+                {{class.grade}}-{{class.name}}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Cursuri</li>
+
     </ol>
 </nav>
 

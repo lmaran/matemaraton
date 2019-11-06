@@ -1,0 +1,40 @@
+<style>
+    .hidePresence {
+        display: none;
+    }
+
+    .hideStudent {
+        display: none;
+    }
+</style>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasa</i></a></li>
+        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">Clasa:
+                {{class.grade}}-{{class.name}}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Elevi</li>
+    </ol>
+</nav>
+
+<h1>Elevi</h1>
+<h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2>
+
+{{#unless students.length}}
+<p>Nu exista date.</p>
+{{/unless}}
+
+
+
+<ul>
+    {{#each students}}
+    <li><a href="/elevi/{{_id}}/prezenta">{{shortName}}</a>
+        {{#if gradeAndLetter}}
+        ({{gradeAndLetter}})
+        {{/if}}
+        {{#if droppedOut}}
+        <span class="text-danger">abandon</span>
+        {{/if}}
+    </li>
+    {{/each}}
+</ul>
