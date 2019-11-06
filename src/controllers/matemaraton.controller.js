@@ -1,10 +1,10 @@
 const { PageNotFound } = require("../errors/all.errors");
 
-exports.getTrainingProgramForENSimulation = async (req, res) => {
+exports.getTrainingProgramForENSimulationEdition2 = async (req, res) => {
     const data = {
         // ctx: req.ctx,
     };
-    res.render("matemaraton/pregatire-simulare-en", data);
+    res.render("matemaraton/pregatire-simulare-en-editia-2", data);
 };
 
 exports.getMatemaraton = async (req, res, next) => {
