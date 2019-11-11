@@ -10,7 +10,7 @@
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        {{!-- <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li> --}}
+        {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasa</i></a></li>
 
         <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">Clasa:
@@ -47,9 +47,9 @@
 </div>
 {{/each}}
 {{#if (gt totalCourses 3)}}
-<a class="toggle-presence" href="#" style="font-size:1.2rem; vertical-align: bottom;">Vezi toate cursurile <i
+<a class="toggle-presence" href="/" style="font-size:1.2rem; vertical-align: bottom;">Vezi toate cursurile <i
         class="fas fa-angle-double-right"></i></a>
-<a class="toggle-presence hidePresence" href="#" style="font-size:1.2rem; vertical-align: bottom;"><i
+<a class="toggle-presence hidePresence" href="/" style="font-size:1.2rem; vertical-align: bottom;"><i
         class="fas fa-angle-double-left"></i> Vezi doar primele cursuri </a>
 {{/if}}
 <br>
