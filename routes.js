@@ -43,6 +43,9 @@ router.get("/clase/:classId/elevi", studentController.getStudentsPerClass);
 // router.get("/:edition?/prezenta/grupe/:groupId", matemaratonController.getPresencePerGroup);
 // router.get("/:edition?/prezenta/elevi/:studentId", matemaratonController.getPresencePerStudent);
 router.get("/pregatire-simulare-en-editia-2", matemaratonController.getTrainingProgramForENSimulationEdition2);
+router.get("/pregatire-teza-s1-editia-3", matemaratonController.getTrainingProgramForSemestrialPaperEdition3);
+router.get("/materiale-teza-s1", matemaratonController.getDocumentsForSemestrialPaper);
+
 // router.get("/:edition?/cursuri/grupe/:groupId", matemaratonController.getCoursesPerGroup);
 // router.get("/:edition?/cursuri/:courseId", matemaratonController.getCourse);
 router.get("/:edition?", matemaratonController.getMatemaraton);

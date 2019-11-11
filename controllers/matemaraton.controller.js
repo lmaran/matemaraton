@@ -7,6 +7,20 @@ exports.getTrainingProgramForENSimulationEdition2 = async (req, res) => {
     res.render("matemaraton/pregatire-simulare-en-editia-2", data);
 };
 
+exports.getTrainingProgramForSemestrialPaperEdition3 = async (req, res) => {
+    const data = {
+        // ctx: req.ctx,
+    };
+    res.render("matemaraton/pregatire-teza-s1-editia-3", data);
+};
+
+exports.getDocumentsForSemestrialPaper = async (req, res) => {
+    const data = {
+        // ctx: req.ctx,
+    };
+    res.render("matemaraton/materiale-teza-s1", data);
+};
+
 exports.getMatemaraton = async (req, res, next) => {
     // get edition (and its associated period)
     // edition = {period:'201819', edition:'2', ...}
