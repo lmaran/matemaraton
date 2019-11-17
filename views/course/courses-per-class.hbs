@@ -27,7 +27,7 @@
 {{#each courses}}
 <div {{#if (gt @index 2)}} class="toggle-presence hidePresence" {{/if}}>
 
-    <h3 class="mt-5" {{#if noCourse}} class="text-muted" {{/if}}>{{#if course}}<a href="/cursuri/{{_id}}">Curs
+    <h3 class="mb-0" {{#if noCourse}} class="text-muted" {{/if}}>{{#if course}}<a href="/cursuri/{{_id}}">Curs
             {{course}}</a>
         {{/if}} <span class="font-weight-light text-secondary2"> - {{dateAsString}}</span> </h3>
 
@@ -37,7 +37,7 @@
 
 
     <div class2="ml-5">
-        <div>{{description}}</div>
+        <div class="text-muted mb-2">{{description}}</div>
 
         {{#each images}}
         <p>{{description}}</p>
@@ -45,6 +45,8 @@
         {{/each}}
     </div>
 </div>
+
+<div class="mb-5"></div>
 {{/each}}
 {{#if (gt totalCourses 3)}}
 <a class="toggle-presence" href="/" style="font-size:1.2rem; vertical-align: bottom;">Vezi toate cursurile <i

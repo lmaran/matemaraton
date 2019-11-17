@@ -20,14 +20,21 @@
 <h1>Elevi</h1>
 <h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2>
 
-{{#unless students.length}}
-<p>Nu exista date.</p>
-{{/unless}}
-
-
-
 <ul>
-    {{#each students}}
+    {{#each activeStudents}}
+    <li><a href="/elevi/{{_id}}/prezenta">{{shortName}}</a>
+        {{#if gradeAndLetter}}
+        ({{gradeAndLetter}})
+        {{/if}}
+        {{#if droppedOut}}
+        <span class="text-danger">abandon</span>
+        {{/if}}
+    </li>
+    {{/each}}
+
+    <hr />
+
+    {{#each inactiveStudents}}
     <li><a href="/elevi/{{_id}}/prezenta">{{shortName}}</a>
         {{#if gradeAndLetter}}
         ({{gradeAndLetter}})
