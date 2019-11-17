@@ -36,7 +36,8 @@ exports.getStudentsPerClass = async (req, res) => {
 
     const data = {
         class: cls,
-        students
+        activeStudents: students.filter(x => !x.droppedOut),
+        inactiveStudents: students.filter(x => x.droppedOut)
     };
     //res.send(data);
     res.render("student/students-per-class", data);

@@ -27,14 +27,16 @@
 {{#each courses}}
 <div {{#if (gt @index 2)}} class="toggle-presence hidePresence" {{/if}}>
 
-    <h3 {{#if noCourse}} class="text-muted" {{/if}}>{{dateAsString}} {{#if course}}- <a href="/cursuri/{{_id}}">curs
+    <h3 class="mb-0" {{#if noCourse}} class="text-muted" {{/if}}>{{dateAsString}} {{#if course}}- <a
+            href="/cursuri/{{_id}}">curs
             {{course}}</a> {{/if}}</h3>
+    <div class="text-muted mb-2">{{description}}</div>
 
     {{#if noCourse}}
     <p style="padding-left:40px;" class="text-muted">Nu s-a tinut curs ({{noCourseReason}})</p>
     {{/if}}
 
-    <ul>
+    <ul class="mb-5">
         {{#each students}}
         <li><a href="/elevi/{{_id}}/prezenta">{{shortName}}</a>
             {{#if gradeAndLetter}}
