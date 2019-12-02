@@ -145,7 +145,8 @@ exports.getPresencePerStudent = async (req, res) => {
         );
     }
 
-    const courses = await courseService.getCoursesByClassId(cls._id.toString());
+    let courses = await courseService.getCoursesByClassId(cls._id.toString());
+    courses = courses.filter(x => !x.noCourse); // ignore vacations etc
 
     // for each course add presence status and count the presences
     let totalCourses = 0;

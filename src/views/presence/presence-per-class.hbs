@@ -10,14 +10,14 @@
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Acasa</i></a></li>
+        <li class="breadcrumb-item"><a href="/">Acasă</i></a></li>
         <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">Clasa:
                 {{class.grade}}-{{class.name}}</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Prezenta</li>
+        <li class="breadcrumb-item active" aria-current="page">Prezența</li>
     </ol>
 </nav>
 
-<h1>Prezenta</h1>
+<h1>Prezența</h1>
 <h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2>
 
 {{#unless studentsInClass.length}}
@@ -43,7 +43,7 @@
             ({{gradeAndLetter}})
             {{/if}}
             {{#if (eq @../index 0)}}
-            - prezente: {{totalPresences}} din {{../../totalActiveCourses}}
+            - prezențe: {{totalPresences}} din {{../../totalActiveCourses}}
             {{/if}}
         </li>
         {{/each}}
@@ -51,10 +51,10 @@
 </div>
 {{/each}}
 {{#if (gt totalActiveCourses 3)}}
-<a class="toggle-presence" href="/" style="font-size:1.2rem; vertical-align: bottom;">Vezi toate prezentele <i
+<a class="toggle-presence" href="/" style="font-size:1.2rem; vertical-align: bottom;">Vezi toate prezențele <i
         class="fas fa-angle-double-right"></i></a>
 <a class="toggle-presence hidePresence" href="/" style="font-size:1.2rem; vertical-align: bottom;"><i
-        class="fas fa-angle-double-left"></i> Vezi doar primele prezente </a>
+        class="fas fa-angle-double-left"></i> Vezi doar primele prezențe </a>
 {{/if}}
 
 {{#if studentsInClass.length}}
@@ -64,7 +64,7 @@
 {{#each studentsInClass}}
 <div {{#if (gt @index 7)}} class="toggle-student hideStudent" {{/if}}>
     <a href="/elevi/{{_id}}/prezenta">{{shortName}}</a>
-    {{#if gradeAndLetter}} ({{gradeAndLetter}}){{/if}} - prezente: {{totalPresences}} din
+    {{#if gradeAndLetter}} ({{gradeAndLetter}}){{/if}} - prezențe: {{totalPresences}} din
     {{../totalActiveCourses}} ({{totalPresencesAsPercent}}%)
     <div class="progress mb-2">
         <div class="progress-bar" role="progressbar" style="width: {{totalPresencesAsPercent}}%" aria-valuenow="25"
@@ -75,7 +75,7 @@
 
 {{#if (gt studentsInClass.length 8)}}
 <div class="mb-5">
-    <a class="toggle-student" href="/" style="font-size:1.2rem">Vezi toti elevii <i
+    <a class="toggle-student" href="/" style="font-size:1.2rem">Vezi toți elevii <i
             class="fas fa-angle-double-right"></i></a>
     <a class="toggle-student hideStudent" href="/" style="font-size:1.2rem; vertical-align: bottom;"><i
             class="fas fa-angle-double-left"></i> Vezi doar primii elevi </a>

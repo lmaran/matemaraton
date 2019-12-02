@@ -1,16 +1,16 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
-        <li class="breadcrumb-item"><a href="/">Acasa</i></a></li>
+        <li class="breadcrumb-item"><a href="/">Acasă</i></a></li>
         <li class="breadcrumb-item"><a href="/clase/{{class._id}}">Clasa:
                 {{class.grade}}-{{class.name}}</a></li>
-        <li class="breadcrumb-item"><a href="/clase/{{class._id}}/prezenta">Prezenta</a></li>
+        <li class="breadcrumb-item"><a href="/clase/{{class._id}}/prezenta">Prezența</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{student.shortName}}</li>
     </ol>
 </nav>
 
 
-<h1>Prezenta</h1>
+<h1>Prezența</h1>
 <h2>{{student.shortName}} ({{student.gradeAndLetter}})</h2>
 <h3 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h3>
 
@@ -19,7 +19,7 @@
 <div class="mb-1">
     <span style="display:inline-block; width:100px">{{dateAsString}}</span>
     {{#if noCourse}}
-    <span class="text-muted"> - {{noCourseReason}}</span>
+    <span class="text-muted">Nu s-a tinut curs ({{noCourseReason}})</span>
     {{else}}
 
 
@@ -36,6 +36,6 @@
 
 <hr />
 <p class="mb-5">
-    <span class="font-weight-bold">Total prezente:</span> {{totalPresences}} din {{totalCourses}}
+    <span class="font-weight-bold">Total prezențe:</span> {{totalPresences}} din {{totalCourses}}
     ({{totalPresencesAsPercent}}%)
 </p>
