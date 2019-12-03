@@ -59,6 +59,7 @@ exports.logout = (req, res) => {
 
 exports.getSignup = (req, res) => {
     if (req.user) {
+        // already authenticated
         return res.redirect("/");
     }
 
