@@ -12,14 +12,65 @@ const validationError = function(res, err) {
 };
 
 exports.getLogin = (req, res) => {
-    if (req.user) res.redirect("/");
-    else res.render("user/login");
+    if (req.user) return res.redirect("/"); // already authenticated
+
+    let data = {};
+    const errors = req.flash("validationErrors");
+
+    if (errors.length) {
+        // redirect from POST (with errors)
+        data = arrayHelper.arrayToObject(errors, "field");
+        if (data.email && data.email.msg) data.email.hasAutofocus = true;
+        else data.password.hasAutofocus = true;
+    } else {
+        // clean, new page
+        data.email = { hasAutofocus: true };
+    }
+
+    res.render("user/login", { data, errors });
 };
 
 exports.postLogin = async (req, res) => {
     // console.log(req.body);
     const email = req.body.email;
     const password = req.body.password;
+
+    const validationErrors = [];
+
+    // const [emailMsg, passwordMsg, confirmPasswordMsg] = await Promise.all([
+    //     await getEmailError(email)
+    //     // await getPasswordError(password),
+    //     // await getConfirmPasswordError(password, confirmPassword)
+    // ]);
+
+    //if (emailMsg) validationErrors.push({ field: "email", msg: emailMsg });
+
+    if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu." });
+    if (!validator.isLength(email, { max: 50 })) validationErrors.push({ field: "email", msg: "Maxim 50 caractere." });
+
+    if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu." });
+    if (!validator.isLength(password, { max: 50 }))
+        validationErrors.push({ field: "password", msg: "Câmp obligatoriu." });
+
+    if (validationErrors.length) {
+        // add also the initial values
+        let emailFound = false;
+        validationErrors.forEach(x => {
+            if (x.field === "email") {
+                x.val = email;
+                emailFound = true;
+            }
+        });
+
+        if (!emailFound) {
+            validationErrors.push({ field: "email", val: email });
+        }
+
+        req.flash("validationErrors", validationErrors);
+
+        return res.redirect("/login");
+    }
+
     try {
         const { user, token } = await authService.login(email, password);
         // return res
@@ -29,7 +80,13 @@ exports.postLogin = async (req, res) => {
         setCookies(req, res, token, user);
         res.redirect("/");
     } catch (error) {
-        return res.status(401).json(error.message);
+        const validationErrors = [
+            { field: "email", val: email },
+            { field: "password", msg: error.message }
+        ];
+        req.flash("validationErrors", validationErrors);
+        return res.redirect("/login");
+        // return res.status(401).json(error.message);
     }
 };
 
@@ -50,13 +107,10 @@ exports.logout = (req, res) => {
 };
 
 exports.getSignup = (req, res) => {
-    if (req.user) {
-        // already authenticated
-        return res.redirect("/");
-    }
+    if (req.user) return res.redirect("/"); // already authenticated
 
     let data = {};
-    const errors = req.flash("validationErrors");
+    const errors = req.flash("validationErrors"); // Get an array of flash messages by passing the key
 
     if (errors.length) {
         // redirect from POST (with errors)
@@ -85,7 +139,7 @@ exports.getSignup = (req, res) => {
     //     });
     // }
 
-    res.render("account/signup", { data, errors });
+    res.render("user/signup", { data, errors });
 };
 
 exports.postSignup = async function(req, res) {
@@ -121,7 +175,7 @@ exports.postSignup = async function(req, res) {
             validationErrors.push({ field: "email", val: email });
         }
 
-        req.flash("validationErrors", validationErrors);
+        req.flash("validationErrors", validationErrors); // Set a flash message by passing the key, followed by the value
 
         return res.redirect("/signup");
     }

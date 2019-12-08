@@ -1,36 +1,46 @@
-{{!-- {{> navbar}} --}}
-
 <div class="container-fluid">
 
     <h1>Login</h1>
-    <hr>
 
-    <form action="/login" method="post" novalidate>
-        <!-- novalidate prevents HTML5 validation since we will be validating ourselves -->
+    {{!-- <p>{{toJSON errors}}</p> --}}
+    {{!-- <p>{{toJSON data}}</p> --}}
 
-        <div class="form-group">
-            <label>Email</label>
-            <input type="email" name="email" class="form-control" autofocus />
+    <form method="post" action="/login" novalidate onsubmit="saveBtn.disabled = true; return true;">
+        <div class="form-group row">
+            <label for="email" class="col-md-3 col-form-label required">Email</label>
+            <div class="col-md-7">
+                <input type="email2" name="email" id="email"
+                    class="form-control {{#if data.email.msg}}is-invalid {{/if}}" value="{{data.email.val}}"
+                    {{#if data.email.hasAutofocus}}autofocus {{/if}} />
+                <div class=" invalid-feedback">{{data.email.msg}}</div>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Parola </label>
-            <input type="password" name="password" class="form-control" />
+        <div class="form-group row">
+            <label for="password" class="col-md-3 col-form-label required">Parola</label>
+            <div class="col-md-7">
+                <input type="password" name="password" id="password"
+                    class="form-control {{#if data.password.msg}}is-invalid {{/if}}"
+                    {{#if data.password.hasAutofocus}}autofocus {{/if}} />
+                <div class="invalid-feedback">{{data.password.msg}}</div>
+            </div>
         </div>
 
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Autentifica</button>
-            <button type="button" class="btn btn-light" onclick='window.history.back();'> <i class="fas fa-times"></i>
-                Renunta</button>
+        <div class="form-group row">
+            <div class="col-md-7 offset-md-3">
+                <button type="submit" name="saveBtn" class="btn btn-primary"><i class="fas fa-save"></i>
+                    Autentifica</button>
+                <button type="button" class="btn btn-light" onclick='window.history.back();'> <i
+                        class="fas fa-times"></i>
+                    Renunta</button>
+            </div>
         </div>
-
     </form>
 
-    <!--<p>
-        Ti-ai uitat parola? <a href="/resetpassword">Cere o noua parola!</a>
-    </p>-->
-    <!--<p>
-        Nu ai inca un cont? <a href="/register">Inregistreaza-te!</a>
-    </p>-->
+    <div class="form-group row">
+        <div class="col-md-7 offset-md-3">
+            Ti-ai uitat parola? <a href="/resetpassword">Reseteaza parola.</a>
+        </div>
+    </div>
 
 </div>
