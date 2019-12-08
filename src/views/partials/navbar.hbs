@@ -126,6 +126,7 @@ if 2 similar sections are used, the last one will override the first one --}}
             </ul> --}}
 
             {{#unless user.activationToken}} {{!do not display this part during user activation}}
+            {{!-- {{toJSON @root.user}} --}}
             <ul class='navbar-nav ml-auto'>
                 {{#if @root.user}}
                 {{#if @root.user.isAdmin}}

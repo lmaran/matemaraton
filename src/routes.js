@@ -58,9 +58,7 @@ router.get("/:pageId/asdfgh", pageController.getPage2);
 // user
 router.get("/login", userController.getLogin);
 router.post("/login", userController.postLogin);
-
 router.get("/logout", isAuthenticated, userController.logout);
-
 router.get("/signup", userController.getSignup);
 router.post("/signup", userController.postSignup);
 

@@ -1,9 +1,9 @@
 const cookie = require("cookie");
+
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
-const authHelper = require("../helpers/auth.helper");
 const userService = require("../services/user.service");
-const passport = require("passport");
+const authService = require("../services/auth.service");
 const config = require("../config");
 const arrayHelper = require("../helpers/array.helper");
 
@@ -16,29 +16,21 @@ exports.getLogin = (req, res) => {
     else res.render("user/login");
 };
 
-exports.postLogin = function(req, res, next) {
-    // auth with custom callback: http://passportjs.org/docs/authenticate
-
-    passport.authenticate("local", function(err, user, info) {
-        // console.log("asd2");
-        const error = err || info;
-        // console.log(error);
-        if (error) return res.status(401).json(error);
-        if (!user) return res.status(404).json({ message: "Something went wrong, please try again." });
-
-        const token = signToken(user._id, user.role);
-
-        const userProfile = {
-            //exclude sensitive info
-            name: user.name,
-            email: user.email,
-            role: user.role
-        };
-
-        setCookies(req, res, token, userProfile);
-
+exports.postLogin = async (req, res) => {
+    // console.log(req.body);
+    const email = req.body.email;
+    const password = req.body.password;
+    try {
+        const { user, token } = await authService.login(email, password);
+        // return res
+        //     .status(200)
+        //     .json({ user, token })
+        //     .end();
+        setCookies(req, res, token, user);
         res.redirect("/");
-    })(req, res, next);
+    } catch (error) {
+        return res.status(401).json(error.message);
+    }
 };
 
 exports.logout = (req, res) => {
@@ -97,7 +89,10 @@ exports.getSignup = (req, res) => {
 };
 
 exports.postSignup = async function(req, res) {
-    const { email, password, confirmPassword } = req.body;
+    const { password, confirmPassword } = req.body;
+    let { email } = req.body;
+
+    email = email.toLowerCase();
 
     const validationErrors = [];
 
@@ -129,9 +124,19 @@ exports.postSignup = async function(req, res) {
         req.flash("validationErrors", validationErrors);
 
         return res.redirect("/signup");
-    } else {
-        // return res.send("ok");
-        return res.redirect("/");
+    }
+
+    // return res.send("ok");
+    // return res.redirect("/");
+
+    try {
+        const { user, token } = await authService.signUp(email, password);
+        // return res.json({ user, token }).status(200).end();
+        setCookies(req, res, token, user);
+        res.redirect("/");
+    } catch (error) {
+        // return res.json(error).status(500).end();
+        return res.status(401).json(error.message);
     }
 };
 
@@ -194,17 +199,17 @@ exports.changePassword = async (req, res) => {
 
     const user = await userService.getOneById(userId);
 
-    if (authHelper.authenticate(oldPass, user.hashedPassword, user.salt)) {
-        user.salt = authHelper.makeSalt();
-        user.hashedPassword = authHelper.encryptPassword(newPass, user.salt);
-        delete user.password;
+    // if (authHelper.authenticate(oldPass, user.hashedPassword, user.salt)) {
+    //     user.salt = authHelper.makeSalt();
+    //     user.hashedPassword = authHelper.encryptPassword(newPass, user.salt);
+    //     delete user.password;
 
-        await userService.updateOne(user);
-        // if (err) return validationError(res, err);
-        res.redirect("/"); // for requests that come from server-side (Jade)
-    } else {
-        res.status(403).send("Forbidden");
-    }
+    //     await userService.updateOne(user);
+    //     // if (err) return validationError(res, err);
+    //     res.redirect("/"); // for requests that come from server-side (Jade)
+    // } else {
+    //     res.status(403).send("Forbidden");
+    // }
 };
 
 /**
