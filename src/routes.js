@@ -63,11 +63,8 @@ router.get("/signup", userController.getSignup);
 router.post("/signup", userController.postSignup);
 
 // app.get('/me', auth.isAuthenticated(), require('./user/userController').me);
-router.post("/user/me/changepassword", isAuthenticated, userController.changePassword);
-
-router.get("/user/changePassword", isAuthenticated, function(req, res) {
-    res.render("user/changePassword", { user: req.user });
-});
+router.get("/changepassword", isAuthenticated, userController.getChangePassword);
+router.post("/changepassword", isAuthenticated, userController.postChangePassword);
 
 // router.get("/:edition?/cursuri/grupe/:groupId", matemaratonController.getCoursesPerGroup);
 // router.get("/:edition?/cursuri/:courseId", matemaratonController.getCourse);

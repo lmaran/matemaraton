@@ -31,19 +31,10 @@ exports.getLogin = (req, res) => {
 };
 
 exports.postLogin = async (req, res) => {
-    // console.log(req.body);
     const email = req.body.email;
     const password = req.body.password;
 
     const validationErrors = [];
-
-    // const [emailMsg, passwordMsg, confirmPasswordMsg] = await Promise.all([
-    //     await getEmailError(email)
-    //     // await getPasswordError(password),
-    //     // await getConfirmPasswordError(password, confirmPassword)
-    // ]);
-
-    //if (emailMsg) validationErrors.push({ field: "email", msg: emailMsg });
 
     if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu." });
     if (!validator.isLength(email, { max: 50 })) validationErrors.push({ field: "email", msg: "Maxim 50 caractere." });
@@ -125,20 +116,6 @@ exports.getSignup = (req, res) => {
         // clean, new page
         data.email = { hasAutofocus: true };
     }
-
-    // const isFocusOnEmail = data.email && (emailRecord.msg || !emailRecord.val);
-    // if (isFocusOnEmail) {
-    //     errors.forEach(x => {
-    //         if (x.type === "email") x.hasAutofocus = true;
-    //         else x.hasAutofocus = false;
-    //     });
-    // } else {
-    //     errors.forEach(x => {
-    //         if (x.type === "password") x.hasAutofocus = true;
-    //         else x.hasAutofocus = false;
-    //     });
-    // }
-
     res.render("user/signup", { data, errors });
 };
 
@@ -246,24 +223,72 @@ exports.remove = function(req, res) {
 /**
  * Change a users password
  */
-exports.changePassword = async (req, res) => {
+exports.getChangePassword = async (req, res) => {
+    // if (req.user) return res.redirect("/"); // already authenticated
+
+    let data = {};
+    const errors = req.flash("validationErrors"); // Get an array of flash messages by passing the key
+
+    if (errors.length) {
+        // redirect from POST (with errors)
+        data = arrayHelper.arrayToObject(errors, "field");
+        // if (data.email && data.email.msg) data.email.hasAutofocus = true;
+        // else data.password.hasAutofocus = true;
+        // } else if (req.query.email) {
+        //     // new page with email (from url)
+        //     data.email = { val: req.query.email };
+        //     data.password = { hasAutofocus: true };
+    } else {
+        // clean, new page
+        data.email = { hasAutofocus: true };
+    }
+    res.render("user/changePassword", { data, errors });
+};
+
+exports.postChangePassword = async (req, res) => {
     const userId = String(req.user._id); //without 'String' the result is an Object
-    const oldPass = String(req.body.oldPassword);
-    const newPass = String(req.body.newPassword);
+    const oldPassword = String(req.body.oldPassword);
+    const newPassword = String(req.body.newPassword);
 
-    const user = await userService.getOneById(userId);
+    console.log(oldPassword);
 
-    // if (authHelper.authenticate(oldPass, user.hashedPassword, user.salt)) {
-    //     user.salt = authHelper.makeSalt();
-    //     user.hashedPassword = authHelper.encryptPassword(newPass, user.salt);
-    //     delete user.password;
+    // const user = await userService.getOneById(userId);
 
-    //     await userService.updateOne(user);
-    //     // if (err) return validationError(res, err);
-    //     res.redirect("/"); // for requests that come from server-side (Jade)
-    // } else {
-    //     res.status(403).send("Forbidden");
-    // }
+    // const email = req.body.email;
+    // const password = req.body.password;
+
+    const validationErrors = [];
+
+    if (validator.isEmpty(oldPassword)) validationErrors.push({ field: "oldPassword", msg: "Câmp obligatoriu." });
+    if (!validator.isLength(oldPassword, { max: 50 }))
+        validationErrors.push({ field: "oldPassword", msg: "Maxim 50 caractere." });
+
+    if (validator.isEmpty(newPassword)) validationErrors.push({ field: "newPassword", msg: "Câmp obligatoriu." });
+    if (!validator.isLength(newPassword, { max: 50 }))
+        validationErrors.push({ field: "newPassword", msg: "Câmp obligatoriu." });
+
+    if (validationErrors.length) {
+        req.flash("validationErrors", validationErrors);
+        return res.redirect("/changepassword");
+    }
+
+    try {
+        // const { user, token } = await authService.login(email, password);
+        // // return res
+        // //     .status(200)
+        // //     .json({ user, token })
+        // //     .end();
+        // setCookies(req, res, token, user);
+        res.redirect("/");
+    } catch (error) {
+        // const validationErrors = [
+        //     { field: "email", val: email },
+        //     { field: "password", msg: error.message }
+        // ];
+        // req.flash("validationErrors", validationErrors);
+        return res.redirect("/changepassword");
+        // return res.status(401).json(error.message);
+    }
 };
 
 /**
