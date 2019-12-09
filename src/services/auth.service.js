@@ -4,28 +4,45 @@ const userService = require("../services/user.service");
 const config = require("../config");
 
 exports.login = async (email, password) => {
+    try {
+        const userRecord = await userService.getOneByEmail(email.toLowerCase());
+        if (!userRecord) {
+            throw new Error("Email sau parolă incorectă");
+        } else {
+            // const isCorrectPassword = await argon2.verify(user.password, password);
+            // const matchPassword = authHelper.authenticate(password, userRecord.hashedPassword, userRecord.salt);
+
+            const matchPassword = await bcrypt.compare(password, userRecord.password);
+
+            if (!matchPassword) {
+                throw new Error("Email sau parolă incorectă");
+            }
+        }
+
+        return {
+            user: {
+                email: userRecord.email,
+                firstName: userRecord.firstName,
+                lastName: userRecord.lastName
+            },
+            token: generateJWT(userRecord)
+        };
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
+// only for validations
+exports.foundCredentials = async (email, password) => {
     const userRecord = await userService.getOneByEmail(email.toLowerCase());
     if (!userRecord) {
-        throw new Error("Email sau parolă incorectă");
+        return false; // email not found
     } else {
-        // const isCorrectPassword = await argon2.verify(user.password, password);
-        // const matchPassword = authHelper.authenticate(password, userRecord.hashedPassword, userRecord.salt);
-
         const matchPassword = await bcrypt.compare(password, userRecord.password);
 
-        if (!matchPassword) {
-            throw new Error("Email sau parolă incorectă");
-        }
+        if (!matchPassword) return false; // incorrect password
     }
-
-    return {
-        user: {
-            email: userRecord.email,
-            firstName: userRecord.firstName,
-            lastName: userRecord.lastName
-        },
-        token: generateJWT(userRecord)
-    };
+    return true;
 };
 
 exports.signUp = async (email, password) => {

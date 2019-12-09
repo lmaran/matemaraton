@@ -14,71 +14,84 @@ const validationError = function(res, err) {
 exports.getLogin = (req, res) => {
     if (req.user) return res.redirect("/"); // already authenticated
 
-    let data = {};
-    const errors = req.flash("validationErrors");
+    // errors or initial values that come from a previous POST redirect
+    let validationErrors = req.flash("validationErrors");
+    const initialValues = req.flash("initialValues");
+    const data = arrayHelper.arrayToObject(initialValues, "field");
 
-    if (errors.length) {
-        // redirect from POST (with errors)
-        data = arrayHelper.arrayToObject(errors, "field");
-        if (data.email && data.email.msg) data.email.hasAutofocus = true;
-        else data.password.hasAutofocus = true;
+    const uiData = {};
+
+    if (validationErrors.length) {
+        validationErrors = arrayHelper.arrayToObject(validationErrors, "field");
+        if (validationErrors.email) uiData.email = { hasAutofocus: true };
+        else uiData.password = { hasAutofocus: true };
     } else {
         // clean, new page
-        data.email = { hasAutofocus: true };
+        uiData.email = { hasAutofocus: true };
     }
 
-    res.render("user/login", { data, errors });
+    res.render("user/login", { data, uiData, validationErrors });
 };
 
 exports.postLogin = async (req, res) => {
-    const email = req.body.email;
-    const password = req.body.password;
+    try {
+        const validationErrors = await getLoginValidationErrors(req.body);
 
-    const validationErrors = [];
+        const email = req.body.email;
+        const password = req.body.password;
 
-    if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu." });
-    if (!validator.isLength(email, { max: 50 })) validationErrors.push({ field: "email", msg: "Maxim 50 caractere." });
+        if (validationErrors.length) {
+            // add also the initial values
+            const initialValues = getLoginInitialValues(req.body);
 
-    if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu." });
-    if (!validator.isLength(password, { max: 50 }))
-        validationErrors.push({ field: "password", msg: "Câmp obligatoriu." });
+            req.flash("validationErrors", validationErrors);
+            req.flash("initialValues", initialValues);
 
-    if (validationErrors.length) {
-        // add also the initial values
-        let emailFound = false;
-        validationErrors.forEach(x => {
-            if (x.field === "email") {
-                x.val = email;
-                emailFound = true;
-            }
-        });
-
-        if (!emailFound) {
-            validationErrors.push({ field: "email", val: email });
+            return res.redirect("/login");
         }
 
-        req.flash("validationErrors", validationErrors);
-
-        return res.redirect("/login");
-    }
-
-    try {
         const { user, token } = await authService.login(email, password);
-        // return res
-        //     .status(200)
-        //     .json({ user, token })
-        //     .end();
+
         setCookies(req, res, token, user);
         res.redirect("/");
     } catch (error) {
-        const validationErrors = [
-            { field: "email", val: email },
-            { field: "password", msg: error.message }
-        ];
-        req.flash("validationErrors", validationErrors);
-        return res.redirect("/login");
-        // return res.status(401).json(error.message);
+        // @TODO display an error message (without details) and log the details
+        return res.status(500).json(error.message);
     }
+};
+
+const getLoginValidationErrors = async body => {
+    try {
+        const validationErrors = [];
+
+        // email
+        const email = body.email;
+        if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu." });
+        else if (!validator.isLength(email, { max: 50 }))
+            validationErrors.push({ field: "email", msg: "Maxim 50 caractere." });
+
+        // password
+        const password = body.password;
+        if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu." });
+        else if (!validator.isLength(password, { max: 50 }))
+            validationErrors.push({ field: "password", msg: "Maxim 50 caractere." });
+
+        // credentials (email and password)
+        const emailAndPasswordAreValid = !validationErrors.find(x => x.field === "email" || x.field === "password");
+        if (emailAndPasswordAreValid) {
+            if (!(await authService.foundCredentials(email, password)))
+                validationErrors.push({ field: "password", msg: "Email sau parolă incorectă." });
+        }
+        return validationErrors;
+    } catch (error) {
+        throw new Error(error.message); // re-throw the error
+    }
+};
+
+const getLoginInitialValues = body => {
+    const initialValues = [];
+    initialValues.push({ field: "email", val: body.email });
+    return initialValues;
 };
 
 exports.logout = (req, res) => {
@@ -249,8 +262,6 @@ exports.postChangePassword = async (req, res) => {
     const userId = String(req.user._id); //without 'String' the result is an Object
     const oldPassword = String(req.body.oldPassword);
     const newPassword = String(req.body.newPassword);
-
-    console.log(oldPassword);
 
     // const user = await userService.getOneById(userId);
 
