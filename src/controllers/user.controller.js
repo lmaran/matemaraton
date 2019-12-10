@@ -1,14 +1,30 @@
 const cookie = require("cookie");
-
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
 const userService = require("../services/user.service");
 const authService = require("../services/auth.service");
+const emailService = require("../services/email.service");
 const config = require("../config");
 const arrayHelper = require("../helpers/array.helper");
 
 const validationError = function(res, err) {
     return res.status(422).json(err);
+};
+
+exports.checkSendEmail = async (req, res) => {
+    const data = {
+        to: "lucian.maran@outlook.com",
+        subject: "Hello7",
+        text: "Testing some Mailgun awesomness!"
+    };
+
+    try {
+        const response = await emailService.sendEmail(data);
+        console.log(response);
+        return res.json(response);
+    } catch (error) {
+        return res.json(error.message);
+    }
 };
 
 exports.getLogin = (req, res) => {
@@ -39,8 +55,7 @@ exports.postLogin = async (req, res) => {
         const { email, password } = req.body;
 
         if (validationErrors.length) {
-            // keep old values at page reload
-            const initialValues = [{ field: "email", val: email }];
+            const initialValues = [{ field: "email", val: email }]; // keep old values at page reload
 
             req.flash("validationErrors", validationErrors);
             req.flash("initialValues", initialValues);
@@ -60,16 +75,15 @@ exports.postLogin = async (req, res) => {
 
 const getLoginValidationErrors = async body => {
     try {
+        const { email, password } = body;
         const validationErrors = [];
 
         // email
-        const email = body.email;
         if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu." });
         else if (!validator.isLength(email, { max: 50 }))
             validationErrors.push({ field: "email", msg: "Maxim 50 caractere." });
 
         // password
-        const password = body.password;
         if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu." });
         else if (!validator.isLength(password, { max: 50 }))
             validationErrors.push({ field: "password", msg: "Maxim 50 caractere." });
@@ -154,10 +168,10 @@ exports.postSignup = async function(req, res) {
 
 const getSignupValidationErrors = async body => {
     try {
+        const { email, password, confirmPassword } = body;
         const validationErrors = [];
 
         // email
-        const email = body.email;
         if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu." });
         else if (!validator.isLength(email, { max: 50 }))
             validationErrors.push({ field: "email", msg: "Maxim 50 caractere." });
@@ -166,7 +180,6 @@ const getSignupValidationErrors = async body => {
             validationErrors.push({ field: "email", msg: "Exista deja un cont cu acest email." });
 
         // password
-        const password = body.password;
         if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu." });
         else if (!validator.isLength(password, { min: 6 }))
             validationErrors.push({ field: "password", msg: "Minim 6 caractere." });
@@ -174,7 +187,6 @@ const getSignupValidationErrors = async body => {
             validationErrors.push({ field: "password", msg: "Maxim 50 caractere." });
 
         // confirm password
-        const confirmPassword = body.confirmPassword;
         if (validator.isEmpty(confirmPassword))
             validationErrors.push({ field: "confirmPassword", msg: "Câmp obligatoriu." });
         else if (confirmPassword !== password)

@@ -61,6 +61,7 @@ router.post("/login", userController.postLogin);
 router.get("/logout", isAuthenticated, userController.logout);
 router.get("/signup", userController.getSignup);
 router.post("/signup", userController.postSignup);
+// router.get("/check-send-email", userController.checkSendEmail);
 
 // app.get('/me', auth.isAuthenticated(), require('./user/userController').me);
 router.get("/changepassword", isAuthenticated, userController.getChangePassword);
