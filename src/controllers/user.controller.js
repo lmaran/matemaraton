@@ -14,35 +14,33 @@ const validationError = function(res, err) {
 exports.getLogin = (req, res) => {
     if (req.user) return res.redirect("/"); // already authenticated
 
-    // errors or initial values that come from a previous POST redirect
-    let validationErrors = req.flash("validationErrors");
+    // Get an array of flash errors (or initial values) by passing the key
+    const validationErrors = req.flash("validationErrors");
     const initialValues = req.flash("initialValues");
+
+    const errors = arrayHelper.arrayToObject(validationErrors, "field");
     const data = arrayHelper.arrayToObject(initialValues, "field");
 
+    // set autofocus
     const uiData = {};
-
     if (validationErrors.length) {
-        validationErrors = arrayHelper.arrayToObject(validationErrors, "field");
-        if (validationErrors.email) uiData.email = { hasAutofocus: true };
-        else uiData.password = { hasAutofocus: true };
+        uiData[validationErrors[0].field] = { hasAutofocus: true }; // focus on first field with error
     } else {
-        // clean, new page
-        uiData.email = { hasAutofocus: true };
+        uiData.email = { hasAutofocus: true }; // in case of a new page
     }
 
-    res.render("user/login", { data, uiData, validationErrors });
+    res.render("user/login", { data, uiData, errors });
 };
 
 exports.postLogin = async (req, res) => {
     try {
         const validationErrors = await getLoginValidationErrors(req.body);
 
-        const email = req.body.email;
-        const password = req.body.password;
+        const { email, password } = req.body;
 
         if (validationErrors.length) {
-            // add also the initial values
-            const initialValues = getLoginInitialValues(req.body);
+            // keep old values at page reload
+            const initialValues = [{ field: "email", val: email }];
 
             req.flash("validationErrors", validationErrors);
             req.flash("initialValues", initialValues);
@@ -88,12 +86,6 @@ const getLoginValidationErrors = async body => {
     }
 };
 
-const getLoginInitialValues = body => {
-    const initialValues = [];
-    initialValues.push({ field: "email", val: body.email });
-    return initialValues;
-};
-
 exports.logout = (req, res) => {
     // http://expressjs.com/api.html#res.clearCookie
     //res.clearCookie('access_token', { path: '/' });
@@ -113,74 +105,84 @@ exports.logout = (req, res) => {
 exports.getSignup = (req, res) => {
     if (req.user) return res.redirect("/"); // already authenticated
 
-    let data = {};
-    const errors = req.flash("validationErrors"); // Get an array of flash messages by passing the key
+    // Get an array of flash errors (or initial values) by passing the key
+    const validationErrors = req.flash("validationErrors");
+    const initialValues = req.flash("initialValues");
 
-    if (errors.length) {
-        // redirect from POST (with errors)
-        data = arrayHelper.arrayToObject(errors, "field");
-        if (data.email.msg) data.email.hasAutofocus = true;
-        else data.password.hasAutofocus = true;
-    } else if (req.query.email) {
-        // new page with email (from url)
-        data.email = { val: req.query.email };
-        data.password = { hasAutofocus: true };
+    const errors = arrayHelper.arrayToObject(validationErrors, "field");
+    const data = arrayHelper.arrayToObject(initialValues, "field");
+
+    // set autofocus
+    const uiData = {};
+    if (validationErrors.length) {
+        uiData[validationErrors[0].field] = { hasAutofocus: true }; // focus on first field with error
     } else {
-        // clean, new page
-        data.email = { hasAutofocus: true };
+        uiData.email = { hasAutofocus: true }; // in case of a new page
     }
-    res.render("user/signup", { data, errors });
+
+    res.render("user/signup", { data, uiData, errors });
 };
 
 exports.postSignup = async function(req, res) {
-    const { password, confirmPassword } = req.body;
-    let { email } = req.body;
+    try {
+        const validationErrors = await getSignupValidationErrors(req.body);
 
-    email = email.toLowerCase();
+        const { email, password } = req.body;
 
-    const validationErrors = [];
+        if (validationErrors.length) {
+            // keep old values at page reload
+            const initialValues = [
+                { field: "email", val: email },
+                { field: "password", val: password }
+            ];
 
-    const [emailMsg, passwordMsg, confirmPasswordMsg] = await Promise.all([
-        await getEmailError(email),
-        await getPasswordError(password),
-        await getConfirmPasswordError(password, confirmPassword)
-    ]);
+            req.flash("validationErrors", validationErrors); // Set a flash message by passing the key, followed by the value
+            req.flash("initialValues", initialValues);
 
-    if (emailMsg) validationErrors.push({ field: "email", msg: emailMsg });
-    if (passwordMsg) validationErrors.push({ field: "password", msg: passwordMsg });
-    if (confirmPasswordMsg) validationErrors.push({ field: "confirmPassword", msg: confirmPasswordMsg });
-
-    // if (Object.getOwnPropertyNames(errors).length !== 0) {
-    if (validationErrors.length) {
-        // add also the initial values
-        let emailFound = false;
-        validationErrors.forEach(x => {
-            if (x.field === "email") {
-                x.val = email;
-                emailFound = true;
-            }
-        });
-
-        if (!emailFound) {
-            validationErrors.push({ field: "email", val: email });
+            return res.redirect("/signup");
         }
 
-        req.flash("validationErrors", validationErrors); // Set a flash message by passing the key, followed by the value
-
-        return res.redirect("/signup");
-    }
-
-    // return res.send("ok");
-    // return res.redirect("/");
-
-    try {
         const { user, token } = await authService.signUp(email, password);
         // return res.json({ user, token }).status(200).end();
         setCookies(req, res, token, user);
         res.redirect("/");
     } catch (error) {
-        // return res.json(error).status(500).end();
-        return res.status(401).json(error.message);
+        // @TODO display an error message (without details) and log the details
+        return res.status(500).json(error.message);
+    }
+};
+
+const getSignupValidationErrors = async body => {
+    try {
+        const validationErrors = [];
+
+        // email
+        const email = body.email;
+        if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu." });
+        else if (!validator.isLength(email, { max: 50 }))
+            validationErrors.push({ field: "email", msg: "Maxim 50 caractere." });
+        else if (!validator.isEmail(email)) validationErrors.push({ field: "email", msg: "Email invalid." });
+        else if (await userService.getOneByEmail(email))
+            validationErrors.push({ field: "email", msg: "Exista deja un cont cu acest email." });
+
+        // password
+        const password = body.password;
+        if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu." });
+        else if (!validator.isLength(password, { min: 6 }))
+            validationErrors.push({ field: "password", msg: "Minim 6 caractere." });
+        else if (!validator.isLength(password, { max: 50 }))
+            validationErrors.push({ field: "password", msg: "Maxim 50 caractere." });
+
+        // confirm password
+        const confirmPassword = body.confirmPassword;
+        if (validator.isEmpty(confirmPassword))
+            validationErrors.push({ field: "confirmPassword", msg: "Câmp obligatoriu." });
+        else if (confirmPassword !== password)
+            validationErrors.push({ field: "confirmPassword", msg: "Parolele nu coincid." });
+
+        return validationErrors;
+    } catch (error) {
+        throw new Error(error.message); // re-throw the error
     }
 };
 
@@ -245,12 +247,6 @@ exports.getChangePassword = async (req, res) => {
     if (errors.length) {
         // redirect from POST (with errors)
         data = arrayHelper.arrayToObject(errors, "field");
-        // if (data.email && data.email.msg) data.email.hasAutofocus = true;
-        // else data.password.hasAutofocus = true;
-        // } else if (req.query.email) {
-        //     // new page with email (from url)
-        //     data.email = { val: req.query.email };
-        //     data.password = { hasAutofocus: true };
     } else {
         // clean, new page
         data.email = { hasAutofocus: true };
@@ -259,7 +255,7 @@ exports.getChangePassword = async (req, res) => {
 };
 
 exports.postChangePassword = async (req, res) => {
-    const userId = String(req.user._id); //without 'String' the result is an Object
+    // const userId = String(req.user._id); //without 'String' the result is an Object
     const oldPassword = String(req.body.oldPassword);
     const newPassword = String(req.body.newPassword);
 
@@ -425,28 +421,3 @@ function setCookies(req, res, token, userProfile) {
 function signToken(id) {
     return jwt.sign({ _id: id }, config.session_secret, { expiresIn: 60 * 60 * 24 * 365 }); // in seconds
 }
-
-const getEmailError = async email => {
-    if (validator.isEmpty(email)) return "Camp obligatoriu.";
-    if (!validator.isLength(email, { max: 50 })) return "Maxim 50 caractere.";
-    if (!validator.isEmail(email)) return "Email invalid.";
-
-    const normalizedEmail = validator.normalizeEmail(email, { gmail_remove_dots: false });
-    const found = await userService.getOneByEmail(normalizedEmail);
-    if (found) return "Exista deja un cont cu acest email.";
-
-    return null;
-};
-
-const getPasswordError = async password => {
-    if (validator.isEmpty(password)) return "Camp obligatoriu.";
-    if (!validator.isLength(password, { min: 6 })) return "Minim 6 caractere.";
-    if (!validator.isLength(password, { max: 50 })) return "Maxim 50 caractere.";
-    return null;
-};
-
-const getConfirmPasswordError = async (password, confirmPassword) => {
-    if (validator.isEmpty(confirmPassword)) return "Camp obligatoriu.";
-    if (confirmPassword !== password) return "Parolele nu coincid.";
-    return null;
-};

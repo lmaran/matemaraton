@@ -9,9 +9,6 @@ exports.login = async (email, password) => {
         if (!userRecord) {
             throw new Error("Email sau parolă incorectă");
         } else {
-            // const isCorrectPassword = await argon2.verify(user.password, password);
-            // const matchPassword = authHelper.authenticate(password, userRecord.hashedPassword, userRecord.salt);
-
             const matchPassword = await bcrypt.compare(password, userRecord.password);
 
             if (!matchPassword) {
@@ -54,7 +51,7 @@ exports.signUp = async (email, password) => {
     const response = await userService.create({
         firstName,
         lastName,
-        email,
+        email: email.toLowerCase(),
         password: hashedPassword,
         createdOn: new Date()
     });

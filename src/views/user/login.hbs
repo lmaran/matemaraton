@@ -3,16 +3,15 @@
     <h1>Login</h1>
 
     {{!-- <p>{{toJSON data}}</p> --}}
-    {{!-- <p>{{toJSON validationErrors}}</p> --}}
+    {{!-- <p>{{toJSON errors}}</p> --}}
 
     <form method="post" action="/login" novalidate onsubmit="saveBtn.disabled = true; return true;">
         <div class="form-group row">
             <label for="email" class="col-md-3 col-form-label required">Email</label>
             <div class="col-md-7">
-                <input type="email2" name="email" id="email"
-                    class="form-control {{#if validationErrors.email}}is-invalid {{/if}}" value="{{data.email.val}}"
-                    {{#if uiData.email.hasAutofocus}}autofocus {{/if}} />
-                <div class=" invalid-feedback">{{validationErrors.email.msg}}</div>
+                <input type="email" name="email" id="email" class="form-control {{#if errors.email}}is-invalid {{/if}}"
+                    value="{{data.email.val}}" {{#if uiData.email.hasAutofocus}}autofocus {{/if}} />
+                <div class=" invalid-feedback">{{errors.email.msg}}</div>
             </div>
         </div>
 
@@ -20,9 +19,9 @@
             <label for="password" class="col-md-3 col-form-label required">Parola</label>
             <div class="col-md-7">
                 <input type="password" name="password" id="password"
-                    class="form-control {{#if validationErrors.password}}is-invalid {{/if}}"
+                    class="form-control {{#if errors.password}}is-invalid {{/if}}"
                     {{#if uiData.password.hasAutofocus}}autofocus {{/if}} />
-                <div class="invalid-feedback">{{validationErrors.password.msg}}</div>
+                <div class="invalid-feedback">{{errors.password.msg}}</div>
             </div>
         </div>
 

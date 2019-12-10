@@ -31,5 +31,5 @@ exports.create = async user => {
 
 exports.getOneByEmail = async email => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).findOne({ email });
+    return db.collection(collection).findOne({ email: email.toLowerCase() });
 };
