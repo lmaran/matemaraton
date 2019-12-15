@@ -2,6 +2,35 @@
 // const matemaratonService = require("../services/matemaraton.service");
 // const studentService = require("../services/student.service");
 // const personService = require("../services/person.service");
+// const classService = require("../services/class.service");
+// const studentsAndClassesService = require("../services/studentsAndClasses.service");
+
+// exports.mapStudentsToClasses = async (req, res) => {
+//     const classes = await classService.getAll();
+
+//     const studentsAndClasses = [];
+
+//     classes.forEach(cls => {
+//         const studentsIds = cls.studentsIds;
+//         studentsIds.forEach(studentId => {
+//             const studentToClass = {
+//                 academicYear: cls.academicYear,
+//                 studentId,
+//                 classId: cls._id.toString(),
+//                 startDateInClass: cls.academicYear === "201819" ? "2019-09-22" : "2019-09-28"
+//             };
+//             studentsAndClasses.push(studentToClass);
+//         });
+//     });
+
+//     await studentsAndClassesService.insertManyStudentsAndClasses(studentsAndClasses);
+
+//     const data = {
+//         //classes,
+//         studentsAndClasses
+//     };
+//     res.send(data);
+// };
 
 // exports.moveSchoolClassNameFromStudentToPerson = async (req, res) => {
 //     const students = await studentService.getAll();

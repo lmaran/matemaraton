@@ -1,17 +1,22 @@
-const mongoHelper = require("../../shared/helpers/mongo.helper");
+const mongoHelper = require("../helpers/mongo.helper");
 
-const collection = "studentsAndClasses";
+const studentsAndClassesCollection = "studentsAndClasses";
 
-exports.getStudentsIdsPerClass = async classId => {
+exports.getStudentsIdsPerClassId = async classId => {
     const db = await mongoHelper.getDb();
     const result = await db
-        .collection(collection)
-        .find({ "class.id": classId }, { projection: { _id: 0, student: 1 } })
+        .collection(studentsAndClassesCollection)
+        .find({ classId })
         .toArray();
 
     // flatten the result
     // console.log(result);
-    return result.map(x => x.student.id);
+    return result.map(x => x.studentId);
+};
+
+exports.getClassIdByStudentId = async (academicYear, studentId) => {
+    const db = await mongoHelper.getDb();
+    return db.collection(studentsAndClassesCollection).findOne({ academicYear, studentId });
 };
 
 // exports.getAllClassesIdPerStudent = async studentId => {
@@ -24,12 +29,12 @@ exports.getStudentsIdsPerClass = async classId => {
 
 exports.getStudentAndClassByStudentIdAndYear = async (studentId, academicYear) => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).findOne({ "student.id": studentId, academicYear });
+    return db.collection(studentsAndClassesCollection).findOne({ "student.id": studentId, academicYear });
 };
 
-exports.insertManyStudentsPerClass = async studentsPerClass => {
+exports.insertManyStudentsAndClasses = async studentsAndClasses => {
     const db = await mongoHelper.getDb();
-    return db.collection("studentsPerClass").insertMany(studentsPerClass);
+    return db.collection(studentsAndClassesCollection).insertMany(studentsAndClasses);
 };
 
 // exports.getStudentsPerClass = async classId => {

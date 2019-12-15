@@ -4,13 +4,15 @@ const classService = require("../services/class.service");
 const dateTimeHelper = require("../helpers/date-time.helper");
 const arrayHelper = require("../helpers/array.helper");
 const studentHelper = require("../helpers/student.helper");
+const studentsAndClassesService = require("../services/studentsAndClasses.service");
 
 exports.getPresencePerClass = async (req, res) => {
     const classId = req.params.classId;
 
-    const [cls, courses] = await Promise.all([
+    const [cls, courses, studentsIds] = await Promise.all([
         await classService.getClassById(classId),
-        await courseService.getCoursesByClassId(classId)
+        await courseService.getCoursesByClassId(classId),
+        await studentsAndClassesService.getStudentsIdsPerClassId(classId)
     ]);
 
     const academicYear = cls.academicYear;
@@ -25,7 +27,7 @@ exports.getPresencePerClass = async (req, res) => {
     }, []);
 
     // consider also students defined for class
-    allStudentsIds = allStudentsIds.concat(cls.studentsIds);
+    allStudentsIds = allStudentsIds.concat(studentsIds);
 
     // deduplicate studentsIds
     const allUniqueStudentsIds = [...new Set(allStudentsIds)];
@@ -89,7 +91,7 @@ exports.getPresencePerClass = async (req, res) => {
         }
     });
 
-    const studentsInClass = cls.studentsIds
+    const studentsInClass = studentsIds
         .reduce((acc, studentId) => {
             const student = studentsObj[studentId];
             student.totalPresences = student.totalPresences || 0;
@@ -114,11 +116,16 @@ exports.getPresencePerStudent = async (req, res) => {
     let academicYear = "201920";
 
     let student = null;
+    let classIdByStudent = null;
     let cls = null;
-    [student, cls] = await Promise.all([
+    [student, classIdByStudent] = await Promise.all([
         await personService.getPersonById(studentId),
-        await classService.getClassByStudentId(academicYear, studentId)
+        await studentsAndClassesService.getClassIdByStudentId(academicYear, studentId)
     ]);
+
+    if (classIdByStudent) {
+        cls = await classService.getClassById(classIdByStudent.classId);
+    }
 
     if (!cls && student.academicYearRelatedInfo) {
         // maybe a graduated student
@@ -126,7 +133,8 @@ exports.getPresencePerStudent = async (req, res) => {
         // overwrite the existing class and academicYear
         if (academicYears.length > 0) {
             academicYear = academicYears.sort()[0];
-            cls = await classService.getClassByStudentId(academicYear, studentId);
+            classIdByStudent = await studentsAndClassesService.getClassIdByStudentId(academicYear, studentId);
+            cls = await classService.getClassById(classIdByStudent.classId);
         }
     }
 

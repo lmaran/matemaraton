@@ -20,7 +20,7 @@ const courseController = require("./controllers/course.controller");
 router.get("/", homeController.getHomePage);
 
 // uncomment this route in order to make upgrade operations
-// router.get("/upgrade-operation", upgradeOperationController.moveSchoolClassNameFromStudentToPerson);
+// router.get("/upgrade-operation", upgradeOperationController.mapStudentsToClasses);
 
 // my page
 router.get("/pagina-mea", meController.getMyPage);
