@@ -7,8 +7,6 @@ const routes = require("./routes");
 const handlebarHelpers = require("./helpers/handlebar.helper");
 const setContext = require("./middlewares/setContext.middleware").setContext;
 
-require("./config/passport"); // init passport
-
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);

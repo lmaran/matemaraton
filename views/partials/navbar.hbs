@@ -126,6 +126,7 @@ if 2 similar sections are used, the last one will override the first one --}}
             </ul> --}}
 
             {{#unless user.activationToken}} {{!do not display this part during user activation}}
+            {{!-- {{toJSON @root.user}} --}}
             <ul class='navbar-nav ml-auto'>
                 {{#if @root.user}}
                 {{#if @root.user.isAdmin}}
@@ -138,7 +139,7 @@ if 2 similar sections are used, the last one will override the first one --}}
                     <a class='nav-link dropdown-toggle' href="/" id="navbarDropdown2" role="button"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <!--<img src='//www.gravatar.com/avatar/6f137572059f8c0f23363e8678d7a795' width="20" height="20">-->
-                        {{@root.user.name}}
+                        {{@root.user.firstName}} {{@root.user.lastName}}
                         {{!-- <b class='caret'></b> --}}
                     </a>
                     {{!-- <ul class="dropdown-menu">
@@ -146,7 +147,7 @@ if 2 similar sections are used, the last one will override the first one --}}
                         <li><a href='/logout'>Log out</a></li>
                     </ul> --}}
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/changePassword">Schimba parola</a>
+                        <a class="dropdown-item" href="/changepassword">Schimba parola</a>
                         <a class="dropdown-item" href="/logout">Log out</a>
                     </div>
                 </li>

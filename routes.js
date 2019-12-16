@@ -20,7 +20,7 @@ const courseController = require("./controllers/course.controller");
 router.get("/", homeController.getHomePage);
 
 // uncomment this route in order to make upgrade operations
-// router.get("/upgrade-operation", upgradeOperationController.moveSchoolClassNameFromStudentToPerson);
+// router.get("/upgrade-operation", upgradeOperationController.mapStudentsToClasses);
 
 // my page
 router.get("/pagina-mea", meController.getMyPage);
@@ -46,10 +46,6 @@ router.get("/pregatire-simulare-en-editia-2", matemaratonController.getTrainingP
 router.get("/pregatire-teza-s1-editia-3", matemaratonController.getTrainingProgramForSemestrialPaperEdition3);
 router.get("/materiale-teza-s1", matemaratonController.getDocumentsForSemestrialPaper);
 
-// router.get("/:edition?/cursuri/grupe/:groupId", matemaratonController.getCoursesPerGroup);
-// router.get("/:edition?/cursuri/:courseId", matemaratonController.getCourse);
-router.get("/:edition?", matemaratonController.getMatemaraton);
-
 // contact
 router.get("/contact", contactController.getContact);
 
@@ -60,20 +56,20 @@ router.post("/probleme", problemController.createProblem);
 router.get("/:pageId/asdfgh", pageController.getPage2);
 
 // user
-router.get("/user/login", userController.getLogin);
-router.post("/user/login/", userController.postLogin);
-
-router.get("/user/logout", isAuthenticated, userController.logout);
-
-router.get("/user/signup", userController.getSignup);
-router.post("/user/signup", userController.postSignup);
+router.get("/login", userController.getLogin);
+router.post("/login", userController.postLogin);
+router.get("/logout", isAuthenticated, userController.logout);
+router.get("/signup", userController.getSignup);
+router.post("/signup", userController.postSignup);
+// router.get("/check-send-email", userController.checkSendEmail);
 
 // app.get('/me', auth.isAuthenticated(), require('./user/userController').me);
-router.post("/user/me/changepassword", isAuthenticated, userController.changePassword);
+router.get("/changepassword", isAuthenticated, userController.getChangePassword);
+router.post("/changepassword", isAuthenticated, userController.postChangePassword);
 
-router.get("/user/changePassword", isAuthenticated, function(req, res) {
-    res.render("user/changePassword", { user: req.user });
-});
+// router.get("/:edition?/cursuri/grupe/:groupId", matemaratonController.getCoursesPerGroup);
+// router.get("/:edition?/cursuri/:courseId", matemaratonController.getCourse);
+router.get("/:edition?", matemaratonController.getMatemaraton);
 
 // pages
 router.get("/:pageId", pageController.getPage);

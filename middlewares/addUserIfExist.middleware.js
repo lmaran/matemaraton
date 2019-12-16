@@ -15,8 +15,8 @@ exports.addUserIfExist = async (req, res, next) => {
             }
 
             // Attach user to request
-            if (jwtPayload && jwtPayload._id) {
-                const userId = jwtPayload._id; // jwtPayload = {_id, iat, exp}
+            if (jwtPayload && jwtPayload.data && jwtPayload.data._id) {
+                const userId = jwtPayload.data._id; // jwtPayload = {data:{_id, email...}, iat, exp}
                 try {
                     req.user = await userService.getByIdWithoutPsw2(userId);
                     res.locals.user = req.user;

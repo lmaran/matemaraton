@@ -1,19 +1,18 @@
 const personService = require("../services/person.service");
 const classService = require("../services/class.service");
-const dateTimeHelper = require("../helpers/date-time.helper");
+// const dateTimeHelper = require("../helpers/date-time.helper");
 const studentHelper = require("../helpers/student.helper");
+const studentsAndClassesService = require("../services/studentsAndClasses.service");
 
 exports.getStudentsPerClass = async (req, res) => {
     const classId = req.params.classId;
 
-    // const [cls, courses] = await Promise.all([
-    //     await classService.getClassById(classId),
-    //     await courseService.getCoursesByClassId(classId)
-    // ]);
+    const [cls, studentsIds] = await Promise.all([
+        await classService.getClassById(classId),
+        await studentsAndClassesService.getStudentsIdsPerClassId(classId)
+    ]);
 
-    const cls = await classService.getClassById(classId);
-
-    let students = await personService.getPersonsByIds(cls.studentsIds);
+    let students = await personService.getPersonsByIds(studentsIds);
 
     students = students
         .map(student => {

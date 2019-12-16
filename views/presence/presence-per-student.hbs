@@ -15,22 +15,23 @@
 <h3 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h3>
 
 
-{{#each courses}}
+{{#each presencesPerStudent}}
 <div class="mb-1">
     <span style="display:inline-block; width:100px">{{dateAsString}}</span>
-    {{#if noCourse}}
-    <span class="text-muted">Nu s-a tinut curs ({{noCourseReason}})</span>
-    {{else}}
 
 
     {{#if isPresent}}
-    <span class="font-weight-bold">prezent</span>
+    <span class="font-weight-bold">prezent</span>,
     {{else}}
-    <span class="font-weight-bold text-danger">absent</span>
+    <span class="font-weight-bold text-danger">absent</span>,
     {{/if}}
-    <span style2="display:inline-block; width:80px">- Curs {{course}}:</span>
+
+    <span> <a href="/cursuri/{{courseId}}">Curs
+            {{courseNumber}}</a>{{#if isCreditFromOtherClass}}</span>
+    ({{className}}{{#if isTemporaryCreditFromOtherCourse}} - temporar{{/if}}){{/if}}{{#if description}}:
     <span class="text-muted"> {{description}}</span>
     {{/if}}
+
 </div>
 {{/each}}
 

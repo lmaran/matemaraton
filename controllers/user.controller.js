@@ -1,46 +1,103 @@
 const cookie = require("cookie");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
-const authHelper = require("../helpers/auth.helper");
 const userService = require("../services/user.service");
-const passport = require("passport");
+const authService = require("../services/auth.service");
+const emailService = require("../services/email.service");
 const config = require("../config");
-// const uuid = require("uuid");
-// const emailService = require("../helpers/emailService");
 const arrayHelper = require("../helpers/array.helper");
 
 const validationError = function(res, err) {
     return res.status(422).json(err);
 };
 
-exports.getLogin = (req, res) => {
-    if (req.user) res.redirect("/");
-    else res.render("user/login");
+exports.checkSendEmail = async (req, res) => {
+    const data = {
+        to: "lucian.maran@outlook.com",
+        subject: "Hello7",
+        text: "Testing some Mailgun awesomness!"
+    };
+
+    try {
+        const response = await emailService.sendEmail(data);
+        console.log(response);
+        return res.json(response);
+    } catch (error) {
+        return res.json(error.message);
+    }
 };
 
-exports.postLogin = function(req, res, next) {
-    // auth with custom callback: http://passportjs.org/docs/authenticate
+exports.getLogin = (req, res) => {
+    if (req.user) return res.redirect("/"); // already authenticated
 
-    passport.authenticate("local", function(err, user, info) {
-        // console.log("asd2");
-        const error = err || info;
-        // console.log(error);
-        if (error) return res.status(401).json(error);
-        if (!user) return res.status(404).json({ message: "Something went wrong, please try again." });
+    // Get an array of flash errors (or initial values) by passing the key
+    const validationErrors = req.flash("validationErrors");
+    const initialValues = req.flash("initialValues");
 
-        const token = signToken(user._id, user.role);
+    const errors = arrayHelper.arrayToObject(validationErrors, "field");
+    const data = arrayHelper.arrayToObject(initialValues, "field");
 
-        const userProfile = {
-            //exclude sensitive info
-            name: user.name,
-            email: user.email,
-            role: user.role
-        };
+    // set autofocus
+    const uiData = {};
+    if (validationErrors.length) {
+        uiData[validationErrors[0].field] = { hasAutofocus: true }; // focus on first field with error
+    } else {
+        uiData.email = { hasAutofocus: true }; // in case of a new page
+    }
 
-        setCookies(req, res, token, userProfile);
+    res.render("user/login", { data, uiData, errors });
+};
 
+exports.postLogin = async (req, res) => {
+    try {
+        const validationErrors = await getLoginValidationErrors(req.body);
+
+        const { email, password } = req.body;
+
+        if (validationErrors.length) {
+            const initialValues = [{ field: "email", val: email }]; // keep old values at page reload
+
+            req.flash("validationErrors", validationErrors);
+            req.flash("initialValues", initialValues);
+
+            return res.redirect("/login");
+        }
+
+        const { user, token } = await authService.login(email, password);
+
+        setCookies(req, res, token, user);
         res.redirect("/");
-    })(req, res, next);
+    } catch (error) {
+        // @TODO display an error message (without details) and log the details
+        return res.status(500).json(error.message);
+    }
+};
+
+const getLoginValidationErrors = async body => {
+    try {
+        const { email, password } = body;
+        const validationErrors = [];
+
+        // email
+        if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu." });
+        else if (!validator.isLength(email, { max: 50 }))
+            validationErrors.push({ field: "email", msg: "Maxim 50 caractere." });
+
+        // password
+        if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu." });
+        else if (!validator.isLength(password, { max: 50 }))
+            validationErrors.push({ field: "password", msg: "Maxim 50 caractere." });
+
+        // credentials (email and password)
+        const emailAndPasswordAreValid = !validationErrors.find(x => x.field === "email" || x.field === "password");
+        if (emailAndPasswordAreValid) {
+            if (!(await authService.foundCredentials(email, password)))
+                validationErrors.push({ field: "password", msg: "Email sau parolă incorectă." });
+        }
+        return validationErrors;
+    } catch (error) {
+        throw new Error(error.message); // re-throw the error
+    }
 };
 
 exports.logout = (req, res) => {
@@ -60,140 +117,85 @@ exports.logout = (req, res) => {
 };
 
 exports.getSignup = (req, res) => {
-    if (req.user) {
-        return res.redirect("/");
-    }
+    if (req.user) return res.redirect("/"); // already authenticated
 
-    let data = {};
-    const errors = req.flash("validationErrors");
+    // Get an array of flash errors (or initial values) by passing the key
+    const validationErrors = req.flash("validationErrors");
+    const initialValues = req.flash("initialValues");
 
-    if (errors.length) {
-        // redirect from POST (with errors)
-        data = arrayHelper.arrayToObject(errors, "field");
-        if (data.email.msg) data.email.hasAutofocus = true;
-        else data.password.hasAutofocus = true;
-    } else if (req.query.email) {
-        // new page with email (from url)
-        data.email = { val: req.query.email };
-        data.password = { hasAutofocus: true };
+    const errors = arrayHelper.arrayToObject(validationErrors, "field");
+    const data = arrayHelper.arrayToObject(initialValues, "field");
+
+    // set autofocus
+    const uiData = {};
+    if (validationErrors.length) {
+        uiData[validationErrors[0].field] = { hasAutofocus: true }; // focus on first field with error
     } else {
-        // clean, new page
-        data.email = { hasAutofocus: true };
+        uiData.email = { hasAutofocus: true }; // in case of a new page
     }
 
-    // const isFocusOnEmail = data.email && (emailRecord.msg || !emailRecord.val);
-    // if (isFocusOnEmail) {
-    //     errors.forEach(x => {
-    //         if (x.type === "email") x.hasAutofocus = true;
-    //         else x.hasAutofocus = false;
-    //     });
-    // } else {
-    //     errors.forEach(x => {
-    //         if (x.type === "password") x.hasAutofocus = true;
-    //         else x.hasAutofocus = false;
-    //     });
-    // }
-
-    res.render("account/signup", { data, errors });
+    res.render("user/signup", { data, uiData, errors });
 };
 
 exports.postSignup = async function(req, res) {
-    const { email, password, confirmPassword } = req.body;
+    try {
+        const validationErrors = await getSignupValidationErrors(req.body);
 
-    const validationErrors = [];
+        const { email, password } = req.body;
 
-    const [emailMsg, passwordMsg, confirmPasswordMsg] = await Promise.all([
-        await getEmailError(email),
-        await getPasswordError(password),
-        await getConfirmPasswordError(password, confirmPassword)
-    ]);
+        if (validationErrors.length) {
+            // keep old values at page reload
+            const initialValues = [
+                { field: "email", val: email },
+                { field: "password", val: password }
+            ];
 
-    if (emailMsg) validationErrors.push({ field: "email", msg: emailMsg });
-    if (passwordMsg) validationErrors.push({ field: "password", msg: passwordMsg });
-    if (confirmPasswordMsg) validationErrors.push({ field: "confirmPassword", msg: confirmPasswordMsg });
+            req.flash("validationErrors", validationErrors); // Set a flash message by passing the key, followed by the value
+            req.flash("initialValues", initialValues);
 
-    // if (Object.getOwnPropertyNames(errors).length !== 0) {
-    if (validationErrors.length) {
-        // add also the initial values
-        let emailFound = false;
-        validationErrors.forEach(x => {
-            if (x.field === "email") {
-                x.val = email;
-                emailFound = true;
-            }
-        });
-
-        if (!emailFound) {
-            validationErrors.push({ field: "email", val: email });
+            return res.redirect("/signup");
         }
 
-        req.flash("validationErrors", validationErrors);
-
-        return res.redirect("/signup");
-    } else {
-        // return res.send("ok");
-        return res.redirect("/");
+        const { user, token } = await authService.signUp(email, password);
+        // return res.json({ user, token }).status(200).end();
+        setCookies(req, res, token, user);
+        res.redirect("/");
+    } catch (error) {
+        // @TODO display an error message (without details) and log the details
+        return res.status(500).json(error.message);
     }
+};
 
-    // if (validationErrors.length) {
-    //     req.flash("errors", validationErrors);
-    //     return res.redirect("/signup");
-    // }
+const getSignupValidationErrors = async body => {
+    try {
+        const { email, password, confirmPassword } = body;
+        const validationErrors = [];
 
-    // const user = req.body;
+        // email
+        if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu." });
+        else if (!validator.isLength(email, { max: 50 }))
+            validationErrors.push({ field: "email", msg: "Maxim 50 caractere." });
+        else if (!validator.isEmail(email)) validationErrors.push({ field: "email", msg: "Email invalid." });
+        else if (await userService.getOneByEmail(email))
+            validationErrors.push({ field: "email", msg: "Exista deja un cont cu acest email." });
 
-    // // console.log(user);
+        // password
+        if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu." });
+        else if (!validator.isLength(password, { min: 6 }))
+            validationErrors.push({ field: "password", msg: "Minim 6 caractere." });
+        else if (!validator.isLength(password, { max: 50 }))
+            validationErrors.push({ field: "password", msg: "Maxim 50 caractere." });
 
-    // // const data = { email: req.query.email };
-    // //const errors2 = [{ msg: "This is a test2!" }];
+        // confirm password
+        if (validator.isEmpty(confirmPassword))
+            validationErrors.push({ field: "confirmPassword", msg: "Câmp obligatoriu." });
+        else if (confirmPassword !== password)
+            validationErrors.push({ field: "confirmPassword", msg: "Parolele nu coincid." });
 
-    // // res.send(req.user);
-    // // return false;
-
-    // user.isActive = true;
-    // user.provider = "local";
-    // user.role = "admin";
-    // // user.createdBy = req.user.name;
-    // user.createdOn = new Date();
-    // // user.activationToken = uuid.v4();
-    // if (user.email) {
-    //     user.email = user.email.toLowerCase();
-    // }
-    // //user.status = 'waitingToBeActivated';
-
-    // userService.create(user, function(err, response) {
-    //     if (err) {
-    //         return handleError(res, err);
-    //     }
-    //     res.status(201).json(response.ops[0]);
-
-    //     // // send an email with an activationLink
-    //     // const from = user.email;
-    //     // const subject = "Activare cont";
-
-    //     // let tpl = "";
-    //     // tpl += '<p style="margin-bottom:30px;">Buna <strong>' + user.name + "</strong>,</p>";
-    //     // tpl += user.createdBy + " ti-a creat un cont de acces in aplicatie. ";
-    //     // tpl += "Pentru activarea acestuia, te rog sa folosesti link-ul de mai jos:";
-    //     // tpl +=
-    //     //     '<p><a href="' +
-    //     //     config.externalUrl +
-    //     //     "/activate/" +
-    //     //     user._id +
-    //     //     "?activationToken=" +
-    //     //     user.activationToken +
-    //     //     '">Activare cont</a></p>';
-    //     // tpl += '<p style="margin-top:30px">Acest email a fost generat automat.</p>';
-
-    //     // emailService.sendEmail(from, subject, tpl).then(
-    //     //     function(result) {
-    //     //         //res.status(201).json(response.ops[0]);
-    //     //     },
-    //     //     function(err) {
-    //     //         //handleError(res, err)
-    //     //     }
-    //     // );
-    // });
+        return validationErrors;
+    } catch (error) {
+        throw new Error(error.message); // re-throw the error
+    }
 };
 
 /**
@@ -248,23 +250,63 @@ exports.remove = function(req, res) {
 /**
  * Change a users password
  */
-exports.changePassword = async (req, res) => {
-    const userId = String(req.user._id); //without 'String' the result is an Object
-    const oldPass = String(req.body.oldPassword);
-    const newPass = String(req.body.newPassword);
+exports.getChangePassword = async (req, res) => {
+    // if (req.user) return res.redirect("/"); // already authenticated
 
-    const user = await userService.getOneById(userId);
+    let data = {};
+    const errors = req.flash("validationErrors"); // Get an array of flash messages by passing the key
 
-    if (authHelper.authenticate(oldPass, user.hashedPassword, user.salt)) {
-        user.salt = authHelper.makeSalt();
-        user.hashedPassword = authHelper.encryptPassword(newPass, user.salt);
-        delete user.password;
-
-        await userService.updateOne(user);
-        // if (err) return validationError(res, err);
-        res.redirect("/"); // for requests that come from server-side (Jade)
+    if (errors.length) {
+        // redirect from POST (with errors)
+        data = arrayHelper.arrayToObject(errors, "field");
     } else {
-        res.status(403).send("Forbidden");
+        // clean, new page
+        data.email = { hasAutofocus: true };
+    }
+    res.render("user/changePassword", { data, errors });
+};
+
+exports.postChangePassword = async (req, res) => {
+    // const userId = String(req.user._id); //without 'String' the result is an Object
+    const oldPassword = String(req.body.oldPassword);
+    const newPassword = String(req.body.newPassword);
+
+    // const user = await userService.getOneById(userId);
+
+    // const email = req.body.email;
+    // const password = req.body.password;
+
+    const validationErrors = [];
+
+    if (validator.isEmpty(oldPassword)) validationErrors.push({ field: "oldPassword", msg: "Câmp obligatoriu." });
+    if (!validator.isLength(oldPassword, { max: 50 }))
+        validationErrors.push({ field: "oldPassword", msg: "Maxim 50 caractere." });
+
+    if (validator.isEmpty(newPassword)) validationErrors.push({ field: "newPassword", msg: "Câmp obligatoriu." });
+    if (!validator.isLength(newPassword, { max: 50 }))
+        validationErrors.push({ field: "newPassword", msg: "Câmp obligatoriu." });
+
+    if (validationErrors.length) {
+        req.flash("validationErrors", validationErrors);
+        return res.redirect("/changepassword");
+    }
+
+    try {
+        // const { user, token } = await authService.login(email, password);
+        // // return res
+        // //     .status(200)
+        // //     .json({ user, token })
+        // //     .end();
+        // setCookies(req, res, token, user);
+        res.redirect("/");
+    } catch (error) {
+        // const validationErrors = [
+        //     { field: "email", val: email },
+        //     { field: "password", msg: error.message }
+        // ];
+        // req.flash("validationErrors", validationErrors);
+        return res.redirect("/changepassword");
+        // return res.status(401).json(error.message);
     }
 };
 
@@ -391,28 +433,3 @@ function setCookies(req, res, token, userProfile) {
 function signToken(id) {
     return jwt.sign({ _id: id }, config.session_secret, { expiresIn: 60 * 60 * 24 * 365 }); // in seconds
 }
-
-const getEmailError = async email => {
-    if (validator.isEmpty(email)) return "Camp obligatoriu.";
-    if (!validator.isLength(email, { max: 50 })) return "Maxim 50 caractere.";
-    if (!validator.isEmail(email)) return "Email invalid.";
-
-    const normalizedEmail = validator.normalizeEmail(email, { gmail_remove_dots: false });
-    const found = await userService.getOneByEmail(normalizedEmail);
-    if (found) return "Exista deja un cont cu acest email.";
-
-    return null;
-};
-
-const getPasswordError = async password => {
-    if (validator.isEmpty(password)) return "Camp obligatoriu.";
-    if (!validator.isLength(password, { min: 6 })) return "Minim 6 caractere.";
-    if (!validator.isLength(password, { max: 50 })) return "Maxim 50 caractere.";
-    return null;
-};
-
-const getConfirmPasswordError = async (password, confirmPassword) => {
-    if (validator.isEmpty(confirmPassword)) return "Camp obligatoriu.";
-    if (confirmPassword !== password) return "Parolele nu coincid.";
-    return null;
-};
