@@ -116,15 +116,17 @@ exports.getPresencePerStudent = async (req, res) => {
     let academicYear = "201920";
 
     let student = null;
-    let classIdByStudent = null;
+    let classMapByStudent = null;
     let cls = null;
-    [student, classIdByStudent] = await Promise.all([
+    let coursesWithPresence = null;
+    [student, classMapByStudent, coursesWithPresence] = await Promise.all([
         await personService.getPersonById(studentId),
-        await studentsAndClassesService.getClassIdByStudentId(academicYear, studentId)
+        await studentsAndClassesService.getClassMapByStudentId(academicYear, studentId),
+        await courseService.getCoursesByStudentId(studentId)
     ]);
 
-    if (classIdByStudent) {
-        cls = await classService.getClassById(classIdByStudent.classId);
+    if (classMapByStudent) {
+        cls = await classService.getClassById(classMapByStudent.classId);
     }
 
     if (!cls && student.academicYearRelatedInfo) {
@@ -133,10 +135,21 @@ exports.getPresencePerStudent = async (req, res) => {
         // overwrite the existing class and academicYear
         if (academicYears.length > 0) {
             academicYear = academicYears.sort()[0];
-            classIdByStudent = await studentsAndClassesService.getClassIdByStudentId(academicYear, studentId);
-            cls = await classService.getClassById(classIdByStudent.classId);
+            classMapByStudent = await studentsAndClassesService.getClassMapByStudentId(academicYear, studentId);
+            cls = await classService.getClassById(classMapByStudent.classId);
         }
     }
+
+    const classIdsPerIntervals = getClassIdsPerIntervals(classMapByStudent);
+
+    let allClassIdsForStudent = classIdsPerIntervals.map(x => x.classId);
+    allClassIdsForStudent = [...new Set(allClassIdsForStudent)]; // remove duplicates (if exists)
+
+    const allCoursesForStudent = await courseService.getCoursesByClassIds(allClassIdsForStudent);
+
+    const coursesDateByDate = getCoursesDateByDate(classIdsPerIntervals, allCoursesForStudent);
+
+    const presencesPerCourses = getPresencesPerCourses(coursesDateByDate, studentId, coursesWithPresence);
 
     // add "shortName" (e.g.  "Vali M.")
     student.shortName = studentHelper.getShortNameForStudent(student);
@@ -183,15 +196,25 @@ exports.getPresencePerStudent = async (req, res) => {
         }
     });
 
+    totalCourses = presencesPerCourses.length;
+    totalPresences = presencesPerCourses.filter(x => x.isPresent).length;
+
     let totalPresencesAsPercent = 0;
     if (totalCourses) {
         totalPresencesAsPercent = Math.round((totalPresences * 100) / totalCourses);
     }
 
     const data = {
+        // coursesWithPresence,
+        classIdsPerIntervals,
+        allClassIdsForStudent,
+        //coursesDateByDate,
+        presencesPerCourses,
+
+        allCoursesForStudent,
         student,
         class: cls,
-        courses,
+        // courses,
         totalCourses,
         totalPresences,
         totalPresencesAsPercent
@@ -209,3 +232,92 @@ const sortByPresence = (a, b) =>
             ? 1
             : -1
         : 1;
+
+const getClassIdsPerIntervals = classMapByStudent => {
+    let allClassIdsWithStartDates = [
+        // we know the first element
+        { startDate: classMapByStudent.startDateInClass, classId: classMapByStudent.classId }
+    ];
+    if (classMapByStudent.previousClassMaps) {
+        classMapByStudent.previousClassMaps.forEach(cm => {
+            if (!allClassIdsWithStartDates.find(x => x.startDate === cm.startDateInClass)) {
+                allClassIdsWithStartDates.push({
+                    startDate: cm.startDateInClass,
+                    classId: cm.classId
+                });
+            }
+        });
+    }
+
+    // sort by startDate
+    allClassIdsWithStartDates = allClassIdsWithStartDates.sort((a, b) => (a.startDate > b.startDate ? 1 : -1));
+
+    const classIdsPerIntervals = [];
+    const length = allClassIdsWithStartDates.length;
+    if (length > 0) {
+        for (let i = 0; i < length; i++) {
+            classIdsPerIntervals.push({
+                startDate: allClassIdsWithStartDates[i].startDate,
+                endDate: i == length - 1 ? "2999-12-12" : allClassIdsWithStartDates[i + 1].startDate,
+                classId: allClassIdsWithStartDates[i].classId
+            });
+        }
+    }
+    // return format:
+    // [
+    //     {
+    //         startDate: "2019-09-28",
+    //         endDate: "2019-10-12",
+    //         classId: "5d92dba4a0da913a67b9a712"
+    //     },
+    //     {
+    //         startDate: "2019-10-12",
+    //         endDate: "2999-12-12",
+    //         classId: "5d92db9ba0da913a67b9a711"
+    //     }
+    // ];
+    return classIdsPerIntervals;
+};
+
+const getCoursesDateByDate = (classIdsPerIntervals, allCoursesForStudent) => {
+    const coursesDateByDate = [];
+    classIdsPerIntervals.forEach(classIdPerInterval => {
+        const courses = allCoursesForStudent.filter(
+            x =>
+                x.class.id === classIdPerInterval.classId &&
+                x.date >= classIdPerInterval.startDate &&
+                x.date < classIdPerInterval.endDate
+        );
+        coursesDateByDate.push(...courses);
+    });
+    // returns a list of courses based on the class that the student belongs in a certain period
+    return coursesDateByDate;
+};
+
+const getPresencesPerCourses = (coursesDateByDate, studentId, coursesWithPresence) => {
+    const presencesPerCourses = [];
+    coursesDateByDate = coursesDateByDate.filter(x => !x.noCourse); // ignore vacations etc
+    coursesDateByDate.forEach(courseOriginal => {
+        //console.log(courseOriginal.date);
+        const courseWithPresence = coursesWithPresence.find(
+            x => x.date === courseOriginal.date // || x.course === courseOriginal.course
+        );
+        // console.log(courseWithPresence && courseWithPresence.date + " --- " + (courseOriginal && courseOriginal.date));
+        // console.log("--------------------");
+        const isPresent = !!courseWithPresence;
+        const course = isPresent ? courseWithPresence : courseOriginal;
+
+        const presencesPerCourse = {
+            dateAsString: dateTimeHelper.getStringFromStringNoDay(course.date),
+            isPresent,
+            courseNumber: course.course,
+            courseId: course._id,
+            description: course.description,
+            classId: course.class.id,
+            className: course.class.name
+        };
+
+        presencesPerCourses.push(presencesPerCourse);
+    });
+    return presencesPerCourses;
+};

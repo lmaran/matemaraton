@@ -14,7 +14,7 @@ exports.getStudentsIdsPerClassId = async classId => {
     return result.map(x => x.studentId);
 };
 
-exports.getClassIdByStudentId = async (academicYear, studentId) => {
+exports.getClassMapByStudentId = async (academicYear, studentId) => {
     const db = await mongoHelper.getDb();
     return db.collection(studentsAndClassesCollection).findOne({ academicYear, studentId });
 };
