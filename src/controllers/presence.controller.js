@@ -23,6 +23,16 @@ exports.getPresencePerClass = async (req, res) => {
             // prevent adding a null value in this list
             acc = acc.concat(course.studentsIds);
         }
+        if (course.studentsFromOtherClasses) {
+            const otherStudentsIds = course.studentsFromOtherClasses.map(x => x.studentId);
+            // console.log("otherStudentsIds");
+            // console.log(otherStudentsIds);
+            acc = acc.concat(otherStudentsIds);
+        }
+        // if (course.date === "2019-11-26") {
+        //     console.log(course.class.name);
+        //     console.log(acc);
+        // }
         return acc;
     }, []);
 
@@ -31,6 +41,7 @@ exports.getPresencePerClass = async (req, res) => {
 
     // deduplicate studentsIds
     const allUniqueStudentsIds = [...new Set(allStudentsIds)];
+    // console.log(allUniqueStudentsIds);
 
     // get details for each student
     let students = await personService.getPersonsByIds(allUniqueStudentsIds);
@@ -149,7 +160,7 @@ exports.getPresencePerStudent = async (req, res) => {
 
     const coursesDateByDate = getCoursesDateByDate(classIdsPerIntervals, allCoursesForStudent);
 
-    const presencesPerCourses = getPresencesPerCourses(coursesDateByDate, studentId, coursesWithPresence);
+    const presencesPerStudent = getPresencesPerStudent(coursesDateByDate, studentId, coursesWithPresence, cls._id);
 
     // add "shortName" (e.g.  "Vali M.")
     student.shortName = studentHelper.getShortNameForStudent(student);
@@ -196,8 +207,8 @@ exports.getPresencePerStudent = async (req, res) => {
         }
     });
 
-    totalCourses = presencesPerCourses.length;
-    totalPresences = presencesPerCourses.filter(x => x.isPresent).length;
+    totalCourses = presencesPerStudent.length;
+    totalPresences = presencesPerStudent.filter(x => x.isPresent).length;
 
     let totalPresencesAsPercent = 0;
     if (totalCourses) {
@@ -205,16 +216,13 @@ exports.getPresencePerStudent = async (req, res) => {
     }
 
     const data = {
-        // coursesWithPresence,
+        coursesWithPresence,
         classIdsPerIntervals,
         allClassIdsForStudent,
-        //coursesDateByDate,
-        presencesPerCourses,
-
-        allCoursesForStudent,
+        coursesDateByDate,
+        presencesPerStudent,
         student,
         class: cls,
-        // courses,
         totalCourses,
         totalPresences,
         totalPresencesAsPercent
@@ -294,30 +302,50 @@ const getCoursesDateByDate = (classIdsPerIntervals, allCoursesForStudent) => {
     return coursesDateByDate;
 };
 
-const getPresencesPerCourses = (coursesDateByDate, studentId, coursesWithPresence) => {
-    const presencesPerCourses = [];
+const getPresencesPerStudent = (coursesDateByDate, studentId, coursesWithPresence, lastClassId) => {
+    const presencesPerStudent = [];
     coursesDateByDate = coursesDateByDate.filter(x => !x.noCourse); // ignore vacations etc
     coursesDateByDate.forEach(courseOriginal => {
-        //console.log(courseOriginal.date);
-        const courseWithPresence = coursesWithPresence.find(
-            x => x.date === courseOriginal.date // || x.course === courseOriginal.course
-        );
-        // console.log(courseWithPresence && courseWithPresence.date + " --- " + (courseOriginal && courseOriginal.date));
-        // console.log("--------------------");
-        const isPresent = !!courseWithPresence;
-        const course = isPresent ? courseWithPresence : courseOriginal;
+        let isPresent = false;
+        let course = courseOriginal;
+        const courseOriginalId = courseOriginal._id.toString();
+        coursesWithPresence.forEach(courseWithPresence => {
+            if (courseWithPresence._id.toString() === courseOriginalId) {
+                isPresent = true;
+                course = courseWithPresence;
+            } else {
+                if (courseWithPresence.studentsFromOtherClasses) {
+                    courseWithPresence.studentsFromOtherClasses.forEach(other => {
+                        if (other.studentId === studentId && other.creditForThisCourseId === courseOriginalId) {
+                            isPresent = true;
+                            course = courseWithPresence;
+                        }
+                    });
+                }
+            }
+        });
 
-        const presencesPerCourse = {
+        // "8 - Grupa 2" -> "Grupa 2"
+        let className = course.class.name;
+        const classNameParts = className.split("-");
+        if (classNameParts.length > 1) {
+            className = classNameParts[classNameParts.length - 1].trim();
+        }
+
+        const presencePerCourse = {
+            date: course.date,
             dateAsString: dateTimeHelper.getStringFromStringNoDay(course.date),
             isPresent,
             courseNumber: course.course,
             courseId: course._id,
             description: course.description,
             classId: course.class.id,
-            className: course.class.name
+            className,
+            isTemporaryCreditFromOtherCourse: course._id.toString() !== courseOriginalId,
+            isCreditFromOtherClass: lastClassId.toString() !== course.class.id
         };
 
-        presencesPerCourses.push(presencesPerCourse);
+        presencesPerStudent.push(presencePerCourse);
     });
-    return presencesPerCourses;
+    return presencesPerStudent.sort((a, b) => (a.date < b.date ? 1 : -1));
 };

@@ -21,7 +21,7 @@ exports.getCoursesByStudentId = async studentId => {
     const db = await mongoHelper.getDb();
     return db
         .collection(coursesCollection)
-        .find({ studentsIds: studentId })
+        .find({ $or: [{ studentsIds: studentId }, { "studentsFromOtherClasses.studentId": studentId }] })
         .toArray();
 };
 
