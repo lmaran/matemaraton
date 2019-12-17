@@ -12,7 +12,7 @@ const common = {
     port: process.env.PORT || 1416,
     mongo_uri: process.env.MONGO_URI,
     mongo_dbName: process.env.MONGO_DB_NAME,
-    mailgun_apiKey: process.env.MAILGUN_APIKEY,
+    mailgun_key: process.env.MAILGUN_KEY,
     mailgun_domain: "mg.matemaraton.ro",
     mailgun_host: "api.eu.mailgun.net",
     mailgun_defaultSender: "MateMaraton <admin@matemaraton.ro>",

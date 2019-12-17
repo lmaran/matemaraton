@@ -5,7 +5,7 @@ const LogDetail = constants.LogDetail;
 const config = {
     mongo_uri: "mongodb://localhost/matemaraton-dev",
     mongo_dbName: "matemaraton-dev",
-    mailgun_apiKey: "<mailgun_apiKey>",
+    mailgun_key: "<mailgun_key>",
     session_secret: "node-fullstack-secret",
     rollbarToken: "<rollbarToken>",
     logglyToken: "<logglyToken>",
