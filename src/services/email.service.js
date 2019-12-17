@@ -2,7 +2,7 @@ const mailgun = require("mailgun-js");
 const config = require("../config");
 
 const mg = mailgun({
-    apiKey: config.mailgun_apiKey,
+    apiKey: config.mailgun_key,
     domain: config.mailgun_domain,
     host: config.mailgun_host
 });
