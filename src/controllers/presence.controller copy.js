@@ -17,93 +17,27 @@ exports.getPresencePerClass = async (req, res) => {
 
     const academicYear = cls.academicYear;
 
-    let allStudentsIdsObj = {};
-    // let allCoursesWithStudents = [];
-
-    courses.forEach(course => {
-        // if (course.studentsIds) {
-        //     course.studentsIds.forEach(studentId => {
-        //         const student = studentsObj[studentId];
-        //         if (student) {
-        //             student.totalPresences = (student.totalPresences || 0) + 1;
-        //         }
-        //     });
-        // }
-        course.dateAsString = dateTimeHelper.getStringFromStringNoDay(course.date);
-        let allStudentsIdsPerCourse = course.studentsIds || [];
+    // get a list of all (unique) students with at least one presence in this class
+    let allStudentsIds = courses.reduce((acc, course) => {
+        if (course.studentsIds) {
+            // prevent adding a null value in this list
+            acc = acc.concat(course.studentsIds);
+        }
         if (course.studentsFromOtherClasses) {
             const otherStudentsIds = course.studentsFromOtherClasses.map(x => x.studentId);
-            allStudentsIdsPerCourse = allStudentsIdsPerCourse.concat(otherStudentsIds);
+            // console.log("otherStudentsIds");
+            // console.log(otherStudentsIds);
+            acc = acc.concat(otherStudentsIds);
         }
-        course.allStudentsIds = allStudentsIdsPerCourse;
-    });
-
-    const allCoursesWithStudents = courses.reduce((acc, course) => {
-        let presences = [];
-        if (course.studentsIds) {
-            presences = course.studentsIds.map(studentId => ({
-                studentId
-            }));
-        }
-
-        if (course.studentsFromOtherClasses) {
-            presences = presences.concat(
-                course.studentsFromOtherClasses.map(x => ({
-                    studentId: x.studentId,
-                    isTemporaryPresenceFromOtherCourse: true,
-                    presenceForThisCourseId: x.creditForThisCourseId
-                }))
-            );
-        }
-
-        // const presences
-
-        const newCourse = {
-            _id: course.id,
-            dateAsString: dateTimeHelper.getStringFromStringNoDay(course.date),
-            course: course.course,
-            noCourse: course.noCourse,
-            noCourseReason: course.noCourseReason,
-            description: course.description,
-            presences
-        };
-
-        acc.push(newCourse);
+        // if (course.date === "2019-11-26") {
+        //     console.log(course.class.name);
+        //     console.log(acc);
+        // }
         return acc;
     }, []);
 
-    const allStudentsIds = [];
-    // const allStudentsIds2 = allCoursesWithStudents.reduce((acc, courseWitStudents) => {
-    //     console.log(courseWitStudents.course);
-    //     acc = acc.concat(courseWitStudents.presences.map(x => x.studentId));
-    // }, []);
-    allCoursesWithStudents.forEach(x => {
-        console.log(x.course + " " + x.dateAsString + " " + x.presences.length);
-    });
-    let allStudentsIdsUnic = new Set();
-    allCoursesWithStudents.forEach(x => {
-        x.presences.forEach(y => {
-            allStudentsIdsUnic.add(y.studentId);
-        });
-    });
-
-    allStudentsIdsUnic = [...allStudentsIdsUnic];
-
-    // // get a list of all (unique) students with at least one presence in this class
-    // let allStudentsIds = courses.reduce((acc, course) => {
-    //     if (course.studentsIds) {
-    //         // prevent adding a null value in this list
-    //         acc = acc.concat(course.studentsIds);
-    //     }
-    //     if (course.studentsFromOtherClasses) {
-    //         const otherStudentsIds = course.studentsFromOtherClasses.map(x => x.studentId);
-    //         acc = acc.concat(otherStudentsIds);
-    //     }
-    //     return acc;
-    // }, []);
-
-    // // consider also students defined for class
-    // allStudentsIds = allStudentsIds.concat(studentsIds);
+    // consider also students defined for class
+    allStudentsIds = allStudentsIds.concat(studentsIds);
 
     // deduplicate studentsIds
     const allUniqueStudentsIds = [...new Set(allStudentsIds)];
@@ -126,49 +60,66 @@ exports.getPresencePerClass = async (req, res) => {
     // count the presences for each student in class
     // we have to count the presences in a separate loop, otherwise cannot sort students by presence
     courses.forEach(course => {
-        // if (course.studentsIds) {
-        //     course.studentsIds.forEach(studentId => {
-        //         const student = studentsObj[studentId];
-        //         if (student) {
-        //             student.totalPresences = (student.totalPresences || 0) + 1;
-        //         }
-        //     });
-        // }
+        if (course.studentsIds) {
+            course.studentsIds.forEach(studentId => {
+                const student = studentsObj[studentId];
+                if (student) {
+                    student.totalPresences = (student.totalPresences || 0) + 1;
+                }
+            });
+        }
         course.dateAsString = dateTimeHelper.getStringFromStringNoDay(course.date);
     });
+
+    // apply a presenceCredit (if exists). E.g. Some students have additional presences from another class
+    if (cls.presenceCredits) {
+        cls.presenceCredits.forEach(presenceCredit => {
+            const student = studentsObj[presenceCredit.studentId];
+            if (student) {
+                student.totalPresences = (student.totalPresences || 0) + (presenceCredit.presenceCreditAmt || 0);
+            }
+        });
+    }
+
+    const totalActiveCourses = courses.filter(x => !x.noCourse).length; // ignore vacations etc
 
     // for each course, replace student Ids with student details
     courses.forEach(course => {
         if (course.studentsIds) {
-            course.students = course.studentsIds.reduce((acc, studentId) => {
-                const student = studentsObj[studentId];
-                if (student) {
-                    acc.push(studentsObj[studentId]);
-                }
-                return acc;
-            }, []);
-            // .sort(sortByPresence);
+            course.students = course.studentsIds
+                .reduce((acc, studentId) => {
+                    const student = studentsObj[studentId];
+                    if (student) {
+                        // for each student, add totalPresencesAsPercent
+                        student.totalPresencesAsPercent = Math.round(
+                            (student.totalPresences * 100) / totalActiveCourses
+                        );
+                        acc.push(student);
+                    }
+                    return acc;
+                }, [])
+                .sort(sortByPresence);
         }
     });
 
     const studentsInClass = studentsIds
         .reduce((acc, studentId) => {
             const student = studentsObj[studentId];
+            student.totalPresences = student.totalPresences || 0;
             acc.push(student);
             return acc;
         }, [])
         .sort(sortByPresence);
 
     const data = {
-        allCoursesWithStudents,
-        allStudentsIdsUnic
-        //allUniqueStudentsIds
-        // studentsInClass,
-        // class: cls,
-        // courses
+        allUniqueStudentsIds,
+        studentsInClass,
+        class: cls,
+        totalActiveCourses,
+        courses
     };
-    res.send(data);
-    //res.render("presence/presence-per-class", data);
+    //res.send(data);
+    res.render("presence/presence-per-class", data);
 };
 
 exports.getPresencePerStudent = async (req, res) => {

@@ -25,7 +25,7 @@
 {{/unless}}
 
 {{#each courses}}
-<div {{#if (gt @index 2)}} class="toggle-presence hidePresence" {{/if}}>
+<div>
 
     <h3 class="mb-0" {{#if noCourse}} class="text-muted" {{/if}}>{{dateAsString}} {{#if course}}- <a
             href="/cursuri/{{_id}}">curs
@@ -42,71 +42,8 @@
             {{#if gradeAndLetter}}
             ({{gradeAndLetter}})
             {{/if}}
-            {{#if (eq @../index 0)}}
-            - prezențe: {{totalPresences}} din {{../../totalActiveCourses}}
-            {{/if}}
         </li>
         {{/each}}
     </ul>
 </div>
 {{/each}}
-{{#if (gt totalActiveCourses 3)}}
-<a class="toggle-presence" href="/" style="font-size:1.2rem; vertical-align: bottom;">Vezi toate prezențele <i
-        class="fas fa-angle-double-right"></i></a>
-<a class="toggle-presence hidePresence" href="/" style="font-size:1.2rem; vertical-align: bottom;"><i
-        class="fas fa-angle-double-left"></i> Vezi doar primele prezențe </a>
-{{/if}}
-
-{{#if studentsInClass.length}}
-<h3 class="mt-5">Cumulat pe elevi: </h3>
-{{/if}}
-
-{{#each studentsInClass}}
-<div {{#if (gt @index 7)}} class="toggle-student hideStudent" {{/if}}>
-    <a href="/elevi/{{_id}}/prezenta">{{shortName}}</a>
-    {{#if gradeAndLetter}} ({{gradeAndLetter}}){{/if}} - prezențe: {{totalPresences}} din
-    {{../totalActiveCourses}} ({{totalPresencesAsPercent}}%)
-    <div class="progress mb-2">
-        <div class="progress-bar" role="progressbar" style="width: {{totalPresencesAsPercent}}%" aria-valuenow="25"
-            aria-valuemin="0" aria-valuemax="100"></div>
-    </div>
-</div>
-{{/each}}
-
-{{#if (gt studentsInClass.length 8)}}
-<div class="mb-5">
-    <a class="toggle-student" href="/" style="font-size:1.2rem">Vezi toți elevii <i
-            class="fas fa-angle-double-right"></i></a>
-    <a class="toggle-student hideStudent" href="/" style="font-size:1.2rem; vertical-align: bottom;"><i
-            class="fas fa-angle-double-left"></i> Vezi doar primii elevi </a>
-</div>
-{{/if}}
-
-
-{{#section 'script-after'}}
-<script>
-    (function () {
-        // DOM ready
-        $(function () {
-            // elements
-            var togglePresencesElem = $("a.toggle-presence");
-            var toggleStudentsElem = $("a.toggle-student");
-
-            // events
-            togglePresencesElem.click(togglePresences);
-            toggleStudentsElem.click(toggleStudents);
-        });
-
-        var togglePresences = function () {
-            event.preventDefault();
-            $(".toggle-presence").toggleClass("hidePresence");
-        }
-
-        var toggleStudents = function () {
-            event.preventDefault();
-            $(".toggle-student").toggleClass("hideStudent");
-        }
-
-    }())
-</script>
-{{/section}}
