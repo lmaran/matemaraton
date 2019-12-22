@@ -1,13 +1,3 @@
-<style>
-    .hidePresence {
-        display: none;
-    }
-
-    .hideStudent {
-        display: none;
-    }
-</style>
-
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</i></a></li>
@@ -20,7 +10,7 @@
 <h1>Prezența</h1>
 <h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2>
 
-{{#unless studentsInClass.length}}
+{{#unless courses.length}}
 <p>Nu exista date.</p>
 {{/unless}}
 
@@ -37,11 +27,10 @@
     {{/if}}
 
     <ul class="mb-5">
-        {{#each students}}
-        <li><a href="/elevi/{{_id}}/prezenta">{{shortName}}</a>
-            {{#if gradeAndLetter}}
-            ({{gradeAndLetter}})
-            {{/if}}
+        {{#each presences}}
+        <li><a href="/elevi/{{student._id}}/prezenta">{{student.shortName}}</a>
+            {{#if student.gradeAndLetter}}
+            ({{student.gradeAndLetter}}){{/if}}{{#if isTemporaryPresenceFromOtherCourse}}, temporar{{/if}}
         </li>
         {{/each}}
     </ul>

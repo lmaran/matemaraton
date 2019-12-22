@@ -25,6 +25,16 @@ exports.getCoursesByStudentId = async studentId => {
         .toArray();
 };
 
+exports.getCoursesByStudentIds = async studentIds => {
+    const db = await mongoHelper.getDb();
+    return db
+        .collection(coursesCollection)
+        .find({
+            $or: [{ studentsIds: { $in: studentIds } }, { "studentsFromOtherClasses.studentId": { $in: studentIds } }]
+        })
+        .toArray();
+};
+
 exports.getCoursesByClassIds = async classIds => {
     const db = await mongoHelper.getDb();
     return db
