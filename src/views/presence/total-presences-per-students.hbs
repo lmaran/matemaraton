@@ -9,3 +9,15 @@
 
 <h1>Total prezențe pe elevi</h1>
 <h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2>
+
+{{#each presencesInfo}}
+<div>
+    <a href="/elevi/{{student.id}}/prezenta">{{student.shortName}}</a>
+    {{#if student.gradeAndLetter}} ({{student.gradeAndLetter}}){{/if}} - prezențe: {{totalPresences}} din
+    {{totalCourses}} ({{totalPresencesAsPercent}}%)
+    <div class="progress mb-2">
+        <div class="progress-bar" role="progressbar" style="width: {{totalPresencesAsPercent}}%" aria-valuenow="25"
+            aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+</div>
+{{/each}}
