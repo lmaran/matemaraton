@@ -58,16 +58,24 @@ exports.getTotalPresencesPerStudents = async (req, res) => {
         const totalPresences = presencesPerStudent.filter(x => x.isPresent).length;
         const totalPresencesAsPercent = totalCourses ? Math.round((totalPresences * 100) / totalCourses) : 0;
 
+        let isDroppedOut = false;
+        if (
+            student.academicYearRelatedInfo &&
+            student.academicYearRelatedInfo[cls.academicYear] &&
+            student.academicYearRelatedInfo[cls.academicYear].droppedOut
+        ) {
+            isDroppedOut = true;
+        }
+
         presencesInfo.push({
             student: {
                 id: classMapByStudent.studentId,
                 // add "shortName" (e.g.  "Vali M.")
                 shortName: studentHelper.getShortNameForStudent(student),
                 // add "gradeAndLetter" (e.g.  "8A")
-                gradeAndLetter: studentHelper.getGradeAndLetterForStudent(student, cls.academicYear)
+                gradeAndLetter: studentHelper.getGradeAndLetterForStudent(student, cls.academicYear),
+                isDroppedOut
             },
-            studentId: classMapByStudent.studentId,
-            studentName: student.firstName + " " + student.lastName,
             // classIdsPerIntervals,
             // coursesDateByDateForStudent,
             // presencesPerStudent,
@@ -86,7 +94,8 @@ exports.getTotalPresencesPerStudents = async (req, res) => {
         //allStudentsIdsPerClass,
         allUniqueClassIdsForAllStudents,
         //allCoursesForStudents,
-        presencesInfo
+        presencesInfoForActiveStudents: presencesInfo.filter(x => !x.student.isDroppedOut),
+        presencesInfoForInactiveStudents: presencesInfo.filter(x => x.student.isDroppedOut)
         // class: cls
     };
     //res.send(data);
