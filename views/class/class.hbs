@@ -11,11 +11,11 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</i></a></li>
-        <li class="breadcrumb-item active" aria-current="page">Clasa: {{class.grade}}-{{class.name}}</li>
+        <li class="breadcrumb-item active" aria-current="page">Cls.{{class.grade}}, {{class.name}}</li>
     </ol>
 </nav>
 
-<h1>Clasa a {{class.grade}}-a, {{class.name}}</h1>
+<h1>Cls.{{class.grade}}, {{class.name}}</h1>
 {{!-- <h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2> --}}
 
 <ul>
@@ -23,6 +23,13 @@
     <li><a href="/clase/{{class._id}}/prezenta">Prezența</a></li>
     <li><a href="/clase/{{class._id}}/cursuri">Cursuri <span class="text-muted">(poze de pe tablă)</span></a></li>
     {{!-- <li>Cursuri <span class="text-muted">(poze de pe tabla, in curand)</span></li> --}}
-    <li>Teme <span class="text-muted">(în curând)</span> </li>
+    {{!-- <li>Teme <span class="text-muted">(în curând)</span> </li> --}}
 
+</ul>
+
+<hr />
+<h5>Rapoarte</h5>
+
+<ul>
+    <li><a href="/clase/{{class._id}}/total-prezente-pe-elevi">Total prezențe (cumulat pe elevi)</a> </li>
 </ul>

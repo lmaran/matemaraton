@@ -7,10 +7,12 @@ const studentsAndClassesService = require("../services/studentsAndClasses.servic
 exports.getStudentsPerClass = async (req, res) => {
     const classId = req.params.classId;
 
-    const [cls, studentsIds] = await Promise.all([
+    const [cls, studentsMapByClass] = await Promise.all([
         await classService.getClassById(classId),
-        await studentsAndClassesService.getStudentsIdsPerClassId(classId)
+        await studentsAndClassesService.getStudentsMapByClassId(classId)
     ]);
+
+    const studentsIds = studentsMapByClass.map(x => x.studentId);
 
     let students = await personService.getPersonsByIds(studentsIds);
 

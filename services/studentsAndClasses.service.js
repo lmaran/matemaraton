@@ -2,34 +2,21 @@ const mongoHelper = require("../helpers/mongo.helper");
 
 const studentsAndClassesCollection = "studentsAndClasses";
 
-exports.getStudentsIdsPerClassId = async classId => {
+exports.getStudentsMapByClassId = async classId => {
     const db = await mongoHelper.getDb();
-    const result = await db
+    return db
         .collection(studentsAndClassesCollection)
         .find({ classId })
         .toArray();
 
     // flatten the result
     // console.log(result);
-    return result.map(x => x.studentId);
+    // return result.map(x => x.studentId);
 };
 
 exports.getClassMapByStudentId = async (academicYear, studentId) => {
     const db = await mongoHelper.getDb();
     return db.collection(studentsAndClassesCollection).findOne({ academicYear, studentId });
-};
-
-// exports.getAllClassesIdPerStudent = async studentId => {
-//     const db = await mongoHelper.getDb();
-//     return await db
-//         .collection(collection)
-//         .find({ studentId: studentId })
-//         .toArray();
-// };
-
-exports.getStudentAndClassByStudentIdAndYear = async (studentId, academicYear) => {
-    const db = await mongoHelper.getDb();
-    return db.collection(studentsAndClassesCollection).findOne({ "student.id": studentId, academicYear });
 };
 
 exports.insertManyStudentsAndClasses = async studentsAndClasses => {
