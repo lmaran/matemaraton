@@ -1,15 +1,10 @@
-const jwt = require("jsonwebtoken");
 const validator = require("validator");
 const userService = require("../services/user.service");
 const authService = require("../services/auth.service");
 const emailService = require("../services/email.service");
-const config = require("../config");
+// const config = require("../config");
 const arrayHelper = require("../helpers/array.helper");
 const cookieHelper = require("../helpers/cookie.helper");
-
-const validationError = function(res, err) {
-    return res.status(422).json(err);
-};
 
 exports.checkSendEmail = async (req, res) => {
     const data = {
@@ -50,58 +45,31 @@ exports.getLogin = (req, res) => {
 exports.postLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const validationErrors = await getLoginValidationErrors(email, password);
-
+        // handle static validation errors
+        const validationErrors = getLoginStaticValidationErrors(email, password);
         if (validationErrors.length) {
-            const initialValues = [{ field: "email", val: email }]; // keep old values at page reload
-
-            req.flash("validationErrors", validationErrors);
-            req.flash("initialValues", initialValues);
-
-            return res.redirect("/login");
+            return flashAndReloadLoginPage(req, res, validationErrors);
         }
 
-        // we expect here that the user exists and the psw is correct
-        const userRecord = await userService.getOneByEmail(email.toLowerCase());
-        const token = authService.generateJWT(userRecord);
+        const token = await authService.login(email, password);
 
         cookieHelper.setCookies(res, token);
         res.redirect("/");
-    } catch (error) {
-        // @TODO display an error message (without details) and log the details
-        return res.status(500).json(error.message);
-    }
-};
-
-const getLoginValidationErrors = async (email, password) => {
-    try {
+    } catch (err) {
+        // handle dynamic validation errors
         const validationErrors = [];
-
-        // email
-        if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu." });
-        else if (!validator.isLength(email, { max: 50 }))
-            validationErrors.push({ field: "email", msg: "Maxim 50 caractere" });
-
-        // password
-        if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu." });
-        else if (!validator.isLength(password, { max: 50 }))
-            validationErrors.push({ field: "password", msg: "Maxim 50 caractere" });
-
-        // credentials (email and password)
-        const emailAndPasswordAreValid = !validationErrors.find(x => x.field === "email" || x.field === "password");
-        if (emailAndPasswordAreValid) {
-            const userRecord = await userService.getOneByEmail(email.toLowerCase());
-            if (!userRecord) {
-                validationErrors.push({ field: "email", msg: "Email necunoscut" });
-            } else {
-                if (!(await authService.matchPassword(password, userRecord.password))) {
-                    validationErrors.push({ field: "password", msg: "Parolă incorectă" });
-                }
-            }
+        if (err.message === "UnknownEmail") {
+            validationErrors.push({ field: "email", msg: "Email necunoscut" });
+        } else if (err.message === "IncorrectPassword") {
+            validationErrors.push({ field: "password", msg: "Parolă incorectă" });
         }
-        return validationErrors;
-    } catch (error) {
-        throw new Error(error.message); // re-throw the error
+
+        if (validationErrors.length) {
+            return flashAndReloadLoginPage(req, res, validationErrors);
+        }
+
+        // @TODO display an error message (without details) and log the details
+        return res.status(500).json(err.message);
     }
 };
 
@@ -146,76 +114,32 @@ exports.getSignup = (req, res) => {
 
 exports.postSignup = async function(req, res) {
     try {
-        const validationErrors = await getSignupValidationErrors(req.body);
+        const { email, password, confirmPassword } = req.body;
 
-        const { email, password } = req.body;
-
+        // handle static validation errors
+        const validationErrors = getSignupStaticValidationErrors(email, password, confirmPassword);
         if (validationErrors.length) {
-            // keep old values at page reload
-            const initialValues = [
-                { field: "email", val: email },
-                { field: "password", val: password }
-            ];
-
-            req.flash("validationErrors", validationErrors); // Set a flash message by passing the key, followed by the value
-            req.flash("initialValues", initialValues);
-
-            return res.redirect("/signup");
+            return flashAndReloadSignupPage(req, res, validationErrors);
         }
 
-        const firstName = "My First Name";
-        const lastName = "My Last Name";
-
-        const hashedPassword = await authService.getHashedPassword(password);
-
-        const response = await userService.create({
-            firstName,
-            lastName,
-            email: email.toLowerCase(),
-            password: hashedPassword,
-            createdOn: new Date()
-        });
-
-        const userRecord = response.ops[0];
-        const token = authService.generateJWT(userRecord);
+        const token = await authService.signup(email, password, confirmPassword);
 
         cookieHelper.setCookies(res, token);
         res.redirect("/");
-    } catch (error) {
-        // @TODO display an error message (without details) and log the details
-        return res.status(500).json(error.message);
-    }
-};
+    } catch (err) {
+        // handle dynamic validation errors
 
-const getSignupValidationErrors = async body => {
-    try {
-        const { email, password, confirmPassword } = body;
         const validationErrors = [];
+        if (err.message === "EmailAlreadyExists") {
+            validationErrors.push({ field: "email", msg: "Există deja un cont cu acest email." });
+        }
 
-        // email
-        if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu." });
-        else if (!validator.isLength(email, { max: 50 }))
-            validationErrors.push({ field: "email", msg: "Maxim 50 caractere." });
-        else if (!validator.isEmail(email)) validationErrors.push({ field: "email", msg: "Email invalid." });
-        else if (await userService.getOneByEmail(email))
-            validationErrors.push({ field: "email", msg: "Exista deja un cont cu acest email." });
+        if (validationErrors.length) {
+            return flashAndReloadSignupPage(req, res, validationErrors);
+        }
 
-        // password
-        if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu." });
-        else if (!validator.isLength(password, { min: 6 }))
-            validationErrors.push({ field: "password", msg: "Minim 6 caractere." });
-        else if (!validator.isLength(password, { max: 50 }))
-            validationErrors.push({ field: "password", msg: "Maxim 50 caractere." });
-
-        // confirm password
-        if (validator.isEmpty(confirmPassword))
-            validationErrors.push({ field: "confirmPassword", msg: "Câmp obligatoriu." });
-        else if (confirmPassword !== password)
-            validationErrors.push({ field: "confirmPassword", msg: "Parolele nu coincid." });
-
-        return validationErrors;
-    } catch (error) {
-        throw new Error(error.message); // re-throw the error
+        // @TODO display an error message (without details) and log the details
+        return res.status(500).json(err);
     }
 };
 
@@ -237,14 +161,11 @@ exports.update = function(req, res) {
 
     user.modifiedBy = req.user.name;
     user.modifiedOn = new Date();
-    if (user.email) {
-        user.email = user.email.toLowerCase();
-    }
 
     userService.updatePartial(user, function(err, response) {
         // replacing the entire object will delete the psw+salt
         if (err) {
-            return handleError(res, err);
+            return res.status(500).send(err);
         }
         if (!response.value) {
             res.sendStatus(404); // not found
@@ -262,7 +183,7 @@ exports.remove = function(req, res) {
     const id = req.params.id;
     userService.remove(id, function(err) {
         if (err) {
-            return handleError(res, err);
+            return res.status(500).send(err);
         }
         res.sendStatus(204);
     });
@@ -291,11 +212,6 @@ exports.postChangePassword = async (req, res) => {
     // const userId = String(req.user._id); //without 'String' the result is an Object
     const oldPassword = String(req.body.oldPassword);
     const newPassword = String(req.body.newPassword);
-
-    // const user = await userService.getOneById(userId);
-
-    // const email = req.body.email;
-    // const password = req.body.password;
 
     const validationErrors = [];
 
@@ -344,13 +260,6 @@ exports.me = function(req, res, next) {
     });
 };
 
-/**
- * Authentication callback
- */
-exports.authCallback = function(req, res) {
-    res.redirect("/");
-};
-
 exports.saveActivationData = function(req, res) {
     const userId = req.params.id;
     const psw = req.body.password;
@@ -364,10 +273,10 @@ exports.saveActivationData = function(req, res) {
         user.modifiedOn = new Date();
 
         userService.update(user, function(err) {
-            if (err) return validationError(res, err);
+            if (err) return res.status(422).json(err);
 
             // keep user as authenticated
-            const token = signToken(user._id, user.role);
+            const token = "signToken(user._id, user.role)";
 
             cookieHelper.setCookies(res, token);
 
@@ -392,29 +301,69 @@ exports.activateUser = function(req, res, next) {
     });
 };
 
-exports.checkEmail = function(req, res) {
-    const email = req.params.email;
+const getSignupStaticValidationErrors = (email, password, confirmPassword) => {
+    const validationErrors = [];
 
-    userService.getByValue("email", email, null, function(err, user) {
-        if (err) {
-            return handleError(res, err);
-        }
+    // email
+    if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu." });
+    else if (!validator.isLength(email, { max: 50 }))
+        validationErrors.push({ field: "email", msg: "Maxim 50 caractere." });
+    else if (!validator.isEmail(email)) validationErrors.push({ field: "email", msg: "Email invalid." });
+    // else if (await userService.getOneByEmail(email))
+    //     validationErrors.push({ field: "email", msg: "Exista deja un cont cu acest email." });
 
-        if (user) {
-            res.send(true);
-        } else {
-            res.send(false);
-        }
-    });
+    // password
+    if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu." });
+    else if (!validator.isLength(password, { min: 6 }))
+        validationErrors.push({ field: "password", msg: "Minim 6 caractere." });
+    else if (!validator.isLength(password, { max: 50 }))
+        validationErrors.push({ field: "password", msg: "Maxim 50 caractere." });
+
+    // confirm password
+    if (validator.isEmpty(confirmPassword))
+        validationErrors.push({ field: "confirmPassword", msg: "Câmp obligatoriu." });
+    else if (confirmPassword !== password)
+        validationErrors.push({ field: "confirmPassword", msg: "Parolele nu coincid." });
+
+    return validationErrors;
 };
 
-function handleError(res, err) {
-    return res.status(500).send(err);
-}
+const getLoginStaticValidationErrors = (email, password) => {
+    const validationErrors = [];
 
-/**
- * Returns a jwt token signed by the app secret
- */
-function signToken(id) {
-    return jwt.sign({ _id: id }, config.session_secret, { expiresIn: 60 * 60 * 24 * 365 }); // in seconds
-}
+    // email
+    if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu." });
+    else if (!validator.isLength(email, { max: 50 }))
+        validationErrors.push({ field: "email", msg: "Maxim 50 caractere" });
+
+    // password
+    if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu." });
+    else if (!validator.isLength(password, { max: 50 }))
+        validationErrors.push({ field: "password", msg: "Maxim 50 caractere" });
+
+    return validationErrors;
+};
+
+const flashAndReloadSignupPage = (req, res, validationErrors) => {
+    const { email, password, confirmPassword } = req.body;
+    const initialValues = [
+        { field: "email", val: email },
+        { field: "password", val: password },
+        { field: "confirmPassword", val: confirmPassword }
+    ];
+    // keep old values at page reload by setting a flash message (a key, followed by a value)
+    req.flash("validationErrors", validationErrors);
+    req.flash("initialValues", initialValues);
+    return res.redirect("/signup");
+};
+
+const flashAndReloadLoginPage = (req, res, validationErrors) => {
+    const { email, password } = req.body;
+    const initialValues = [
+        { field: "email", val: email },
+        { field: "password", val: password }
+    ];
+    req.flash("validationErrors", validationErrors);
+    req.flash("initialValues", initialValues);
+    return res.redirect("/login");
+};

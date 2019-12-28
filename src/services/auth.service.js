@@ -1,14 +1,38 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const config = require("../config");
+const userService = require("../services/user.service");
 
-exports.getHashedPassword = async psw => await bcrypt.hash(psw, 10);
+exports.login = async (email, password) => {
+    const userRecord = await userService.getOneByEmail(email);
 
-exports.matchPassword = async (textPassword, hashedPassword) => {
-    return await bcrypt.compare(textPassword, hashedPassword);
+    if (!userRecord) {
+        throw new Error("UnknownEmail");
+    } else if (!(await bcrypt.compare(password, userRecord.password))) {
+        throw new Error("IncorrectPassword");
+    } else {
+        const token = generateJWT(userRecord);
+        return token;
+    }
 };
 
-exports.generateJWT = user => {
+exports.signup = async (email, password) => {
+    if (await userService.getOneByEmail(email)) throw new Error("EmailAlreadyExists");
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const response = await userService.create({
+        firstName: "My First Name",
+        lastName: "My Last Name",
+        email,
+        password: hashedPassword
+    });
+
+    const userRecord = response.ops[0];
+    const token = generateJWT(userRecord);
+    return token;
+};
+
+const generateJWT = user => {
     return jwt.sign(
         {
             data: {
@@ -23,6 +47,7 @@ exports.generateJWT = user => {
     );
 };
 
-exports.getJWTPayload = async jwt => {
-    return await jwt.verify(jwt, config.session_secret);
+exports.getJwtPayload = async token => {
+    const payload = await jwt.verify(token, config.session_secret);
+    return payload;
 };

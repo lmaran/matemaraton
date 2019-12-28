@@ -19,7 +19,7 @@
             <label for="password" class="col-md-3 col-form-label required">Parola</label>
             <div class="col-md-7">
                 <input type="password" name="password" id="password"
-                    class="form-control {{#if errors.password}}is-invalid {{/if}}"
+                    class="form-control {{#if errors.password}}is-invalid {{/if}}" value="{{data.password.val}}"
                     {{#if uiData.password.hasAutofocus}}autofocus {{/if}} />
                 <div class="invalid-feedback">{{errors.password.msg}}</div>
             </div>

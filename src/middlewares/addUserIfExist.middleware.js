@@ -12,7 +12,7 @@ exports.addUserIfExist = async (req, res, next) => {
         const token = req.cookies && req.cookies.access_token;
         if (!token) return next();
         // const jwtPayload = await jwt.verify(token, config.session_secret);
-        const jwtPayload = await authService.getJwtPaylod(token);
+        const jwtPayload = await authService.getJwtPayload(token);
 
         // Attach user to request
         const userId = jwtPayload.data._id; // jwtPayload = {data:{_id, email...}, iat, exp}

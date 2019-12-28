@@ -5,7 +5,7 @@ const collection = "users";
 
 exports.getOneByEmail = async email => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).findOne({ email });
+    return db.collection(collection).findOne({ email: email.toLowerCase() });
 };
 
 exports.getOneById = async id => {
@@ -18,18 +18,16 @@ exports.getByIdWithoutPsw2 = async id => {
     return db.collection(collection).findOne({ _id: new ObjectID(id) }, { projection: { salt: 0, hashedPassword: 0 } });
 };
 
-exports.updateOne = async item => {
+exports.updateOne = async user => {
     const db = await mongoHelper.getDb();
-    item._id = new ObjectID(item._id);
-    return db.collection(collection).updateOne({ _id: item._id }, { $set: item });
+    if (user.email) user.email = user.email.toLowerCase(); // ensures that the email is saved in lowerCase
+    user._id = new ObjectID(user._id);
+    return db.collection(collection).updateOne({ _id: user._id }, { $set: user });
 };
 
 exports.create = async user => {
     const db = await mongoHelper.getDb();
+    if (user.email) user.email = user.email.toLowerCase(); // ensures that the email is saved in lowerCase
+    user.createdOn = new Date();
     return db.collection(collection).insertOne(user);
-};
-
-exports.getOneByEmail = async email => {
-    const db = await mongoHelper.getDb();
-    return db.collection(collection).findOne({ email: email.toLowerCase() });
 };
