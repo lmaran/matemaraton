@@ -1,4 +1,3 @@
-const cookie = require("cookie");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
 const userService = require("../services/user.service");
@@ -6,6 +5,7 @@ const authService = require("../services/auth.service");
 const emailService = require("../services/email.service");
 const config = require("../config");
 const arrayHelper = require("../helpers/array.helper");
+const cookieHelper = require("../helpers/cookie.helper");
 
 const validationError = function(res, err) {
     return res.status(422).json(err);
@@ -20,7 +20,6 @@ exports.checkSendEmail = async (req, res) => {
 
     try {
         const response = await emailService.sendEmail(data);
-        console.log(response);
         return res.json(response);
     } catch (error) {
         return res.json(error.message);
@@ -50,9 +49,8 @@ exports.getLogin = (req, res) => {
 
 exports.postLogin = async (req, res) => {
     try {
-        const validationErrors = await getLoginValidationErrors(req.body);
-
         const { email, password } = req.body;
+        const validationErrors = await getLoginValidationErrors(email, password);
 
         if (validationErrors.length) {
             const initialValues = [{ field: "email", val: email }]; // keep old values at page reload
@@ -63,9 +61,11 @@ exports.postLogin = async (req, res) => {
             return res.redirect("/login");
         }
 
-        const { user, token } = await authService.login(email, password);
+        // we expect here that the user exists and the psw is correct
+        const userRecord = await userService.getOneByEmail(email.toLowerCase());
+        const token = authService.generateJWT(userRecord);
 
-        setCookies(req, res, token, user);
+        cookieHelper.setCookies(res, token);
         res.redirect("/");
     } catch (error) {
         // @TODO display an error message (without details) and log the details
@@ -73,26 +73,31 @@ exports.postLogin = async (req, res) => {
     }
 };
 
-const getLoginValidationErrors = async body => {
+const getLoginValidationErrors = async (email, password) => {
     try {
-        const { email, password } = body;
         const validationErrors = [];
 
         // email
         if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu." });
         else if (!validator.isLength(email, { max: 50 }))
-            validationErrors.push({ field: "email", msg: "Maxim 50 caractere." });
+            validationErrors.push({ field: "email", msg: "Maxim 50 caractere" });
 
         // password
         if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu." });
         else if (!validator.isLength(password, { max: 50 }))
-            validationErrors.push({ field: "password", msg: "Maxim 50 caractere." });
+            validationErrors.push({ field: "password", msg: "Maxim 50 caractere" });
 
         // credentials (email and password)
         const emailAndPasswordAreValid = !validationErrors.find(x => x.field === "email" || x.field === "password");
         if (emailAndPasswordAreValid) {
-            if (!(await authService.foundCredentials(email, password)))
-                validationErrors.push({ field: "password", msg: "Email sau parolă incorectă." });
+            const userRecord = await userService.getOneByEmail(email.toLowerCase());
+            if (!userRecord) {
+                validationErrors.push({ field: "email", msg: "Email necunoscut" });
+            } else {
+                if (!(await authService.matchPassword(password, userRecord.password))) {
+                    validationErrors.push({ field: "password", msg: "Parolă incorectă" });
+                }
+            }
         }
         return validationErrors;
     } catch (error) {
@@ -101,16 +106,18 @@ const getLoginValidationErrors = async body => {
 };
 
 exports.logout = (req, res) => {
-    // http://expressjs.com/api.html#res.clearCookie
-    //res.clearCookie('access_token', { path: '/' });
-    //res.clearCookie('user', { path: '/' });
+    // // http://expressjs.com/api.html#res.clearCookie
+    // //res.clearCookie('access_token', { path: '/' });
+    // //res.clearCookie('user', { path: '/' });
 
-    const c1 = cookie.serialize("access_token", "", { path: "/", expires: new Date(1) });
-    const c2 = cookie.serialize("XSRF-TOKEN", "", { path: "/", expires: new Date(1) });
-    const c3 = cookie.serialize("user", "", { path: "/", expires: new Date(1) });
+    // const c1 = cookie.serialize("access_token", "", { path: "/", expires: new Date(1) });
+    // const c2 = cookie.serialize("XSRF-TOKEN", "", { path: "/", expires: new Date(1) });
+    // const c3 = cookie.serialize("user", "", { path: "/", expires: new Date(1) });
 
-    // http://www.connecto.io/blog/nodejs-express-how-to-set-multiple-cookies-in-the-same-response-object/
-    res.header("Set-Cookie", [c1, c2, c3]); // array of cookies http://expressjs.com/api.html#res.set
+    // // http://www.connecto.io/blog/nodejs-express-how-to-set-multiple-cookies-in-the-same-response-object/
+    // res.header("Set-Cookie", [c1, c2, c3]); // array of cookies http://expressjs.com/api.html#res.set
+
+    cookieHelper.clearCookies(res);
 
     req.user = null;
     res.redirect("/");
@@ -156,9 +163,23 @@ exports.postSignup = async function(req, res) {
             return res.redirect("/signup");
         }
 
-        const { user, token } = await authService.signUp(email, password);
-        // return res.json({ user, token }).status(200).end();
-        setCookies(req, res, token, user);
+        const firstName = "My First Name";
+        const lastName = "My Last Name";
+
+        const hashedPassword = await authService.getHashedPassword(password);
+
+        const response = await userService.create({
+            firstName,
+            lastName,
+            email: email.toLowerCase(),
+            password: hashedPassword,
+            createdOn: new Date()
+        });
+
+        const userRecord = response.ops[0];
+        const token = authService.generateJWT(userRecord);
+
+        cookieHelper.setCookies(res, token);
         res.redirect("/");
     } catch (error) {
         // @TODO display an error message (without details) and log the details
@@ -297,7 +318,7 @@ exports.postChangePassword = async (req, res) => {
         // //     .status(200)
         // //     .json({ user, token })
         // //     .end();
-        // setCookies(req, res, token, user);
+        // cookieHelper.setCookies(res, token, user);
         res.redirect("/");
     } catch (error) {
         // const validationErrors = [
@@ -348,14 +369,7 @@ exports.saveActivationData = function(req, res) {
             // keep user as authenticated
             const token = signToken(user._id, user.role);
 
-            const userProfile = {
-                //exclude sensitive info
-                name: user.name,
-                email: user.email,
-                role: user.role
-            };
-
-            setCookies(req, res, token, userProfile);
+            cookieHelper.setCookies(res, token);
 
             res.redirect("/");
         });
@@ -396,35 +410,6 @@ exports.checkEmail = function(req, res) {
 
 function handleError(res, err) {
     return res.status(500).send(err);
-}
-
-function setCookies(req, res, token, userProfile) {
-    // Stormpath recommends that you store your JWT in cookies:
-    // https://stormpath.com/blog/where-to-store-your-jwts-cookies-vs-html5-web-storage
-    // all details are sumarized here: http://disq.us/p/16qo82e
-    const milliseconds = 1000 * 60 * 60 * 24 * 365; // (1000 = 1 sec) http://stackoverflow.com/a/9718416/2726725
-
-    const isSecure = process.env.NODE_ENV == "production"; // in production the cookie is sent only over https
-
-    // "secure" flag == true => this cookie will only be sent over an HTTPS connection
-    // "httpOnly" flag == true => JavaScript will not be able to read this authentication cookie
-    // "httpOnly" is used to prevent XSS (Cross-Site Scripting)
-    const c1 = cookie.serialize("access_token", token, {
-        path: "/",
-        maxAge: milliseconds,
-        httpOnly: true,
-        secure: isSecure
-    });
-
-    // 'XSRF-TOKEN' is the default name in Anguler for CSRF token
-    // 'XSRF-TOKEN' is used to prevent CSRF (Cross-Site Request Forgery)
-    const c2 = cookie.serialize("XSRF-TOKEN", token, { path: "/", maxAge: milliseconds });
-
-    // only for client
-    const c3 = cookie.serialize("user", JSON.stringify(userProfile), { path: "/", maxAge: milliseconds });
-
-    // http://www.connecto.io/blog/nodejs-express-how-to-set-multiple-cookies-in-the-same-response-object/
-    res.header("Set-Cookie", [c1, c2, c3]); // array of cookies http://expressjs.com/api.html#res.set
 }
 
 /**

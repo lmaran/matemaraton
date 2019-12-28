@@ -3,6 +3,7 @@ const classService = require("../services/class.service");
 // const dateTimeHelper = require("../helpers/date-time.helper");
 const studentHelper = require("../helpers/student.helper");
 const studentsAndClassesService = require("../services/studentsAndClasses.service");
+const autz = require("../services/autz.service");
 
 exports.getStudentsPerClass = async (req, res) => {
     const classId = req.params.classId;
@@ -16,10 +17,14 @@ exports.getStudentsPerClass = async (req, res) => {
 
     let students = await personService.getPersonsByIds(studentsIds);
 
+    const canReadStudentFullName = await autz.can(req.user, "read:student/full-name");
+
     students = students
         .map(student => {
-            // add "shortName" (e.g.  "Vali M.")
-            student.shortName = studentHelper.getShortNameForStudent(student);
+            // add "displayName" (e.g.  "Vali M.")
+            student.displayName = canReadStudentFullName
+                ? studentHelper.getFullNameForStudent(student)
+                : studentHelper.getShortNameForStudent(student);
 
             if (
                 student.academicYearRelatedInfo &&
@@ -33,7 +38,7 @@ exports.getStudentsPerClass = async (req, res) => {
             student.gradeAndLetter = studentHelper.getGradeAndLetterForStudent(student, cls.academicYear);
             return student;
         })
-        .sort((a, b) => (a.shortName > b.shortName ? 1 : -1));
+        .sort((a, b) => (a.displayName > b.displayName ? 1 : -1));
 
     const data = {
         class: cls,
