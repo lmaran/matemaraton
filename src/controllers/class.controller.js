@@ -1,4 +1,5 @@
 const classService = require("../services/class.service");
+const autz = require("../services/autz.service");
 
 exports.getClass = async (req, res) => {
     const classId = req.params.classId;
@@ -6,7 +7,10 @@ exports.getClass = async (req, res) => {
 
     const data = {
         class: cls,
-        ctx: req.ctx
+        ctx: req.ctx,
+        can: {
+            viewParentsLink: await autz.can(req.user, "read:parents", { classId })
+        }
     };
 
     //res.send(data);

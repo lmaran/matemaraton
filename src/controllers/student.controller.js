@@ -4,6 +4,7 @@ const classService = require("../services/class.service");
 const studentHelper = require("../helpers/student.helper");
 const studentsAndClassesService = require("../services/studentsAndClasses.service");
 const autz = require("../services/autz.service");
+//const { can } = require("../services/autz.service");
 
 exports.getStudentsPerClass = async (req, res) => {
     const classId = req.params.classId;
@@ -47,4 +48,38 @@ exports.getStudentsPerClass = async (req, res) => {
     };
     //res.send(data);
     res.render("student/students-per-class", data);
+};
+
+exports.getStudent = async (req, res) => {
+    const studentId = req.params.studentId;
+    const academicYear = "201920";
+    // const student = await personService.getPersonById(studentId);
+    const [clsMapLine, studentAndTheirParents] = await Promise.all([
+        await studentsAndClassesService.getClassMapByStudentId(academicYear, studentId),
+        await personService.getStudentAndTheirParentsById(studentId)
+    ]);
+
+    const student = studentAndTheirParents.find(x => x._id.toString() === studentId);
+    const parents = studentAndTheirParents.filter(x => x.studentIds && x.studentIds.length > 0);
+
+    const [cls] = await Promise.all([await classService.getClassById(clsMapLine.classId)]);
+
+    // add "shortName" (e.g.  "Vali M.")
+    student.shortName = studentHelper.getShortNameForStudent(student);
+    // parents.forEach(p => p.displayName = );
+
+    // add "gradeAndLetter" (e.g.  "8A")
+    student.gradeAndLetter = studentHelper.getGradeAndLetterForStudent(student, academicYear);
+
+    const data = {
+        student,
+        class: cls,
+        parents,
+        studentAndTheirParents,
+        can: {
+            viewParentsLink: await autz.can(req.user, "read:parents")
+        }
+    };
+    //res.send(data);
+    res.render("student/student", data);
 };

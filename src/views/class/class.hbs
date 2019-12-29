@@ -22,6 +22,9 @@
     <li><a href="/clase/{{class._id}}/elevi">Elevi</a></li>
     <li><a href="/clase/{{class._id}}/prezenta">Prezența</a></li>
     <li><a href="/clase/{{class._id}}/cursuri">Cursuri <span class="text-muted">(poze de pe tablă)</span></a></li>
+    {{#if can.viewParentsLink}}
+    <li><a href="/clase/{{class._id}}/parinti">Parinți</a></li>
+    {{/if}}
     {{!-- <li>Cursuri <span class="text-muted">(poze de pe tabla, in curand)</span></li> --}}
     {{!-- <li>Teme <span class="text-muted">(în curând)</span> </li> --}}
 

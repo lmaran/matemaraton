@@ -7,6 +7,7 @@ const matemaratonController = require("./controllers/matemaraton.controller");
 const problemController = require("./controllers/problem.controller");
 const classController = require("./controllers/class.controller");
 const studentController = require("./controllers/student.controller");
+const parentController = require("./controllers/parent.controller");
 
 const contactController = require("./controllers/contact.controller");
 const pageController = require("./controllers/page.controller");
@@ -14,13 +15,13 @@ const userController = require("./controllers/user.controller");
 const isAuthenticated = require("./middlewares/isAuthenticated.middleware").isAuthenticated;
 const presenceController = require("./controllers/presence.controller");
 const courseController = require("./controllers/course.controller");
-// const upgradeOperationController = require("./controllers/upgrade-operation.controller");
 
 // home
 router.get("/", homeController.getHomePage);
 
 // uncomment this route in order to make upgrade operations
-// router.get("/upgrade-operation", upgradeOperationController.mapStudentsToClasses);
+// const upgradeOperationController = require("./controllers/upgrade-operation.controller");
+// router.get("/upgrade-operation", upgradeOperationController.removeParentDetails);
 
 // my page
 router.get("/pagina-mea", meController.getMyPage);
@@ -33,12 +34,17 @@ router.get("/clase/:classId/prezenta", presenceController.getPresencePerClass);
 router.get("/clase/:classId/total-prezente-pe-elevi", presenceController.getTotalPresencesPerStudents);
 router.get("/elevi/:studentId/prezenta", presenceController.getPresencePerStudent);
 
+// parents
+router.get("/clase/:classId/parinti", parentController.getParentsPerClass);
+router.get("/parinti/:parentId", parentController.getParent);
+
 // courses
 router.get("/clase/:classId/cursuri", courseController.getCoursesPerClass);
 router.get("/cursuri/:courseId", courseController.getCourse);
 
 // students
 router.get("/clase/:classId/elevi", studentController.getStudentsPerClass);
+router.get("/elevi/:studentId", studentController.getStudent);
 
 // router.get("/matemaraton/:edition", matemaratonController.getEditionHomepage);
 // router.get("/:edition?/prezenta/grupe/:groupId", matemaratonController.getPresencePerGroup);

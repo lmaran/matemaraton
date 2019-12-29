@@ -1,0 +1,54 @@
+<style>
+    .hidePresence {
+        display: none;
+    }
+
+    .hideStudent {
+        display: none;
+    }
+</style>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</i></a></li>
+        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">Clasa:
+                {{class.grade}}-{{class.name}}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Părinți</li>
+    </ol>
+</nav>
+
+<h1>Părinți</h1>
+<h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2>
+
+
+<table class="table thead-light table-bordered table-light2 table-hover mb-5">
+    <thead>
+        <tr>
+            <th>Elevi</th>
+
+            <th>Părinți</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each students}}
+        <tr>
+            <td>
+                <a href="/elevi/{{_id}}">{{displayName}}
+            </td>
+            <td>
+                {{!-- {{#each students}}
+                                <div><a href="/elevi/{{id}}">{{firstName}} {{lastName}}</div>
+                            {{/each}} --}}
+                <ul class="pl-3 mb-0">
+                    {{#each parents }}
+                    <li>
+                        <a href="/parinti/{{_id}}">{{lastName}} {{firstName}}</a>
+                        - {{email}}
+                    </li>
+                    {{/each}}
+                </ul>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

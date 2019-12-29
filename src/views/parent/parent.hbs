@@ -1,0 +1,17 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
+        <li class="breadcrumb-item"><a href="/">Acasă</i></a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{parent.lastName}} {{parent.firstName}}</li>
+    </ol>
+</nav>
+
+
+{{#if can.viewParentsLink}}
+<h5>Elevi</h5>
+<ul>
+    {{#each students}}
+    <li><a href="/elevi/{{_id}}">{{lastName}} {{firstName}}</a></li>
+    {{/each}}
+</ul>
+{{/if}}
