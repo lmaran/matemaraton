@@ -6,6 +6,10 @@ const emailService = require("../services/email.service");
 const arrayHelper = require("../helpers/array.helper");
 const cookieHelper = require("../helpers/cookie.helper");
 
+exports.inviteToSignup = async (req, res) => {
+    res.redirect(req.get("referer"));
+};
+
 exports.checkSendEmail = async (req, res) => {
     const data = {
         to: "lucian.maran@outlook.com",
