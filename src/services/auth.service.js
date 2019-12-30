@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const config = require("../config");
 const userService = require("../services/user.service");
+const personService = require("../services/person.service");
 
 exports.login = async (email, password) => {
     const userRecord = await userService.getOneByEmail(email);
@@ -16,13 +17,32 @@ exports.login = async (email, password) => {
     }
 };
 
-exports.signup = async (email, password) => {
-    if (await userService.getOneByEmail(email)) throw new Error("EmailAlreadyExists");
+exports.signup = async (firstName, lastName, email, password, invitationCode) => {
+    if (invitationCode) {
+        // we know that the email is verified
+        const existingUser = await userService.getOneByInvitationCode(invitationCode);
+        if (existingUser) {
+            // TODO: check if the invitationCode has expired
+
+            // update user info
+            existingUser.firstName = firstName;
+            existingUser.lastName = lastName;
+            existingUser.password = hashedPassword;
+
+            await userService.updateOne(existingUser);
+        } else throw new Error("InvalidInvitationCode");
+    } else {
+        // no invitationCode
+        if (await userService.getOneByEmail(email)) throw new Error("EmailAlreadyExists");
+
+        // TODO: check if we have a person (student, parent, teacher...) with this email address
+        if (await personService.getOneByEmail(email)) throw new Error("PersonNotExist");
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const response = await userService.create({
-        firstName: "My First Name",
-        lastName: "My Last Name",
+    const response = await userService.insertOne({
+        firstName,
+        lastName,
         email,
         password: hashedPassword
     });

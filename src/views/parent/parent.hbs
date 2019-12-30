@@ -17,6 +17,10 @@
 {{/if}}
 
 <form method="post" action="/invite-to-signup" novalidate onsubmit="saveBtn.disabled = true; return true;">
+    <input type2="hidden" name="personId" value="{{parent._id}}" />
+    <input type2="hidden" name="firstName" value="{{parent.firstName}}" />
+    <input type2="hidden" name="lastName" value="{{parent.lastName}}" />
+    <input type2="hidden" name="email" value="{{parent.email}}" />
     <button type="submit" name="saveBtn" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i>
         Trimite invitație pt. creare cont</button>
 

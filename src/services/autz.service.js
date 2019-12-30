@@ -2,7 +2,9 @@
  * @param {string} rp - the required permission
  */
 exports.can = async (user, rp) => {
-    const up = user && (user.permissions || []); // user permissions
+    if (!user) return false;
+    const up = user.permissions || []; // user permissions
+
     // console.log(rp);
     // console.log(up);
     if (rp === "read:student/full-name") {

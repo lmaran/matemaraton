@@ -5,9 +5,46 @@ const emailService = require("../services/email.service");
 // const config = require("../config");
 const arrayHelper = require("../helpers/array.helper");
 const cookieHelper = require("../helpers/cookie.helper");
+const uuid = require("uuid/v4");
 
 exports.inviteToSignup = async (req, res) => {
-    res.redirect(req.get("referer"));
+    const { email, firstName, lastName, personId } = req.body;
+    const existingUser = await userService.getOneByEmail(email);
+
+    if (existingUser && existingUser.status === "active") {
+        return res.send("Există deja un utilizator activ cu acest email");
+    }
+    //if (userRecord.status === "invited") return res.send("Există deja o invitație trimisă pe această adresă de email");
+    const date = new Date();
+    date.setDate(date.getDate() + 7); // expires after 1 week
+    const uniqueId = uuid();
+    if (existingUser) {
+        existingUser.status = "invited";
+        existingUser.invitationCode = uniqueId;
+        existingUser.invitationExpTime = date;
+        await userService.updateOne(existingUser);
+    } else {
+        const newUser = {
+            firstName,
+            lastName,
+            email,
+            emailVerified: false,
+            personId,
+            status: "invited",
+            invitationCode: uniqueId,
+            invitationExpTime: date
+        };
+        await userService.insertOne(newUser);
+    }
+
+    //const urlUniqueToken = authService.generateJwtForInviteToJoin(email);
+
+    const data = {
+        email,
+        uniqueId
+    };
+    res.send(data);
+    // res.redirect(req.get("referer"));
 };
 
 exports.checkSendEmail = async (req, res) => {
@@ -95,8 +132,9 @@ exports.logout = (req, res) => {
     res.redirect("/");
 };
 
-exports.getSignup = (req, res) => {
+exports.getSignup = async (req, res) => {
     if (req.user) return res.redirect("/"); // already authenticated
+    const uiData = {};
 
     // Get an array of flash errors (or initial values) by passing the key
     const validationErrors = req.flash("validationErrors");
@@ -105,37 +143,72 @@ exports.getSignup = (req, res) => {
     const errors = arrayHelper.arrayToObject(validationErrors, "field");
     const data = arrayHelper.arrayToObject(initialValues, "field");
 
-    // set autofocus
-    const uiData = {};
+    // rely on invitation code only on first request
     if (validationErrors.length) {
         uiData[validationErrors[0].field] = { hasAutofocus: true }; // focus on first field with error
     } else {
-        uiData.email = { hasAutofocus: true }; // in case of a new page
+        const invitationCode = req.query.invitationCode;
+        if (invitationCode) {
+            // console.log(invitationCode);
+            const existingUser = await userService.getOneByInvitationCode(invitationCode);
+            if (existingUser) {
+                data.firstName = {
+                    field: "firstName",
+                    val: existingUser.firstName
+                };
+                data.lastName = {
+                    field: "lastName",
+                    val: existingUser.lastName
+                };
+                data.email = {
+                    field: "email",
+                    val: existingUser.email
+                };
+
+                uiData.password = { hasAutofocus: true };
+            }
+        } else {
+            uiData.lastName = { hasAutofocus: true };
+        }
     }
 
+    if (req.query.invitationCode) {
+        uiData.email = { isReadOnly: true };
+    }
+
+    // set autofocus
+
+    // if (validationErrors.length) {
+    //     uiData[validationErrors[0].field] = { hasAutofocus: true }; // focus on first field with error
+    // } else {
+    //     uiData.lastName = { hasAutofocus: true }; // in case of a new page
+    // }
+
+    //res.send(data);
     res.render("user/signup", { data, uiData, errors });
 };
 
 exports.postSignup = async function(req, res) {
     try {
-        const { email, password, confirmPassword } = req.body;
+        const { firstName, lastName, email, password, confirmPassword } = req.body;
 
         // handle static validation errors
-        const validationErrors = getSignupStaticValidationErrors(email, password, confirmPassword);
+        const validationErrors = getSignupStaticValidationErrors(firstName, lastName, email, password, confirmPassword);
         if (validationErrors.length) {
             return flashAndReloadSignupPage(req, res, validationErrors);
         }
 
-        const token = await authService.signup(email, password, confirmPassword);
+        const token = await authService.signup(firstName, lastName, email, password, confirmPassword);
 
         cookieHelper.setCookies(res, token);
+
         res.redirect("/");
     } catch (err) {
         // handle dynamic validation errors
 
         const validationErrors = [];
         if (err.message === "EmailAlreadyExists") {
-            validationErrors.push({ field: "email", msg: "Există deja un cont cu acest email." });
+            validationErrors.push({ field: "email", msg: "Există deja un cont cu acest email" });
         }
 
         if (validationErrors.length) {
@@ -157,39 +230,6 @@ exports.getById = function(req, res, next) {
         if (err) return next(err);
         if (!user) return res.status(401).send("Unauthorized");
         res.json(user);
-    });
-};
-
-exports.update = function(req, res) {
-    const user = req.body;
-
-    user.modifiedBy = req.user.name;
-    user.modifiedOn = new Date();
-
-    userService.updatePartial(user, function(err, response) {
-        // replacing the entire object will delete the psw+salt
-        if (err) {
-            return res.status(500).send(err);
-        }
-        if (!response.value) {
-            res.sendStatus(404); // not found
-        } else {
-            res.sendStatus(200);
-        }
-    });
-};
-
-/**
- * Deletes a user
- * restriction: 'admin'
- */
-exports.remove = function(req, res) {
-    const id = req.params.id;
-    userService.remove(id, function(err) {
-        if (err) {
-            return res.status(500).send(err);
-        }
-        res.sendStatus(204);
     });
 };
 
@@ -219,13 +259,13 @@ exports.postChangePassword = async (req, res) => {
 
     const validationErrors = [];
 
-    if (validator.isEmpty(oldPassword)) validationErrors.push({ field: "oldPassword", msg: "Câmp obligatoriu." });
+    if (validator.isEmpty(oldPassword)) validationErrors.push({ field: "oldPassword", msg: "Câmp obligatoriu" });
     if (!validator.isLength(oldPassword, { max: 50 }))
-        validationErrors.push({ field: "oldPassword", msg: "Maxim 50 caractere." });
+        validationErrors.push({ field: "oldPassword", msg: "Maxim 50 caractere" });
 
-    if (validator.isEmpty(newPassword)) validationErrors.push({ field: "newPassword", msg: "Câmp obligatoriu." });
+    if (validator.isEmpty(newPassword)) validationErrors.push({ field: "newPassword", msg: "Câmp obligatoriu" });
     if (!validator.isLength(newPassword, { max: 50 }))
-        validationErrors.push({ field: "newPassword", msg: "Câmp obligatoriu." });
+        validationErrors.push({ field: "newPassword", msg: "Câmp obligatoriu" });
 
     if (validationErrors.length) {
         req.flash("validationErrors", validationErrors);
@@ -295,8 +335,8 @@ exports.activateUser = function(req, res, next) {
 
     userService.getByIdWithoutPsw(userId, function(err, user) {
         if (err) return next(err);
-        if (!user) return res.status(400).send("Link incorect sau expirat (utilizator negasit).");
-        if (user.activationToken !== activationToken) return res.status(400).send("Acest cont a fost deja activat.");
+        if (!user) return res.status(400).send("Link incorect sau expirat (utilizator negasit)");
+        if (user.activationToken !== activationToken) return res.status(400).send("Acest cont a fost deja activat");
 
         const context = {
             user: user
@@ -305,43 +345,56 @@ exports.activateUser = function(req, res, next) {
     });
 };
 
-const getSignupStaticValidationErrors = (email, password, confirmPassword) => {
-    const validationErrors = [];
+const getSignupStaticValidationErrors = (firstName, lastName, email, password, confirmPassword) => {
+    try {
+        const validationErrors = [];
 
-    // email
-    if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu." });
-    else if (!validator.isLength(email, { max: 50 }))
-        validationErrors.push({ field: "email", msg: "Maxim 50 caractere." });
-    else if (!validator.isEmail(email)) validationErrors.push({ field: "email", msg: "Email invalid." });
-    // else if (await userService.getOneByEmail(email))
-    //     validationErrors.push({ field: "email", msg: "Exista deja un cont cu acest email." });
+        // firstName
+        if (validator.isEmpty(firstName)) validationErrors.push({ field: "firstName", msg: "Câmp obligatoriu" });
+        else if (!validator.isLength(firstName, { max: 50 }))
+            validationErrors.push({ field: "firstName", msg: "Maxim 50 caractere" });
 
-    // password
-    if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu." });
-    else if (!validator.isLength(password, { min: 6 }))
-        validationErrors.push({ field: "password", msg: "Minim 6 caractere." });
-    else if (!validator.isLength(password, { max: 50 }))
-        validationErrors.push({ field: "password", msg: "Maxim 50 caractere." });
+        // lastName
+        if (validator.isEmpty(lastName)) validationErrors.push({ field: "lastName", msg: "Câmp obligatoriu" });
+        else if (!validator.isLength(lastName, { max: 50 }))
+            validationErrors.push({ field: "lastName", msg: "Maxim 50 caractere" });
 
-    // confirm password
-    if (validator.isEmpty(confirmPassword))
-        validationErrors.push({ field: "confirmPassword", msg: "Câmp obligatoriu." });
-    else if (confirmPassword !== password)
-        validationErrors.push({ field: "confirmPassword", msg: "Parolele nu coincid." });
+        if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu" });
+        else if (!validator.isLength(email, { max: 50 }))
+            validationErrors.push({ field: "email", msg: "Maxim 50 caractere" });
+        else if (!validator.isEmail(email)) validationErrors.push({ field: "email", msg: "Email invalid" });
+        // else if (await userService.getOneByEmail(email))
+        //     validationErrors.push({ field: "email", msg: "Exista deja un cont cu acest email" });
 
-    return validationErrors;
+        // password
+        if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu" });
+        else if (!validator.isLength(password, { min: 6 }))
+            validationErrors.push({ field: "password", msg: "Minim 6 caractere" });
+        else if (!validator.isLength(password, { max: 50 }))
+            validationErrors.push({ field: "password", msg: "Maxim 50 caractere" });
+
+        // confirm password
+        if (validator.isEmpty(confirmPassword))
+            validationErrors.push({ field: "confirmPassword", msg: "Câmp obligatoriu" });
+        else if (confirmPassword !== password)
+            validationErrors.push({ field: "confirmPassword", msg: "Parolele nu coincid" });
+
+        return validationErrors;
+    } catch (err) {
+        throw new Error(err);
+    }
 };
 
 const getLoginStaticValidationErrors = (email, password) => {
     const validationErrors = [];
 
     // email
-    if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu." });
+    if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu" });
     else if (!validator.isLength(email, { max: 50 }))
         validationErrors.push({ field: "email", msg: "Maxim 50 caractere" });
 
     // password
-    if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu." });
+    if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu" });
     else if (!validator.isLength(password, { max: 50 }))
         validationErrors.push({ field: "password", msg: "Maxim 50 caractere" });
 
@@ -349,8 +402,10 @@ const getLoginStaticValidationErrors = (email, password) => {
 };
 
 const flashAndReloadSignupPage = (req, res, validationErrors) => {
-    const { email, password, confirmPassword } = req.body;
+    const { lastName, firstName, email, password, confirmPassword } = req.body;
     const initialValues = [
+        { field: "lastName", val: lastName },
+        { field: "firstName", val: firstName },
         { field: "email", val: email },
         { field: "password", val: password },
         { field: "confirmPassword", val: confirmPassword }
@@ -358,7 +413,8 @@ const flashAndReloadSignupPage = (req, res, validationErrors) => {
     // keep old values at page reload by setting a flash message (a key, followed by a value)
     req.flash("validationErrors", validationErrors);
     req.flash("initialValues", initialValues);
-    return res.redirect("/signup");
+    const currentUrl = req.get("referer"); // "/signup?invitationCode=..."
+    return res.redirect(currentUrl);
 };
 
 const flashAndReloadLoginPage = (req, res, validationErrors) => {

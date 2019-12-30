@@ -8,6 +8,11 @@ exports.getOneByEmail = async email => {
     return db.collection(collection).findOne({ email: email.toLowerCase() });
 };
 
+exports.getOneByInvitationCode = async invitationCode => {
+    const db = await mongoHelper.getDb();
+    return db.collection(collection).findOne({ invitationCode });
+};
+
 exports.getOneById = async id => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).findOne({ _id: new ObjectID(id) });
@@ -25,7 +30,7 @@ exports.updateOne = async user => {
     return db.collection(collection).updateOne({ _id: user._id }, { $set: user });
 };
 
-exports.create = async user => {
+exports.insertOne = async user => {
     const db = await mongoHelper.getDb();
     if (user.email) user.email = user.email.toLowerCase(); // ensures that the email is saved in lowerCase
     user.createdOn = new Date();

@@ -37,6 +37,7 @@
         "markdown-it-texmath": "^0.6.0",
         "marked": "^0.7.0",
         "mongodb": "^3.3.5",
+        "uuid": "^3.3.3",
         "validator": "^12.1.0"
     },
     "devDependencies": {

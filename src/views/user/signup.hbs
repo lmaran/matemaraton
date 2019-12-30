@@ -7,11 +7,33 @@
 
     <form method="post" action="/signup" novalidate onsubmit="saveBtn.disabled = true; return true;">
         <div class="form-group row">
+            <label for="lastName" class="col-md-3 col-form-label required">Nume</label>
+            <div class="col-md-7">
+                <input type="text" name="lastName" id="lastName"
+                    class="form-control {{#if errors.lastName}}is-invalid {{/if}}" value="{{data.lastName.val}}"
+                    {{#if uiData.lastName.hasAutofocus}}autofocus {{/if}} />
+                <div class="invalid-feedback">{{errors.lastName.msg}}</div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="firstName" class="col-md-3 col-form-label required">Prenume</label>
+            <div class="col-md-7">
+                <input type="text" name="firstName" id="firstName"
+                    class="form-control {{#if errors.firstName}}is-invalid {{/if}}" value="{{data.firstName.val}}"
+                    {{#if uiData.firstName.hasAutofocus}}autofocus {{/if}} />
+                <p class="text-muted mb-0">Este suficient doar prenumele preferat</p>
+                <div class="invalid-feedback">{{errors.firstName.msg}}</div>
+            </div>
+        </div>
+
+        <div class="form-group row">
             <label for="email" class="col-md-3 col-form-label required">Email</label>
             <div class="col-md-7">
                 <input type="email" name="email" id="email" class="form-control {{#if errors.email}}is-invalid {{/if}}"
-                    value="{{data.email.val}}" {{#if uiData.email.hasAutofocus}}autofocus {{/if}} />
-                <div class=" invalid-feedback">{{errors.email.msg}}</div>
+                    value="{{data.email.val}}" {{#if uiData.email.hasAutofocus}}autofocus {{/if}}
+                    {{#if uiData.email.isReadOnly}}readonly="readonly" {{/if}} />
+                <div class="invalid-feedback">{{errors.email.msg}}</div>
             </div>
         </div>
 
@@ -21,7 +43,7 @@
                 <input type="password" name="password" id="password"
                     class="form-control {{#if errors.password}}is-invalid {{/if}}" value="{{data.password.val}}"
                     {{#if uiData.password.hasAutofocus}}autofocus {{/if}} />
-                <p class="text-muted mb-0">Minim 6 caractere.</p>
+                <p class="text-muted mb-0">Minim 6 caractere</p>
                 <div class="invalid-feedback">{{errors.password.msg}}</div>
             </div>
         </div>
