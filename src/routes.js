@@ -68,7 +68,12 @@ router.post("/login", userController.postLogin);
 router.get("/logout", isAuthenticated, userController.logout);
 router.get("/signup", userController.getSignup);
 router.post("/signup", userController.postSignup);
+router.get("/signup-activation/:activationCode", userController.signupActivation);
+router.get("/signup-ask-to-complete", userController.askToComplete);
+router.get("/signup-completed", userController.signupCompleted);
+
 router.post("/invite-to-signup", userController.inviteToSignup);
+router.get("/invite-confirm/:userId/:invitationCode", userController.getInviteConfirm);
 // router.get("/check-send-email", userController.checkSendEmail);
 
 // app.get('/me', auth.isAuthenticated(), require('./user/userController').me);

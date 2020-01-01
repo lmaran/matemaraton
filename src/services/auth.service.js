@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const config = require("../config");
 const userService = require("../services/user.service");
 const personService = require("../services/person.service");
+const uuid = require("uuid/v4");
 
 exports.login = async (email, password) => {
     const userRecord = await userService.getOneByEmail(email);
@@ -50,6 +51,87 @@ exports.signup = async (firstName, lastName, email, password, invitationCode) =>
     const userRecord = response.ops[0];
     const token = generateJWT(userRecord);
     return token;
+};
+
+exports.signupByInvitationCode = async (firstName, lastName, email, password, invitationCode) => {
+    const existingUser = await userService.getOneBySignupCode(invitationCode);
+    if (existingUser) {
+        // TODO: check if the invitationCode has expired
+
+        // check if not already activated
+        const otherUser = await userService.getOneByEmail(existingUser.emailTmp);
+        if (otherUser) {
+            throw new Error("AccountAlreadyActivated");
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // update user info
+        existingUser.firstName = firstName;
+        existingUser.lastName = lastName;
+        existingUser.email = email;
+        existingUser.password = hashedPassword;
+        existingUser.status = "active";
+        existingUser.activatedOn = new Date();
+        existingUser.emailVerified = true;
+
+        await userService.updateOne(existingUser);
+
+        // console.log(response.ops[0]);
+
+        // const userRecord = response.ops[0];
+        const token = generateJWT(existingUser);
+        return token;
+    } else throw new Error("InvalidInvitationCode");
+};
+
+exports.signupByUserRegistration = async (firstName, lastName, email, psw) => {
+    if (await userService.getOneByEmail(email)) throw new Error("EmailAlreadyExists");
+
+    const password = await bcrypt.hash(psw, 10);
+
+    const expTime = new Date();
+    expTime.setDate(expTime.getDate() + 7); // expires after 1 week
+    const uniqueId = uuid();
+
+    const newUser = {
+        status: "waiting-for-email-verification",
+        signupExpTime: expTime,
+        signupCode: uniqueId,
+        firstName,
+        lastName,
+        emailTmp: email, // prevent having duplicates in "email" in the field
+        password
+    };
+    await userService.insertOne(newUser);
+    return uniqueId;
+};
+
+exports.signupByActivationCode = async activationCode => {
+    const existingUser = await userService.getOneBySignupCode(activationCode);
+    if (existingUser) {
+        // TODO: check if the invitationCode has expired
+
+        // check if not already activated
+        const otherUser = await userService.getOneByEmail(existingUser.emailTmp);
+        if (otherUser) {
+            throw new Error("AccountAlreadyActivated");
+        }
+
+        // update user info
+        existingUser.email = existingUser.emailTmp;
+        delete existingUser.emailTmp;
+
+        existingUser.status = "active";
+        existingUser.activatedOn = new Date();
+        existingUser.emailVerified = true;
+
+        await userService.updateOne(existingUser);
+
+        // const userRecord = response.ops[0];
+        const token = generateJWT(existingUser);
+        return token;
+    } else throw new Error("InvalidActivationCode");
 };
 
 const generateJWT = user => {

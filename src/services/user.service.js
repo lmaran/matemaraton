@@ -3,14 +3,19 @@ const { ObjectID } = require("mongodb");
 
 const collection = "users";
 
+// to prevent duplicates, we use an unique index for email (with allow for null)
+// db.users.createIndex(
+//     { email: 1 },
+//     { unique: true, partialFilterExpression: { email: {"$exists": true } }}
+//  )
 exports.getOneByEmail = async email => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).findOne({ email: email.toLowerCase() });
 };
 
-exports.getOneByInvitationCode = async invitationCode => {
+exports.getOneBySignupCode = async signupCode => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).findOne({ invitationCode });
+    return db.collection(collection).findOne({ signupCode });
 };
 
 exports.getOneById = async id => {

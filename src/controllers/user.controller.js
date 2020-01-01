@@ -2,7 +2,7 @@ const validator = require("validator");
 const userService = require("../services/user.service");
 const authService = require("../services/auth.service");
 const emailService = require("../services/email.service");
-// const config = require("../config");
+const config = require("../config");
 const arrayHelper = require("../helpers/array.helper");
 const cookieHelper = require("../helpers/cookie.helper");
 const uuid = require("uuid/v4");
@@ -15,13 +15,13 @@ exports.inviteToSignup = async (req, res) => {
         return res.send("Există deja un utilizator activ cu acest email");
     }
     //if (userRecord.status === "invited") return res.send("Există deja o invitație trimisă pe această adresă de email");
-    const date = new Date();
-    date.setDate(date.getDate() + 7); // expires after 1 week
+    const expTime = new Date();
+    expTime.setDate(expTime.getDate() + 7); // expires after 1 week
     const uniqueId = uuid();
     if (existingUser) {
         existingUser.status = "invited";
         existingUser.invitationCode = uniqueId;
-        existingUser.invitationExpTime = date;
+        existingUser.invitationExpTime = expTime;
         await userService.updateOne(existingUser);
     } else {
         const newUser = {
@@ -32,7 +32,7 @@ exports.inviteToSignup = async (req, res) => {
             personId,
             status: "invited",
             invitationCode: uniqueId,
-            invitationExpTime: date
+            invitationExpTime: expTime
         };
         await userService.insertOne(newUser);
     }
@@ -51,7 +51,8 @@ exports.checkSendEmail = async (req, res) => {
     const data = {
         to: "lucian.maran@outlook.com",
         subject: "Hello7",
-        text: "Testing some Mailgun awesomness!"
+        text: "Testing some Mailgun awesomness!",
+        html: "<html>HTML version of the body</html>"
     };
 
     try {
@@ -132,9 +133,9 @@ exports.logout = (req, res) => {
     res.redirect("/");
 };
 
-exports.getSignup = async (req, res) => {
-    if (req.user) return res.redirect("/"); // already authenticated
-    const uiData = {};
+exports.getInviteConfirm = async (req, res) => {
+    // if (req.user) return res.redirect("/"); // already authenticated
+    // const { userId, invitationCode } = req.params;
 
     // Get an array of flash errors (or initial values) by passing the key
     const validationErrors = req.flash("validationErrors");
@@ -143,38 +144,59 @@ exports.getSignup = async (req, res) => {
     const errors = arrayHelper.arrayToObject(validationErrors, "field");
     const data = arrayHelper.arrayToObject(initialValues, "field");
 
-    // rely on invitation code only on first request
+    // set autofocus
+    const uiData = {};
     if (validationErrors.length) {
         uiData[validationErrors[0].field] = { hasAutofocus: true }; // focus on first field with error
     } else {
-        const invitationCode = req.query.invitationCode;
-        if (invitationCode) {
-            // console.log(invitationCode);
-            const existingUser = await userService.getOneByInvitationCode(invitationCode);
-            if (existingUser) {
-                data.firstName = {
-                    field: "firstName",
-                    val: existingUser.firstName
-                };
-                data.lastName = {
-                    field: "lastName",
-                    val: existingUser.lastName
-                };
-                data.email = {
-                    field: "email",
-                    val: existingUser.email
-                };
-
-                uiData.password = { hasAutofocus: true };
-            }
-        } else {
-            uiData.lastName = { hasAutofocus: true };
-        }
+        uiData.email = { hasAutofocus: true }; // in case of a new page
     }
 
-    if (req.query.invitationCode) {
-        uiData.email = { isReadOnly: true };
-    }
+    res.render("user/invite-confirm", { data, uiData, errors });
+
+    // const existingUser = await userService.getOneById(userId);
+
+    // const uiData = {};
+
+    // // Get an array of flash errors (or initial values) by passing the key
+    // const validationErrors = req.flash("validationErrors");
+    // const initialValues = req.flash("initialValues");
+
+    // const errors = arrayHelper.arrayToObject(validationErrors, "field");
+    // const data = arrayHelper.arrayToObject(initialValues, "field");
+
+    // // rely on invitation code only on first request
+    // if (validationErrors.length) {
+    //     uiData[validationErrors[0].field] = { hasAutofocus: true }; // focus on first field with error
+    // } else {
+    //     const invitationCode = req.query.invitationCode;
+    //     if (invitationCode) {
+    //         // console.log(invitationCode);
+    //         const existingUser = await userService.getOneByInvitationCode(invitationCode);
+    //         if (existingUser) {
+    //             data.firstName = {
+    //                 field: "firstName",
+    //                 val: existingUser.firstName
+    //             };
+    //             data.lastName = {
+    //                 field: "lastName",
+    //                 val: existingUser.lastName
+    //             };
+    //             data.email = {
+    //                 field: "email",
+    //                 val: existingUser.email
+    //             };
+
+    //             uiData.password = { hasAutofocus: true };
+    //         }
+    //     } else {
+    //         uiData.lastName = { hasAutofocus: true };
+    //     }
+    // }
+
+    // if (req.query.invitationCode) {
+    //     uiData.email = { isReadOnly: true };
+    // }
 
     // set autofocus
 
@@ -184,13 +206,84 @@ exports.getSignup = async (req, res) => {
     //     uiData.lastName = { hasAutofocus: true }; // in case of a new page
     // }
 
-    //res.send(data);
+    // const data = {
+    //     userId,
+    //     invitationCode,
+    //     existingUser
+    // };
+
+    // res.send(data);
+    // res.render("user/invite-confirm", { data, uiData, errors });
+};
+
+exports.getSignup = async (req, res) => {
+    if (req.user) return res.redirect("/"); // already authenticated
+
+    const invitationCode = req.query.invitationCode;
+    let isInvitationCodeValid = false;
+    const uiData = {};
+
+    // Get an array of flash errors (or initial values) by passing the key
+    const validationErrors = req.flash("validationErrors");
+    const initialValues = req.flash("initialValues");
+
+    const errors = arrayHelper.arrayToObject(validationErrors, "field");
+    const data = arrayHelper.arrayToObject(initialValues, "field");
+
+    const existingUser = invitationCode && (await userService.getOneBySignupCode(invitationCode));
+    if (existingUser) {
+        if (existingUser.status === "active") {
+            return res.render("user/signup-invitation-already-accepted");
+        }
+
+        isInvitationCodeValid = true;
+
+        // populate initial values from DB
+        if (initialValues.length === 0 && existingUser.invitationInfo) {
+            data.firstName = {
+                field: "firstName",
+                val: existingUser.invitationInfo.firstName
+            };
+            data.lastName = {
+                field: "lastName",
+                val: existingUser.invitationInfo.lastName
+            };
+            data.email = {
+                field: "email",
+                val: existingUser.invitationInfo.email
+            };
+        }
+    }
+
+    // set autofocus properties
+    if (validationErrors.length) {
+        uiData[validationErrors[0].field] = { hasAutofocus: true }; // focus on first field with error
+    } else {
+        // no errors (e.g. first page request)s
+        if (isInvitationCodeValid) {
+            uiData.password = { hasAutofocus: true };
+        } else {
+            uiData.lastName = { hasAutofocus: true };
+        }
+    }
+
+    // set readOnly properties
+    if (isInvitationCodeValid) {
+        uiData.email = { isReadOnly: true };
+    }
+
+    // save invitationCode into an hidden field to be sent at POST
+    if (isInvitationCodeValid) {
+        data.invitationCode = invitationCode;
+    }
+
+    //res.send(errors);
     res.render("user/signup", { data, uiData, errors });
 };
 
-exports.postSignup = async function(req, res) {
+exports.postSignup = async (req, res) => {
     try {
-        const { firstName, lastName, email, password, confirmPassword } = req.body;
+        const { firstName, lastName, email, password, confirmPassword, invitationCode } = req.body;
 
         // handle static validation errors
         const validationErrors = getSignupStaticValidationErrors(firstName, lastName, email, password, confirmPassword);
@@ -198,11 +291,49 @@ exports.postSignup = async function(req, res) {
             return flashAndReloadSignupPage(req, res, validationErrors);
         }
 
-        const token = await authService.signup(firstName, lastName, email, password, confirmPassword);
+        if (invitationCode) {
+            const token = await authService.signupByInvitationCode(
+                firstName,
+                lastName,
+                email,
+                password,
+                invitationCode
+            );
 
-        cookieHelper.setCookies(res, token);
+            cookieHelper.setCookies(res, token);
 
-        res.redirect("/");
+            res.redirect("signup-completed");
+        } else {
+            const activationCode = await authService.signupByUserRegistration(firstName, lastName, email, password);
+            // TODO send this code on email
+            // console.log("activationCode: " + activationCode);
+            const rootUrl = config.externalUrl; // e.g. http://localhost:1417
+            const activationLink = `${rootUrl}/signup-activation/${activationCode}`;
+
+            const data = {
+                to: email,
+                subject: "Activare cont",
+                text: `Pentru activarea contului te rugăm sa accesezi link-ul: ${activationLink}`,
+                html: `<html>Pentru activarea contului te rugăm să accesezi 
+                <a href="${activationLink}">link-ul de activare</a>!
+                </html>`
+            };
+
+            // try {
+            //     const response = await emailService.sendEmail(data);
+            //     return res.json(response);
+            // } catch (error) {
+            //     return res.json(error.message);
+            // }
+            await emailService.sendEmail(data);
+
+            res.redirect("signup-ask-to-complete");
+        }
+        // const token = await authService.signup(firstName, lastName, email, password, confirmPassword);
+
+        // cookieHelper.setCookies(res, token);
+
+        // res.redirect("/");
     } catch (err) {
         // handle dynamic validation errors
 
@@ -218,6 +349,28 @@ exports.postSignup = async function(req, res) {
         // @TODO display an error message (without details) and log the details
         return res.status(500).json(err);
     }
+};
+
+exports.signupActivation = async (req, res) => {
+    try {
+        const activationCode = req.params.activationCode;
+        // console.log(activationCode);
+        const token = await authService.signupByActivationCode(activationCode);
+
+        cookieHelper.setCookies(res, token);
+
+        res.redirect("signup-completed");
+    } catch (err) {
+        return res.status(500).json(err);
+    }
+};
+
+exports.signupCompleted = async (req, res) => {
+    res.render("user/signup-completed");
+};
+
+exports.askToComplete = async (req, res) => {
+    res.render("user/signup-ask-to-complete");
 };
 
 /**
@@ -349,15 +502,15 @@ const getSignupStaticValidationErrors = (firstName, lastName, email, password, c
     try {
         const validationErrors = [];
 
-        // firstName
-        if (validator.isEmpty(firstName)) validationErrors.push({ field: "firstName", msg: "Câmp obligatoriu" });
-        else if (!validator.isLength(firstName, { max: 50 }))
-            validationErrors.push({ field: "firstName", msg: "Maxim 50 caractere" });
-
         // lastName
         if (validator.isEmpty(lastName)) validationErrors.push({ field: "lastName", msg: "Câmp obligatoriu" });
         else if (!validator.isLength(lastName, { max: 50 }))
             validationErrors.push({ field: "lastName", msg: "Maxim 50 caractere" });
+
+        // firstName
+        if (validator.isEmpty(firstName)) validationErrors.push({ field: "firstName", msg: "Câmp obligatoriu" });
+        else if (!validator.isLength(firstName, { max: 50 }))
+            validationErrors.push({ field: "firstName", msg: "Maxim 50 caractere" });
 
         if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu" });
         else if (!validator.isLength(email, { max: 50 }))

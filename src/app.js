@@ -17,6 +17,10 @@ const mongoHelper = require("./helpers/mongo.helper");
 
 const app = express();
 
+// https://expressjs.com/en/guide/behind-proxies.html
+app.enable("trust proxy"); // allow express to set req.ip
+// app.set("trust proxy", "loopback, 123.123.123.123"); // specify a subnet and an address
+
 // view engine setup
 app.set("view engine", ".hbs");
 app.set("views", path.join(__dirname, "/views"));

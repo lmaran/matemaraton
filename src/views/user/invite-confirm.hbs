@@ -1,31 +1,9 @@
 <div class="container-fluid">
 
+    <h1>Creaza cont nou</h1>
+
     {{!-- <p>{{toJSON data}}</p> --}}
     {{!-- <p>{{toJSON errors}}</p> --}}
-
-    {{!-- <div class="alert alert-success">
-        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        <i class="fa fa-check mr-2"></i> <strong>Success!</strong> Account Activated Successfully !!
-    </div>
-
-    <div class="alert alert-danger">
-        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        <i class="fa fa-times mr-2"></i> {{errors.isPageError.msg}}
-    </div>
-
-    <div class="alert alert-info">
-        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        <i class="fa fa-info mr-2"></i> <strong>Success!</strong> Account Activated Successfully !!
-    </div> --}}
-
-    {{#if errors.isPageError}}
-    <div class="alert alert-info">
-        {{!-- <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> --}}
-        <i class="fa fa-info mr-2"></i> {{errors.isPageError.msg}}
-    </div>
-    {{/if}}
-
-    <h1>Creaza cont nou</h1>
 
     <form method="post" action="/signup" novalidate onsubmit="saveBtn.disabled = true; return true;">
         <div class="form-group row">
@@ -44,6 +22,7 @@
                 <input type="text" name="firstName" id="firstName"
                     class="form-control {{#if errors.firstName}}is-invalid {{/if}}" value="{{data.firstName.val}}"
                     {{#if uiData.firstName.hasAutofocus}}autofocus {{/if}} />
+                <p class="text-muted mb-0">Este suficient doar prenumele preferat</p>
                 <div class="invalid-feedback">{{errors.firstName.msg}}</div>
             </div>
         </div>
@@ -78,8 +57,6 @@
                 <div class="invalid-feedback">{{errors.confirmPassword.msg}}</div>
             </div>
         </div>
-
-        <input type="hidden" name="invitationCode" value="{{data.invitationCode}}" />
 
         <div class="form-group row">
             <div class="col-md-7 offset-md-3">
