@@ -32,6 +32,7 @@ exports.updateOne = async user => {
     const db = await mongoHelper.getDb();
     if (user.email) user.email = user.email.toLowerCase(); // ensures that the email is saved in lowerCase
     user._id = new ObjectID(user._id);
+    user.modifiedOn = new Date();
     return db.collection(collection).updateOne({ _id: user._id }, { $set: user });
 };
 

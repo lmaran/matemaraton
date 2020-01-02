@@ -16,8 +16,34 @@
 </ul>
 {{/if}}
 
+
+
+Situația contului:
+{{#if (eq parentUser.status "active")}}
+Activ. Ultima conectare la {{parentUser.lastActionDate}}
+
+{{else if (eq parentUser.status "invited")}}
+Invitație trimisă. Așteaptă activare.
+<p>Detalii: Ultima înregistrare a fost trimisă la <strong>{{parentUser.email}}</strong> la {{parentUser.lastActionDate}}
+</p>
 <form method="post" action="/invite-to-signup" novalidate onsubmit="saveBtn.disabled = true; return true;">
-    <input type2="hidden" name="personId" value="{{parent._id}}" />
+    {{!-- <input type2="hidden" name="personId" value="{{parent._id}}" /> --}}
+    <input type2="hidden" name="firstName" value="{{parent.firstName}}" />
+    <input type2="hidden" name="lastName" value="{{parent.lastName}}" />
+    <input type2="hidden" name="email" value="{{parent.email}}" />
+    <button type="submit" name="saveBtn" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i>
+        Retrimite invitație pt. creare cont</button>
+
+</form>
+
+
+{{else if (eq parentUser.status "registered")}}
+inregistrat
+
+{{else}}
+Cont inexistent.
+<form method="post" action="/invite-to-signup" novalidate onsubmit="saveBtn.disabled = true; return true;">
+    {{!-- <input type2="hidden" name="personId" value="{{parent._id}}" /> --}}
     <input type2="hidden" name="firstName" value="{{parent.firstName}}" />
     <input type2="hidden" name="lastName" value="{{parent.lastName}}" />
     <input type2="hidden" name="email" value="{{parent.email}}" />
@@ -25,3 +51,4 @@
         Trimite invitație pt. creare cont</button>
 
 </form>
+{{/if}}

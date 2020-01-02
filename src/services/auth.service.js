@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const config = require("../config");
 const userService = require("../services/user.service");
-const personService = require("../services/person.service");
+// const personService = require("../services/person.service");
 const uuid = require("uuid/v4");
 
 exports.login = async (email, password) => {
@@ -18,58 +18,33 @@ exports.login = async (email, password) => {
     }
 };
 
-exports.signup = async (firstName, lastName, email, password, invitationCode) => {
-    if (invitationCode) {
-        // we know that the email is verified
-        const existingUser = await userService.getOneByInvitationCode(invitationCode);
-        if (existingUser) {
-            // TODO: check if the invitationCode has expired
+exports.changePassword = async (email, oldPassword, newPassword) => {
+    const existingUser = await userService.getOneByEmail(email);
 
-            // update user info
-            existingUser.firstName = firstName;
-            existingUser.lastName = lastName;
-            existingUser.password = hashedPassword;
-
-            await userService.updateOne(existingUser);
-        } else throw new Error("InvalidInvitationCode");
+    if (!existingUser) {
+        throw new Error("UnknownEmail");
+    } else if (!(await bcrypt.compare(oldPassword, existingUser.password))) {
+        throw new Error("IncorrectPassword");
     } else {
-        // no invitationCode
-        if (await userService.getOneByEmail(email)) throw new Error("EmailAlreadyExists");
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        existingUser.password = hashedPassword;
 
-        // TODO: check if we have a person (student, parent, teacher...) with this email address
-        if (await personService.getOneByEmail(email)) throw new Error("PersonNotExist");
+        await userService.updateOne(existingUser);
+
+        const token = generateJWT(existingUser);
+        return token;
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const response = await userService.insertOne({
-        firstName,
-        lastName,
-        email,
-        password: hashedPassword
-    });
-
-    const userRecord = response.ops[0];
-    const token = generateJWT(userRecord);
-    return token;
 };
 
-exports.signupByInvitationCode = async (firstName, lastName, email, password, invitationCode) => {
+exports.signupByInvitationCode = async (firstName, lastName, password, invitationCode) => {
     const existingUser = await userService.getOneBySignupCode(invitationCode);
     if (existingUser) {
-        // TODO: check if the invitationCode has expired
-
-        // check if not already activated
-        const otherUser = await userService.getOneByEmail(existingUser.emailTmp);
-        if (otherUser) {
-            throw new Error("AccountAlreadyActivated");
-        }
-
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // update user info
         existingUser.firstName = firstName;
         existingUser.lastName = lastName;
-        existingUser.email = email;
+        //existingUser.email = email;
         existingUser.password = hashedPassword;
         existingUser.status = "active";
         existingUser.activatedOn = new Date();
@@ -86,51 +61,53 @@ exports.signupByInvitationCode = async (firstName, lastName, email, password, in
 };
 
 exports.signupByUserRegistration = async (firstName, lastName, email, psw) => {
-    if (await userService.getOneByEmail(email)) throw new Error("EmailAlreadyExists");
+    const existingUser = await userService.getOneByEmail(email);
+    if (existingUser && existingUser.status === "active") throw new Error("EmailAlreadyExists");
 
     const password = await bcrypt.hash(psw, 10);
 
-    const expTime = new Date();
-    expTime.setDate(expTime.getDate() + 7); // expires after 1 week
-    const uniqueId = uuid();
+    const uniqueId = existingUser && existingUser.signupCode ? existingUser.signupCode : uuid(); // keep the original code if exists
 
-    const newUser = {
-        status: "waiting-for-email-verification",
-        signupExpTime: expTime,
-        signupCode: uniqueId,
-        firstName,
-        lastName,
-        emailTmp: email, // prevent having duplicates in "email" in the field
-        password
-    };
-    await userService.insertOne(newUser);
+    if (existingUser) {
+        existingUser.firstName = firstName;
+        existingUser.lastName = lastName;
+        existingUser.password = password;
+        existingUser.status = "registered";
+        existingUser.signupCode = uniqueId;
+
+        await userService.updateOne(existingUser);
+    } else {
+        const newUser = {
+            firstName,
+            lastName,
+            password,
+            status: "registered",
+            signupCode: uniqueId,
+            email
+        };
+        await userService.insertOne(newUser);
+    }
+
     return uniqueId;
 };
 
 exports.signupByActivationCode = async activationCode => {
     const existingUser = await userService.getOneBySignupCode(activationCode);
     if (existingUser) {
-        // TODO: check if the invitationCode has expired
+        if (existingUser.status === "registered") {
+            // update user info
+            existingUser.status = "active";
+            existingUser.activatedOn = new Date();
+            existingUser.emailVerified = true;
 
-        // check if not already activated
-        const otherUser = await userService.getOneByEmail(existingUser.emailTmp);
-        if (otherUser) {
+            await userService.updateOne(existingUser);
+
+            // const userRecord = response.ops[0];
+            const token = generateJWT(existingUser);
+            return token;
+        } else if (existingUser.status === "active") {
             throw new Error("AccountAlreadyActivated");
-        }
-
-        // update user info
-        existingUser.email = existingUser.emailTmp;
-        delete existingUser.emailTmp;
-
-        existingUser.status = "active";
-        existingUser.activatedOn = new Date();
-        existingUser.emailVerified = true;
-
-        await userService.updateOne(existingUser);
-
-        // const userRecord = response.ops[0];
-        const token = generateJWT(existingUser);
-        return token;
+        } else throw new Error("InvalidActivationCode");
     } else throw new Error("InvalidActivationCode");
 };
 
@@ -139,7 +116,6 @@ const generateJWT = user => {
         {
             data: {
                 _id: user._id,
-                // name: user.name,
                 email: user.email
             }
         },

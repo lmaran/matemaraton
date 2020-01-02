@@ -1,9 +1,10 @@
 const personService = require("../services/person.service");
 const classService = require("../services/class.service");
-// const dateTimeHelper = require("../helpers/date-time.helper");
+const dateTimeHelper = require("../helpers/date-time.helper");
 const studentHelper = require("../helpers/student.helper");
 const studentsAndClassesService = require("../services/studentsAndClasses.service");
 const autz = require("../services/autz.service");
+const userService = require("../services/user.service");
 //const { can } = require("../services/autz.service");
 
 exports.getParentsPerClass = async (req, res) => {
@@ -51,10 +52,19 @@ exports.getParent = async (req, res) => {
     // const students = parentAndTheirStudents.filter(x => x.parentIds && x.parentIds.length > 0);
 
     const parent = await personService.getPersonById(parentId);
-    const students = await personService.getPersonsByIds(parent.studentIds);
+    // const students = await personService.getPersonsByIds(parent.studentIds);
+
+    const [students, parentUser] = await Promise.all([
+        await await personService.getPersonsByIds(parent.studentIds),
+        await userService.getOneByEmail(parent.email)
+    ]);
+
+    const d = dateTimeHelper.getFriendlyDate(parentUser.modifiedOn || parentUser.createdOn);
+    parentUser.lastActionDate = `${d.dmy} ${d.time}`; // "23.04.2020 13:07"
 
     const data = {
         parent,
+        parentUser,
         students,
         can: {
             viewParentsLink: await autz.can(req.user, "read:parents")

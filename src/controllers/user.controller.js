@@ -8,43 +8,68 @@ const cookieHelper = require("../helpers/cookie.helper");
 const uuid = require("uuid/v4");
 
 exports.inviteToSignup = async (req, res) => {
-    const { email, firstName, lastName, personId } = req.body;
-    const existingUser = await userService.getOneByEmail(email);
+    try {
+        const { email, firstName, lastName } = req.body;
+        const existingUser = await userService.getOneByEmail(email);
 
-    if (existingUser && existingUser.status === "active") {
-        return res.send("Există deja un utilizator activ cu acest email");
-    }
-    //if (userRecord.status === "invited") return res.send("Există deja o invitație trimisă pe această adresă de email");
-    const expTime = new Date();
-    expTime.setDate(expTime.getDate() + 7); // expires after 1 week
-    const uniqueId = uuid();
-    if (existingUser) {
-        existingUser.status = "invited";
-        existingUser.invitationCode = uniqueId;
-        existingUser.invitationExpTime = expTime;
-        await userService.updateOne(existingUser);
-    } else {
-        const newUser = {
+        if (existingUser && existingUser.status === "active") {
+            return res.send("Există deja un utilizator activ cu acest email");
+        }
+        // const expTime = new Date();
+        // expTime.setDate(expTime.getDate() + 7); // expires after 1 week
+        const uniqueId = existingUser && existingUser.signupCode ? existingUser.signupCode : uuid(); // keep the original code if exists
+
+        const invitationInfo = {
             firstName,
-            lastName,
-            email,
-            emailVerified: false,
-            personId,
-            status: "invited",
-            invitationCode: uniqueId,
-            invitationExpTime: expTime
+            lastName
         };
-        await userService.insertOne(newUser);
+
+        if (existingUser) {
+            existingUser.invitationInfo = invitationInfo;
+            existingUser.status = "invited";
+            existingUser.signupCode = uniqueId;
+
+            //existingUser.invitationExpTime = expTime;
+            await userService.updateOne(existingUser);
+        } else {
+            const newUser = {
+                invitationInfo,
+                status: "invited",
+                signupCode: uniqueId,
+                email
+                //invitationExpTime: expTime
+            };
+            await userService.insertOne(newUser);
+        }
+        //const urlUniqueToken = authService.generateJwtForInviteToJoin(email);
+
+        // TODO: send invitation link on email
+
+        // Send this code on email
+        const rootUrl = config.externalUrl; // e.g. http://localhost:1417
+        const activationLink = `${rootUrl}/signup?invitationCode=${uniqueId}`;
+
+        const emailData = {
+            to: email,
+            subject: "Invitație activare cont",
+            text: `Pentru activarea contului te rugăm sa accesezi link-ul: ${activationLink}`,
+            html: `<html>Pentru activarea contului te rugăm să accesezi 
+                <a href="${activationLink}">link-ul de activare</a>!
+                </html>`
+        };
+
+        await emailService.sendEmail(emailData);
+
+        // const data = {
+        //     email,
+        //     uniqueId
+        // };
+        // res.send(data);
+        // res.redirect(req.get("referer"));s
+        res.redirect("/signup-invitation-sent");
+    } catch (err) {
+        return res.json(err.message);
     }
-
-    //const urlUniqueToken = authService.generateJwtForInviteToJoin(email);
-
-    const data = {
-        email,
-        uniqueId
-    };
-    res.send(data);
-    // res.redirect(req.get("referer"));
 };
 
 exports.checkSendEmail = async (req, res) => {
@@ -153,71 +178,10 @@ exports.getInviteConfirm = async (req, res) => {
     }
 
     res.render("user/invite-confirm", { data, uiData, errors });
-
-    // const existingUser = await userService.getOneById(userId);
-
-    // const uiData = {};
-
-    // // Get an array of flash errors (or initial values) by passing the key
-    // const validationErrors = req.flash("validationErrors");
-    // const initialValues = req.flash("initialValues");
-
-    // const errors = arrayHelper.arrayToObject(validationErrors, "field");
-    // const data = arrayHelper.arrayToObject(initialValues, "field");
-
-    // // rely on invitation code only on first request
-    // if (validationErrors.length) {
-    //     uiData[validationErrors[0].field] = { hasAutofocus: true }; // focus on first field with error
-    // } else {
-    //     const invitationCode = req.query.invitationCode;
-    //     if (invitationCode) {
-    //         // console.log(invitationCode);
-    //         const existingUser = await userService.getOneByInvitationCode(invitationCode);
-    //         if (existingUser) {
-    //             data.firstName = {
-    //                 field: "firstName",
-    //                 val: existingUser.firstName
-    //             };
-    //             data.lastName = {
-    //                 field: "lastName",
-    //                 val: existingUser.lastName
-    //             };
-    //             data.email = {
-    //                 field: "email",
-    //                 val: existingUser.email
-    //             };
-
-    //             uiData.password = { hasAutofocus: true };
-    //         }
-    //     } else {
-    //         uiData.lastName = { hasAutofocus: true };
-    //     }
-    // }
-
-    // if (req.query.invitationCode) {
-    //     uiData.email = { isReadOnly: true };
-    // }
-
-    // set autofocus
-
-    // if (validationErrors.length) {
-    //     uiData[validationErrors[0].field] = { hasAutofocus: true }; // focus on first field with error
-    // } else {
-    //     uiData.lastName = { hasAutofocus: true }; // in case of a new page
-    // }
-
-    // const data = {
-    //     userId,
-    //     invitationCode,
-    //     existingUser
-    // };
-
-    // res.send(data);
-    // res.render("user/invite-confirm", { data, uiData, errors });
 };
 
 exports.getSignup = async (req, res) => {
-    if (req.user) return res.redirect("/"); // already authenticated
+    // if (req.user) return res.redirect("/"); // already authenticated
 
     const invitationCode = req.query.invitationCode;
     let isInvitationCodeValid = false;
@@ -233,7 +197,7 @@ exports.getSignup = async (req, res) => {
     const existingUser = invitationCode && (await userService.getOneBySignupCode(invitationCode));
     if (existingUser) {
         if (existingUser.status === "active") {
-            return res.render("user/signup-invitation-already-accepted");
+            return res.render("user/signup-invitation-already-accepted", { isNotAuthenticated: !req.user });
         }
 
         isInvitationCodeValid = true;
@@ -250,7 +214,7 @@ exports.getSignup = async (req, res) => {
             };
             data.email = {
                 field: "email",
-                val: existingUser.invitationInfo.email
+                val: existingUser.email
             };
         }
     }
@@ -295,7 +259,7 @@ exports.postSignup = async (req, res) => {
             const token = await authService.signupByInvitationCode(
                 firstName,
                 lastName,
-                email,
+                // email,
                 password,
                 invitationCode
             );
@@ -305,8 +269,7 @@ exports.postSignup = async (req, res) => {
             res.redirect("signup-completed");
         } else {
             const activationCode = await authService.signupByUserRegistration(firstName, lastName, email, password);
-            // TODO send this code on email
-            // console.log("activationCode: " + activationCode);
+            // Send this code on email
             const rootUrl = config.externalUrl; // e.g. http://localhost:1417
             const activationLink = `${rootUrl}/signup-activation/${activationCode}`;
 
@@ -319,12 +282,6 @@ exports.postSignup = async (req, res) => {
                 </html>`
             };
 
-            // try {
-            //     const response = await emailService.sendEmail(data);
-            //     return res.json(response);
-            // } catch (error) {
-            //     return res.json(error.message);
-            // }
             await emailService.sendEmail(data);
 
             res.redirect("signup-ask-to-complete");
@@ -347,7 +304,7 @@ exports.postSignup = async (req, res) => {
         }
 
         // @TODO display an error message (without details) and log the details
-        return res.status(500).json(err);
+        return res.status(500).json(err.message);
     }
 };
 
@@ -361,7 +318,11 @@ exports.signupActivation = async (req, res) => {
 
         res.redirect("signup-completed");
     } catch (err) {
-        return res.status(500).json(err);
+        if (err.message === "AccountAlreadyActivated") {
+            res.redirect("/signup-registration-already-activated");
+        } else {
+            return res.status(500).json(err.message);
+        }
     }
 };
 
@@ -371,6 +332,14 @@ exports.signupCompleted = async (req, res) => {
 
 exports.askToComplete = async (req, res) => {
     res.render("user/signup-ask-to-complete");
+};
+
+exports.signupInvitationSent = async (req, res) => {
+    res.render("user/signup-invitation-sent");
+};
+
+exports.signupRegistrationAlreadyActivated = async (req, res) => {
+    res.render("user/signup-registration-already-activated", { isNotAuthenticated: !req.user });
 };
 
 /**
@@ -386,61 +355,56 @@ exports.getById = function(req, res, next) {
     });
 };
 
-/**
- * Change a users password
- */
 exports.getChangePassword = async (req, res) => {
-    // if (req.user) return res.redirect("/"); // already authenticated
+    // the "isAuthenticated" middleware ensure us that only authenticated users can call this method
 
-    let data = {};
-    const errors = req.flash("validationErrors"); // Get an array of flash messages by passing the key
+    // Get an array of flash errors (or initial values) by passing the key
+    const validationErrors = req.flash("validationErrors");
+    const initialValues = req.flash("initialValues");
 
-    if (errors.length) {
-        // redirect from POST (with errors)
-        data = arrayHelper.arrayToObject(errors, "field");
+    const errors = arrayHelper.arrayToObject(validationErrors, "field");
+    const data = arrayHelper.arrayToObject(initialValues, "field");
+
+    // set autofocus
+    const uiData = {};
+    if (validationErrors.length) {
+        uiData[validationErrors[0].field] = { hasAutofocus: true }; // focus on first field with error
     } else {
-        // clean, new page
-        data.email = { hasAutofocus: true };
+        uiData.oldPassword = { hasAutofocus: true }; // in case of a new page
     }
-    res.render("user/changePassword", { data, errors });
+    //res.send({ data, uiData, errors });
+    res.render("user/changePassword", { data, uiData, errors });
 };
 
 exports.postChangePassword = async (req, res) => {
-    // const userId = String(req.user._id); //without 'String' the result is an Object
-    const oldPassword = String(req.body.oldPassword);
-    const newPassword = String(req.body.newPassword);
-
-    const validationErrors = [];
-
-    if (validator.isEmpty(oldPassword)) validationErrors.push({ field: "oldPassword", msg: "Câmp obligatoriu" });
-    if (!validator.isLength(oldPassword, { max: 50 }))
-        validationErrors.push({ field: "oldPassword", msg: "Maxim 50 caractere" });
-
-    if (validator.isEmpty(newPassword)) validationErrors.push({ field: "newPassword", msg: "Câmp obligatoriu" });
-    if (!validator.isLength(newPassword, { max: 50 }))
-        validationErrors.push({ field: "newPassword", msg: "Câmp obligatoriu" });
-
-    if (validationErrors.length) {
-        req.flash("validationErrors", validationErrors);
-        return res.redirect("/changepassword");
-    }
-
     try {
-        // const { user, token } = await authService.login(email, password);
-        // // return res
-        // //     .status(200)
-        // //     .json({ user, token })
-        // //     .end();
-        // cookieHelper.setCookies(res, token, user);
+        const { oldPassword, newPassword } = req.body;
+        // handle static validation errors
+        const validationErrors = getChangePasswordStaticValidationErrors(oldPassword, newPassword);
+
+        if (validationErrors.length) {
+            return flashAndReloadChangePasswordPage(req, res, validationErrors);
+        }
+
+        const token = await authService.changePassword(req.user.email, oldPassword, newPassword);
+
+        cookieHelper.setCookies(res, token);
         res.redirect("/");
-    } catch (error) {
-        // const validationErrors = [
-        //     { field: "email", val: email },
-        //     { field: "password", msg: error.message }
-        // ];
-        // req.flash("validationErrors", validationErrors);
-        return res.redirect("/changepassword");
-        // return res.status(401).json(error.message);
+    } catch (err) {
+        // handle dynamic validation errors
+        const validationErrors = [];
+        if (err.message === "UnknownEmail") {
+            validationErrors.push({ field: "oldPassword", msg: "Utilizator necunoscut" });
+        } else if (err.message === "IncorrectPassword") {
+            validationErrors.push({ field: "oldPassword", msg: "Parolă incorectă" });
+        }
+
+        if (validationErrors.length) {
+            return flashAndReloadChangePasswordPage(req, res, validationErrors);
+        }
+
+        // @TODO display an error message (without details) and log the details
+        return res.status(500).json(err.message);
     }
 };
 
@@ -454,47 +418,6 @@ exports.me = function(req, res, next) {
         if (err) return next(err);
         if (!user) return res.status(401).send("Unauthorized");
         res.json(user);
-    });
-};
-
-exports.saveActivationData = function(req, res) {
-    const userId = req.params.id;
-    const psw = req.body.password;
-
-    userService.getOneById(userId, function(err, user) {
-        user.salt = userService.makeSalt();
-        user.hashedPassword = userService.encryptPassword(psw, user.salt);
-        delete user.activationToken;
-
-        user.modifiedBy = user.name;
-        user.modifiedOn = new Date();
-
-        userService.update(user, function(err) {
-            if (err) return res.status(422).json(err);
-
-            // keep user as authenticated
-            const token = "signToken(user._id, user.role)";
-
-            cookieHelper.setCookies(res, token);
-
-            res.redirect("/");
-        });
-    });
-};
-
-exports.activateUser = function(req, res, next) {
-    const userId = req.params.id;
-    const activationToken = req.query.activationToken;
-
-    userService.getByIdWithoutPsw(userId, function(err, user) {
-        if (err) return next(err);
-        if (!user) return res.status(400).send("Link incorect sau expirat (utilizator negasit)");
-        if (user.activationToken !== activationToken) return res.status(400).send("Acest cont a fost deja activat");
-
-        const context = {
-            user: user
-        };
-        res.render("user/activate", context);
     });
 };
 
@@ -554,6 +477,24 @@ const getLoginStaticValidationErrors = (email, password) => {
     return validationErrors;
 };
 
+const getChangePasswordStaticValidationErrors = (oldPassword, newPassword) => {
+    const validationErrors = [];
+
+    // oldPassword
+    if (validator.isEmpty(oldPassword)) validationErrors.push({ field: "oldPassword", msg: "Câmp obligatoriu" });
+    else if (!validator.isLength(oldPassword, { max: 50 }))
+        validationErrors.push({ field: "oldPassword", msg: "Maxim 50 caractere" });
+
+    // newPassword
+    if (validator.isEmpty(newPassword)) validationErrors.push({ field: "newPassword", msg: "Câmp obligatoriu" });
+    else if (!validator.isLength(newPassword, { min: 6 }))
+        validationErrors.push({ field: "newPassword", msg: "Minim 6 caractere" });
+    else if (!validator.isLength(newPassword, { max: 50 }))
+        validationErrors.push({ field: "newPassword", msg: "Câmp obligatoriu" });
+
+    return validationErrors;
+};
+
 const flashAndReloadSignupPage = (req, res, validationErrors) => {
     const { lastName, firstName, email, password, confirmPassword } = req.body;
     const initialValues = [
@@ -579,4 +520,15 @@ const flashAndReloadLoginPage = (req, res, validationErrors) => {
     req.flash("validationErrors", validationErrors);
     req.flash("initialValues", initialValues);
     return res.redirect("/login");
+};
+
+const flashAndReloadChangePasswordPage = (req, res, validationErrors) => {
+    const { oldPassword, newPassword } = req.body;
+    const initialValues = [
+        { field: "oldPassword", val: oldPassword },
+        { field: "newPassword", val: newPassword }
+    ];
+    req.flash("validationErrors", validationErrors);
+    req.flash("initialValues", initialValues);
+    return res.redirect("/changepassword");
 };

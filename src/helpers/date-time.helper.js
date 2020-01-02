@@ -60,6 +60,11 @@ exports.getFriendlyDate = date => {
     let mm = m;
     if (mm < 10) mm = "0" + m;
 
+    // format time: https://stackoverflow.com/a/25275808
+    const hours = date.getHours(); // hour returned in 24 hour format
+    let minutes = date.getMinutes();
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+
     return {
         dayAsString: this.getRoDay(date.getDay()), // Joi
         dayAsShortString: this.getRoShortDay(date.getDay()), // Jo
@@ -69,7 +74,9 @@ exports.getFriendlyDate = date => {
         monthAsShortString: this.getRoShortMonth(m - 1), // Apr
         year: yyyy, // 2015
         ymd: yyyy + "-" + mm + "-" + dd, // 2015-07-23
-        dmy: dd + "." + mm + "." + yyyy // 23.07.2015
+        dmy: dd + "." + mm + "." + yyyy, // 23.07.2015
+
+        time: hours + ":" + minutes // 13:07
     };
 };
 

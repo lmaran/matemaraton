@@ -23,7 +23,8 @@ exports.addUserIfExist = async (req, res, next) => {
         ]);
 
         if (!user) {
-            res.status(401).end();
+            cookieHelper.clearCookies(res);
+            return next();
         }
 
         // attach user roles
@@ -51,11 +52,12 @@ exports.addUserIfExist = async (req, res, next) => {
         res.locals.user = user;
         next();
     } catch (err) {
+        cookieHelper.clearCookies(res);
         if (err.name === "TokenExpiredError") {
             // TODO: Silently renew the tokens
-            cookieHelper.clearCookies(res);
             return res.redirect("/login");
+        } else {
+            return res.send(err.message);
         }
-        return res.status(500).json(err.toString());
     }
 };

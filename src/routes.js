@@ -71,6 +71,8 @@ router.post("/signup", userController.postSignup);
 router.get("/signup-activation/:activationCode", userController.signupActivation);
 router.get("/signup-ask-to-complete", userController.askToComplete);
 router.get("/signup-completed", userController.signupCompleted);
+router.get("/signup-invitation-sent", userController.signupInvitationSent);
+router.get("/signup-registration-already-activated", userController.signupRegistrationAlreadyActivated);
 
 router.post("/invite-to-signup", userController.inviteToSignup);
 router.get("/invite-confirm/:userId/:invitationCode", userController.getInviteConfirm);
