@@ -26,7 +26,7 @@ Activ. Ultima conectare la {{parentUser.lastActionDate}}
 Invitație trimisă. Așteaptă activare.
 <p>Detalii: Ultima înregistrare a fost trimisă la <strong>{{parentUser.email}}</strong> la {{parentUser.lastActionDate}}
 </p>
-<form method="post" action="/invite-to-signup" novalidate onsubmit="saveBtn.disabled = true; return true;">
+<form method="post" action="/signup/invite" novalidate onsubmit="saveBtn.disabled = true; return true;">
     {{!-- <input type2="hidden" name="personId" value="{{parent._id}}" /> --}}
     <input type2="hidden" name="firstName" value="{{parent.firstName}}" />
     <input type2="hidden" name="lastName" value="{{parent.lastName}}" />
@@ -42,7 +42,7 @@ inregistrat
 
 {{else}}
 Cont inexistent.
-<form method="post" action="/invite-to-signup" novalidate onsubmit="saveBtn.disabled = true; return true;">
+<form method="post" action="/signup/invite" novalidate onsubmit="saveBtn.disabled = true; return true;">
     {{!-- <input type2="hidden" name="personId" value="{{parent._id}}" /> --}}
     <input type2="hidden" name="firstName" value="{{parent.firstName}}" />
     <input type2="hidden" name="lastName" value="{{parent.lastName}}" />

@@ -2,7 +2,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const config = require("../config");
 const userService = require("../services/user.service");
-// const personService = require("../services/person.service");
 const uuid = require("uuid/v4");
 
 exports.login = async (email, password) => {
@@ -44,7 +43,7 @@ exports.signupByInvitationCode = async (firstName, lastName, password, invitatio
         // update user info
         existingUser.firstName = firstName;
         existingUser.lastName = lastName;
-        //existingUser.email = email;
+        // email is already saved
         existingUser.password = hashedPassword;
         existingUser.status = "active";
         existingUser.activatedOn = new Date();
@@ -52,9 +51,6 @@ exports.signupByInvitationCode = async (firstName, lastName, password, invitatio
 
         await userService.updateOne(existingUser);
 
-        // console.log(response.ops[0]);
-
-        // const userRecord = response.ops[0];
         const token = generateJWT(existingUser);
         return token;
     } else throw new Error("InvalidInvitationCode");
@@ -85,6 +81,7 @@ exports.signupByUserRegistration = async (firstName, lastName, email, psw) => {
             signupCode: uniqueId,
             email
         };
+
         await userService.insertOne(newUser);
     }
 
@@ -146,6 +143,11 @@ exports.resetPasswordByCode = async resetPasswordCode => {
     return await userService.updateOne(existingUser);
 };
 
+exports.getJwtPayload = async token => {
+    const payload = await jwt.verify(token, config.session_secret);
+    return payload;
+};
+
 const generateJWT = user => {
     return jwt.sign(
         {
@@ -158,9 +160,4 @@ const generateJWT = user => {
         // { expiresIn: 60 * 60 * 24 * 365 } // in seconds
         { expiresIn: "6h" }
     );
-};
-
-exports.getJwtPayload = async token => {
-    const payload = await jwt.verify(token, config.session_secret);
-    return payload;
 };

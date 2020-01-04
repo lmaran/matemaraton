@@ -12,6 +12,12 @@ const parentController = require("./controllers/parent.controller");
 const contactController = require("./controllers/contact.controller");
 const pageController = require("./controllers/page.controller");
 const userController = require("./controllers/user.controller");
+const userResetPasswordController = require("./controllers/user-reset-password.controller");
+const userChangePasswordController = require("./controllers/user-change-password.controller");
+const userSignupController = require("./controllers/user-signup.controller");
+const userLoginController = require("./controllers/user-login.controller");
+const userLogoutController = require("./controllers/user-logout.controller");
+
 const isAuthenticated = require("./middlewares/is-authenticated.middleware").isAuthenticated;
 const presenceController = require("./controllers/presence.controller");
 const courseController = require("./controllers/course.controller");
@@ -63,34 +69,31 @@ router.post("/probleme", problemController.createProblem);
 router.get("/:pageId/asdfgh", pageController.getPage2);
 
 // user
-router.get("/login", userController.getLogin);
-router.post("/login", userController.postLogin);
-router.get("/logout", isAuthenticated, userController.logout);
-router.get("/signup", userController.getSignup);
-router.post("/signup", userController.postSignup);
-router.get("/signup-activation/:activationCode", userController.signupActivation);
-router.get("/signup-ask-to-complete", userController.askToComplete);
-router.get("/signup-completed", userController.signupCompleted);
-router.get("/signup-invitation-sent", userController.signupInvitationSent);
-router.get("/signup-registration-already-activated", userController.signupRegistrationAlreadyActivated);
+router.get("/login", userLoginController.getLogin);
+router.post("/login", userLoginController.postLogin);
+router.get("/logout", isAuthenticated, userLogoutController.logout);
 
-router.post("/invite-to-signup", userController.inviteToSignup);
-router.get("/invite-confirm/:userId/:invitationCode", userController.getInviteConfirm);
-// router.get("/check-send-email", userController.checkSendEmail);
+// user-signup
+router.post("/signup/invite", userSignupController.postInviteToSignup);
+router.get("/signup/invitation-sent", userSignupController.displaySignupInvitationSent);
+router.get("/signup", userSignupController.getSignup);
+router.post("/signup", userSignupController.postSignup);
+router.get("/signup/ask-to-confirm", userSignupController.displaySignupAskToConfirm);
+router.get("/signup/confirm/:activationCode", userSignupController.getSignupConfirm);
 
-// change password
-router.get("/change-password", isAuthenticated, userController.getChangePassword);
-router.post("/change-password", isAuthenticated, userController.postChangePassword);
+// user-change-password
+router.get("/change-password", isAuthenticated, userChangePasswordController.getChangePassword);
+router.post("/change-password", isAuthenticated, userChangePasswordController.postChangePassword);
 
-// reset password (step1: request, step2: confirmation)
-router.get("/reset-password", userController.getResetPassword);
-router.post("/reset-password", userController.postResetPassword);
-router.get("/reset-password/ask-to-confirm", userController.resetPasswordAskToConfirm);
-router.get("/reset-password/confirm/:resetPasswordCode", userController.resetPasswordConfirm);
+// user-reset-password (step1: request, step2: confirmation)
+router.get("/reset-password", userResetPasswordController.getResetPassword);
+router.post("/reset-password", userResetPasswordController.postResetPassword);
+router.get("/reset-password/ask-to-confirm", userResetPasswordController.displayResetPasswordAskToConfirm);
+router.get("/reset-password/confirm/:resetPasswordCode", userResetPasswordController.getResetPasswordConfirm);
 
 // router.get("/:edition?/cursuri/grupe/:groupId", matemaratonController.getCoursesPerGroup);
 // router.get("/:edition?/cursuri/:courseId", matemaratonController.getCourse);
-router.get("/:edition?", matemaratonController.getMatemaraton);
+// router.get("/:edition?", matemaratonController.getMatemaraton);
 
 // pages
 router.get("/:pageId", pageController.getPage);

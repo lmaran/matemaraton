@@ -59,8 +59,10 @@ exports.getParent = async (req, res) => {
         await userService.getOneByEmail(parent.email)
     ]);
 
-    const d = dateTimeHelper.getFriendlyDate(parentUser.modifiedOn || parentUser.createdOn);
-    parentUser.lastActionDate = `${d.dmy} ${d.time}`; // "23.04.2020 13:07"
+    if (parentUser) {
+        const d = dateTimeHelper.getFriendlyDate(parentUser.modifiedOn || parentUser.createdOn);
+        parentUser.lastActionDate = `${d.dmy} ${d.time}`; // "23.04.2020 13:07"
+    }
 
     const data = {
         parent,
