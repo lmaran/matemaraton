@@ -12,7 +12,7 @@ const parentController = require("./controllers/parent.controller");
 const contactController = require("./controllers/contact.controller");
 const pageController = require("./controllers/page.controller");
 const userController = require("./controllers/user.controller");
-const isAuthenticated = require("./middlewares/isAuthenticated.middleware").isAuthenticated;
+const isAuthenticated = require("./middlewares/is-authenticated.middleware").isAuthenticated;
 const presenceController = require("./controllers/presence.controller");
 const courseController = require("./controllers/course.controller");
 

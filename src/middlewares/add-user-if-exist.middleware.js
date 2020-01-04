@@ -1,8 +1,8 @@
 /* eslint-disable require-atomic-updates */
 const authService = require("../services/auth.service");
 const userService = require("../services/user.service");
-const roleAssignmentsService = require("../services/roleAssignments.service");
-const roleDefinitionsService = require("../services/roleDefinitions.service");
+const roleAssignmentsService = require("../services/role-assignments.service");
+const roleDefinitionsService = require("../services/role-definitions.service");
 
 const cookieHelper = require("../helpers/cookie.helper");
 
