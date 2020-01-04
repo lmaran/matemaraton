@@ -18,6 +18,11 @@ exports.getOneBySignupCode = async signupCode => {
     return db.collection(collection).findOne({ signupCode });
 };
 
+exports.getOneByResetPasswordCode = async resetPasswordCode => {
+    const db = await mongoHelper.getDb();
+    return db.collection(collection).findOne({ resetPasswordCode });
+};
+
 exports.getOneById = async id => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).findOne({ _id: new ObjectID(id) });

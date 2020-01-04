@@ -91,6 +91,23 @@ exports.signupByUserRegistration = async (firstName, lastName, email, psw) => {
     return uniqueId;
 };
 
+exports.saveResetPasswordRequest = async (email, password) => {
+    const existingUser = await userService.getOneByEmail(email);
+    if (!existingUser || (existingUser && existingUser.status !== "active")) throw new Error("AccountNotExists");
+
+    const resetPasswordCode = uuid();
+
+    existingUser.resetPasswordCode = resetPasswordCode;
+    existingUser.resetPasswordInfo = {
+        newPassword: await bcrypt.hash(password, 10),
+        requestDate: new Date()
+    };
+
+    await userService.updateOne(existingUser);
+
+    return resetPasswordCode;
+};
+
 exports.signupByActivationCode = async activationCode => {
     const existingUser = await userService.getOneBySignupCode(activationCode);
     if (existingUser) {
@@ -109,6 +126,24 @@ exports.signupByActivationCode = async activationCode => {
             throw new Error("AccountAlreadyActivated");
         } else throw new Error("InvalidActivationCode");
     } else throw new Error("InvalidActivationCode");
+};
+
+exports.resetPasswordByCode = async resetPasswordCode => {
+    const existingUser = await userService.getOneByResetPasswordCode(resetPasswordCode);
+
+    if (!existingUser) throw new Error("InvalidResetPasswordCode");
+    else if (existingUser.status !== "active") throw new Error("InactiveUser");
+    else if (!existingUser.resetPasswordInfo) throw new Error("InvalideResetPasswordInfo");
+
+    const pswInfo = existingUser.resetPasswordInfo; // shortcut
+
+    // update user info
+    existingUser.password = pswInfo.newPassword;
+    existingUser.lastResetPasswordOn = new Date();
+    delete existingUser.resetPasswordCode;
+    delete existingUser.resetPasswordInfo;
+
+    return await userService.updateOne(existingUser);
 };
 
 const generateJWT = user => {

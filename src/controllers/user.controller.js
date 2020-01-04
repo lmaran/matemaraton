@@ -47,14 +47,13 @@ exports.inviteToSignup = async (req, res) => {
 
         // Send this code on email
         const rootUrl = config.externalUrl; // e.g. http://localhost:1417
-        const activationLink = `${rootUrl}/signup?invitationCode=${uniqueId}`;
+        const link = `${rootUrl}/signup?invitationCode=${uniqueId}`;
 
         const emailData = {
             to: email,
             subject: "Invitație activare cont",
-            text: `Pentru activarea contului te rugăm sa accesezi link-ul: ${activationLink}`,
             html: `<html>Pentru activarea contului te rugăm să accesezi 
-                <a href="${activationLink}">link-ul de activare</a>!
+                <a href="${link}">link-ul de activare</a>!
                 </html>`
         };
 
@@ -76,7 +75,7 @@ exports.checkSendEmail = async (req, res) => {
     const data = {
         to: "lucian.maran@outlook.com",
         subject: "Hello7",
-        text: "Testing some Mailgun awesomness!",
+        // text: "Testing some Mailgun awesomness!",
         html: "<html>HTML version of the body</html>"
     };
 
@@ -271,14 +270,13 @@ exports.postSignup = async (req, res) => {
             const activationCode = await authService.signupByUserRegistration(firstName, lastName, email, password);
             // Send this code on email
             const rootUrl = config.externalUrl; // e.g. http://localhost:1417
-            const activationLink = `${rootUrl}/signup-activation/${activationCode}`;
+            const link = `${rootUrl}/signup-activation/${activationCode}`;
 
             const data = {
                 to: email,
                 subject: "Activare cont",
-                text: `Pentru activarea contului te rugăm sa accesezi link-ul: ${activationLink}`,
                 html: `<html>Pentru activarea contului te rugăm să accesezi 
-                <a href="${activationLink}">link-ul de activare</a>!
+                <a href="${link}">link-ul de activare</a>!
                 </html>`
             };
 
@@ -286,14 +284,8 @@ exports.postSignup = async (req, res) => {
 
             res.redirect("signup-ask-to-complete");
         }
-        // const token = await authService.signup(firstName, lastName, email, password, confirmPassword);
-
-        // cookieHelper.setCookies(res, token);
-
-        // res.redirect("/");
     } catch (err) {
         // handle dynamic validation errors
-
         const validationErrors = [];
         if (err.message === "EmailAlreadyExists") {
             validationErrors.push({ field: "email", msg: "Există deja un cont cu acest email" });
@@ -373,7 +365,7 @@ exports.getChangePassword = async (req, res) => {
         uiData.oldPassword = { hasAutofocus: true }; // in case of a new page
     }
     //res.send({ data, uiData, errors });
-    res.render("user/changePassword", { data, uiData, errors });
+    res.render("user/change-password", { data, uiData, errors });
 };
 
 exports.postChangePassword = async (req, res) => {
@@ -408,9 +400,123 @@ exports.postChangePassword = async (req, res) => {
     }
 };
 
-/**
- * Get my info
- */
+exports.getResetPassword = async (req, res) => {
+    try {
+        const uiData = {};
+
+        // Get an array of flash errors (or initial values) by passing the key
+        const validationErrors = req.flash("validationErrors");
+        const initialValues = req.flash("initialValues");
+
+        const errors = arrayHelper.arrayToObject(validationErrors, "field");
+        const data = arrayHelper.arrayToObject(initialValues, "field");
+
+        // if authenticate,fill in the email field
+        if (req.user) {
+            data.email = {
+                field: "email",
+                val: req.user.email
+            };
+        }
+
+        // set autofocus properties
+        if (validationErrors.length) {
+            uiData[validationErrors[0].field] = { hasAutofocus: true }; // focus on first field with error
+        } else {
+            // no errors (e.g. first page request)
+            if (req.user) {
+                uiData.password = { hasAutofocus: true };
+            } else {
+                uiData.email = { hasAutofocus: true };
+            }
+        }
+
+        // set readOnly properties
+        if (req.user) {
+            uiData.email = { isReadOnly: true };
+        }
+
+        res.render("user/reset-password", { data, uiData, errors });
+    } catch (err) {
+        return res.status(200).json(err.message);
+    }
+};
+
+exports.postResetPassword = async (req, res) => {
+    try {
+        const { email, password, confirmPassword } = req.body;
+
+        // handle static validation errors
+        const validationErrors = getResetPasswordStaticValidationErrors(email, password, confirmPassword);
+        if (validationErrors.length) {
+            return flashAndReloadSignupPage(req, res, validationErrors);
+        }
+
+        const resetPasswordCode = await authService.saveResetPasswordRequest(email, password);
+
+        // Send this code on email
+        const rootUrl = config.externalUrl; // e.g. http://localhost:1417
+        const link = `${rootUrl}/reset-password/confirm/${resetPasswordCode}`;
+        const data = {
+            to: email,
+            subject: "Resetare parolă",
+            html: `<html>Te rugăm să confirmi operația de resetare a parolei folosind acest <a href="${link}">link</a>!</html>`
+        };
+        await emailService.sendEmail(data);
+
+        res.redirect("/reset-password/ask-to-confirm");
+    } catch (err) {
+        // handle dynamic validation errors
+        const validationErrors = [];
+        if (err.message === "AccountNotExists") {
+            validationErrors.push({ field: "email", msg: "Nu există un cont activ cu acest email" });
+        }
+
+        if (validationErrors.length) {
+            return flashAndReloadSignupPage(req, res, validationErrors);
+        }
+
+        // @TODO display an error message (without details) and log the details
+        return res.status(500).json(err.message);
+    }
+};
+
+exports.resetPasswordAskToConfirm = async (req, res) => {
+    res.render("user/reset-password-ask-to-confirm");
+};
+
+exports.resetPasswordConfirm = async (req, res) => {
+    try {
+        const resetPasswordCode = req.params.resetPasswordCode;
+
+        await authService.resetPasswordByCode(resetPasswordCode);
+
+        cookieHelper.clearCookies(res);
+
+        const data = {
+            isSuccess: true,
+            message: "Parola a fost <strong>resetată</strong> cu success!",
+            details: "Poți continua cu pagina de <a href='/login'>login</a>."
+        };
+
+        res.render("user/reset-password-confirm", data);
+    } catch (err) {
+        const data = { isError: true, message: err.message };
+
+        if (err.message === "InvalidResetPasswordCode")
+            data.message = "Codul pentru resetarea parolei este <strong>invalid</strong> sau <strong>expirat</strong>!";
+        else if (err.message === "InactiveUser") data.message = "Utilizatorul aferent acestui cod este inactiv!";
+        else if (err.message === "InvalideResetPasswordInfo")
+            data.message = "Lipsesc informațiile necesare pentru resetarea parolei!";
+
+        res.render("user/reset-password-confirm", data);
+    }
+};
+
+exports.resetPasswordConfirmed = async (req, res) => {
+    res.render("user/reset-password-confirmed");
+};
+
 exports.me = function(req, res, next) {
     const userId = req.user._id.toString();
     userService.getByIdWithoutPsw(userId, function(err, user) {
@@ -441,6 +547,34 @@ const getSignupStaticValidationErrors = (firstName, lastName, email, password, c
         else if (!validator.isEmail(email)) validationErrors.push({ field: "email", msg: "Email invalid" });
         // else if (await userService.getOneByEmail(email))
         //     validationErrors.push({ field: "email", msg: "Exista deja un cont cu acest email" });
+
+        // password
+        if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu" });
+        else if (!validator.isLength(password, { min: 6 }))
+            validationErrors.push({ field: "password", msg: "Minim 6 caractere" });
+        else if (!validator.isLength(password, { max: 50 }))
+            validationErrors.push({ field: "password", msg: "Maxim 50 caractere" });
+
+        // confirm password
+        if (validator.isEmpty(confirmPassword))
+            validationErrors.push({ field: "confirmPassword", msg: "Câmp obligatoriu" });
+        else if (confirmPassword !== password)
+            validationErrors.push({ field: "confirmPassword", msg: "Parolele nu coincid" });
+
+        return validationErrors;
+    } catch (err) {
+        throw new Error(err);
+    }
+};
+
+const getResetPasswordStaticValidationErrors = (email, password, confirmPassword) => {
+    try {
+        const validationErrors = [];
+
+        if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu" });
+        else if (!validator.isLength(email, { max: 50 }))
+            validationErrors.push({ field: "email", msg: "Maxim 50 caractere" });
+        else if (!validator.isEmail(email)) validationErrors.push({ field: "email", msg: "Email invalid" });
 
         // password
         if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu" });
@@ -530,5 +664,5 @@ const flashAndReloadChangePasswordPage = (req, res, validationErrors) => {
     ];
     req.flash("validationErrors", validationErrors);
     req.flash("initialValues", initialValues);
-    return res.redirect("/changepassword");
+    return res.redirect("/change-password");
 };

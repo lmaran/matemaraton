@@ -78,9 +78,15 @@ router.post("/invite-to-signup", userController.inviteToSignup);
 router.get("/invite-confirm/:userId/:invitationCode", userController.getInviteConfirm);
 // router.get("/check-send-email", userController.checkSendEmail);
 
-// app.get('/me', auth.isAuthenticated(), require('./user/userController').me);
-router.get("/changepassword", isAuthenticated, userController.getChangePassword);
-router.post("/changepassword", isAuthenticated, userController.postChangePassword);
+// change password
+router.get("/change-password", isAuthenticated, userController.getChangePassword);
+router.post("/change-password", isAuthenticated, userController.postChangePassword);
+
+// reset password (step1: request, step2: confirmation)
+router.get("/reset-password", userController.getResetPassword);
+router.post("/reset-password", userController.postResetPassword);
+router.get("/reset-password/ask-to-confirm", userController.resetPasswordAskToConfirm);
+router.get("/reset-password/confirm/:resetPasswordCode", userController.resetPasswordConfirm);
 
 // router.get("/:edition?/cursuri/grupe/:groupId", matemaratonController.getCoursesPerGroup);
 // router.get("/:edition?/cursuri/:courseId", matemaratonController.getCourse);

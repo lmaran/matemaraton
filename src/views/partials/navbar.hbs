@@ -140,14 +140,10 @@ if 2 similar sections are used, the last one will override the first one --}}
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <!--<img src='//www.gravatar.com/avatar/6f137572059f8c0f23363e8678d7a795' width="20" height="20">-->
                         {{@root.user.firstName}} {{@root.user.lastName}}
-                        {{!-- <b class='caret'></b> --}}
                     </a>
-                    {{!-- <ul class="dropdown-menu">
-                        <li><a href='/changePassword'>Schimba parola</a></li>
-                        <li><a href='/logout'>Log out</a></li>
-                    </ul> --}}
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/changepassword">Schimba parola</a>
+                        <a class="dropdown-item" href="/change-password">Schimbă parola</a>
+                        <a class="dropdown-item" href="/reset-password">Resetează parola</a>
                         <a class="dropdown-item" href="/logout">Log out</a>
                     </div>
                 </li>
