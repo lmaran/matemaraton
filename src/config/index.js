@@ -20,6 +20,8 @@ const common = {
     rollbarToken: process.env.ROLLBAR_TOKEN,
     logglyToken: process.env.LOGGLY_TOKEN,
     logglySubdomain: process.env.LOGGLY_SUBDOMAIN,
+    loginCookieMaxAge: 60 * 60 * 24 * 30, // (30 days; in seconds),
+    loginJwtTokenExpiresIn: 60 * 15, // (15 minutes; in seconds),
 
     logLevel: process.env.LOG_LEVEL || LogLevel.WARNING,
 

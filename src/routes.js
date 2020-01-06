@@ -11,7 +11,7 @@ const parentController = require("./controllers/parent.controller");
 
 const contactController = require("./controllers/contact.controller");
 const pageController = require("./controllers/page.controller");
-const userController = require("./controllers/user.controller");
+// const userController = require("./controllers/user.controller");
 const userResetPasswordController = require("./controllers/user-reset-password.controller");
 const userChangePasswordController = require("./controllers/user-change-password.controller");
 const userSignupController = require("./controllers/user-signup.controller");
@@ -68,7 +68,7 @@ router.post("/probleme", problemController.createProblem);
 
 router.get("/:pageId/asdfgh", pageController.getPage2);
 
-// user
+// user-login/logout
 router.get("/login", userLoginController.getLogin);
 router.post("/login", userLoginController.postLogin);
 router.get("/logout", isAuthenticated, userLogoutController.logout);
