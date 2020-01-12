@@ -3,7 +3,7 @@ const config = require("../config");
 
 exports.setCookies = (res, token) => {
     const isSecure = process.env.NODE_ENV == "production"; // in production the cookie is sent only over https
-    console.log("cookie maxAge: " + config.loginCookieMaxAge);
+    // console.log("cookie maxAge: " + config.loginCookieMaxAge);
 
     // "secure" flag == true => this cookie will only be sent over an HTTPS connection
     // "httpOnly" flag == true => JavaScript will not be able to read this authentication cookie

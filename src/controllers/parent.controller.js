@@ -5,9 +5,14 @@ const studentHelper = require("../helpers/student.helper");
 const studentsAndClassesService = require("../services/studentsAndClasses.service");
 const autz = require("../services/autz.service");
 const userService = require("../services/user.service");
+const urlHelper = require("../helpers/url.helper");
 //const { can } = require("../services/autz.service");
 
 exports.getParentsPerClass = async (req, res) => {
+    if (!req.user) {
+        return res.redirect(`/login?redirect_uri=${urlHelper.getCurrentEncodedUri(req)}`);
+    }
+
     const classId = req.params.classId;
 
     const [cls, studentsMapByClass] = await Promise.all([

@@ -4,7 +4,15 @@ const arrayHelper = require("../helpers/array.helper");
 const cookieHelper = require("../helpers/cookie.helper");
 
 exports.getLogin = (req, res) => {
-    if (req.user) return res.redirect("/"); // already authenticated
+    if (req.user) {
+        // already authenticated
+        const data = {
+            isInfo: true,
+            message: "Ești deja autentificat!",
+            details: "Dacă dorești să te re-autentifici, trebuie întâi să te deconectezi: <a href='/logout'>logout</a>."
+        };
+        return res.render("user/login-already-authenticated", data);
+    }
 
     // Get an array of flash errors (or initial values) by passing the key
     const validationErrors = req.flash("validationErrors");
@@ -12,6 +20,9 @@ exports.getLogin = (req, res) => {
 
     const errors = arrayHelper.arrayToObject(validationErrors, "field");
     const data = arrayHelper.arrayToObject(initialValues, "field");
+
+    // save into an hidden field to be sent at POST
+    data.redirectUri = req.query.redirect_uri;
 
     // set autofocus
     const uiData = {};
@@ -26,7 +37,7 @@ exports.getLogin = (req, res) => {
 
 exports.postLogin = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, redirectUri } = req.body;
         // handle static validation errors
         const validationErrors = getLoginStaticValidationErrors(email, password);
         if (validationErrors.length) {
@@ -36,7 +47,7 @@ exports.postLogin = async (req, res) => {
         const token = await authService.login(email, password);
 
         cookieHelper.setCookies(res, token);
-        res.redirect("/");
+        res.redirect(redirectUri || "/");
     } catch (err) {
         // handle dynamic validation errors
         const validationErrors = [];

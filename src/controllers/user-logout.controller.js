@@ -15,5 +15,5 @@ exports.logout = (req, res) => {
     cookieHelper.clearCookies(res);
 
     req.user = null;
-    res.redirect("/");
+    res.redirect(req.query.redirect_uri || "/");
 };
