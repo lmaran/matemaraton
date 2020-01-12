@@ -80,6 +80,7 @@ router.get("/signup", userSignupController.getSignup);
 router.post("/signup", userSignupController.postSignup);
 router.get("/signup/ask-to-confirm", userSignupController.displaySignupAskToConfirm);
 router.get("/signup/confirm/:activationCode", userSignupController.getSignupConfirm);
+router.get("/signup/confirm-invitation-done", userSignupController.getSignupConfirmInvitationDone);
 
 // user-change-password
 router.get("/change-password", isAuthenticated, userChangePasswordController.getChangePassword);

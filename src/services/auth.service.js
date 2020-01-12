@@ -5,16 +5,13 @@ const userService = require("../services/user.service");
 const uuid = require("uuid/v4");
 
 exports.login = async (email, password) => {
-    const userRecord = await userService.getOneByEmail(email);
+    const existingUser = await userService.getOneByEmail(email);
 
-    if (!userRecord) {
-        throw new Error("UnknownEmail");
-    } else if (!(await bcrypt.compare(password, userRecord.password))) {
+    if (!existingUser) throw new Error("UnknownEmail");
+    else if (existingUser.status !== "active") throw new Error("InactiveUser");
+    else if (!(await bcrypt.compare(password, existingUser.password))) {
         throw new Error("IncorrectPassword");
-    } else {
-        const token = generateJWT(userRecord);
-        return token;
-    }
+    } else return getAccessAndRefreshTokens(existingUser);
 };
 
 exports.changePassword = async (email, oldPassword, newPassword) => {
@@ -30,8 +27,7 @@ exports.changePassword = async (email, oldPassword, newPassword) => {
 
         await userService.updateOne(existingUser);
 
-        const token = generateJWT(existingUser);
-        return token;
+        return getAccessAndRefreshTokens(existingUser);
     }
 };
 
@@ -51,8 +47,7 @@ exports.signupByInvitationCode = async (firstName, lastName, password, invitatio
 
         await userService.updateOne(existingUser);
 
-        const token = generateJWT(existingUser);
-        return token;
+        return getAccessAndRefreshTokens(existingUser);
     } else throw new Error("InvalidInvitationCode");
 };
 
@@ -116,9 +111,7 @@ exports.signupByActivationCode = async activationCode => {
 
             await userService.updateOne(existingUser);
 
-            // const userRecord = response.ops[0];
-            const token = generateJWT(existingUser);
-            return token;
+            return getAccessAndRefreshTokens(existingUser);
         } else if (existingUser.status === "active") {
             throw new Error("AccountAlreadyActivated");
         } else throw new Error("InvalidActivationCode");
@@ -148,6 +141,17 @@ exports.getJwtPayload = async token => {
     return payload;
 };
 
+exports.getTokensFromRefreshToken = async refreshToken => {
+    const payload = await jwt.verify(refreshToken, config.session_secret);
+    const userId = payload.data._id;
+
+    const existingUser = await userService.getOneById(userId);
+
+    // TODO: check here for other conditions, as needed (eg: new roles/permissions)
+    if (!existingUser || existingUser.status !== "active") throw new Error("InvalidUser");
+    else return getAccessAndRefreshTokens(existingUser);
+};
+
 const generateJWT = user => {
     return jwt.sign(
         {
@@ -158,6 +162,29 @@ const generateJWT = user => {
         },
         config.session_secret,
         // { expiresIn: 60 * 60 * 24 * 365 } // in seconds
-        { expiresIn: "6h" }
+        // { expiresIn: "6h" }
+        { expiresIn: config.loginJwtTokenExpiresIn }
     );
+};
+
+const generateJWTRefreshToken = user => {
+    return jwt.sign(
+        {
+            data: {
+                _id: user._id
+                // email: user.email
+            }
+        },
+        // TODO: use a different key
+        config.session_secret
+
+        // refresh token doesn't expire
+        // { expiresIn: config.loginJwtTokenExpiresIn }
+    );
+};
+
+const getAccessAndRefreshTokens = existingUser => {
+    const token = generateJWT(existingUser);
+    const refreshToken = generateJWTRefreshToken(existingUser);
+    return { token, refreshToken };
 };

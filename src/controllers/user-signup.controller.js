@@ -133,7 +133,7 @@ exports.postSignup = async (req, res) => {
         }
 
         if (invitationCode) {
-            const token = await authService.signupByInvitationCode(
+            const { token, refreshToken } = await authService.signupByInvitationCode(
                 firstName,
                 lastName,
                 // email,
@@ -141,9 +141,9 @@ exports.postSignup = async (req, res) => {
                 invitationCode
             );
 
-            cookieHelper.setCookies(res, token);
+            cookieHelper.setCookies(res, token, refreshToken);
 
-            res.redirect("signup-completed");
+            res.redirect("/signup/confirm-invitation-done");
         } else {
             const activationCode = await authService.signupByUserRegistration(firstName, lastName, email, password);
             // Send this code on email
@@ -160,7 +160,7 @@ exports.postSignup = async (req, res) => {
 
             await emailService.sendEmail(data);
 
-            res.redirect("signup-ask-to-confirm");
+            res.redirect("/signup/ask-to-confirm");
         }
     } catch (err) {
         // handle dynamic validation errors
@@ -182,9 +182,9 @@ exports.getSignupConfirm = async (req, res) => {
     try {
         const activationCode = req.params.activationCode;
 
-        const token = await authService.signupByActivationCode(activationCode);
+        const { token, refreshToken } = await authService.signupByActivationCode(activationCode);
 
-        cookieHelper.setCookies(res, token);
+        cookieHelper.setCookies(res, token, refreshToken);
 
         const data = {
             isSuccess: true,
@@ -212,6 +212,15 @@ exports.displaySignupAskToConfirm = async (req, res) => {
 
 exports.displaySignupInvitationSent = async (req, res) => {
     res.render("user/signup-invitation-sent");
+};
+
+exports.getSignupConfirmInvitationDone = async (req, res) => {
+    const data = {
+        isSuccess: true,
+        message: "Contul a fost <strong>activat</strong> cu success!",
+        details: "Poți continua cu <a href='/'>pagina principală</a>."
+    };
+    res.render("user/signup-confirm", data);
 };
 
 const getSignupStaticValidationErrors = (firstName, lastName, email, password, confirmPassword) => {

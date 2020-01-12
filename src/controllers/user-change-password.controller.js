@@ -35,9 +35,9 @@ exports.postChangePassword = async (req, res) => {
             return flashAndReloadChangePasswordPage(req, res, validationErrors);
         }
 
-        const token = await authService.changePassword(req.user.email, oldPassword, newPassword);
+        const { token, refreshToken } = await authService.changePassword(req.user.email, oldPassword, newPassword);
 
-        cookieHelper.setCookies(res, token);
+        cookieHelper.setCookies(res, token, refreshToken);
         res.redirect("/");
     } catch (err) {
         // handle dynamic validation errors

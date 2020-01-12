@@ -44,9 +44,9 @@ exports.postLogin = async (req, res) => {
             return flashAndReloadLoginPage(req, res, validationErrors);
         }
 
-        const token = await authService.login(email, password);
+        const { token, refreshToken } = await authService.login(email, password);
 
-        cookieHelper.setCookies(res, token);
+        cookieHelper.setCookies(res, token, refreshToken);
         res.redirect(redirectUri || "/");
     } catch (err) {
         // handle dynamic validation errors
@@ -55,6 +55,8 @@ exports.postLogin = async (req, res) => {
             validationErrors.push({ field: "email", msg: "Email necunoscut" });
         } else if (err.message === "IncorrectPassword") {
             validationErrors.push({ field: "password", msg: "Parolă incorectă" });
+        } else if (err.message === "InactiveUser") {
+            validationErrors.push({ field: "email", msg: "Utilizator inactiv" });
         }
 
         if (validationErrors.length) {

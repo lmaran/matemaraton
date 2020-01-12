@@ -9,10 +9,28 @@ const cookieHelper = require("../helpers/cookie.helper");
 exports.addUserIfExist = async (req, res, next) => {
     // this middleware depends on "cookie-parser"
     try {
-        const token = req.cookies && req.cookies.access_token;
+        let token = req.cookies && req.cookies.access_token;
         if (!token) return next();
-        // const jwtPayload = await jwt.verify(token, config.session_secret);
-        const jwtPayload = await authService.getJwtPayload(token);
+
+        let jwtPayload;
+
+        try {
+            jwtPayload = await authService.getJwtPayload(token);
+        } catch (err) {
+            if (err.name === "TokenExpiredError") {
+                // Silently renew tokens
+                let refreshToken = req.cookies && req.cookies.refresh_token;
+
+                // details about the wrapping parenthesis: https://stackoverflow.com/a/35576419
+                ({ token, refreshToken } = await authService.getTokensFromRefreshToken(refreshToken));
+
+                // save the new values for further use
+                cookieHelper.setCookies(res, token, refreshToken);
+
+                // use the new payload
+                jwtPayload = await authService.getJwtPayload(token);
+            }
+        }
 
         // Attach user to request
         const userId = jwtPayload.data._id; // jwtPayload = {data:{_id, email...}, iat, exp}
@@ -53,11 +71,7 @@ exports.addUserIfExist = async (req, res, next) => {
         next();
     } catch (err) {
         cookieHelper.clearCookies(res);
-        if (err.name === "TokenExpiredError") {
-            // TODO: Silently renew the tokens
-            return res.redirect("/login");
-        } else {
-            return res.send(err.message);
-        }
+        // return res.send(err.message);
+        return next();
     }
 };
