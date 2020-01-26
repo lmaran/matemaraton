@@ -29,10 +29,11 @@ exports.getParentsPerClass = async (req, res) => {
     students.forEach(student => {
         student.displayName = studentHelper.getLastAndShortNameForStudent(student);
         student.parents = [];
-        student.parentIds.forEach(parentId => {
-            const parent = parents.find(p => p._id.toString() === parentId);
-            student.parents.push(parent);
-        });
+        student.parentIds &&
+            student.parentIds.forEach(parentId => {
+                const parent = parents.find(p => p._id.toString() === parentId);
+                student.parents.push(parent);
+            });
     });
 
     const data = {

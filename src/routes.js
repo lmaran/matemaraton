@@ -37,7 +37,7 @@ router.get("/clase/:classId", classController.getClass);
 
 // presence
 router.get("/clase/:classId/prezenta", presenceController.getPresencePerClass);
-router.get("/clase/:classId/total-prezente-pe-elevi", presenceController.getTotalPresencesPerStudents);
+router.get("/clase/:classId/total-prezente", presenceController.getTotalPresences);
 router.get("/elevi/:studentId/prezenta", presenceController.getPresencePerStudent);
 
 // parents

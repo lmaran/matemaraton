@@ -22,7 +22,7 @@
 
 <ul>
     {{#each activeStudents}}
-    <li><a href="/elevi/{{_id}}/prezenta">{{displayName}}</a>
+    <li><a href="/elevi/{{_id}}">{{displayName}}</a>
         {{#if gradeAndLetter}}
         ({{gradeAndLetter}})
         {{/if}}
@@ -32,7 +32,7 @@
     <hr />
 
     {{#each inactiveStudents}}
-    <li><a href="/elevi/{{_id}}/prezenta">{{displayName}}</a>
+    <li><a href="/elevi/{{_id}}">{{displayName}}</a>
         {{#if gradeAndLetter}}
         ({{gradeAndLetter}})
         {{/if}}

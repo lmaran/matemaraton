@@ -13,17 +13,18 @@
         <li class="breadcrumb-item"><a href="/">Acasă</i></a></li>
         <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">Clasa:
                 {{class.grade}}-{{class.name}}</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Prezența pe elevi</li>
+        <li class="breadcrumb-item active" aria-current="page">Total prezențe</li>
     </ol>
 </nav>
 
-<h1>Prezența pe elevi</h1>
+<h1>Total prezențe</h1>
 <h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2>
 
 {{#each presencesInfoForActiveStudents}}
 <div>
-    <a href="/elevi/{{student.id}}/prezenta">{{student.shortName}}</a>
-    {{#if student.gradeAndLetter}} ({{student.gradeAndLetter}}){{/if}} - prezențe: {{totalPresences}} din
+    <a href="/elevi/{{student.id}}">{{student.shortName}}</a>
+    {{#if student.gradeAndLetter}} ({{student.gradeAndLetter}}){{/if}}
+    - prezențe: <a href="/elevi/{{student.id}}/prezenta">{{totalPresences}}</a> din
     {{totalCourses}} ({{totalPresencesAsPercent}}%)
     <div class="progress mb-2">
         <div class="progress-bar" role="progressbar" style="width: {{totalPresencesAsPercent}}%" aria-valuenow="25"
@@ -37,8 +38,9 @@
 
 {{#each presencesInfoForInactiveStudents}}
 <div {{#if student.isDroppedOut}} class="toggle-presence hidePresence" {{/if}}>
-    <a href="/elevi/{{student.id}}/prezenta">{{student.shortName}}</a>
-    {{#if student.gradeAndLetter}} ({{student.gradeAndLetter}}){{/if}} - prezențe: {{totalPresences}} din
+    <a href="/elevi/{{student.id}}">{{student.shortName}}</a>
+    {{#if student.gradeAndLetter}} ({{student.gradeAndLetter}}){{/if}}
+    - prezențe: <a href="/elevi/{{student.id}}/prezenta">{{totalPresences}}</a> din
     {{totalCourses}} ({{totalPresencesAsPercent}}%)
     <div class="progress">
         <div class="progress-bar" role="progressbar" style="width: {{totalPresencesAsPercent}}%" aria-valuenow="25"
