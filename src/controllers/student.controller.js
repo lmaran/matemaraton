@@ -9,12 +9,12 @@ const autz = require("../services/autz.service");
 exports.getStudentsPerClass = async (req, res) => {
     const classId = req.params.classId;
 
-    const [cls, studentsMapByClass] = await Promise.all([
+    const [cls, studentsMapByClassId] = await Promise.all([
         await classService.getClassById(classId),
         await studentsAndClassesService.getStudentsMapByClassId(classId)
     ]);
 
-    const studentsIds = studentsMapByClass.map(x => x.studentId);
+    const studentsIds = studentsMapByClassId.map(x => x.studentId);
 
     let students = await personService.getPersonsByIds(studentsIds);
 

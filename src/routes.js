@@ -21,6 +21,7 @@ const userLogoutController = require("./controllers/user-logout.controller");
 const isAuthenticated = require("./middlewares/is-authenticated.middleware").isAuthenticated;
 const presenceController = require("./controllers/presence.controller");
 const courseController = require("./controllers/course.controller");
+const homeworkController = require("./controllers/homework.controller");
 
 // home
 router.get("/", homeController.getHomePage);
@@ -39,6 +40,9 @@ router.get("/clase/:classId", classController.getClass);
 router.get("/clase/:classId/prezenta", presenceController.getPresencePerClass);
 router.get("/clase/:classId/total-prezente", presenceController.getTotalPresences);
 router.get("/elevi/:studentId/prezenta", presenceController.getPresencePerStudent);
+
+// homework
+router.get("/clase/:classId/total-teme-predate", homeworkController.getTotalHomeworkSubmissions);
 
 // parents
 router.get("/clase/:classId/parinti", parentController.getParentsPerClass);
