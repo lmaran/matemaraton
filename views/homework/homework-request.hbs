@@ -16,34 +16,43 @@
 
 <div> <span class="font-weight-bold">Data publicării</span>: {{homeworkRequest.publishedDate}}</div>
 <div> <span class="font-weight-bold">Termen de predare</span>: {{homeworkRequest.dueDate}}</div>
-<div> <span class="font-weight-bold">Cursuri relaționate</span>: {{#each homeworkRequest.relatedCourses}}
+<div> <span class="font-weight-bold">Cursuri relaționate</span>:
+    {{#each homeworkRequest.relatedCourses}}
     <span>
         <a href="/cursuri/{{_id}}">curs {{course}}</a>,
     </span>
     {{/each}}
 </div>
 
-<div> <span class="font-weight-bold">Exerciții propuse</span>: {{#each homeworkRequest.documents}}
+<div> <span class="font-weight-bold">Exerciții propuse</span>:
+    {{#each homeworkRequest.documents}}
     <span>
-        <a href="{{url}}">{{name}}</a>
+        <a href="{{url}}">pdf</a>
     </span>
     {{/each}}
+    {{homeworkRequest.details}}
+
     (total: {{homeworkRequest.totalRequestedQuestions}} ex.)
 </div>
 
+
 {{#if isNotCurrentHomework}}
 <hr />
-<div> <span class="font-weight-bold">Exerciții rezolvate<sup>*</sup></span>:
-    {{#if homeworkRequest.submissions}}
+Elevii care au predat<sup>*</sup> această temă:
+
+{{#if homeworkRequest.submissions}}
+<ul>
     {{#each homeworkRequest.submissions}}
-    <span>
-        <a href="/elevi/{{student._id}}">{{student.displayName}}</a> ({{totalSubmittedQuestions}}),
-    </span>
+    <li>
+        <a href="/elevi/{{student._id}}">{{student.displayName}}</a> ({{totalSubmittedQuestions}} din
+        {{@root.homeworkRequest.totalRequestedQuestions}} exerciții)
+    </li>
     {{/each}}
-    {{else}}
-    Temă nefăcută (toată clasa)!
-    {{/if}}
-</div>
+</ul>
+{{else}}
+Temă nefăcută (toată clasa)!
+{{/if}}
+
 
 
 {{#if homeworkRequest.submissions}}
