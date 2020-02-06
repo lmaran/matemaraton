@@ -8,6 +8,15 @@ exports.getCourseById = async id => {
     return db.collection(coursesCollection).findOne({ _id: new ObjectID(id) });
 };
 
+exports.getCoursesByIds = async ids => {
+    const idsAsObjectID = ids.map(x => new ObjectID(x));
+    const db = await mongoHelper.getDb();
+    return db
+        .collection(coursesCollection)
+        .find({ _id: { $in: idsAsObjectID } })
+        .toArray();
+};
+
 exports.getCoursesByClassId = async classId => {
     const db = await mongoHelper.getDb();
     return db

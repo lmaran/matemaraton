@@ -5,6 +5,46 @@
 // const classService = require("../services/class.service");
 // const studentsAndClassesService = require("../services/studentsAndClasses.service");
 
+// exports.removeParentDetails = async (req, res) => {
+//     // same for students. we'll keep only the IDs and drop all other details
+//     const persons = await personService.getAllPersons();
+
+//     const mongoOps = [];
+//     persons.forEach(person => {
+//         if (person.students) {
+//             const studentIds = person.students.map(x => x.id);
+//             person.studentIds = studentIds; // test only
+
+//             mongoOps.push({
+//                 updateOne: {
+//                     filter: { _id: new ObjectID(person._id) },
+//                     update: { $set: { studentIds }, $unset: { students: "" } }
+//                 }
+//             });
+//         }
+
+//         if (person.parents) {
+//             const parentIds = person.parents.map(x => x.id);
+//             person.parentIds = parentIds; // test only
+
+//             mongoOps.push({
+//                 updateOne: {
+//                     filter: { _id: new ObjectID(person._id) },
+//                     update: { $set: { parentIds }, $unset: { parents: "" } }
+//                 }
+//             });
+//         }
+//     });
+
+//     await personService.bulkWritePersons(mongoOps);
+
+//     const data = {
+//         mongoOps,
+//         persons
+//     };
+//     res.send(data);
+// };
+
 // exports.mapStudentsToClasses = async (req, res) => {
 //     const classes = await classService.getAll();
 

@@ -7,20 +7,28 @@ const matemaratonController = require("./controllers/matemaraton.controller");
 const problemController = require("./controllers/problem.controller");
 const classController = require("./controllers/class.controller");
 const studentController = require("./controllers/student.controller");
+const parentController = require("./controllers/parent.controller");
 
 const contactController = require("./controllers/contact.controller");
 const pageController = require("./controllers/page.controller");
-const userController = require("./controllers/user.controller");
-const isAuthenticated = require("./middlewares/isAuthenticated.middleware").isAuthenticated;
+// const userController = require("./controllers/user.controller");
+const userResetPasswordController = require("./controllers/user-reset-password.controller");
+const userChangePasswordController = require("./controllers/user-change-password.controller");
+const userSignupController = require("./controllers/user-signup.controller");
+const userLoginController = require("./controllers/user-login.controller");
+const userLogoutController = require("./controllers/user-logout.controller");
+
+const isAuthenticated = require("./middlewares/is-authenticated.middleware").isAuthenticated;
 const presenceController = require("./controllers/presence.controller");
 const courseController = require("./controllers/course.controller");
-// const upgradeOperationController = require("./controllers/upgrade-operation.controller");
+const homeworkController = require("./controllers/homework.controller");
 
 // home
 router.get("/", homeController.getHomePage);
 
 // uncomment this route in order to make upgrade operations
-// router.get("/upgrade-operation", upgradeOperationController.mapStudentsToClasses);
+// const upgradeOperationController = require("./controllers/upgrade-operation.controller");
+// router.get("/upgrade-operation", upgradeOperationController.removeParentDetails);
 
 // my page
 router.get("/pagina-mea", meController.getMyPage);
@@ -30,8 +38,17 @@ router.get("/clase/:classId", classController.getClass);
 
 // presence
 router.get("/clase/:classId/prezenta", presenceController.getPresencePerClass);
-router.get("/clase/:classId/total-prezente-pe-elevi", presenceController.getTotalPresencesPerStudents);
+router.get("/clase/:classId/total-prezente", presenceController.getTotalPresences);
 router.get("/elevi/:studentId/prezenta", presenceController.getPresencePerStudent);
+
+// homework
+router.get("/clase/:classId/teme-propuse", homeworkController.getHomeworkRequests);
+router.get("/clase/:classId/total-teme-predate", homeworkController.getTotalHomeworkSubmissions);
+router.get("/teme/:homeworkRequestId", homeworkController.getHomeworkRequest);
+
+// parents
+router.get("/clase/:classId/parinti", parentController.getParentsPerClass);
+router.get("/parinti/:parentId", parentController.getParent);
 
 // courses
 router.get("/clase/:classId/cursuri", courseController.getCoursesPerClass);
@@ -39,6 +56,7 @@ router.get("/cursuri/:courseId", courseController.getCourse);
 
 // students
 router.get("/clase/:classId/elevi", studentController.getStudentsPerClass);
+router.get("/elevi/:studentId", studentController.getStudent);
 
 // router.get("/matemaraton/:edition", matemaratonController.getEditionHomepage);
 // router.get("/:edition?/prezenta/grupe/:groupId", matemaratonController.getPresencePerGroup);
@@ -56,21 +74,33 @@ router.post("/probleme", problemController.createProblem);
 
 router.get("/:pageId/asdfgh", pageController.getPage2);
 
-// user
-router.get("/login", userController.getLogin);
-router.post("/login", userController.postLogin);
-router.get("/logout", isAuthenticated, userController.logout);
-router.get("/signup", userController.getSignup);
-router.post("/signup", userController.postSignup);
-// router.get("/check-send-email", userController.checkSendEmail);
+// user-login/logout
+router.get("/login", userLoginController.getLogin);
+router.post("/login", userLoginController.postLogin);
+router.get("/logout", isAuthenticated, userLogoutController.logout);
 
-// app.get('/me', auth.isAuthenticated(), require('./user/userController').me);
-router.get("/changepassword", isAuthenticated, userController.getChangePassword);
-router.post("/changepassword", isAuthenticated, userController.postChangePassword);
+// user-signup
+router.post("/signup/invite", userSignupController.postInviteToSignup);
+router.get("/signup/invitation-sent", userSignupController.displaySignupInvitationSent);
+router.get("/signup", userSignupController.getSignup);
+router.post("/signup", userSignupController.postSignup);
+router.get("/signup/ask-to-confirm", userSignupController.displaySignupAskToConfirm);
+router.get("/signup/confirm/:activationCode", userSignupController.getSignupConfirm);
+router.get("/signup/confirm-invitation-done", userSignupController.getSignupConfirmInvitationDone);
+
+// user-change-password
+router.get("/change-password", isAuthenticated, userChangePasswordController.getChangePassword);
+router.post("/change-password", isAuthenticated, userChangePasswordController.postChangePassword);
+
+// user-reset-password (step1: request, step2: confirmation)
+router.get("/reset-password", userResetPasswordController.getResetPassword);
+router.post("/reset-password", userResetPasswordController.postResetPassword);
+router.get("/reset-password/ask-to-confirm", userResetPasswordController.displayResetPasswordAskToConfirm);
+router.get("/reset-password/confirm/:resetPasswordCode", userResetPasswordController.getResetPasswordConfirm);
 
 // router.get("/:edition?/cursuri/grupe/:groupId", matemaratonController.getCoursesPerGroup);
 // router.get("/:edition?/cursuri/:courseId", matemaratonController.getCourse);
-router.get("/:edition?", matemaratonController.getMatemaraton);
+// router.get("/:edition?", matemaratonController.getMatemaraton);
 
 // pages
 router.get("/:pageId", pageController.getPage);

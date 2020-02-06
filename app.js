@@ -5,17 +5,21 @@ const exphbs = require("express-handlebars");
 
 const routes = require("./routes");
 const handlebarHelpers = require("./helpers/handlebar.helper");
-const setContext = require("./middlewares/setContext.middleware").setContext;
+const setContext = require("./middlewares/set-context.middleware").setContext;
 
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
 const flash = require("express-flash");
-const addUserIfExist = require("./middlewares/addUserIfExist.middleware").addUserIfExist;
+const addUserIfExist = require("./middlewares/add-user-if-exist.middleware").addUserIfExist;
 
 const mongoHelper = require("./helpers/mongo.helper");
 
 const app = express();
+
+// https://expressjs.com/en/guide/behind-proxies.html
+app.enable("trust proxy"); // allow express to set req.ip
+// app.set("trust proxy", "loopback, 123.123.123.123"); // specify a subnet and an address
 
 // view engine setup
 app.set("view engine", ".hbs");

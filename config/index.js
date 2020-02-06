@@ -15,11 +15,13 @@ const common = {
     mailgun_key: process.env.MAILGUN_KEY,
     mailgun_domain: "mg.matemaraton.ro",
     mailgun_host: "api.eu.mailgun.net",
-    mailgun_defaultSender: "MateMaraton <admin@matemaraton.ro>",
+    mailgun_defaultSender: "MateMaraton <info@matemaraton.ro>",
     session_secret: process.env.SESSION_SECRET,
     rollbarToken: process.env.ROLLBAR_TOKEN,
     logglyToken: process.env.LOGGLY_TOKEN,
     logglySubdomain: process.env.LOGGLY_SUBDOMAIN,
+    loginCookieMaxAge: 60 * 60 * 24 * 30, // (30 days; in seconds),
+    loginJwtTokenExpiresIn: 60 * 15, // (15 minutes; in seconds),
 
     logLevel: process.env.LOG_LEVEL || LogLevel.WARNING,
 

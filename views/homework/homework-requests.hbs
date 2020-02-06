@@ -1,0 +1,40 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">Clasa:
+                {{class.grade}}-{{class.name}}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Teme propuse</li>
+    </ol>
+</nav>
+
+<h1>Teme pt. acasă</h1>
+<h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2>
+
+<h3>Tema curentă:</h3>
+{{#if currentRequest}}
+{{currentRequest.name}}
+{{else}}
+Nu sunt teme pentru perioada următoare!
+{{/if}}
+
+<hr />
+
+<h3>Teme vechi:</h3>
+<ul>
+    {{#each homeworkRequests}}
+    <li>
+        <a href="/teme/{{_id}}">{{name}}:</a>
+        <span class="text-muted">{{description}}</span>,
+
+        <div class="ml-4">
+            <span class="font-weight-bold">termen</span>: {{dueDate}},
+            {{#each documents}}
+            <span>
+                <a href="{{url}}">pdf</a>
+            </span>
+            {{/each}}
+        </div>
+
+    </li>
+    {{/each}}
+</ul>

@@ -10,7 +10,7 @@
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Acasă</i></a></li>
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item active" aria-current="page">Cls.{{class.grade}}, {{class.name}}</li>
     </ol>
 </nav>
@@ -20,16 +20,25 @@
 
 <ul>
     <li><a href="/clase/{{class._id}}/elevi">Elevi</a></li>
-    <li><a href="/clase/{{class._id}}/prezenta">Prezența</a></li>
+    <li><a href="/clase/{{class._id}}/prezenta">Prezența <span class="text-muted">(pe zile)</span></a></li>
+    <li><a href="/clase/{{class._id}}/total-prezente">Total prezențe <span class="text-muted">(pe elevi)</span></a></li>
     <li><a href="/clase/{{class._id}}/cursuri">Cursuri <span class="text-muted">(poze de pe tablă)</span></a></li>
+    <li><a href="/clase/{{class._id}}/teme-propuse">Teme propuse <span class="text-muted">(pentru acasă)</span></a>
+    </li>
+    <li><a href="/clase/{{class._id}}/teme-propuse">Total teme predate <span class="text-muted">(făcute
+                acasă)</span></a> </li>
+    {{#if can.viewParentsLink}}
+    <li><a href="/clase/{{class._id}}/parinti">Parinți</a></li>
+    {{/if}}
     {{!-- <li>Cursuri <span class="text-muted">(poze de pe tabla, in curand)</span></li> --}}
     {{!-- <li>Teme <span class="text-muted">(în curând)</span> </li> --}}
 
 </ul>
 
-<hr />
+{{!-- <hr />
 <h5>Rapoarte</h5>
 
 <ul>
-    <li><a href="/clase/{{class._id}}/total-prezente-pe-elevi">Total prezențe (cumulat pe elevi)</a> </li>
-</ul>
+    <li><a href="/clase/{{class._id}}/total-prezente">Total prezențe</a> </li>
+    <li><a href="/clase/{{class._id}}/total-teme-predate">Total teme predate</a> </li>
+</ul> --}}

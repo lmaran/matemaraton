@@ -10,7 +10,7 @@
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Acasă</i></a></li>
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">Clasa:
                 {{class.grade}}-{{class.name}}</a></li>
         <li class="breadcrumb-item active" aria-current="page">Elevi</li>
@@ -22,7 +22,7 @@
 
 <ul>
     {{#each activeStudents}}
-    <li><a href="/elevi/{{_id}}/prezenta">{{shortName}}</a>
+    <li><a href="/elevi/{{_id}}">{{displayName}}</a>
         {{#if gradeAndLetter}}
         ({{gradeAndLetter}})
         {{/if}}
@@ -32,7 +32,7 @@
     <hr />
 
     {{#each inactiveStudents}}
-    <li><a href="/elevi/{{_id}}/prezenta">{{shortName}}</a>
+    <li><a href="/elevi/{{_id}}">{{displayName}}</a>
         {{#if gradeAndLetter}}
         ({{gradeAndLetter}})
         {{/if}}

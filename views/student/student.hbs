@@ -1,0 +1,61 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/clase/{{class._id}}">Clasa:
+                {{class.grade}}-{{class.name}}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{student.shortName}}</li>
+    </ol>
+</nav>
+
+
+{{!-- <h1>Prezența</h1> --}}
+<h1>{{student.shortName}} ({{student.gradeAndLetter}})</h1>
+<h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2>
+
+<ul>
+    <li><a href="/elevi/{{student._id}}/prezenta">Prezența</a></li>
+
+    {{!-- <li>Cursuri <span class="text-muted">(poze de pe tabla, in curand)</span></li> --}}
+    {{!-- <li>Teme <span class="text-muted">(în curând)</span> </li> --}}
+
+</ul>
+
+{{#if can.viewParentsLink}}
+<h5>Părinți/tutori</h5>
+<ul>
+    {{#each parents}}
+    <li><a href="/parinti/{{_id}}">{{lastName}} {{firstName}}</a></li>
+    {{/each}}
+</ul>
+{{/if}}
+
+
+
+{{!-- <ul class="pl-4">
+    {{#each presencesPerStudent}}
+    <li class="mb-1">
+        <span style="display:inline-block; width:100px">{{dateAsString}}</span>
+
+
+        {{#if isPresent}}
+        <span class="font-weight-bold">prezent</span>,
+        {{else}}
+        <span class="font-weight-bold text-danger">absent</span>,
+        {{/if}}
+
+        <span> <a href="/cursuri/{{courseId}}">Curs
+                {{courseNumber}}</a>{{#if isCreditFromOtherClass}}</span>
+        ({{className}}{{#if isTemporaryCreditFromOtherCourse}} - temporar{{/if}}){{/if}}{{#if description}}:
+        <span class="text-muted"> {{description}}</span>
+        {{/if}}
+
+    </li>
+    {{/each}}
+</ul>
+
+<hr />
+<p class="mb-5">
+    <span class="font-weight-bold">Total prezențe:</span> {{totalPresences}} din {{totalCourses}}
+    ({{totalPresencesAsPercent}}%)
+</p> --}}

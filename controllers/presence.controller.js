@@ -6,7 +6,7 @@ const arrayHelper = require("../helpers/array.helper");
 const studentHelper = require("../helpers/student.helper");
 const studentsAndClassesService = require("../services/studentsAndClasses.service");
 
-exports.getTotalPresencesPerStudents = async (req, res) => {
+exports.getTotalPresences = async (req, res) => {
     const classId = req.params.classId;
 
     const [cls, studentsMapByClassId] = await Promise.all([
@@ -99,7 +99,7 @@ exports.getTotalPresencesPerStudents = async (req, res) => {
         // class: cls
     };
     //res.send(data);
-    res.render("presence/total-presences-per-students", data);
+    res.render("presence/total-presences", data);
 };
 
 exports.getPresencePerClass = async (req, res) => {

@@ -4,6 +4,16 @@ exports.getShortNameForStudent = student => {
     return `${shortFirstName} ${lastName.charAt(0)}.`;
 };
 
+exports.getFullNameForStudent = student => {
+    const shortFirstName = student.shortFirstName || student.firstName;
+    return `${shortFirstName} ${student.lastName}`;
+};
+
+exports.getLastAndShortNameForStudent = student => {
+    const shortFirstName = student.shortFirstName || student.firstName;
+    return `${student.lastName} ${shortFirstName}`;
+};
+
 exports.getGradeAndLetterForStudent = (student, academicYear) => {
     let gradeAndLetter = "";
     const actualStudentAcademicYearInfo =

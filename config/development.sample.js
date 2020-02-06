@@ -10,6 +10,9 @@ const config = {
     rollbarToken: "<rollbarToken>",
     logglyToken: "<logglyToken>",
     logglySubdomain: "<logglySubdomain>",
+    loginCookieMaxAge: 60 * 10 * 1, // (10 minutes; in seconds),
+    loginJwtTokenExpiresIn: 60 * 3, // (3 minutes; in seconds),
+
     logLevel: LogLevel.DEBUG,
     httpLogDetails: {
         request: {
