@@ -1,0 +1,44 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/clase/{{class._id}}">Clasa:
+                {{class.grade}}-{{class.name}}</a></li>
+        <li class="breadcrumb-item"><a href="/elevi/{{student._id}}">{{student.shortName}}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Teme predate</li>
+    </ol>
+</nav>
+
+
+<h1>Teme predate</h1>
+<h2>{{student.shortName}} ({{student.gradeAndLetter}})</h2>
+<h3 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h3>
+
+<ul class="pl-4">
+    {{#each closedRequests}}
+    <li class="mb-3">
+        <span>{{dueDate}}</span>,
+        <a href="/teme/{{_id}}">{{name}}:</a> <span class="text-muted">{{description}}</span>
+
+        <div class="ml-4">
+            <span class="font-weight-bold">exerciții predate<sup>*</sup></span>:
+            {{#if userSubmittedQuestions}}
+            {{userSubmittedQuestions}} din {{totalRequestedQuestions}}
+            {{else}}
+            <span class="text-danger">temă nefăcută</span>
+            {{/if}}
+        </div>
+    </li>
+    {{/each}}
+</ul>
+
+<hr />
+<p class="mb-5">
+    <span class="font-weight-bold">Total exerciții predate:</span> {{totalUserSubmittedQuestions}} din
+    {{totalQuestions}}
+    ({{totalUserSubmittedQuestionsAsPercent}}%)
+</p>
+
+<div class="mt-5">
+    <sup>*</sup> - Au fost contorizate toate exercițiile (inclusiv cele rezolvate parțial sau cele complet greșite).
+</div

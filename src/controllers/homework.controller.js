@@ -8,6 +8,103 @@ const studentHelper = require("../helpers/student.helper");
 const studentsAndClassesService = require("../services/studentsAndClasses.service");
 const dateTimeHelper = require("../helpers/date-time.helper");
 
+exports.getHomeworkSubmissionsPerStudent = async (req, res) => {
+    const studentId = req.params.studentId;
+    let academicYear = "201920";
+
+    let student = null;
+    let classMapByStudent = null;
+    let cls = null;
+    let homeworkRequests = null;
+
+    [student, classMapByStudent] = await Promise.all([
+        await personService.getPersonById(studentId),
+        await studentsAndClassesService.getClassMapByStudentId(academicYear, studentId)
+    ]);
+
+    if (classMapByStudent) {
+        // cls = await classService.getClassById(classMapByStudent.classId);
+        [cls, homeworkRequests] = await Promise.all([
+            await classService.getClassById(classMapByStudent.classId),
+            await homeworkService.getHomeworRequestsByClassId(classMapByStudent.classId)
+        ]);
+    }
+
+    if (!cls && student.academicYearRelatedInfo) {
+        // maybe a graduated student
+        const academicYears = Object.keys(student.academicYearRelatedInfo);
+        // overwrite the existing class and academicYear
+        if (academicYears.length > 0) {
+            academicYear = academicYears.sort()[0];
+            classMapByStudent = await studentsAndClassesService.getClassMapByStudentId(academicYear, studentId);
+            cls = await classService.getClassById(classMapByStudent.classId);
+        }
+    }
+
+    homeworkRequests.forEach(homeworkRequest => {
+        const submission = homeworkRequest.submissions.find(x => x.studentId === studentId);
+        homeworkRequest.totalSubmittedQuestions = (submission && submission.totalSubmittedQuestions) || 0;
+    });
+
+    const today = dateTimeHelper.getFriendlyDate(new Date()).ymd; // 2020-02-17
+    // const closedRequests = homeworkRequests.filter(x => x.dueDate < today) || [];
+
+    let totalQuestions = 0;
+    let totalUserSubmittedQuestions = 0;
+    homeworkRequests.forEach(x => {
+        const userSubmission = x.submissions.find(x => x.studentId === studentId);
+        x.userSubmittedQuestions = (userSubmission && userSubmission.totalSubmittedQuestions) || 0;
+        totalUserSubmittedQuestions += x.userSubmittedQuestions;
+        totalQuestions += x.totalRequestedQuestions;
+
+        // totalQuestions += x.totalRequestedQuestions;
+        // (x.submissions || []).forEach(submission => {
+        //     // const studentCrt = studentsObj[submission.studentId];
+        //     const studentCrt = students.find(x => x._id.toString() === submission.studentId);
+        //     studentCrt.totalSubmittedQuestions =
+        //         (studentCrt.totalSubmittedQuestions || 0) + submission.totalSubmittedQuestions;
+        // });
+    });
+
+    const totalUserSubmittedQuestionsAsPercent = totalQuestions
+        ? Math.round((totalUserSubmittedQuestions * 100) / totalQuestions)
+        : 0;
+
+    // console.log(homeworkRequests);
+
+    // const classIdsPerIntervals = getClassIdsPerIntervals(classMapByStudent);
+
+    // let allClassIdsForStudent = classIdsPerIntervals.map(x => x.classId);
+    // allClassIdsForStudent = [...new Set(allClassIdsForStudent)]; // remove duplicates (if exists)
+
+    // const allCoursesForStudent = await courseService.getCoursesByClassIds(allClassIdsForStudent);
+
+    // const coursesDateByDate = getCoursesDateByDate(classIdsPerIntervals, allCoursesForStudent);
+
+    // const presencesPerStudent = getPresencesPerStudent(coursesDateByDate, studentId, coursesWithPresence, cls._id);
+
+    // add "shortName" (e.g.  "Vali M.")
+    student.shortName = studentHelper.getShortNameForStudent(student);
+    // add "gradeAndLetter" (e.g.  "8A")
+    student.gradeAndLetter = studentHelper.getGradeAndLetterForStudent(student, academicYear);
+
+    // // add aggregated values
+    // const totalCourses = presencesPerStudent.length;
+    // const totalPresences = presencesPerStudent.filter(x => x.isPresent).length;
+    // const totalPresencesAsPercent = totalCourses ? Math.round((totalPresences * 100) / totalCourses) : 0;
+
+    const data = {
+        student,
+        totalQuestions,
+        totalUserSubmittedQuestions,
+        totalUserSubmittedQuestionsAsPercent,
+        class: cls,
+        closedRequests: homeworkRequests.filter(x => x.dueDate < today).sort((a, b) => (a.dueDate < b.dueDate ? 1 : -1))
+    };
+    //res.send(data);
+    res.render("homework/homework-submissions-per-student", data);
+};
+
 exports.getHomeworkRequest = async (req, res) => {
     const homeworkRequestId = req.params.homeworkRequestId;
 
@@ -96,9 +193,10 @@ exports.getHomeworkRequests = async (req, res) => {
 exports.getTotalHomeworkSubmissions = async (req, res) => {
     const classId = req.params.classId;
 
-    const [cls, studentsMapByClassId] = await Promise.all([
+    const [cls, studentsMapByClassId, homeworkRequests] = await Promise.all([
         await classService.getClassById(classId),
-        await studentsAndClassesService.getStudentsMapByClassId(classId)
+        await studentsAndClassesService.getStudentsMapByClassId(classId),
+        await homeworkService.getHomeworRequestsByClassId(classId)
     ]);
 
     const studentsIds = studentsMapByClassId.map(x => x.studentId);
@@ -107,14 +205,31 @@ exports.getTotalHomeworkSubmissions = async (req, res) => {
 
     // const studentsObj = arrayHelper.arrayToObject(students, "_id") || {};
 
-    const submissionsInfo = [];
+    const today = dateTimeHelper.getFriendlyDate(new Date()).ymd; // 2020-02-17
+    const closedRequests = homeworkRequests.filter(x => x.dueDate < today) || [];
+
+    let totalQuestions = 0;
+    closedRequests.forEach(x => {
+        totalQuestions += x.totalRequestedQuestions;
+        (x.submissions || []).forEach(submission => {
+            // const studentCrt = studentsObj[submission.studentId];
+            const studentCrt = students.find(x => x._id.toString() === submission.studentId);
+            studentCrt.totalSubmittedQuestions =
+                (studentCrt.totalSubmittedQuestions || 0) + submission.totalSubmittedQuestions;
+        });
+    });
+
+    // console.log(students);
+    // console.log(totalQuestions);
+    // const submissionsInfo = [];
 
     students.forEach(student => {
         // add aggregated values
-        const totalExercises = 30;
-        const totalSubmittedExercises = 15;
-        const totalSubmittedExercisesAsPercent = totalExercises
-            ? Math.round((totalSubmittedExercises * 100) / totalExercises)
+
+        // const totalSubmittedExercises = 15;
+        student.totalSubmittedQuestions = student.totalSubmittedQuestions || 0;
+        const totalSubmittedQuestionsAsPercent = totalQuestions
+            ? Math.round((student.totalSubmittedQuestions * 100) / totalQuestions)
             : 0;
 
         let isDroppedOut = false;
@@ -125,72 +240,29 @@ exports.getTotalHomeworkSubmissions = async (req, res) => {
         ) {
             isDroppedOut = true;
         }
-        submissionsInfo.push({
-            student: {
-                id: student._id,
-                // add "shortName" (e.g.  "Vali M.")
-                shortName: studentHelper.getShortNameForStudent(student),
-                // add "gradeAndLetter" (e.g.  "8A")
-                gradeAndLetter: studentHelper.getGradeAndLetterForStudent(student, cls.academicYear),
-                isDroppedOut
-            },
-            totalExercises,
-            totalSubmittedExercises,
-            totalSubmittedExercisesAsPercent
-        });
+
+        student.shortName = studentHelper.getShortNameForStudent(student);
+        // add "gradeAndLetter" (e.g.  "8A")
+        student.gradeAndLetter = studentHelper.getGradeAndLetterForStudent(student, cls.academicYear);
+        student.isDroppedOut = isDroppedOut;
+
+        student.totalSubmittedQuestionsAsPercent = totalSubmittedQuestionsAsPercent;
+
+        // submissionsInfo.push({
+        //     student: {
+        //         id: student._id,
+        //         // add "shortName" (e.g.  "Vali M.")
+        //         shortName: studentHelper.getShortNameForStudent(student),
+        //         // add "gradeAndLetter" (e.g.  "8A")
+        //         gradeAndLetter: studentHelper.getGradeAndLetterForStudent(student, cls.academicYear),
+        //         isDroppedOut
+        //     },
+        //     totalQuestions,
+        //     totalSubmittedQuestions: student.totalSubmittedQuestions,
+        //     totalSubmittedQuestionsAsPercent
+        // });
     });
-
-    // studentsMapByClassId.forEach(classMapByStudent => {
-    //     const studentId = classMapByStudent.studentId;
-    //     const student = studentsObj[studentId];
-    //     const classIdsPerIntervals = getClassIdsPerIntervals(classMapByStudent);
-
-    //     const coursesDateByDateForStudent = getCoursesDateByDate(classIdsPerIntervals, allCoursesForStudents);
-
-    //     const coursesWithPresenceForStudent = coursesWithPresenceForStudents.filter(
-    //         x =>
-    //             (x.studentsIds && x.studentsIds.includes(studentId)) ||
-    //             (x.studentsFromOtherClasses && x.studentsFromOtherClasses.map(y => y.studentId).includes(studentId))
-    //     );
-
-    //     const presencesPerStudent = getPresencesPerStudent(
-    //         coursesDateByDateForStudent,
-    //         studentId,
-    //         coursesWithPresenceForStudent,
-    //         cls._id
-    //     );
-
-    //     // add aggregated values
-    //     const totalCourses = presencesPerStudent.length;
-    //     const totalPresences = presencesPerStudent.filter(x => x.isPresent).length;
-    //     const totalPresencesAsPercent = totalCourses ? Math.round((totalPresences * 100) / totalCourses) : 0;
-
-    //     let isDroppedOut = false;
-    //     if (
-    //         student.academicYearRelatedInfo &&
-    //         student.academicYearRelatedInfo[cls.academicYear] &&
-    //         student.academicYearRelatedInfo[cls.academicYear].droppedOut
-    //     ) {
-    //         isDroppedOut = true;
-    //     }
-
-    //     submissionsInfo.push({
-    //         student: {
-    //             id: classMapByStudent.studentId,
-    //             // add "shortName" (e.g.  "Vali M.")
-    //             shortName: studentHelper.getShortNameForStudent(student),
-    //             // add "gradeAndLetter" (e.g.  "8A")
-    //             gradeAndLetter: studentHelper.getGradeAndLetterForStudent(student, cls.academicYear),
-    //             isDroppedOut
-    //         },
-    //         // classIdsPerIntervals,
-    //         // coursesDateByDateForStudent,
-    //         // presencesPerStudent,
-    //         totalCourses,
-    //         totalPresences,
-    //         totalPresencesAsPercent
-    //     });
-    // });
+    // students.sort((a, b) => (a.totalSubmittedQuestions < b.totalSubmittedQuestions ? 1 : -1));
 
     // submissionsInfo = submissionsInfo.sort((a, b) => (a.totalPresencesAsPercent < b.totalPresencesAsPercent ? 1 : -1));
 
@@ -201,7 +273,10 @@ exports.getTotalHomeworkSubmissions = async (req, res) => {
         // //allStudentsIdsPerClass,
         // allUniqueClassIdsForAllStudents,
         // //allCoursesForStudents,
-        submissionsInfoForActiveStudents: submissionsInfo.filter(x => !x.student.isDroppedOut)
+        totalQuestions,
+        activeStudents: students
+            .filter(x => !x.isDroppedOut)
+            .sort((a, b) => (a.totalSubmittedQuestions < b.totalSubmittedQuestions ? 1 : -1))
         // presencesInfoForInactiveStudents: presencesInfo.filter(x => x.student.isDroppedOut)
     };
     //res.send(data);
