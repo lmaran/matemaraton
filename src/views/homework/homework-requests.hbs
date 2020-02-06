@@ -12,9 +12,23 @@
 
 <h3>Tema curentă:</h3>
 {{#if currentRequest}}
-{{currentRequest.name}}
+<ul>
+    <li>
+        <a href="/teme/{{currentRequest._id}}">{{currentRequest.name}}:</a>
+        <span class="text-muted">{{currentRequest.description}}</span>,
+
+        <div class="ml-4">
+            <span class="font-weight-bold">termen</span>: {{currentRequest.dueDate}},
+            {{#each currentRequest.documents}}
+            <span>
+                <a href="{{currentRequest.url}}">pdf</a>
+            </span>
+            {{/each}}
+        </div>
+    </li>
+</ul>
 {{else}}
-Nu sunt teme pentru perioada următoare!
+Nu există temă pentru perioada curentă!
 {{/if}}
 
 <hr />
@@ -22,7 +36,7 @@ Nu sunt teme pentru perioada următoare!
 <h3>Teme vechi:</h3>
 <ul>
     {{#each homeworkRequests}}
-    <li>
+    <li class="mb-3">
         <a href="/teme/{{_id}}">{{name}}:</a>
         <span class="text-muted">{{description}}</span>,
 
@@ -34,7 +48,6 @@ Nu sunt teme pentru perioada următoare!
             </span>
             {{/each}}
         </div>
-
     </li>
     {{/each}}
 </ul>

@@ -37,9 +37,9 @@ exports.getHomeworkRequest = async (req, res) => {
 
     const today = dateTimeHelper.getFriendlyDate(new Date()).ymd; // 2020-02-17
 
-    const isCurrentHomework = today <= homeworkRequest.dueDate;
+    const isCurrentHomework = homeworkRequest.dueDate >= today;
 
-    console.log(isCurrentHomework);
+    // console.log(homeworkRequest);
 
     const data = {
         // studentIds,
@@ -60,25 +60,29 @@ exports.getHomeworkRequest = async (req, res) => {
 exports.getHomeworkRequests = async (req, res) => {
     const classId = req.params.classId;
 
-    const [cls, studentsMapByClassId, homeworkRequests] = await Promise.all([
+    const [cls, homeworkRequests] = await Promise.all([
         await classService.getClassById(classId),
-        await studentsAndClassesService.getStudentsMapByClassId(classId),
+        // await studentsAndClassesService.getStudentsMapByClassId(classId),
         await homeworkService.getHomeworRequestsByClassId(classId)
     ]);
 
-    const studentsIds = studentsMapByClassId.map(x => x.studentId);
+    // const studentsIds = studentsMapByClassId.map(x => x.studentId);
 
-    const students = await personService.getPersonsByIds(studentsIds);
+    // const students = await personService.getPersonsByIds(studentsIds);
 
     const today = dateTimeHelper.getFriendlyDate(new Date()).ymd; // 2020-02-17
 
-    const currentRequest = homeworkRequests.find(x => x.dueDate <= today);
+    const currentRequest = homeworkRequests.find(x => x.dueDate >= today);
+    const currentRequestId = currentRequest && currentRequest._id;
 
     const data = {
         // studentIds,
         // // students,
+        currentRequest,
         class: cls,
-        homeworkRequests
+        homeworkRequests: homeworkRequests
+            .filter(x => x._id !== currentRequestId)
+            .sort((a, b) => (a.dueDate < b.dueDate ? 1 : -1))
         // //allStudentsIdsPerClass,
         // allUniqueClassIdsForAllStudents,
         // //allCoursesForStudents,
