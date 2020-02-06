@@ -1,0 +1,52 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">Clasa:
+                {{class.grade}}-{{class.name}}</a></li>
+        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}/teme-propuse">Teme propuse</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">{{homeworkRequest.name}}</li>
+    </ol>
+</nav>
+
+<h1>{{homeworkRequest.name}}</h1>
+<h5 class="mb-5 text-muted font-weight-normal" class2="mb-5">{{homeworkRequest.description}}</h5>
+{{!-- <h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2> --}}
+
+
+<div> <span class="font-weight-bold">Data publicării</span>: {{homeworkRequest.publishedDate}}</div>
+<div> <span class="font-weight-bold">Termen de predare</span>: {{homeworkRequest.dueDate}}</div>
+<div> <span class="font-weight-bold">Cursuri relaționate</span>: {{#each homeworkRequest.relatedCourses}}
+    <span>
+        <a href="/cursuri/{{_id}}">curs {{course}}</a>,
+    </span>
+    {{/each}}
+</div>
+
+<div> <span class="font-weight-bold">Exerciții propuse</span>: {{#each homeworkRequest.documents}}
+    <span>
+        <a href="{{url}}">{{name}}</a>
+    </span>
+    {{/each}}
+    (total: {{homeworkRequest.totalRequestedQuestions}} ex.)
+</div>
+
+{{#if isNotCurrentHomework}}
+<hr />
+<div> <span class="font-weight-bold">Exerciții rezolvate<sup>*</sup></span>:
+    {{#if homeworkRequest.submissions}}
+    {{#each homeworkRequest.submissions}}
+    <span>
+        <a href="/elevi/{{student._id}}">{{student.displayName}}</a> ({{totalSubmittedQuestions}}),
+    </span>
+    {{/each}}
+    {{else}}
+    Temă nefăcută (toată clasa)!
+    {{/if}}
+</div>
+
+
+{{#if homeworkRequest.submissions}}
+<div class="mt-5">
+    <sup>*</sup> - Au fost contorizate toate exercițiile (inclusiv cele rezolvate parțial sau cele complet greșite).
+</div {{/if}} {{/if}}

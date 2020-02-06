@@ -42,7 +42,9 @@ router.get("/clase/:classId/total-prezente", presenceController.getTotalPresence
 router.get("/elevi/:studentId/prezenta", presenceController.getPresencePerStudent);
 
 // homework
+router.get("/clase/:classId/teme-propuse", homeworkController.getHomeworkRequests);
 router.get("/clase/:classId/total-teme-predate", homeworkController.getTotalHomeworkSubmissions);
+router.get("/teme/:homeworkRequestId", homeworkController.getHomeworkRequest);
 
 // parents
 router.get("/clase/:classId/parinti", parentController.getParentsPerClass);
