@@ -56,6 +56,7 @@ exports.getHomeworkSubmissionsPerStudent = async (req, res) => {
         x.userSubmittedQuestions = (userSubmission && userSubmission.totalSubmittedQuestions) || 0;
         totalUserSubmittedQuestions += x.userSubmittedQuestions;
         totalQuestions += x.totalRequestedQuestions;
+        x.dueDateAsString = dateTimeHelper.getStringFromStringNoDay(x.dueDate);
 
         // totalQuestions += x.totalRequestedQuestions;
         // (x.submissions || []).forEach(submission => {
@@ -131,6 +132,8 @@ exports.getHomeworkRequest = async (req, res) => {
     );
 
     homeworkRequest.relatedCourses = courses.sort((a, b) => (a.date > b.date ? 1 : -1));
+    homeworkRequest.dueDateAsString = dateTimeHelper.getStringFromStringNoDay(homeworkRequest.dueDate);
+    homeworkRequest.publishedDateAsString = dateTimeHelper.getStringFromStringNoDay(homeworkRequest.publishedDate);
 
     const today = dateTimeHelper.getFriendlyDate(new Date()).ymd; // 2020-02-17
 
@@ -166,6 +169,10 @@ exports.getHomeworkRequests = async (req, res) => {
     // const studentsIds = studentsMapByClassId.map(x => x.studentId);
 
     // const students = await personService.getPersonsByIds(studentsIds);
+
+    homeworkRequests.forEach(x => {
+        x.dueDateAsString = dateTimeHelper.getStringFromStringNoDay(x.dueDate);
+    });
 
     const today = dateTimeHelper.getFriendlyDate(new Date()).ymd; // 2020-02-17
 
