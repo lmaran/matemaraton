@@ -26,6 +26,7 @@
 
     (total: {{homeworkRequest.totalRequestedQuestions}} ex.)
 </div>
+{{#if homeworkRequest.relatedCourses.length}}
 <div> <span class="font-weight-bold">Cursuri relaționate</span>:
     {{#each homeworkRequest.relatedCourses}}
     <span>
@@ -33,6 +34,7 @@
     </span>
     {{/each}}
 </div>
+{{/if}}
 
 
 
@@ -54,9 +56,6 @@ Elevii care au predat<sup>*</sup> această temă:
 Temă nefăcută (toată clasa)!
 {{/if}}
 
-
-
-{{#if homeworkRequest.submissions}}
 <div class="mt-5">
     <sup>*</sup> - Au fost contorizate toate exercițiile (inclusiv cele rezolvate parțial sau cele complet greșite).
-</div {{/if}} {{/if}}
+</div {{/if}}
