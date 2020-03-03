@@ -61,6 +61,9 @@ router.get("/pregatire-simulare-en-editia-2", matemaratonController.getTrainingP
 router.get("/pregatire-teza-s1-editia-3", matemaratonController.getTrainingProgramForSemestrialPaperEdition3);
 router.get("/materiale-teza-s1", matemaratonController.getDocumentsForSemestrialPaper);
 
+router.get("/program-simulare-en-editia-3", matemaratonController.getProgramSimulareEnEditia3);
+router.get("/materiale-simulare-en-editia-3", matemaratonController.getMaterialeSimulareEnEditia3);
+
 // contact
 router.get("/contact", contactController.getContact);
 
