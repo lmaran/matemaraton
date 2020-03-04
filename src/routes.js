@@ -57,8 +57,8 @@ router.get("/cursuri/:courseId", courseController.getCourse);
 router.get("/clase/:classId/elevi", studentController.getStudentsPerClass);
 router.get("/elevi/:studentId", studentController.getStudent);
 
-router.get("/pregatire-simulare-en-editia-2", matemaratonController.getTrainingProgramForENSimulationEdition2);
-router.get("/pregatire-teza-s1-editia-3", matemaratonController.getTrainingProgramForSemestrialPaperEdition3);
+router.get("/program-simulare-en-editia-2", matemaratonController.getTrainingProgramForENSimulationEdition2);
+router.get("/program-teza-s1-editia-3", matemaratonController.getTrainingProgramForSemestrialPaperEdition3);
 router.get("/materiale-teza-s1", matemaratonController.getDocumentsForSemestrialPaper);
 
 router.get("/program-simulare-en-editia-3", matemaratonController.getProgramSimulareEnEditia3);

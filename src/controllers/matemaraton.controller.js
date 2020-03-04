@@ -4,14 +4,14 @@ exports.getTrainingProgramForENSimulationEdition2 = async (req, res) => {
     const data = {
         // ctx: req.ctx,
     };
-    res.render("matemaraton/pregatire-simulare-en-editia-2", data);
+    res.render("matemaraton/program-simulare-en-editia-2", data);
 };
 
 exports.getTrainingProgramForSemestrialPaperEdition3 = async (req, res) => {
     const data = {
         // ctx: req.ctx,
     };
-    res.render("matemaraton/pregatire-teza-s1-editia-3", data);
+    res.render("matemaraton/program-teza-s1-editia-3", data);
 };
 
 exports.getProgramSimulareEnEditia3 = async (req, res) => {
