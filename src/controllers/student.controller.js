@@ -62,7 +62,10 @@ exports.getStudent = async (req, res) => {
     const student = studentAndTheirParents.find(x => x._id.toString() === studentId);
     const parents = studentAndTheirParents.filter(x => x.studentIds && x.studentIds.length > 0);
 
-    const [cls] = await Promise.all([await classService.getClassById(clsMapLine.classId)]);
+    let cls = {};
+    if (clsMapLine) {
+        cls = await classService.getClassById(clsMapLine.classId);
+    }
 
     // add "shortName" (e.g.  "Vali M.")
     student.shortName = studentHelper.getShortNameForStudent(student);
