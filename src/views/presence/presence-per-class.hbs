@@ -15,24 +15,24 @@
 {{/unless}}
 
 {{#each courses}}
-<div>
 
-    <h3 class="mb-0" {{#if noCourse}} class="text-muted" {{/if}}>{{dateAsString}} {{#if course}}- <a
-            href="/cursuri/{{_id}}">curs
-            {{course}}</a> {{/if}}</h3>
-    <div class="text-muted mb-2">{{description}}</div>
-
-    {{#if noCourse}}
-    <p style="padding-left:40px;" class="text-muted">Nu s-a tinut curs ({{noCourseReason}})</p>
-    {{/if}}
-
-    <ul class="mb-5">
-        {{#each presences}}
-        <li><a href="/elevi/{{student._id}}/prezenta">{{student.shortName}}</a>
-            {{#if student.gradeAndLetter}}
-            ({{student.gradeAndLetter}}){{/if}}{{#if isTemporaryPresenceFromOtherCourse}}, temporar{{/if}}
-        </li>
-        {{/each}}
-    </ul>
+<div class="h4" {{#if noCourse}} class="text-muted" {{/if}}>{{dateAsString}} {{#if course}}- <a
+        href="/cursuri/{{_id}}">curs
+        {{course}}</a> {{/if}}
 </div>
+<div class="text-muted mb-2">{{description}}</div>
+
+{{#if noCourse}}
+<p style="padding-left:40px;" class="text-muted">Nu s-a tinut curs ({{noCourseReason}})</p>
+{{/if}}
+
+<ul class="mb-5">
+    {{#each presences}}
+    <li><a href="/elevi/{{student._id}}/prezenta">{{student.shortName}}</a>
+        {{#if student.gradeAndLetter}}
+        ({{student.gradeAndLetter}}){{/if}}{{#if isTemporaryPresenceFromOtherCourse}}, temporar{{/if}}
+    </li>
+    {{/each}}
+</ul>
+
 {{/each}}

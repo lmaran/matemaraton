@@ -5,33 +5,35 @@
 
         <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">Clasa:
                 {{class.grade}}-{{class.name}}</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Cursuri</li>
+        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}/cursuri">Cursuri</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Toate pozele</li>
 
     </ol>
 </nav>
 
-<h1>Cursuri</h1>
+<h1>Cursuri <span class="h3 font-weight-light text-muted">(toate pozele)</span></h1>
 <h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2>
 
 
-<div class="mb-5">Vezi pozele de la toate cursurile <span class="font-weight-bold">pe o singură pagină</span> <a
-        href="/clase/{{class._id}}/cursuri/poze">aici</a>.</div>
-<hr />
-
 {{#each courses}}
-<div class="h4">
+<div class="h4 mt-5">
     <a href="/cursuri/{{_id}}">Curs{{course}}</a>
     <span class="h5 font-weight-light text-muted"> - {{dateAsString}}
         {{#if videos}}
         <a href="/cursuri/{{_id}}"><i class="fab fa-youtube" style="color:red"></i></a>
         {{/if}}
-        <a href="/cursuri/{{_id}}"><i class="fas fa-camera" style="color:rgb(90, 143, 5)"></i></a>
     </span>
 </div>
 
-<div class="h6 font-weight-normal mb-5 mt-2">{{description}}</div>
+
+<div class="h6 font-weight-normal mb-5a mt-2">{{description}}</div>
+
+{{#each images}}
+<p>{{description}}</p>
+<img src={{url}} class="img-fluid border" alt="">
+<a class="mb-4" style="display: block;" href={{highQualityUrl}}>Vezi poza la calitate maximă</a>
 {{/each}}
 
-<hr />
-<div class="mb-5">Vezi pozele de la toate cursurile <span class="font-weight-bold">pe o singură pagină</span> <a
-        href="/clase/{{class._id}}/cursuri/poze">aici</a>.</div>
+
+
+{{/each}}
