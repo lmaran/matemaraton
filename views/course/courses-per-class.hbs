@@ -1,13 +1,3 @@
-<style>
-    .hidePresence {
-        display: none;
-    }
-
-    .hideStudent {
-        display: none;
-    }
-</style>
-
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
@@ -24,65 +14,24 @@
 <h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2>
 
 
+<div class="mb-5">Vezi pozele de la toate cursurile <span class="font-weight-bold">pe o singură pagină</span> <a
+        href="/clase/{{class._id}}/cursuri/poze">aici</a>.</div>
+<hr />
+
 {{#each courses}}
-<div {{#if (gt @index 2)}} class="toggle-presence hidePresence" {{/if}}>
-
-    <h3 class="mb-0" {{#if noCourse}} class="text-muted" {{/if}}>{{#if course}}<a href="/cursuri/{{_id}}">Curs
-            {{course}}</a>
-        {{/if}} <span class="font-weight-light text-secondary2"> - {{dateAsString}}</span> </h3>
-
-    {{#if noCourse}}
-    <p style="padding-left:40px;" class="text-muted">Nu s-a ținut curs ({{noCourseReason}})</p>
-    {{/if}}
-
-
-    <div class2="ml-5">
-        <div class="text-muted mb-2">{{description}}</div>
-
-        {{#each images}}
-        <p>{{description}}</p>
-        <img src={{url}} class="img-fluid" alt="">
-        {{/each}}
-    </div>
+<div class="h4">
+    <a href="/cursuri/{{_id}}">Curs{{course}}</a>
+    <span class="h5 font-weight-light text-muted"> - {{dateAsString}}
+        {{#if videos}}
+        <a href="/cursuri/{{_id}}"><i class="fab fa-youtube" style="color:red"></i></a>
+        {{/if}}
+        <a href="/cursuri/{{_id}}"><i class="fas fa-camera" style="color:rgb(90, 143, 5)"></i></a>
+    </span>
 </div>
 
-<div class="mb-5"></div>
+<div class="h6 font-weight-normal mb-5 mt-2">{{description}}</div>
 {{/each}}
-{{#if (gt totalCourses 3)}}
-<a class="toggle-presence" href="/" style="font-size:1.2rem; vertical-align: bottom;">Vezi toate cursurile <i
-        class="fas fa-angle-double-right"></i></a>
-<a class="toggle-presence hidePresence" href="/" style="font-size:1.2rem; vertical-align: bottom;"><i
-        class="fas fa-angle-double-left"></i> Vezi doar primele cursuri </a>
-{{/if}}
-<br>
-<br>
-<br>
 
-
-{{#section 'script-after'}}
-<script>
-    (function () {
-        // DOM ready
-        $(function () {
-            // elements
-            var togglePresencesElem = $("a.toggle-presence");
-            var toggleStudentsElem = $("a.toggle-student");
-
-            // events
-            togglePresencesElem.click(togglePresences);
-            toggleStudentsElem.click(toggleStudents);
-        });
-
-        var togglePresences = function () {
-            event.preventDefault();
-            $(".toggle-presence").toggleClass("hidePresence");
-        }
-
-        var toggleStudents = function () {
-            event.preventDefault();
-            $(".toggle-student").toggleClass("hideStudent");
-        }
-
-    }())
-</script>
-{{/section}}
+<hr />
+<div class="mb-5">Vezi pozele de la toate cursurile <span class="font-weight-bold">pe o singură pagină</span> <a
+        href="/clase/{{class._id}}/cursuri/poze">aici</a>.</div>
