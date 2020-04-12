@@ -8,6 +8,14 @@
     }
 </style>
 
+{{#if (or (eq2 class._id "5d92dba4a0da913a67b9a712") (eq2 class._id "5db470a58f57b35330bc93c5"))}}
+<div class="alert alert-info" role="alert">
+    <i class="fa fa-info-circle mr-2 fa-lg"></i>
+    Cursurile pentru această grupă au fost întrerupte în <span class="font-weight-bold">01 Aprilie 2020</span> (din
+    lipsă de elevi - vezi prezența).
+</div>
+{{/if}}
+
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
@@ -21,7 +29,9 @@
 <ul>
     <li><a href="/clase/{{class._id}}/elevi">Elevi</a></li>
     <li class="mb-3"><a href="/clase/{{class._id}}/cursuri">Cursuri <span class="text-muted">(poze de pe
-                tablă)</span></a></li>
+                tablă
+                {{#if (or (eq2 class._id "5d92db9ba0da913a67b9a711") (eq2 class._id "5d92dc63a0da913a67b9a713"))}}
+                <span class="font-weight-bold text-danger">și video</span>{{/if}})</span></a></li>
 
     <li><a href="/clase/{{class._id}}/prezenta">Prezența <span class="text-muted">(pe zile)</span></a></li>
     <li class="mb-3"><a href="/clase/{{class._id}}/total-prezente">Total prezențe <span class="text-muted">(pe
