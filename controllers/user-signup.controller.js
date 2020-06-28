@@ -74,7 +74,11 @@ exports.getSignup = async (req, res) => {
     const existingUser = invitationCode && (await userService.getOneBySignupCode(invitationCode));
     if (existingUser) {
         if (existingUser.status === "active") {
-            return res.render("user/signup-invitation-already-accepted", { isNotAuthenticated: !req.user });
+            const data = {
+                message: "Contul aferent accestei invitații a fost deja <strong>activat</strong>!",
+                userIsNotAuthenticated: !req.user
+            };
+            return res.render("user/signup-confirm-info", data);
         }
 
         isInvitationCodeValid = true;
@@ -185,24 +189,16 @@ exports.getSignupConfirm = async (req, res) => {
         const { token, refreshToken } = await authService.signupByActivationCode(activationCode);
 
         cookieHelper.setCookies(res, token, refreshToken);
-
-        const data = {
-            isSuccess: true,
-            message: "Contul a fost <strong>activat</strong> cu success!",
-            details: "Poți continua cu <a href='/'>pagina principală</a>."
-        };
-
-        res.render("user/signup-confirm", data);
+        res.redirect("/signup/confirm-invitation-done");
     } catch (err) {
-        const data = { isError: true, message: err.message };
+        const data = { message: err.message, userIsNotAuthenticated: !req.user };
 
         if (err.message === "AccountAlreadyActivated") {
-            // res.redirect("/signup-registration-already-activated");
             data.message = "Acest cont a fost deja <strong>activat</strong>!";
-            data.details = "Poți continua cu pagina de <a href='/login'>login</a>.";
+            res.render("user/signup-confirm-info", data);
+        } else {
+            res.render("user/signup-confirm-error", data);
         }
-
-        res.render("user/reset-password-confirm", data);
     }
 };
 
@@ -211,16 +207,17 @@ exports.displaySignupAskToConfirm = async (req, res) => {
 };
 
 exports.displaySignupInvitationSent = async (req, res) => {
-    res.render("user/signup-invitation-sent");
+    const data = {
+        userIsNotAuthenticated: !req.user
+    };
+    res.render("user/signup-invitation-ask-to-confirm", data);
 };
 
-exports.getSignupConfirmInvitationDone = async (req, res) => {
+exports.getSignupConfirmSuccess = async (req, res) => {
     const data = {
-        isSuccess: true,
-        message: "Contul a fost <strong>activat</strong> cu success!",
-        details: "Poți continua cu <a href='/'>pagina principală</a>."
+        userIsNotAuthenticated: !req.user
     };
-    res.render("user/signup-confirm", data);
+    res.render("user/signup-confirm-success", data);
 };
 
 const getSignupStaticValidationErrors = (firstName, lastName, email, password, confirmPassword) => {

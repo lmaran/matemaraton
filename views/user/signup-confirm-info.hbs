@@ -1,0 +1,10 @@
+<div class="container-fluid">
+    <div class="alert alert-info">
+        <i class="fa fa-info mr-2"></i> {{{message}}}
+    </div>
+    {{#if userIsNotAuthenticated}}
+    Poți continua cu pagina de <a href='/login'>login</a>
+    {{else}}
+    Poți continua cu <a href='/'>pagina principală</a>.
+    {{/if}}
+</div>

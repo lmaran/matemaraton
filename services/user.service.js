@@ -41,6 +41,13 @@ exports.updateOne = async user => {
     return db.collection(collection).updateOne({ _id: user._id }, { $set: user });
 };
 
+exports.resetPassword = async (userIdAsString, modifiedFields, removedFields) => {
+    const db = await mongoHelper.getDb();
+    return db
+        .collection(collection)
+        .updateOne({ _id: new ObjectID(userIdAsString) }, { $set: modifiedFields, $unset: removedFields });
+};
+
 exports.insertOne = async user => {
     const db = await mongoHelper.getDb();
     if (user.email) user.email = user.email.toLowerCase(); // ensures that the email is saved in lowerCase

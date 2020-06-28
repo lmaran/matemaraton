@@ -123,17 +123,23 @@ exports.resetPasswordByCode = async resetPasswordCode => {
 
     if (!existingUser) throw new Error("InvalidResetPasswordCode");
     else if (existingUser.status !== "active") throw new Error("InactiveUser");
-    else if (!existingUser.resetPasswordInfo) throw new Error("InvalideResetPasswordInfo");
-
-    const pswInfo = existingUser.resetPasswordInfo; // shortcut
+    else if (!existingUser.resetPasswordInfo) throw new Error("InvalidResetPasswordInfo");
 
     // update user info
-    existingUser.password = pswInfo.newPassword;
-    existingUser.lastResetPasswordOn = new Date();
-    delete existingUser.resetPasswordCode;
-    delete existingUser.resetPasswordInfo;
+    const currentDate = new Date();
 
-    return await userService.updateOne(existingUser);
+    const modifiedFields = {
+        password: existingUser.resetPasswordInfo.newPassword,
+        lastResetPasswordOn: currentDate,
+        modifiedOn: currentDate
+    };
+
+    const removedFields = {
+        resetPasswordCode: "",
+        resetPasswordInfo: ""
+    };
+
+    return await userService.resetPassword(existingUser._id, modifiedFields, removedFields);
 };
 
 exports.getJwtPayload = async token => {
