@@ -84,7 +84,7 @@ router.get("/signup", userSignupController.getSignup);
 router.post("/signup", userSignupController.postSignup);
 router.get("/signup/ask-to-confirm", userSignupController.displaySignupAskToConfirm);
 router.get("/signup/confirm/:activationCode", userSignupController.getSignupConfirm);
-router.get("/signup/confirm-invitation-done", userSignupController.getSignupConfirmInvitationDone);
+router.get("/signup/confirm-success", userSignupController.getSignupConfirmSuccess);
 
 // user-change-password
 router.get("/change-password", isAuthenticated, userChangePasswordController.getChangePassword);
@@ -95,6 +95,7 @@ router.get("/reset-password", userResetPasswordController.getResetPassword);
 router.post("/reset-password", userResetPasswordController.postResetPassword);
 router.get("/reset-password/ask-to-confirm", userResetPasswordController.displayResetPasswordAskToConfirm);
 router.get("/reset-password/confirm/:resetPasswordCode", userResetPasswordController.getResetPasswordConfirm);
+router.get("/reset-password/confirm-success", userResetPasswordController.getResetPasswordConfirmSuccess);
 
 router.get("/:edition?", matemaratonController.getMatemaraton);
 

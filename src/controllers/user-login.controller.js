@@ -5,13 +5,12 @@ const cookieHelper = require("../helpers/cookie.helper");
 
 exports.getLogin = (req, res) => {
     if (req.user) {
-        // already authenticated
         const data = {
             isInfo: true,
             message: "Ești deja autentificat!",
             details: "Dacă dorești să te re-autentifici, trebuie întâi să te deconectezi: <a href='/logout'>logout</a>."
         };
-        return res.render("user/login-already-authenticated", data);
+        return res.render("user/login-response", data);
     }
 
     // Get an array of flash errors (or initial values) by passing the key

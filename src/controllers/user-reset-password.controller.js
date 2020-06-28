@@ -98,23 +98,17 @@ exports.getResetPasswordConfirm = async (req, res) => {
 
         cookieHelper.clearCookies(res);
 
-        const data = {
-            isSuccess: true,
-            message: "Parola a fost <strong>resetată</strong> cu success!",
-            details: "Poți continua cu pagina de <a href='/login'>login</a>."
-        };
-
-        res.render("user/reset-password-confirm", data);
+        res.redirect("/reset-password/confirm-success");
     } catch (err) {
-        const data = { isError: true, message: err.message };
+        const data = { message: err.message };
 
         if (err.message === "InvalidResetPasswordCode")
             data.message = "Codul pentru resetarea parolei este <strong>invalid</strong> sau <strong>expirat</strong>!";
         else if (err.message === "InactiveUser") data.message = "Utilizatorul aferent acestui cod este inactiv!";
-        else if (err.message === "InvalideResetPasswordInfo")
+        else if (err.message === "InvalidResetPasswordInfo")
             data.message = "Lipsesc informațiile necesare pentru resetarea parolei!";
 
-        res.render("user/reset-password-confirm", data);
+        res.render("user/reset-password-confirm-error", data);
     }
 };
 
@@ -158,4 +152,11 @@ const flashAndReloadResetPasswordPage = (req, res, validationErrors) => {
     req.flash("initialValues", initialValues);
     const currentUrl = req.get("referer"); // "/signup?invitationCode=..."
     return res.redirect(currentUrl);
+};
+
+exports.getResetPasswordConfirmSuccess = async (req, res) => {
+    const data = {
+        userIsNotAuthenticated: !req.user
+    };
+    res.render("user/reset-password-confirm-success", data);
 };
