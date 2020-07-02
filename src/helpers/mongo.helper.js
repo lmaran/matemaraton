@@ -25,12 +25,11 @@ let _clientAsPromise;
     _clientAsPromise = client.connect();
 })();
 
-exports.getDb = async () => {
+exports.getDb = async specificDbName => {
     try {
-        // console.log(_clientAsPromise);
         if (!_db) {
             const client = await _clientAsPromise;
-            _db = client.db(dbName);
+            _db = client.db(specificDbName || dbName);
             return _db;
         } else {
             // db already exists...
