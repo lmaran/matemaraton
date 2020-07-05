@@ -70,8 +70,11 @@ router.get("/materiale-simulare-en-editia-3", matemaratonController.getMateriale
 router.get("/contact", contactController.getContact);
 
 // problems
+router.get("/probleme/edit/:id", problemController.editProblem);
 router.get("/probleme/:id", problemController.getProblem);
-router.post("/probleme", problemController.createProblem);
+router.put("/probleme/:id", problemController.updateProblem);
+router.get("/probleme", problemController.getProblems);
+router.post("/probleme/katex-preview", problemController.createKatekPreview);
 
 // user-login/logout
 router.get("/login", userLoginController.getLogin);

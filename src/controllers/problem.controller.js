@@ -1,36 +1,67 @@
+const problemService = require("../services/problem.service");
+
+const katex = require("katex");
+
+const tm = require("markdown-it-texmath").use(katex);
+const md = require("markdown-it")().use(tm, { delimiters: "dollars", macros: { "\\RR": "\\mathbb{R}" } });
+
+exports.getProblems = async (req, res) => {
+    const problems = await problemService.getAll();
+    const data = { problems };
+    //res.send(data);
+    res.render("problem/problems", data);
+};
+
 exports.getProblem = async (req, res) => {
     const problemId = req.params.id;
 
-    const katex = require("katex");
+    const problem = await problemService.getById(problemId);
 
-    const tm = require("markdown-it-texmath").use(katex);
-    const md = require("markdown-it")().use(tm, { delimiters: "dollars", macros: { "\\RR": "\\mathbb{R}" } });
+    // problem.question.statement.text = md.render(problem.question.statement.text);
+
+    const q5 = `Fie mulțimile $A = \\{ x \\in \\mathbb{N} \\mid x+3<8 \\}$ si $B = \\{ x \\in \\mathbb{N}, \\medspace x$ divizor al lui 10 $\\}.$\\
+    a) Scrieți elementele mulțimilor $A$ si $B$.
+    `;
+
+    problem.question.statement.textPreview = md.render(problem.question.statement.text);
+
+    // const data = { problem, testOriginal: q5, test: md.render(q5) };
+    const data = { problem };
+    //res.send(data);
+    res.render("problem/problem", data);
+};
+
+exports.editProblem = async (req, res) => {
+    const problemId = req.params.id;
+
+    const problem = await problemService.getById(problemId);
+
+    // problem.question.statement.text = md.render(problem.question.statement.text);
+
+    const q5 = `Fie mulțimile $A = \\{ x \\in \\mathbb{N} \\mid x+3<8 \\}$ si $B = \\{ x \\in \\mathbb{N}, \\medspace x$ divizor al lui 10 $\\}.$\\
+    a) Scrieți elementele mulțimilor $A$ si $B$.
+    `;
+
+    problem.question.statement.textPreview = md.render(problem.question.statement.text);
+
+    // const data = { problem, testOriginal: q5, test: md.render(q5) };
+    const data = { problem };
+    //res.send(data);
+    res.render("problem/problem-edit", data);
+};
+
+exports.editProblem2 = async (req, res) => {
+    const problemId = req.params.id;
 
     const str1 = "Sa se afle   c = \\pm\\sqrt{a^2 + b^2}";
     const str2 = "If we try $x^{b^b}$, it aligned well.";
     const str3 = "Sa se afle f(x) = \\int_{-\\infty}^\\infty\\hat f(\\xi)\\,e^{2 \\pi i \\xi x}\\,d\\xi";
-    //var eq = "f(x) = \\pm\\sqrt{a^2 + b^2}"
 
-    // const html2 = katex.renderToString(str1, {
-    //     // throwOnError: false,
-    //     displayMode: false
-    // });
-
-    //const html3 = md.render("Euler's identity $e^{ipi}+1=0$ is a beautiful formula in $\\RR 2$.");
     const p1 = md.render("Câte numere de forma $\\overline{x1yz}$ sunt divizibile cu 2?");
 
     const p2 = md.render(
         "In clasa a VI-a B sunt 32 de elevi care participă la cel puțin unul dintre concursurile COMPER si Olimpiada de matematica. Știind că 28 de elevi participă la concursul COMPER și 12 elevi participă la Olimpiada de matematică, determinați câți elevi participă doar la concursul COMPER."
     );
-
-    const p3 = md.render(
-        "Pentru amenajarea unui acvariu de formă cubică, cu muchia de 50 cm, se pun 15 kg de pietriș si 75 l de apă. Știind că 1 dm$^3$ de pietriș cântărește 0,6 kg, aflați până la ce înălțime se ridică apa in vas."
-    );
-
-    const q4 = `Dacă $a, b, c$ sunt numere naturale, arătați că 
-    numărul $n = 27a + 81b + 9c + 45, x \\in \\mathbb{N}$ este multiplu de 9.`;
-    const p4 = md.render(q4);
-    // console.log(q4);
 
     const q5 = `Fie mulțimile $A = \\{ x \\in \\mathbb{N} \\mid x+3<8 \\}$ si $B = \\{ x \\in \\mathbb{N}, \\medspace x$ divizor al lui 10 $\\}.$\\
     a) Scrieți elementele mulțimilor $A$ si $B$.
@@ -55,38 +86,35 @@ exports.getProblem = async (req, res) => {
 
     const data = {
         problemId,
-        // p1,
         p2,
-        p3,
-        p4,
         p5,
         p6,
         ctx: req.ctx
     };
-    res.render("problem/problem", data);
+    res.render("problem/problem-edit2", data);
     // res.send(html2);
 };
 
-exports.createProblem = async (req, res) => {
-    const data = req.body;
-    console.log(data.str);
+exports.createKatekPreview = async (req, res) => {
+    const problemStatementKatex = req.body.problemStatement;
+    const problemStatementHtml = md.render(problemStatementKatex);
+    res.status(201).json(problemStatementHtml);
+};
 
-    const katex = require("katex");
+exports.updateProblem = async (req, res) => {
+    const problemId = req.params.id;
+    const problemStatement = req.body.problemStatement;
+    // console.log(problemStatement);
 
-    const tm = require("markdown-it-texmath").use(katex);
-    const md = require("markdown-it")({
-        // breaks: true // Convert '\n' in paragraphs into <br>
-    }).use(tm, { delimiters: "dollars", macros: { "\\RR": "\\mathbb{R}" } });
-    data.strKatex = md.render(data.str);
+    const problem = await problemService.getById(problemId);
 
-    const md2 = require("markdown-it")();
+    // console.log(problem);
 
-    data.strMarkdown = md2.render(data.str);
+    problem.question.statement.text = problemStatement;
 
-    // data.strKatex = katex.renderToString(data.str, {
-    //     // throwOnError: false,
-    //     displayMode: false
-    // });
+    problemService.updateOne(problem); // don't have to await
 
-    res.status(201).json(data);
+    // update preview field also
+    problem.question.statement.textPreview = md.render(problem.question.statement.text);
+    res.status(200).json(problem); // or res.status(204).send();  fo No Content
 };
