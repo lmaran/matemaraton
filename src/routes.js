@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const homeController = require("./controllers/home.controller");
+const editionController = require("./controllers/edition.controller");
 const meController = require("./controllers/me.controller");
 const matemaratonController = require("./controllers/matemaraton.controller");
 const problemController = require("./controllers/problem.controller");
@@ -97,6 +98,6 @@ router.get("/reset-password/ask-to-confirm", userResetPasswordController.display
 router.get("/reset-password/confirm/:resetPasswordCode", userResetPasswordController.getResetPasswordConfirm);
 router.get("/reset-password/confirm-success", userResetPasswordController.getResetPasswordConfirmSuccess);
 
-router.get("/:edition?", matemaratonController.getMatemaraton);
+router.get("/editia-[1|2|3]", editionController.getEdition);
 
 module.exports = router;
