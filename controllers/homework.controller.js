@@ -41,31 +41,35 @@ exports.getHomeworkSubmissionsPerStudent = async (req, res) => {
         }
     }
 
-    homeworkRequests.forEach(homeworkRequest => {
-        const submission = homeworkRequest.submissions.find(x => x.studentId === studentId);
-        homeworkRequest.totalSubmittedQuestions = (submission && submission.totalSubmittedQuestions) || 0;
-    });
+    if (homeworkRequests) {
+        homeworkRequests.forEach(homeworkRequest => {
+            const submission = homeworkRequest.submissions.find(x => x.studentId === studentId);
+            homeworkRequest.totalSubmittedQuestions = (submission && submission.totalSubmittedQuestions) || 0;
+        });
+    }
 
     const today = dateTimeHelper.getFriendlyDate(new Date()).ymd; // 2020-02-17
     // const closedRequests = homeworkRequests.filter(x => x.dueDate < today) || [];
 
     let totalQuestions = 0;
     let totalUserSubmittedQuestions = 0;
-    homeworkRequests.forEach(x => {
-        const userSubmission = x.submissions.find(x => x.studentId === studentId);
-        x.userSubmittedQuestions = (userSubmission && userSubmission.totalSubmittedQuestions) || 0;
-        totalUserSubmittedQuestions += x.userSubmittedQuestions;
-        totalQuestions += x.totalRequestedQuestions;
-        x.dueDateAsString = dateTimeHelper.getStringFromStringNoDay(x.dueDate);
+    if (homeworkRequests) {
+        homeworkRequests.forEach(x => {
+            const userSubmission = x.submissions.find(x => x.studentId === studentId);
+            x.userSubmittedQuestions = (userSubmission && userSubmission.totalSubmittedQuestions) || 0;
+            totalUserSubmittedQuestions += x.userSubmittedQuestions;
+            totalQuestions += x.totalRequestedQuestions;
+            x.dueDateAsString = dateTimeHelper.getStringFromStringNoDay(x.dueDate);
 
-        // totalQuestions += x.totalRequestedQuestions;
-        // (x.submissions || []).forEach(submission => {
-        //     // const studentCrt = studentsObj[submission.studentId];
-        //     const studentCrt = students.find(x => x._id.toString() === submission.studentId);
-        //     studentCrt.totalSubmittedQuestions =
-        //         (studentCrt.totalSubmittedQuestions || 0) + submission.totalSubmittedQuestions;
-        // });
-    });
+            // totalQuestions += x.totalRequestedQuestions;
+            // (x.submissions || []).forEach(submission => {
+            //     // const studentCrt = studentsObj[submission.studentId];
+            //     const studentCrt = students.find(x => x._id.toString() === submission.studentId);
+            //     studentCrt.totalSubmittedQuestions =
+            //         (studentCrt.totalSubmittedQuestions || 0) + submission.totalSubmittedQuestions;
+            // });
+        });
+    }
 
     const totalUserSubmittedQuestionsAsPercent = totalQuestions
         ? Math.round((totalUserSubmittedQuestions * 100) / totalQuestions)
@@ -99,9 +103,16 @@ exports.getHomeworkSubmissionsPerStudent = async (req, res) => {
         totalQuestions,
         totalUserSubmittedQuestions,
         totalUserSubmittedQuestionsAsPercent,
-        class: cls,
-        closedRequests: homeworkRequests.filter(x => x.dueDate < today).sort((a, b) => (a.dueDate < b.dueDate ? 1 : -1))
+        class: cls
+        //closedRequests: homeworkRequests.filter(x => x.dueDate < today).sort((a, b) => (a.dueDate < b.dueDate ? 1 : -1))
     };
+
+    if (homeworkRequests) {
+        data.closedRequests = homeworkRequests
+            .filter(x => x.dueDate < today)
+            .sort((a, b) => (a.dueDate < b.dueDate ? 1 : -1));
+    }
+
     //res.send(data);
     res.render("homework/homework-submissions-per-student", data);
 };

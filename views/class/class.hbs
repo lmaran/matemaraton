@@ -28,10 +28,12 @@
 
 <ul>
     <li><a href="/clase/{{class._id}}/elevi">Elevi</a></li>
-    <li class="mb-3"><a href="/clase/{{class._id}}/cursuri">Cursuri <span class="text-muted">(poze de pe
-                tablă
+    <li class="mb-3"><a href="/clase/{{class._id}}/cursuri">Cursuri
+            <span class="text-muted">(poze de pe tablă
                 {{#if (or (eq2 class._id "5d92db9ba0da913a67b9a711") (eq2 class._id "5d92dc63a0da913a67b9a713"))}}
-                <span class="font-weight-bold text-danger">și video</span>{{/if}})</span></a></li>
+                <span class="font-weight-bold">și video</span>
+                {{/if}})
+            </span></a></li>
 
     <li><a href="/clase/{{class._id}}/prezenta">Prezența <span class="text-muted">(pe zile)</span></a></li>
     <li class="mb-3"><a href="/clase/{{class._id}}/total-prezente">Total prezențe <span class="text-muted">(pe
