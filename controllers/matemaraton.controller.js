@@ -1,5 +1,3 @@
-const { PageNotFound } = require("../errors/all.errors");
-
 exports.getTrainingProgramForENSimulationEdition2 = async (req, res) => {
     const data = {
         // ctx: req.ctx,

@@ -39,14 +39,16 @@ export const fetchHelpers = {
             body: JSON.stringify(data) // data can be `string` or {object}!
         };
         const response = await fetch(url, config);
-        // console.log(response);
+        //console.log(response);
         if (response.ok) {
             // console.log(response);
-            if (response.status === 201) {
+            if (response.status === 200) {
+                // be sure to return 200 if you want to return a result, otherwise return 204
+                // https://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
                 if (response.bodyUsed) {
                     return response.json(); // it returns a Promise here, not a concrete object
                 } else {
-                    return null; // OK, but no content
+                    return response.json();
                 }
             }
             // TODO treat also other response codes: https://stackoverflow.com/a/827045

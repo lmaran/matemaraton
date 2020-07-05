@@ -1,0 +1,17 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Probleme</li>
+    </ol>
+</nav>
+
+<h1>Probleme</h1>
+{{!-- <h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2> --}}
+
+<ul>
+    {{#each problems}}
+    <li>
+        <a href="/probleme/{{_id}}">Problema {{code}}</a>
+    </li>
+    {{/each}}
+</ul>
