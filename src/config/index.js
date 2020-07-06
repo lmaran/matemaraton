@@ -41,7 +41,8 @@ const common = {
     // List of user roles
     userRoles: ["guest", "user", "partner", "admin"], // the order is important
 
-    externalUrl: "http://localhost:1417"
+    externalUrl: "http://localhost:1417",
+    azureBlobStorageConnectionString: process.env.AZURE_BLOB_STORAGE_CONNECTION_STRING || ""
 };
 
 // Merge a `source` object to a `target` recursively

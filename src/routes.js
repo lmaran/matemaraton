@@ -22,6 +22,8 @@ const presenceController = require("./controllers/presence.controller");
 const courseController = require("./controllers/course.controller");
 const homeworkController = require("./controllers/homework.controller");
 
+const idGeneratorController = require("./controllers/id-generator.controller");
+
 // home
 router.get("/", homeController.getHomePage);
 
@@ -100,6 +102,8 @@ router.post("/reset-password", userResetPasswordController.postResetPassword);
 router.get("/reset-password/ask-to-confirm", userResetPasswordController.displayResetPasswordAskToConfirm);
 router.get("/reset-password/confirm/:resetPasswordCode", userResetPasswordController.getResetPasswordConfirm);
 router.get("/reset-password/confirm-success", userResetPasswordController.getResetPasswordConfirmSuccess);
+
+router.get("/test-id-generator", idGeneratorController.getNextId);
 
 router.get("/editia-[1|2|3]", editionController.getEdition);
 

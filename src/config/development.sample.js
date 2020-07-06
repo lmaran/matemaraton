@@ -25,6 +25,7 @@ const config = {
             headers: false,
             body: false
         }
-    }
+    },
+    azureBlobStorageConnectionString: "<azure-blob-storage-connection-string>"
 };
 module.exports = config;
