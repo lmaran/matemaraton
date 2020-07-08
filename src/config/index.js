@@ -4,7 +4,12 @@ const LogLevel = constants.LogLevel;
 const LogDetail = constants.LogDetail;
 const EnvironmentType = constants.EnvironmentType;
 
-const env = (process.env.NODE_ENV || EnvironmentType.DEVELOPMENT).toLowerCase();
+let env = (process.env.NODE_ENV || EnvironmentType.DEVELOPMENT).toLowerCase();
+if (env === "test") {
+    // jest sets this env variable as "test"
+    // we can also create a test.js file in the config folder but have to exclude it from testing (as it ends in *test.js)
+    env = EnvironmentType.DEVELOPMENT.toLowerCase();
+}
 const envConfig = require(`./${env}`);
 
 const common = {
@@ -42,7 +47,8 @@ const common = {
     userRoles: ["guest", "user", "partner", "admin"], // the order is important
 
     externalUrl: "http://localhost:1417",
-    azureBlobStorageConnectionString: process.env.AZURE_BLOB_STORAGE_CONNECTION_STRING || ""
+    azureBlobStorageConnectionString: process.env.AZURE_BLOB_STORAGE_CONNECTION_STRING || "",
+    idGenerator: { defaultBatchSize: 10, specificBatchSize: { exercises: 1 } }
 };
 
 // Merge a `source` object to a `target` recursively

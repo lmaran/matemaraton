@@ -3,6 +3,8 @@
 // Samples: https://github.com/Azure/azure-sdk-for-js/tree/master/sdk/storage/storage-blob/samples/javascript
 // Quick start: https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-nodejs
 
+// Azure AutoNumber in C#: https://itnext.io/generate-auto-increment-id-on-azure-62cc962b6fa6
+
 const config = require("../config");
 const { BlobServiceClient } = require("@azure/storage-blob");
 
@@ -25,7 +27,7 @@ exports.init = async () => {
 };
 
 let currentId = 0;
-let maxId = 0;
+let maxId = 0; // exclusive (actually the max id that can be used without a roundtrip to the blob is maxId-1)
 
 exports.getNextId = async scope => {
     // in blob se va stoca urmatorul id disponibil
@@ -35,10 +37,13 @@ exports.getNextId = async scope => {
     // id-ul disponibil pt. urmatoarea cerere (ex: poate stoca 1, 2 sau 3)
     // dupa fiecare cerere, acest id se va incrementa cu 1. Cand se ajunge la nr. maxim, se umple bufferul si se reia procesul
 
-    if (currentId === maxId) {
+    if (currentId >= maxId) {
         const writeAttempts = 0;
-        await uploadInMemoryCountersFromBlob(scope, writeAttempts);
+        await this.uploadInMemoryCountersFromBlob(scope, writeAttempts);
     }
+
+    // console.log("maxId: " + maxId);
+    // console.log("currentId: " + currentId);
 
     // get from memory
     const nextId = currentId;
@@ -47,8 +52,8 @@ exports.getNextId = async scope => {
     return `Counter value for  ${scope}: ${nextId}`;
 };
 
-// async function uploadBlobAsync(blockBlobClient, data, originalETag) {
-async function uploadInMemoryCountersFromBlob(scope, writeAttempts) {
+// concurrency with blob and ETag in c#: https://docs.microsoft.com/en-us/azure/storage/common/storage-concurrency
+exports.uploadInMemoryCountersFromBlob = async (scope, writeAttempts) => {
     try {
         // read the current counter from blob
 
@@ -64,7 +69,8 @@ async function uploadInMemoryCountersFromBlob(scope, writeAttempts) {
         const oldValueInBlob = Number(oldValueInBlobAsString);
 
         // calculate the new counter
-        const batchSize = 3;
+        const batchSize = this.getBatchSize(scope, config);
+
         const newValueInBlob = oldValueInBlob + batchSize;
 
         // write new counter to the blob
@@ -94,7 +100,7 @@ async function uploadInMemoryCountersFromBlob(scope, writeAttempts) {
             }
         }
     }
-}
+};
 
 // A helper method used to read a Node.js readable stream into string
 // https://github.com/Azure/azure-sdk-for-js/blob/master/sdk/storage/storage-blob/samples/javascript/basic.js
@@ -122,6 +128,19 @@ function sleep(milliseconds) {
 }
 
 // only for testing (sleep but does not block the thread)
-function sleepAsync(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+function sleepAsync(milliseconds) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
+
+exports.getBatchSize = (scope, config) => {
+    let batchSize = 3; // default
+    if (config.idGenerator && config.idGenerator.specificBatchSize && config.idGenerator.specificBatchSize[scope]) {
+        batchSize = config.idGenerator.specificBatchSize[scope];
+    } else {
+        if (config.idGenerator && config.idGenerator.defaultBatchSize) {
+            batchSize = config.idGenerator.defaultBatchSize;
+        }
+    }
+    //console.log("new batchSize: " + batchSize);
+    return batchSize;
+};

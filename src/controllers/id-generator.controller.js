@@ -1,4 +1,5 @@
 const idGeneratorService = require("../services/id-generator.service");
+const timerHelper = require("../helpers/time.helper");
 
 // https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-nodejs#setting-up
 // idGeneratorService
@@ -10,10 +11,12 @@ const idGeneratorService = require("../services/id-generator.service");
 
 exports.getNextId = async (req, res) => {
     try {
-        const startTime = Date.now();
+        const start = process.hrtime();
+
         const nextId = await idGeneratorService.getNextId("exercises");
-        const timeTaken = Date.now() - startTime;
-        console.log(`Returned nextId in ${timeTaken / 1000} sec.`); // ~ 0.1 sec on dev machine (via Azure)
+
+        console.log(`Returned nextId in ${timerHelper.elapsedTime(start)} sec.`);
+
         res.send(nextId);
     } catch (err) {
         res.send(err.message);
