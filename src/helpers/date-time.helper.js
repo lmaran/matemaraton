@@ -131,3 +131,69 @@ exports.getStringFromDate = function(date) {
 //     const roDate = this.getRoToday();
 //     return this.getFriendlyDate(roDate).ymd;
 // };
+
+/**
+ *
+ * process.hrtime() returns the current high-resolution real time in a [seconds, nanoseconds] tuple Array
+ * this helper merges seconds and nanoseconds providing a single number (as seconds)
+ *
+ * node.js original doc: https://nodejs.org/docs/v0.8.0/api/all.html#all_process_hrtime
+ * helper doc: https://stackoverflow.com/a/14551263
+ *
+ * NEW (with process.hrtime() and elapsedTime helper) - more precisely
+ * const startTime = Date.now();
+ * //...some code
+ * console.log(`Returned nextId in ${(Date.now() - startTime) / 1000} sec.`);
+ *
+ * OLD method: (with Date.now)
+ * const timerHelper = require("../helpers/time.helper");
+ * const start = process.hrtime();
+ * //...some code
+ * console.log(`Returned nextId in ${timerHelper.elapsedTime(start)} sec.`);
+ *
+ * input: [2 sec, 123456789 ns]
+ * output: 2.1234
+ * @param {*} timer
+ * @returns {number}
+ */
+exports.elapsedTime = timer => {
+    const precision = 3; // 3 decimal places
+
+    const secondsPart1 = process.hrtime(timer)[0];
+
+    const nanosecondsPart2 = process.hrtime(timer)[1];
+    const secondsPart2Initial = nanosecondsPart2 / 1000000000; // divide by a billion to get nano to seconds
+    const secondsPart2 = Number(secondsPart2Initial.toFixed(precision));
+
+    timer = process.hrtime(); // reset the timer
+
+    return secondsPart1 + secondsPart2;
+};
+
+/**
+ * only for testing (sleep and block the thread)
+ *
+ * USAGE: add this line where you want to introduce a delay
+ * timeHelper.sleep(20000); // 20 sec
+ *
+ * @param {*} milliseconds
+ */
+exports.sleep = milliseconds => {
+    const date = Date.now();
+    let currentDate = null;
+    do {
+        currentDate = Date.now();
+    } while (currentDate - date < milliseconds);
+};
+
+/**
+ * only for testing (sleep but does not block the thread)
+ *
+ * USAGE: add this line where you want to introduce a delay
+ * await timeHelper.sleepAsync(20000); // 20 sec
+ *
+ * @param {*} milliseconds
+ */
+exports.sleepAsync = milliseconds => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+};

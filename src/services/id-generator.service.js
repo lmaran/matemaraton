@@ -6,6 +6,7 @@
 // Azure AutoNumber in C#: https://itnext.io/generate-auto-increment-id-on-azure-62cc962b6fa6
 
 const config = require("../config");
+const streamHelper = require("../helpers/stream.helper");
 const { BlobServiceClient } = require("@azure/storage-blob");
 
 const blobServiceClient = BlobServiceClient.fromConnectionString(config.azureBlobStorageConnectionString);
@@ -64,7 +65,7 @@ exports.uploadInMemoryCountersFromBlob = async (scope, writeAttempts) => {
         const originalETag = downloadBlockBlobResponse.originalResponse.etag; // etag: '"0x8D821EA1A932960"',
         //const originalETag = "wrong-etag";
 
-        const oldValueInBlobAsString = await streamToString(downloadBlockBlobResponse.readableStreamBody);
+        const oldValueInBlobAsString = await streamHelper.streamToString(downloadBlockBlobResponse.readableStreamBody);
 
         const oldValueInBlob = Number(oldValueInBlobAsString);
 
@@ -76,7 +77,7 @@ exports.uploadInMemoryCountersFromBlob = async (scope, writeAttempts) => {
         // write new counter to the blob
 
         // only for testing...to have time to change the value manually in Storage Explorer
-        //await sleepAsync(20000); // 20 sec
+        // await timeHelper.sleepAsync(20000); // 20 sec
 
         const data = newValueInBlob.toString();
 
@@ -93,7 +94,7 @@ exports.uploadInMemoryCountersFromBlob = async (scope, writeAttempts) => {
             if (writeAttempts < maxWriteAttempts) {
                 // retry
                 writeAttempts++;
-                await uploadInMemoryCountersFromBlob(scope, writeAttempts);
+                await this.uploadInMemoryCountersFromBlob(scope, writeAttempts);
             } else {
                 console.log("Too much concurrency conflicts!");
                 throw new Error("Too much concurrency conflicts!");
@@ -101,36 +102,6 @@ exports.uploadInMemoryCountersFromBlob = async (scope, writeAttempts) => {
         }
     }
 };
-
-// A helper method used to read a Node.js readable stream into string
-// https://github.com/Azure/azure-sdk-for-js/blob/master/sdk/storage/storage-blob/samples/javascript/basic.js
-// TODO: move it into the helper folders if we need it multiple places
-async function streamToString(readableStream) {
-    return new Promise((resolve, reject) => {
-        const chunks = [];
-        readableStream.on("data", data => {
-            chunks.push(data.toString());
-        });
-        readableStream.on("end", () => {
-            resolve(chunks.join(""));
-        });
-        readableStream.on("error", reject);
-    });
-}
-
-// only for testing (sleep and block the thread)
-function sleep(milliseconds) {
-    const date = Date.now();
-    let currentDate = null;
-    do {
-        currentDate = Date.now();
-    } while (currentDate - date < milliseconds);
-}
-
-// only for testing (sleep but does not block the thread)
-function sleepAsync(milliseconds) {
-    return new Promise(resolve => setTimeout(resolve, milliseconds));
-}
 
 exports.getBatchSize = (scope, config) => {
     let batchSize = 3; // default
