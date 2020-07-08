@@ -1,5 +1,6 @@
-const idGeneratorService = require("../services/id-generator.service");
-const timeHelper = require("../helpers/date-time.helper");
+// const idGeneratorBlobService = require("../services/id-generator-blob.service");
+const idGeneratorMongoService = require("../services/id-generator-mongo.service");
+// const timeHelper = require("../helpers/date-time.helper");
 
 // https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-nodejs#setting-up
 // idGeneratorService
@@ -11,11 +12,13 @@ const timeHelper = require("../helpers/date-time.helper");
 
 exports.getNextId = async (req, res) => {
     try {
-        const start = process.hrtime();
+        // let start = process.hrtime(); // reset the timer
+        // const nextIdWithBlob = await idGeneratorBlobService.getNextId("exercises");
+        // console.log(`Returned nextId with Blob in ${timeHelper.elapsedTime(start)} sec.`);
 
-        const nextId = await idGeneratorService.getNextId("exercises");
-
-        console.log(`Returned nextId in ${timeHelper.elapsedTime(start)} sec.`);
+        // start = process.hrtime(); // reset the timer
+        const nextId = await idGeneratorMongoService.getNextId("exercises");
+        // console.log(`Returned nextId with Mongo in ${timeHelper.elapsedTime(start)} sec.`);
 
         res.send(nextId);
     } catch (err) {

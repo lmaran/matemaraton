@@ -1,4 +1,4 @@
-const srcFile = require("./id-generator.service.js");
+const srcFile = require("./id-generator-blob.service.js");
 
 describe("id-generator.service.getBatchSize()", () => {
     // let treeRow = {
