@@ -36,7 +36,7 @@ exports.uploadInMemoryCountersFromMongo = async scope => {
     // Increment nextId using findOneAndUpdate to ensure that the nextId field will be incremented atomically with the fetch of this document"
     const db = await mongoHelper.getDb();
     const result = await db
-        .collection("counters")
+        .collection("id-generator")
         .findOneAndUpdate({ _id: scope }, { $inc: { nextId: batchSize } }, { returnOriginal: false });
 
     const newValueInBlob = result.value.nextId;
