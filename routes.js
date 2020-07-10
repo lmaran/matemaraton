@@ -73,6 +73,7 @@ router.get("/contact", contactController.getContact);
 
 // exercises
 router.get("/exercitii/edit/:id", exerciseController.editExercise);
+router.get("/exercitii/adauga", exerciseController.createExercise);
 router.get("/exercitii/:id", exerciseController.getExercise);
 router.put("/exercitii/:id", exerciseController.updateExercise);
 router.get("/exercitii", exerciseController.getExercises);

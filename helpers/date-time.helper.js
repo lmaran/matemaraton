@@ -176,12 +176,8 @@ exports.elapsedTime = timer => {
 };
 
 /**
- * only for testing (sleep and block the thread)
- *
- * USAGE: add this line where you want to introduce a delay
- * timeHelper.sleep(20000); // 20 sec
- *
- * @param {*} milliseconds
+ * ONLY FOR TESTING (sleep and block the thread)
+ * USAGE: timeHelper.sleep(500); // 500 ms
  */
 exports.sleep = milliseconds => {
     const date = Date.now();
@@ -192,12 +188,9 @@ exports.sleep = milliseconds => {
 };
 
 /**
- * only for testing (sleep but does not block the thread)
- *
- * USAGE: add this line where you want to introduce a delay
- * await timeHelper.sleepAsync(20000); // 20 sec
- *
- * @param {*} milliseconds
+ * https://stackoverflow.com/a/39914235/2726725
+ * Sleep but does not block the thread
+ * USAGE: await dateTimeHelper.sleepAsync(500);
  */
 exports.sleepAsync = milliseconds => {
     return new Promise(resolve => setTimeout(resolve, milliseconds));

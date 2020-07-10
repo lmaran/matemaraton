@@ -23,3 +23,5 @@ exports.updateOne = async problem => {
     //problem.modifiedOn = new Date();
     return db.collection(collection).updateOne({ _id: problem._id }, { $set: problem });
 };
+
+exports.getObjectId = () => new ObjectID();
