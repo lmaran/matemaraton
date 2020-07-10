@@ -1,4 +1,5 @@
 const urlHelper = require("../helpers/url.helper");
+const config = require("../config");
 
 exports.setContext = async (req, res, next) => {
     req.ctx = {};
@@ -24,9 +25,12 @@ exports.setContext = async (req, res, next) => {
     // console.log("====================");
     // console.log(req.user);
     req.ctx.user = req.user;
+    req.ctx.isUserAdmin = req.user && req.user.isAdmin;
 
     res.locals.redirectUri = urlHelper.getCurrentEncodedUri(req); // e.g: /students?active=true
     res.locals.isNotRootPath = !urlHelper.isRootPath(req);
+
+    res.locals.isDevEnv = config.env === "development";
 
     next();
 };

@@ -5,7 +5,7 @@ const homeController = require("./controllers/home.controller");
 const editionController = require("./controllers/edition.controller");
 const meController = require("./controllers/me.controller");
 const matemaratonController = require("./controllers/matemaraton.controller");
-const problemController = require("./controllers/problem.controller");
+const exerciseController = require("./controllers/exercise.controller");
 const classController = require("./controllers/class.controller");
 const studentController = require("./controllers/student.controller");
 const parentController = require("./controllers/parent.controller");
@@ -71,12 +71,12 @@ router.get("/materiale-simulare-en-editia-3", matemaratonController.getMateriale
 // contact
 router.get("/contact", contactController.getContact);
 
-// problems
-router.get("/probleme/edit/:id", problemController.editProblem);
-router.get("/probleme/:id", problemController.getProblem);
-router.put("/probleme/:id", problemController.updateProblem);
-router.get("/probleme", problemController.getProblems);
-router.post("/probleme/katex-preview", problemController.createKatekPreview);
+// exercises
+router.get("/exercitii/edit/:id", exerciseController.editExercise);
+router.get("/exercitii/:id", exerciseController.getExercise);
+router.put("/exercitii/:id", exerciseController.updateExercise);
+router.get("/exercitii", exerciseController.getExercises);
+router.post("/exercitii/katex-preview", exerciseController.createKatekPreview);
 
 // user-login/logout
 router.get("/login", userLoginController.getLogin);

@@ -1,21 +1,21 @@
-const problemService = require("../services/problem.service");
+const exerciseService = require("../services/exercise.service");
 
 const katex = require("katex");
 
 const tm = require("markdown-it-texmath").use(katex);
 const md = require("markdown-it")().use(tm, { delimiters: "dollars", macros: { "\\RR": "\\mathbb{R}" } });
 
-exports.getProblems = async (req, res) => {
-    const problems = await problemService.getAll();
-    const data = { problems };
+exports.getExercises = async (req, res) => {
+    const exercises = await exerciseService.getAll();
+    const data = { exercises };
     //res.send(data);
-    res.render("problem/problems", data);
+    res.render("exercise/exercises", data);
 };
 
-exports.getProblem = async (req, res) => {
-    const problemId = req.params.id;
+exports.getExercise = async (req, res) => {
+    const exerciseId = req.params.id;
 
-    const problem = await problemService.getById(problemId);
+    const exercise = await exerciseService.getById(exerciseId);
 
     // problem.question.statement.text = md.render(problem.question.statement.text);
 
@@ -23,18 +23,18 @@ exports.getProblem = async (req, res) => {
     a) Scrieți elementele mulțimilor $A$ si $B$.
     `;
 
-    problem.question.statement.textPreview = md.render(problem.question.statement.text);
+    exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
 
     // const data = { problem, testOriginal: q5, test: md.render(q5) };
-    const data = { problem };
+    const data = { exercise };
     //res.send(data);
-    res.render("problem/problem", data);
+    res.render("exercise/exercise", data);
 };
 
-exports.editProblem = async (req, res) => {
-    const problemId = req.params.id;
+exports.editExercise = async (req, res) => {
+    const exerciseId = req.params.id;
 
-    const problem = await problemService.getById(problemId);
+    const exercise = await exerciseService.getById(exerciseId);
 
     // problem.question.statement.text = md.render(problem.question.statement.text);
 
@@ -42,15 +42,15 @@ exports.editProblem = async (req, res) => {
     a) Scrieți elementele mulțimilor $A$ si $B$.
     `;
 
-    problem.question.statement.textPreview = md.render(problem.question.statement.text);
+    exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
 
     // const data = { problem, testOriginal: q5, test: md.render(q5) };
-    const data = { problem };
+    const data = { exercise };
     //res.send(data);
-    res.render("problem/problem-edit", data);
+    res.render("exercise/exercise-edit", data);
 };
 
-exports.editProblem2 = async (req, res) => {
+exports.editExercise2 = async (req, res) => {
     const problemId = req.params.id;
 
     const str1 = "Sa se afle   c = \\pm\\sqrt{a^2 + b^2}";
@@ -91,30 +91,30 @@ exports.editProblem2 = async (req, res) => {
         p6,
         ctx: req.ctx
     };
-    res.render("problem/problem-edit2", data);
+    res.render("exercise/exercise-edit2", data);
     // res.send(html2);
 };
 
 exports.createKatekPreview = async (req, res) => {
-    const problemStatementKatex = req.body.problemStatement;
-    const problemStatementHtml = md.render(problemStatementKatex);
-    res.status(201).json(problemStatementHtml);
+    const exerciseStatementKatex = req.body.exerciseStatement;
+    const exerciseStatementHtml = md.render(exerciseStatementKatex);
+    res.status(201).json(exerciseStatementHtml);
 };
 
-exports.updateProblem = async (req, res) => {
-    const problemId = req.params.id;
-    const problemStatement = req.body.problemStatement;
-    // console.log(problemStatement);
+exports.updateExercise = async (req, res) => {
+    const exerciseId = req.params.id;
+    const exerciseStatement = req.body.exerciseStatement;
+    // console.log(pexerciseStatement);
 
-    const problem = await problemService.getById(problemId);
+    const exercise = await exerciseService.getById(exerciseId);
 
     // console.log(problem);
 
-    problem.question.statement.text = problemStatement;
+    exercise.question.statement.text = exerciseStatement;
 
-    problemService.updateOne(problem); // don't have to await
+    exerciseService.updateOne(exercise); // don't have to await
 
     // update preview field also
-    problem.question.statement.textPreview = md.render(problem.question.statement.text);
-    res.status(200).json(problem); // or res.status(204).send();  fo No Content
+    exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
+    res.status(200).json(exercise); // or res.status(204).send();  fo No Content
 };

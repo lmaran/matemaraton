@@ -2,19 +2,19 @@
     <ol class="breadcrumb">
         {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
-        <li class="breadcrumb-item"><a href="/probleme">Probleme</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Problema {{problem.code}}</li>
+        <li class="breadcrumb-item"><a href="/exercitii">Exerciții</a></li>
+        <li class="breadcrumb-item active" aria-current="page">E{{exercise.code}}</li>
     </ol>
 </nav>
 
 
-<h1>Problema {{problem.code}}</h1>
+<h1>Exercițiul {{exercise.code}}</h1>
 
 
-<div id="question-txt" rows="15" cols="150">{{{problem.question.statement.textPreview}}}</div>
+<div id="question-txt" rows="15" cols="150">{{{exercise.question.statement.textPreview}}}</div>
 
 {{!-- <div id="result-div-katex" style="font-family: KaTeX_Main; font-size: 1.1em"></div>
 
 <button id="submit-btn">Submit</button> --}}
 
-<a href="/probleme/edit/{{problem._id}}">Edit</a>
+<a href="/exercitii/edit/{{exercise._id}}">Edit</a>

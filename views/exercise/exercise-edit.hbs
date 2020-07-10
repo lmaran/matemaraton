@@ -22,27 +22,27 @@
     <ol class="breadcrumb">
         {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
-        <li class="breadcrumb-item"><a href="/probleme">Probleme</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Edit: problema {{problem.code}}</li>
+        <li class="breadcrumb-item"><a href="/exercitii">Exerciții</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Edit: E{{exercise.code}}</li>
     </ol>
 </nav>
 
 
-<h1 id="problem-id-container" data-problem-id="{{problem._id}}">Edit: problema {{problem.code}}</h1>
+<h1 id="exercise-id-container" data-exercise-id="{{exercise._id}}">Edit: Exercițiul {{exercise.code}}</h1>
 
-<textarea id="problem-statement-txt" rows="15" cols="150">{{{problem.question.statement.text}}}</textarea>
+<textarea id="exercise-statement-txt" rows="15" cols="150">{{{exercise.question.statement.text}}}</textarea>
 
 {{!-- <button id="preview-btn">Previzualizează</button>  --}}
 <button id="save-btn">Salvează</button> <i id="save-statement-check-icon" class="fa fa-check mr-2 fa-lg hide"
     style="color:green;"></i>
 
 <div id="katex-preview-div" style2="font-family: KaTeX_Main; font-size: 1.1em;">
-    {{{problem.question.statement.textPreview}}}</div>
+    {{{exercise.question.statement.textPreview}}}</div>
 
 {{!-- <div id="result-div-katex" style="font-family: KaTeX_Main; font-size: 1.1em"></div>
 
 <button id="submit-btn">Submit</button> --}}
 
 {{#section 'script'}}
-<script type="module" src="/js/problem/main.js"></script>
+<script type="module" src="/js/exercise/main.js"></script>
 {{/section}}
