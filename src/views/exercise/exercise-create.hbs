@@ -1,0 +1,49 @@
+<style>
+    .hidePresence {
+        display: none;
+    }
+
+    .hideStudent {
+        display: none;
+    }
+
+
+    .show {
+        opacity: 1;
+    }
+
+    .hide {
+        opacity: 0;
+        transition: opacity 800ms;
+    }
+</style>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/exercitii">Exerciții</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Adauga</li>
+    </ol>
+</nav>
+
+
+<h1 id="exercise-id-container" data-exercise-id="{{exercise._id}}">Exercițiu nou</h1>
+<div>{{id}}</div>
+Enunț:
+<textarea id="exercise-statement-txt" rows="15" cols="150">{{{exercise.question.statement.text}}}</textarea>
+
+{{!-- <button id="preview-btn">Previzualizează</button>  --}}
+<button id="save-btn">Salvează</button> <i id="save-statement-status-icon" class="fa fa-check mr-2 fa-lg hide"
+    style="color:green;"></i>
+
+<div id="katex-preview-div" style2="font-family: KaTeX_Main; font-size: 1.1em;">
+    {{{exercise.question.statement.textPreview}}}</div>
+
+{{!-- <div id="result-div-katex" style="font-family: KaTeX_Main; font-size: 1.1em"></div>
+
+<button id="submit-btn">Submit</button> --}}
+
+{{#section 'script'}}
+<script type="module" src="/js/exercise/main.js"></script>
+{{/section}}

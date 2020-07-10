@@ -5,8 +5,27 @@ const katex = require("katex");
 const tm = require("markdown-it-texmath").use(katex);
 const md = require("markdown-it")().use(tm, { delimiters: "dollars", macros: { "\\RR": "\\mathbb{R}" } });
 
+exports.createExercise = async (req, res) => {
+    // const exercises = await exerciseService.getAll();
+
+    // exercises.forEach(exercise => {
+    //     exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
+    // });
+
+    const id = exerciseService.getObjectId();
+
+    const data = { id };
+    // res.send(data);
+    res.render("exercise/exercise-create", data);
+};
+
 exports.getExercises = async (req, res) => {
     const exercises = await exerciseService.getAll();
+
+    exercises.forEach(exercise => {
+        exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
+    });
+
     const data = { exercises };
     //res.send(data);
     res.render("exercise/exercises", data);
