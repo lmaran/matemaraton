@@ -129,9 +129,9 @@ if 2 similar sections are used, the last one will override the first one --}}
             {{!-- {{toJSON @root.user}} --}}
             <ul class='navbar-nav ml-auto'>
                 {{#if @root.user}}
-                {{#if @root.user.isAdmin}}
+                {{!-- {{#if @root.user.isAdmin}}
                 <li class="nav-item"><a class="nav-link" href='/admin'>Admin</a></li>
-                {{/if}}
+                {{/if}} --}}
                 {{#if @root.user.isPartner}}
                 <li class="nav-item"><a class="nav-link" href='/admin'>Admin</a></li>
                 {{/if}}

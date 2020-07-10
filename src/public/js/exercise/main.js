@@ -1,12 +1,12 @@
 import { fetchHelpers } from "../helpers/fetch.helper.js";
 
 // event binders
-const problemStatementTxt = document.getElementById("problem-statement-txt");
+const exerciseStatementTxt = document.getElementById("exercise-statement-txt");
 //const previewBtn = document.getElementById("preview-btn");
 const saveBtn = document.getElementById("save-btn");
 
 //const problemIdContainer = document.querySelector(".problem-id-container");
-const problemIdContainer = document.getElementById("problem-id-container");
+const exerciseIdContainer = document.getElementById("exercise-id-container");
 
 // const resultDivOriginal = document.getElementById("result-div-original");
 // const resultDivOriginalFormatted = document.getElementById("result-div-original-formatted");
@@ -30,23 +30,23 @@ const saveStatementCheckIcon = document.getElementById("save-statement-check-ico
 // event handlers
 const eventHandlers = {
     getPreview: async () => {
-        const data = { problemStatement: problemStatementTxt.value };
+        const data = { exerciseStatement: exerciseStatementTxt.value };
         const katexPreview = await getKatexPreview(data);
         katexPreviewDiv.innerHTML = katexPreview;
     },
-    saveProblem: async () => {
-        const data = { problemId: problemIdContainer.dataset.problemId, problemStatement: problemStatementTxt.value };
-        const newProblem = await saveProblem(data);
-        // console.log(newProblem);
-        katexPreviewDiv.innerHTML = newProblem.question.statement.textPreview;
+    saveExercise: async () => {
+        const data = {
+            exerciseId: exerciseIdContainer.dataset.exerciseId,
+            exerciseStatement: exerciseStatementTxt.value
+        };
+        const newExercise = await saveExercise(data);
+        katexPreviewDiv.innerHTML = newExercise.question.statement.textPreview;
 
         saveStatementCheckIcon.classList.add("show");
         saveStatementCheckIcon.classList.remove("hide");
-        //saveStatementCheckIcon.classList.remove("hide2");
 
         setTimeout(function() {
             saveStatementCheckIcon.classList.add("hide");
-            //saveStatementCheckIcon.classList.remove("show");
             saveStatementCheckIcon.classList.remove("show");
         }, 3000);
     }
@@ -69,16 +69,16 @@ function debounce(callback, wait) {
 }
 
 //previewBtn.addEventListener("click", eventHandlers.getPreview);
-saveBtn.addEventListener("click", eventHandlers.saveProblem);
+saveBtn.addEventListener("click", eventHandlers.saveExercise);
 
 // problemStatementTxt.addEventListener("keyup", eventHandlers.getPreview); // without debouncer
-problemStatementTxt.addEventListener("keyup", debounce(eventHandlers.getPreview, 500)); // with debouncer
+exerciseStatementTxt.addEventListener("keyup", debounce(eventHandlers.getPreview, 500)); // with debouncer
 
 // http services
 const getKatexPreview = async data => {
-    return fetchHelpers.post("/probleme/katex-preview", data);
+    return fetchHelpers.post("/exercitii/katex-preview", data);
 };
 
-const saveProblem = async data => {
-    return fetchHelpers.put(`/probleme/${data.problemId}`, data);
+const saveExercise = async data => {
+    return fetchHelpers.put(`/exercitii/${data.exerciseId}`, data);
 };

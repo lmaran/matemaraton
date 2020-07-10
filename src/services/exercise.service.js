@@ -1,7 +1,7 @@
 const mongoHelper = require("../helpers/mongo.helper");
 const { ObjectID } = require("mongodb");
 
-const collection = "problems";
+const collection = "exercises";
 
 exports.getAll = async filter => {
     const db = await mongoHelper.getDb();

@@ -83,3 +83,10 @@ Va urma!
 </ul>
 
 <hr>
+
+{{#if @root.user.isAdmin}}
+<h5>Admin:</h5>
+<ul>
+    <li><a href='/exercitii'>Exerciții</a></li>
+</ul>
+{{/if}}
