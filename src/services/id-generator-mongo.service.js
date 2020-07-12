@@ -26,7 +26,8 @@ exports.getNextId = async scope => {
     const nextId = currentId;
     currentId++; // set this id "as taken"
 
-    return `Counter value for  ${scope}: ${nextId}`;
+    // return `Counter value for  ${scope}: ${nextId}`;
+    return nextId.toString();
 };
 
 exports.uploadInMemoryCountersFromMongo = async scope => {
