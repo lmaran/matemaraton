@@ -72,12 +72,14 @@ router.get("/materiale-simulare-en-editia-3", matemaratonController.getMateriale
 router.get("/contact", contactController.getContact);
 
 // exercises
-router.get("/exercitii/edit/:id", exerciseController.editExercise);
-router.get("/exercitii/adauga", exerciseController.createExercise);
-router.get("/exercitii/:id", exerciseController.getExercise);
-router.put("/exercitii/:id", exerciseController.updateExercise);
+router.get("/exercitii/edit/:code", exerciseController.createOrEditExerciseGet);
+router.get("/exercitii/adauga", exerciseController.createOrEditExerciseGet);
+router.post("/exercitii/createoredit", exerciseController.createOrEditExercisePost);
+router.get("/exercitii/:code", exerciseController.getExerciseByCode);
+router.put("/exercitii/statement/:id", exerciseController.updateStatement);
 router.get("/exercitii", exerciseController.getExercises);
 router.post("/exercitii/katex-preview", exerciseController.createKatekPreview);
+router.post("/exercitii/delete", exerciseController.deleteExercise);
 
 // user-login/logout
 router.get("/login", userLoginController.getLogin);

@@ -39,5 +39,16 @@ module.exports = {
     inc: function(v) {
         // https://stackoverflow.com/a/22103990
         return parseInt(v) + 1;
+    },
+    select: function(value, options) {
+        // https://gist.github.com/LukeChannings/6173ab951d8b1dc4602e
+        return options
+            .fn(this)
+            .split("\n")
+            .map(function(v) {
+                const t = `value="${value}"`;
+                return !RegExp(t).test(v) ? v : v.replace(t, `${t} selected="selected"`);
+            })
+            .join("\n");
     }
 };

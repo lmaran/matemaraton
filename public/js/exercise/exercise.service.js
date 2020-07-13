@@ -5,6 +5,6 @@ export const exerciseService = {
         return fetchHelpers.post("/exercitii/katex-preview", data);
     },
     saveExercise: async data => {
-        return fetchHelpers.put(`/exercitii/${data.exerciseId}`, data);
+        return fetchHelpers.put(`/exercitii/statement/${data.exerciseId}`, data);
     }
 };
