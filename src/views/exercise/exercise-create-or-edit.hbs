@@ -72,29 +72,86 @@
         </div>
     </div>
 
-    {{#if isEditMode}}
+    {{!-- {{#if isEditMode}}
     <div class="form-group row2">
         <div class="col-md-7s offset-md-3s">
             <button class="btn btn-primary" id="save-btn">Salvează</button> <i id="save-statement-status-icon"
                 class="fa fa-check mr-2 fa-lg hide" style="color:green;"></i>
         </div>
     </div>
-    {{/if}}
+    {{/if}} --}}
 
-    <div class="form-group">
-        <label for="exampleInputPassword1">Sursa:</label>
-        <input type="text" name="source" class="form-control" id="exampleInputPassword1" placeholder=""
-            value="{{exercise.source}}">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="gradeSelect">Clasa:</label>
+            <select name="grade" class="form-control" id="gradeSelect">
+                {{#select exercise.grade}}
+                <option value=""></option>
+                {{#each gradeAvailableOptions}}
+                <option value="{{value}}">{{text}}</option>
+                {{/each}}
+
+                {{/select}}
+            </select>
+        </div>
+
+        <div class="form-group col-md-6">
+            <label for="branchSelect">Ramura:</label>
+            <select name="branch" class="form-control" id="branchSelect">
+                {{#select exercise.branch}}
+                <option value=""></option>
+                {{#each branchAvailableOptions}}
+                <option value="{{value}}">{{text}}</option>
+                {{/each}}
+
+                {{/select}}
+            </select>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="exampleInputPassword1">Clasa:</label>
-        <input type="text" name="class" class="form-control" id="exampleInputPassword1" placeholder=""
-            value="{{exercise.grade}}">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="contestTypeSelect">Tipul concursului
+                <span class="text-muted">(la care a fost dat accest ex.)</span>:</label>
+            <select name="contestType" class="form-control" id="contestTypeSelect">
+                {{#select exercise.contestType}}
+                <option value=""></option>
+                {{#each contestTypeAvailableOptions}}
+                <option value="{{value}}">{{text}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+
+        <div class="form-group col-md-6">
+            <label for="contestNameInput">Numele concursului:</label>
+            <input type="text" name="contestName" class="form-control" id="contestNameInput" placeholder=""
+                value="{{exercise.contestName}}">
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="sourceTypeSelect">Tipul sursei
+                <span class="text-muted">(de unde a fost copiat ex.)</span>:</label>
+            <select name="sourceType" class="form-control" id="sourceTypeSelect">
+                {{#select exercise.sourceType}}
+                <option value=""></option>
+                {{#each sourceTypeAvailableOptions}}
+                <option value="{{value}}">{{text}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+
+        <div class="form-group col-md-6">
+            <label for="sourceNameInput">Numele sursei:</label>
+            <input type="text" name="sourceName" class="form-control" id="sourceNameInput" placeholder=""
+                value="{{exercise.sourceName}}">
+        </div>
     </div>
 
     <input type="hidden" name="code" value="{{exercise.code}}" />
-
 
     <div class="form-group row2">
         <div class="col-md-7s offset-md-3s">

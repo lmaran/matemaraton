@@ -35,11 +35,11 @@
 
 {{!-- <a href="/exercitii/{{code}}">Exercițiul {{code}}</a> --}}
 {{{question.statement.textPreview}}}
-{{#each sources}}
-<div class="font-italic small text-right text-muted">{{name}}{{#unless @last}}, {{/unless}}
-</div>
-{{!-- <div><small>secondary text</small></div> --}}
-{{/each}}
+
+<div class="font-italic small text-right text-muted">Cls.{{grade}}, {{branch}}</div>
+<div class="font-italic small text-right text-muted">{{contestName}}</div>
+<div class="font-italic small text-right text-muted">{{sourceName}}</div>
+
 </br>
 </br>
 {{/each}}

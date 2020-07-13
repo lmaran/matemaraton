@@ -14,8 +14,60 @@ exports.deleteExercise = async (req, res) => {
 exports.createOrEditExerciseGet = async (req, res) => {
     const isEditMode = !!req.params.code;
 
+    // const availableGrades = ["P", "5", "6", "7", "8", "9", "10", "11", "12"];
+    const gradeAvailableOptions = [
+        { text: "Primar", value: "P" },
+        { text: "Clasa a V-a", value: "5" },
+        { text: "Clasa a VI-a", value: "6" }
+    ];
+
+    const branchAvailableOptions = [
+        // { text: "Aritmetică (primar)", value: "aritmetica" },
+        // { text: "Algebră (gimnaziu)", value: "algebra" },
+        // { text: "Geometrie (gimnaziu)", value: "geometrie" },
+        // { text: "Algebră (liceu)", value: "algebra" },
+        // { text: "Geometrie și Trigonometrie (liceu)", value: "geometrie-trigonometrie" },
+        // { text: "Analiză matematică", value: "analiza" }
+
+        // { text: "Aritmetică (primar)", value: "aritmetica" },
+        { text: "Algebră", value: "algebra" },
+        { text: "Geometrie", value: "geometrie" },
+        { text: "Analiză matematică", value: "analiza" }
+    ];
+
+    const contestTypeAvailableOptions = [
+        { text: "Olimpiadă, etapa locală", value: "olimpiada-locala" },
+        { text: "Olimpiadă, etapa județeană", value: "olimpiada-judeteana" },
+        { text: "Olimpiadă, etapa națională", value: "olimpiada-nationala" },
+        { text: "Evaluare Națională", value: "evaluare-nationala" },
+        { text: "Simulare Evaluare Națională", value: "simulare-evaluare-nationala" },
+        { text: "Alte concursuri", value: "alte-concursuri" }
+    ];
+
+    const sourceTypeAvailableOptions = [
+        { text: "Gazeta Matematică (GM)", value: "gazeta-matematica" },
+        { text: "Revista de Matematică din Timișoara (RMT)", value: "revista-matematică-tm" },
+        { text: "Culegere 'Teme supliment Gazeta Matematică'", value: "teme-supliment-gazeta-matematica" },
+        { text: "Culegere 'Mate2000 excelență'", value: "mate2000-excelenta" },
+        {
+            text: "Culegere 'Matematică pt. olimpiade și concursuri', N. Grigore",
+            value: "mate-olimpiade-ngrigore"
+        },
+        {
+            text: "Culegere 'Exerciții pt. cercurile de matematică', P. Năchilă",
+            value: "cercuri-mate-pnachila"
+        },
+        { text: "Culegere 'Mate2000 consolidare'", value: "mate2000-consolidare" },
+        { text: "Culegere 'Evaluarea Națională', Ed. Paralela 45", value: "evaluare-nationala-p45" },
+        { text: "Alte surse", value: "alte-surse" }
+    ];
+
     const data = {
-        isEditMode
+        isEditMode,
+        gradeAvailableOptions,
+        branchAvailableOptions,
+        contestTypeAvailableOptions,
+        sourceTypeAvailableOptions
     };
 
     if (isEditMode) {
@@ -33,14 +85,19 @@ exports.createOrEditExercisePost = async (req, res) => {
         //const isEditMode = !!req.params.code;
         //const isCreateMode = !isEditMode;
 
-        const { code, source } = req.body;
+        const { code, grade, branch, contestType, contestName, sourceType, sourceName } = req.body;
         const isEditMode = !!code;
 
         const exercise = {
             code,
             question: { statement: {} },
-            source,
-            grade: req.body.class
+            // source,
+            grade,
+            branch,
+            contestType,
+            contestName,
+            sourceType,
+            sourceName
         };
         exercise.question.statement.text = req.body.statement;
 

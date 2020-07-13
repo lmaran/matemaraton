@@ -14,6 +14,9 @@ document
     .getElementById("exercise-statement-txt")
     .addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.getPreview, 500)); // with debouncer (500 ms)
 
+document.getElementById("contestTypeSelect").addEventListener("change", eventHandlers.setDefaultContestName);
+document.getElementById("sourceTypeSelect").addEventListener("change", eventHandlers.setDefaultSourceName);
+
 /**
  * Automatically expand a textarea as the user types
  * https://gomakethings.com/automatically-expand-a-textarea-as-the-user-types-using-vanilla-javascript/
