@@ -41,7 +41,7 @@
 <form method="post" action="/exercitii/createoredit" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
     <div class="form-group row2">
-        <label for="lastName" class="col-md-3s col-form-label required"> Enunț:
+        <label for="exercise-statement-txt" class="col-md-3s col-form-label required"> Enunț:
             (<a href="https://markdown-it.github.io/" target="_blank">markdon</a>
             <small><i class="fas fa-external-link-alt text-muted text-small" aria-hidden="true"></i></small>
             +
@@ -54,21 +54,40 @@
             <textarea id="exercise-statement-txt" rows="8" name="statement"
                 class="form-control {{#if errors.lastName}}is-invalid {{/if}}" value="{{data.lastName.val}}"
                 cols2="150">{{{exercise.question.statement.text}}}</textarea>
-            <div class="invalid-feedback">{{errors.lastName.msg}}</div>
+            <div class="invalid-feedback">{{errors.statement.msg}}</div>
         </div>
     </div>
-
-
-
-
 
     <div class="form-group row2">
         {{!-- <label for="lastName" class="col-md-3s col-form-label required">Preview:</label> --}}
         <div class="col-md-7s">
-            <div id="katex-preview-div" class="border p-2" style="background-color: #f7f7f7; min-height:58px"
+            <div id="statement-preview-div" class="border p-2" style="background-color: #f7f7f7; min-height:58px"
                 style2="font-family: KaTeX_Main; font-size: 1.1em;">
                 {{{exercise.question.statement.textPreview}}}</div>
             <div class="invalid-feedback">{{errors.lastName.msg}}</div>
+        </div>
+    </div>
+
+    <div class="form-group row2">
+        <label for="exercise-solution-txt" class="col-md-3s col-form-label required"> Soluție: </label>
+        <div class="col-md-7s">
+            {{!-- <input type="text" name="lastName" id="lastName"
+                class="form-control {{#if errors.lastName}}is-invalid {{/if}}" value="{{data.lastName.val}}"
+                {{#if uiData.lastName.hasAutofocus}}autofocus {{/if}} /> --}}
+            <textarea id="exercise-solution-txt" rows="8" name="solution"
+                class="form-control {{#if errors.solution}}is-invalid {{/if}}" value="{{data.solution.val}}"
+                cols2="150">{{{exercise.question.solution.text}}}</textarea>
+            <div class="invalid-feedback">{{errors.solution.msg}}</div>
+        </div>
+    </div>
+
+    <div class="form-group row2">
+        {{!-- <label for="lastName" class="col-md-3s col-form-label required">Preview:</label> --}}
+        <div class="col-md-7s">
+            <div id="solution-preview-div" class="border p-2" style="background-color: #f7f7f7; min-height:58px"
+                style2="font-family: KaTeX_Main; font-size: 1.1em;">
+                {{{exercise.question.solution.textPreview}}}</div>
+            <div class="invalid-feedback">{{errors.solution.msg}}</div>
         </div>
     </div>
 
@@ -148,6 +167,39 @@
             <label for="sourceNameInput">Numele sursei:</label>
             <input type="text" name="sourceName" class="form-control" id="sourceNameInput" placeholder=""
                 value="{{exercise.sourceName}}">
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="chapterSelect">Capitol:
+                {{!-- <span class="text-muted">(de unde a fost copiat ex.)</span>:--}}</label>
+            <select name="chapter" class="form-control" id="chapterSelect">
+                {{#select exercise.chapter}}
+                <option value=""></option>
+                {{#each chapterAvailableOptions}}
+                <option value="{{value}}">{{text}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+
+        <div class="form-group col-md-6">
+            <label for="authorInput">Autor:</label>
+            <input type="text" name="author" class="form-control" id="authorInput" placeholder=""
+                value="{{exercise.author}}">
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="tagsInput">Etichete:</label>
+            <input type="text" name="tags" class="form-control" id="tagsInput" placeholder="" value="{{exercise.tags}}">
+        </div>
+
+        <div class="form-group col-md-6">
+            <label for="obsInput">Observații:</label>
+            <input type="text" name="obs" class="form-control" id="obsInput" placeholder="" value="{{exercise.obs}}">
         </div>
     </div>
 

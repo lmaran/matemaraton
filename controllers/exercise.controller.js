@@ -1,5 +1,6 @@
 const exerciseService = require("../services/exercise.service");
 const idGeneratorMongoService = require("../services/id-generator-mongo.service");
+const autz = require("../services/autz.service");
 
 const katex = require("katex");
 
@@ -7,11 +8,20 @@ const tm = require("markdown-it-texmath").use(katex);
 const md = require("markdown-it")().use(tm, { delimiters: "dollars", macros: { "\\RR": "\\mathbb{R}" } });
 
 exports.deleteExercise = async (req, res) => {
+    const canDeleteExercise = await autz.can(req.user, "delete:exercise");
+    if (!canDeleteExercise) {
+        return res.status(403).send("Lipsă permisiuni!"); // forbidden
+    }
     exerciseService.deleteOneByCode(req.body.code);
     res.redirect("/exercitii");
 };
 
 exports.createOrEditExerciseGet = async (req, res) => {
+    const canCreateOrEditExercise = await autz.can(req.user, "create-or-edit:exercise");
+    if (!canCreateOrEditExercise) {
+        return res.status(403).send("Lipsă permisiuni!"); // forbidden
+    }
+
     const isEditMode = !!req.params.code;
 
     // const availableGrades = ["P", "5", "6", "7", "8", "9", "10", "11", "12"];
@@ -62,18 +72,25 @@ exports.createOrEditExerciseGet = async (req, res) => {
         { text: "Alte surse", value: "alte-surse" }
     ];
 
+    const chapterAvailableOptions = [
+        { text: "Numere Raționale", value: "numere-rationale" },
+        { text: "Numere Reale", value: "numere-reale" }
+    ];
+
     const data = {
         isEditMode,
         gradeAvailableOptions,
         branchAvailableOptions,
         contestTypeAvailableOptions,
-        sourceTypeAvailableOptions
+        sourceTypeAvailableOptions,
+        chapterAvailableOptions
     };
 
     if (isEditMode) {
         const exercise = await exerciseService.getByCode(req.params.code);
 
         exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
+        exercise.question.solution.textPreview = md.render(exercise.question.solution.text);
         data.exercise = exercise;
     }
 
@@ -82,24 +99,43 @@ exports.createOrEditExerciseGet = async (req, res) => {
 
 exports.createOrEditExercisePost = async (req, res) => {
     try {
-        //const isEditMode = !!req.params.code;
-        //const isCreateMode = !isEditMode;
+        const canCreateOrEditExercise = await autz.can(req.user, "create-or-edit:exercise");
+        if (!canCreateOrEditExercise) {
+            return res.status(403).send("Lipsă permisiuni!"); // forbidden
+        }
 
-        const { code, grade, branch, contestType, contestName, sourceType, sourceName } = req.body;
+        const {
+            code,
+            grade,
+            branch,
+            contestType,
+            contestName,
+            sourceType,
+            sourceName,
+            chapter,
+            author,
+            tags,
+            obs
+        } = req.body;
         const isEditMode = !!code;
 
         const exercise = {
             code,
-            question: { statement: {} },
+            question: { statement: {}, solution: {} },
             // source,
             grade,
             branch,
             contestType,
             contestName,
             sourceType,
-            sourceName
+            sourceName,
+            chapter,
+            author,
+            tags,
+            obs
         };
         exercise.question.statement.text = req.body.statement;
+        exercise.question.solution.text = req.body.solution;
 
         if (isEditMode) {
             exerciseService.updateOneByCode(exercise);
@@ -172,13 +208,15 @@ exports.getExercises = async (req, res) => {
         );
     });
 
-    const data = { exercises };
+    const data = {
+        exercises,
+        canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise")
+    };
     //res.send(data);
     res.render("exercise/exercises", data);
 };
 
 exports.getExerciseByCode = async (req, res) => {
-    // console.log(req.params.code);
     const exercise = await exerciseService.getByCode(req.params.code);
 
     // problem.question.statement.text = md.render(problem.question.statement.text);
@@ -188,9 +226,13 @@ exports.getExerciseByCode = async (req, res) => {
     `;
 
     exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
+    exercise.question.solution.textPreview = md.render(exercise.question.solution.text);
 
     // const data = { problem, testOriginal: q5, test: md.render(q5) };
-    const data = { exercise };
+    const data = {
+        exercise,
+        canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise")
+    };
     //res.send(data);
     res.render("exercise/exercise", data);
 };
@@ -207,9 +249,9 @@ exports.getExerciseByCode = async (req, res) => {
 // };
 
 exports.createKatekPreview = async (req, res) => {
-    const exerciseStatementKatex = req.body.exerciseStatement;
-    const exerciseStatementHtml = md.render(exerciseStatementKatex);
-    res.status(201).json(exerciseStatementHtml);
+    const katex = req.body.katex;
+    const html = md.render(katex);
+    res.status(201).json(html);
 };
 
 exports.updateStatement = async (req, res) => {

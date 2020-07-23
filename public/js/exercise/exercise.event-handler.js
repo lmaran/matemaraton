@@ -6,25 +6,33 @@ import { domHelper } from "../helpers/dom.helper.js";
  */
 const exerciseStatementTxt = document.getElementById("exercise-statement-txt");
 const exerciseIdContainer = document.getElementById("exercise-id-container");
-const katexPreviewDiv = document.getElementById("katex-preview-div");
+const statementPreviewDiv = document.getElementById("statement-preview-div");
 const saveStatementStatusIcon = document.getElementById("save-statement-status-icon");
+
+const exerciseSolutionTxt = document.getElementById("exercise-solution-txt");
+const solutionPreviewDiv = document.getElementById("solution-preview-div");
 
 /**
  * event handlers (alias 'controller')
  */
 export const eventHandlers = {
-    getPreview: async () => {
-        const data = { exerciseStatement: exerciseStatementTxt.value };
-        const katexPreview = await exerciseService.getKatexPreview(data);
-        katexPreviewDiv.innerHTML = katexPreview;
+    getStatementPreview: async () => {
+        const data = { katex: exerciseStatementTxt.value };
+        statementPreviewDiv.innerHTML = await exerciseService.getKatexPreview(data);
+    },
+    getSolutionPreview: async () => {
+        const data = { katex: exerciseSolutionTxt.value };
+        solutionPreviewDiv.innerHTML = await exerciseService.getKatexPreview(data);
     },
     saveExercise: async () => {
         const data = {
             exerciseId: exerciseIdContainer.dataset.exerciseId,
-            exerciseStatement: exerciseStatementTxt.value
+            exerciseStatement: exerciseStatementTxt.value,
+            exerciseSolution: exerciseSolutionTxt.value
         };
         const newExercise = await exerciseService.saveExercise(data);
-        katexPreviewDiv.innerHTML = newExercise.question.statement.textPreview;
+        statementPreviewDiv.innerHTML = newExercise.question.statement.textPreview;
+        solutionPreviewDiv.innerHTML = newExercise.question.solution.textPreview;
 
         // show and fadeOut status icon
         domHelper.showAndFadeOut(saveStatementStatusIcon, 500);

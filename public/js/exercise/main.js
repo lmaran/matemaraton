@@ -12,7 +12,11 @@ if (saveBtn) {
 
 document
     .getElementById("exercise-statement-txt")
-    .addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.getPreview, 500)); // with debouncer (500 ms)
+    .addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.getStatementPreview, 500)); // with debouncer (500 ms)
+
+document
+    .getElementById("exercise-solution-txt")
+    .addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.getSolutionPreview, 500)); // with debouncer (500 ms)
 
 document.getElementById("contestTypeSelect").addEventListener("change", eventHandlers.setDefaultContestName);
 document.getElementById("sourceTypeSelect").addEventListener("change", eventHandlers.setDefaultSourceName);

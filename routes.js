@@ -38,6 +38,7 @@ router.get("/pagina-mea", meController.getMyPage);
 router.get("/clase/:classId", classController.getClass);
 
 // presence
+router.get("/clase", classController.getClasses);
 router.get("/clase/:classId/prezenta", presenceController.getPresencePerClass);
 router.get("/clase/:classId/total-prezente", presenceController.getTotalPresences);
 router.get("/elevi/:studentId/prezenta", presenceController.getPresencePerStudent);
