@@ -1,0 +1,81 @@
+{{!-- <style>
+    .source {
+        _font-style: italic;
+        _font-size: 8px;
+    }
+</style> --}}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Clase</li>
+    </ol>
+</nav>
+
+<h1>Clase</h1>
+
+{{!-- {{#if canCreateOrEditExercise}}
+<a href="/exercitii/adauga" class="btn btn-primary mt-2 mb-4"><i class="fa fa-plus"></i> Adaugă exercițiu</a>
+{{/if}} --}}
+
+{{!-- <h3< class="mt-4">>Ediția curentă:</h3> --}}
+{{#if activeClasses}}
+<ul>
+    <li>
+        <a href="/clase/{{_id}}">Clasa a {{grade}}-a, {{level}}:</a>
+        {{!-- <span class="text-muted">{{currentRequest.description}}</span>
+        <div class="ml-4">
+            <span class2="font-weight-bold">exerciții propuse</span>:
+            {{#each currentRequest.documents}}
+            <span>
+                <a href="{{url}}">subiecte</a>
+            </span>
+            {{/each}}
+            ({{currentRequest.totalRequestedQuestions}} ex.)
+        </div>
+        <div class="ml-4">
+            <span class2="font-weight-bold">termen de predare</span>: {{currentRequest.dueDateAsString}}
+        </div> --}}
+
+    </li>
+</ul>
+{{else}}
+<div class="mt-4">Nu au fost definite clasele pentru ediția curentă!</div>
+{{/if}}
+
+
+{{#if archivedClasses}}
+<h3 class="mt-4">Arhivă:</h3>
+
+{{#each archivedClasses}}
+{{!-- <span>
+        <a href="{{url}}">subiecte</a>
+    </span> --}}
+
+{{!-- <a href="/clase/{{_id}}">Clasa a {{grade}}-a, {{level}}:</a> --}}
+
+<h5>Editia {{editionNumber}} <span class="text-muted font-weight-light"> ({{key}})</span> :</h5>
+{{!-- <span class="text-muted">{{currentRequest.description}}</span>
+        <div class="ml-4">
+            <span class2="font-weight-bold">exerciții propuse</span>:
+            {{#each currentRequest.documents}}
+            <span>
+                <a href="{{url}}">subiecte</a>
+            </span>
+            {{/each}}
+            ({{currentRequest.totalRequestedQuestions}} ex.)
+        </div>
+        <div class="ml-4">
+            <span class2="font-weight-bold">termen de predare</span>: {{currentRequest.dueDateAsString}}
+        </div> --}}
+<ul>
+    {{#each values}}
+    <li><a href="/clase/{{_id}}">{{name}} </a><span class="text-muted font-weight-light"> (cls-{{grade}}, nivel
+            {{level}})</span></li>
+    {{/each}}
+</ul>
+
+
+{{/each}}
+
+
+{{/if}}
