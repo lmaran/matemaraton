@@ -21,7 +21,7 @@ exports.getCoursesByClassId = async classId => {
     const db = await mongoHelper.getDb();
     return db
         .collection(coursesCollection)
-        .find({ "class.id": classId })
+        .find({ classId })
         .sort({ date: -1 })
         .toArray();
 };

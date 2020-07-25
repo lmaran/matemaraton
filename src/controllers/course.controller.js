@@ -55,12 +55,14 @@ exports.getCourse = async (req, res) => {
     const courseId = req.params.courseId;
 
     const course = await courseService.getCourseById(courseId);
+    const cls = await classService.getClassById(course.classId);
 
     course.dateAsString = dateTimeHelper.getStringFromStringNoDay(course.date);
 
     course.images.forEach(image => (image.highQualityUrl = image.url.replace("courses-lg", "courses")));
 
     const data = {
+        class: cls,
         course
     };
     //res.send(data);
