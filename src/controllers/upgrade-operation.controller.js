@@ -5,6 +5,45 @@
 // const classService = require("../services/class.service");
 // const studentsAndClassesService = require("../services/studentsAndClasses.service");
 
+exports.upgradeOperation = async (req, res) => {
+    return res.json({ msg: "ok" });
+};
+
+// exports.upgradeOperation = async (req, res) => {
+//     const studentsAndClasses = await studentsAndClassesService.getAll();
+//     const persons = await personService.getAllPersons();
+
+//     const mongoOps = [];
+//     studentsAndClasses.forEach(x => {
+//         const person = persons.find(p => p._id == x.studentId);
+//         if (person && person.academicYearRelatedInfo) {
+//             const academicYearInfo = person.academicYearRelatedInfo[x.academicYear];
+//             if (academicYearInfo) {
+//                 x.grade = academicYearInfo.grade;
+//                 x.classLetter = academicYearInfo.classLetter;
+//             }
+//             if (academicYearInfo.droppedOut) {
+//                 x.droppedOut = academicYearInfo.droppedOut;
+//             }
+
+//             x.lastNameTmp = person.lastName;
+//             x.firstNameTmp = person.firstName;
+//         }
+
+//         mongoOps.push({
+//             updateOne: {
+//                 filter: { _id: new ObjectID(x._id) },
+//                 // update: { $set: { studentIds }, $unset: { students: "" } }
+//                 update: { $set: x }
+//             }
+//         });
+//     });
+
+//     await studentsAndClassesService.bulkWrite(mongoOps);
+
+//     return res.json(studentsAndClasses);
+// };
+
 // exports.removeParentDetails = async (req, res) => {
 //     // same for students. we'll keep only the IDs and drop all other details
 //     const persons = await personService.getAllPersons();

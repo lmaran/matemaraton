@@ -36,7 +36,7 @@
 
 
 {{#each presencesInfoForInactiveStudents}}
-<div {{#if student.isDroppedOut}} class="toggle-presence hidePresence" {{/if}}>
+<div {{#if student.droppedOut}} class="toggle-presence hidePresence" {{/if}}>
     <a href="/elevi/{{student.id}}">{{student.shortName}}</a>
     {{#if student.gradeAndLetter}} ({{student.gradeAndLetter}}){{/if}}
     - prezențe: <a href="/elevi/{{student.id}}/prezenta">{{totalPresences}}</a> din

@@ -2,6 +2,14 @@ const mongoHelper = require("../helpers/mongo.helper");
 
 const studentsAndClassesCollection = "studentsAndClasses";
 
+exports.getAll = async () => {
+    const db = await mongoHelper.getDb();
+    return db
+        .collection(studentsAndClassesCollection)
+        .find()
+        .toArray();
+};
+
 exports.getStudentsMapByClassId = async classId => {
     const db = await mongoHelper.getDb();
     return db
@@ -30,6 +38,11 @@ exports.getClassesByStudentId = async studentId => {
 exports.insertManyStudentsAndClasses = async studentsAndClasses => {
     const db = await mongoHelper.getDb();
     return db.collection(studentsAndClassesCollection).insertMany(studentsAndClasses);
+};
+
+exports.bulkWrite = async mongoOps => {
+    const db = await mongoHelper.getDb();
+    return db.collection(studentsAndClassesCollection).bulkWrite(mongoOps, { ordered: false });
 };
 
 // exports.getStudentsPerClass = async classId => {

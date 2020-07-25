@@ -3,7 +3,7 @@ const personService = require("../services/person.service");
 const classService = require("../services/class.service");
 const homeworkService = require("../services/homework.service");
 // const dateTimeHelper = require("../helpers/date-time.helper");
-// const arrayHelper = require("../helpers/array.helper");
+const arrayHelper = require("../helpers/array.helper");
 const studentHelper = require("../helpers/student.helper");
 const studentsAndClassesService = require("../services/studentsAndClasses.service");
 const dateTimeHelper = require("../helpers/date-time.helper");
@@ -17,7 +17,7 @@ exports.getHomeworkSubmissionsPerStudent = async (req, res) => {
 
     [student, homeworkRequests, cls] = await Promise.all([
         await personService.getPersonById(studentId),
-        await homeworkService.getHomeworRequestsByClassId(classId),
+        await homeworkService.getHomeworkRequestsByClassId(classId),
         await classService.getClassById(classId)
     ]);
 
@@ -128,19 +128,10 @@ exports.getHomeworkRequest = async (req, res) => {
 
     const isCurrentHomework = homeworkRequest.dueDate >= today;
 
-    // console.log(homeworkRequest);
-
     const data = {
-        // studentIds,
-        // // students,
         isNotCurrentHomework: !isCurrentHomework,
         class: cls,
         homeworkRequest
-        // //allStudentsIdsPerClass,
-        // allUniqueClassIdsForAllStudents,
-        // //allCoursesForStudents,
-        // submissionsInfoForActiveStudents: submissionsInfo.filter(x => !x.student.isDroppedOut)
-        // presencesInfoForInactiveStudents: presencesInfo.filter(x => x.student.isDroppedOut)
     };
     //res.send(data);
     res.render("homework/homework-request", data);
@@ -152,7 +143,7 @@ exports.getHomeworkRequests = async (req, res) => {
     const [cls, homeworkRequests] = await Promise.all([
         await classService.getClassById(classId),
         // await studentsAndClassesService.getStudentsMapByClassId(classId),
-        await homeworkService.getHomeworRequestsByClassId(classId)
+        await homeworkService.getHomeworkRequestsByClassId(classId)
     ]);
 
     // const studentsIds = studentsMapByClassId.map(x => x.studentId);
@@ -169,18 +160,11 @@ exports.getHomeworkRequests = async (req, res) => {
     const currentRequestId = currentRequest && currentRequest._id;
 
     const data = {
-        // studentIds,
-        // // students,
         currentRequest,
         class: cls,
         homeworkRequests: homeworkRequests
             .filter(x => x._id !== currentRequestId)
             .sort((a, b) => (a.dueDate < b.dueDate ? 1 : -1))
-        // //allStudentsIdsPerClass,
-        // allUniqueClassIdsForAllStudents,
-        // //allCoursesForStudents,
-        // submissionsInfoForActiveStudents: submissionsInfo.filter(x => !x.student.isDroppedOut)
-        // presencesInfoForInactiveStudents: presencesInfo.filter(x => x.student.isDroppedOut)
     };
     //res.send(data);
     res.render("homework/homework-requests", data);
@@ -192,14 +176,12 @@ exports.getTotalHomeworkSubmissions = async (req, res) => {
     const [cls, studentsMapByClassId, homeworkRequests] = await Promise.all([
         await classService.getClassById(classId),
         await studentsAndClassesService.getStudentsMapByClassId(classId),
-        await homeworkService.getHomeworRequestsByClassId(classId)
+        await homeworkService.getHomeworkRequestsByClassId(classId)
     ]);
 
     const studentsIds = studentsMapByClassId.map(x => x.studentId);
 
     const students = await personService.getPersonsByIds(studentsIds);
-
-    // const studentsObj = arrayHelper.arrayToObject(students, "_id") || {};
 
     const today = dateTimeHelper.getFriendlyDate(new Date()).ymd; // 2020-02-17
     const closedRequests = homeworkRequests.filter(x => x.dueDate < today) || [];
@@ -208,72 +190,41 @@ exports.getTotalHomeworkSubmissions = async (req, res) => {
     closedRequests.forEach(x => {
         totalQuestions += x.totalRequestedQuestions;
         (x.submissions || []).forEach(submission => {
-            // const studentCrt = studentsObj[submission.studentId];
             const studentCrt = students.find(x => x._id.toString() === submission.studentId);
             studentCrt.totalSubmittedQuestions =
                 (studentCrt.totalSubmittedQuestions || 0) + submission.totalSubmittedQuestions;
         });
     });
 
-    // console.log(students);
-    // console.log(totalQuestions);
-    // const submissionsInfo = [];
+    const studentsMapByClassIdObj = arrayHelper.arrayToObject(studentsMapByClassId, "studentId");
 
     students.forEach(student => {
         // add aggregated values
 
-        // const totalSubmittedExercises = 15;
         student.totalSubmittedQuestions = student.totalSubmittedQuestions || 0;
         const totalSubmittedQuestionsAsPercent = totalQuestions
             ? Math.round((student.totalSubmittedQuestions * 100) / totalQuestions)
             : 0;
 
-        let isDroppedOut = false;
-        if (
-            student.academicYearRelatedInfo &&
-            student.academicYearRelatedInfo[cls.academicYear] &&
-            student.academicYearRelatedInfo[cls.academicYear].droppedOut
-        ) {
-            isDroppedOut = true;
-        }
+        const studentInfoInClass = studentsMapByClassIdObj[student._id];
+
+        student.droppedOut = studentInfoInClass && studentInfoInClass.droppedOut;
+        student.gradeAndLetter = studentInfoInClass && `${studentInfoInClass.grade}${studentInfoInClass.classLetter}`; // e.g.  "8A"
 
         student.shortName = studentHelper.getShortNameForStudent(student);
-        // add "gradeAndLetter" (e.g.  "8A")
-        student.gradeAndLetter = studentHelper.getGradeAndLetterForStudent(student, cls.academicYear);
-        student.isDroppedOut = isDroppedOut;
 
         student.totalSubmittedQuestionsAsPercent = totalSubmittedQuestionsAsPercent;
-
-        // submissionsInfo.push({
-        //     student: {
-        //         id: student._id,
-        //         // add "shortName" (e.g.  "Vali M.")
-        //         shortName: studentHelper.getShortNameForStudent(student),
-        //         // add "gradeAndLetter" (e.g.  "8A")
-        //         gradeAndLetter: studentHelper.getGradeAndLetterForStudent(student, cls.academicYear),
-        //         isDroppedOut
-        //     },
-        //     totalQuestions,
-        //     totalSubmittedQuestions: student.totalSubmittedQuestions,
-        //     totalSubmittedQuestionsAsPercent
-        // });
     });
-    // students.sort((a, b) => (a.totalSubmittedQuestions < b.totalSubmittedQuestions ? 1 : -1));
-
-    // submissionsInfo = submissionsInfo.sort((a, b) => (a.totalPresencesAsPercent < b.totalPresencesAsPercent ? 1 : -1));
 
     const data = {
-        // studentIds,
-        // // students,
         class: cls,
-        // //allStudentsIdsPerClass,
-        // allUniqueClassIdsForAllStudents,
-        // //allCoursesForStudents,
         totalQuestions,
-        activeStudents: students
-            .filter(x => !x.isDroppedOut)
+        homeworkInfoForActiveStudents: students
+            .filter(x => !x.droppedOut)
+            .sort((a, b) => (a.totalSubmittedQuestions < b.totalSubmittedQuestions ? 1 : -1)),
+        homeworkInfoForInactiveStudents: students
+            .filter(x => x.droppedOut)
             .sort((a, b) => (a.totalSubmittedQuestions < b.totalSubmittedQuestions ? 1 : -1))
-        // presencesInfoForInactiveStudents: presencesInfo.filter(x => x.student.isDroppedOut)
     };
     //res.send(data);
     res.render("homework/total-homework-submissions", data);
