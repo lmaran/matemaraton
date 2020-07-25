@@ -2,8 +2,7 @@
     <ol class="breadcrumb">
         {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
-        <li class="breadcrumb-item"><a href="/clase/{{class._id}}">Clasa:
-                {{class.grade}}-{{class.name}}</a></li>
+        <li class="breadcrumb-item"><a href="/clase/{{class._id}}">{{class.name}}</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{student.shortName}}</li>
     </ol>
 </nav>
@@ -11,7 +10,7 @@
 
 {{!-- <h1>Prezența</h1> --}}
 <h1>{{student.shortName}} ({{student.gradeAndLetter}})</h1>
-<h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2>
+<h2 class="mb-5">{{class.name}}</h2>
 
 <ul>
     <li><a href="/elevi/{{student._id}}/prezenta">Prezența</a></li>
