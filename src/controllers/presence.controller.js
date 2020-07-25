@@ -167,33 +167,18 @@ exports.getPresencePerClass = async (req, res) => {
 };
 
 exports.getPresencePerStudent = async (req, res) => {
-    const studentId = req.params.studentId;
-    let academicYear = "201920";
+    const { studentId, classId } = req.params;
 
     let student = null;
     let classMapByStudent = null;
     let cls = null;
     let coursesWithPresence = null;
-    [student, classMapByStudent, coursesWithPresence] = await Promise.all([
+    [student, classMapByStudent, coursesWithPresence, cls] = await Promise.all([
         await personService.getPersonById(studentId),
-        await studentsAndClassesService.getClassMapByStudentId(academicYear, studentId),
-        await courseService.getCoursesByStudentId(studentId)
+        await studentsAndClassesService.getClassMapByStudentId(classId, studentId),
+        await courseService.getCoursesByStudentId(studentId),
+        await classService.getClassById(classId)
     ]);
-
-    if (classMapByStudent) {
-        cls = await classService.getClassById(classMapByStudent.classId);
-    }
-
-    if (!cls && student.academicYearRelatedInfo) {
-        // maybe a graduated student
-        const academicYears = Object.keys(student.academicYearRelatedInfo);
-        // overwrite the existing class and academicYear
-        if (academicYears.length > 0) {
-            academicYear = academicYears.sort()[0];
-            classMapByStudent = await studentsAndClassesService.getClassMapByStudentId(academicYear, studentId);
-            cls = await classService.getClassById(classMapByStudent.classId);
-        }
-    }
 
     const classIdsPerIntervals = getClassIdsPerIntervals(classMapByStudent);
 
@@ -209,7 +194,6 @@ exports.getPresencePerStudent = async (req, res) => {
     // add "shortName" (e.g.  "Vali M.")
     student.shortName = studentHelper.getShortNameForStudent(student);
     // add "gradeAndLetter" (e.g.  "8A")
-    student.gradeAndLetter = studentHelper.getGradeAndLetterForStudent(student, academicYear);
 
     // add aggregated values
     const totalCourses = presencesPerStudent.length;

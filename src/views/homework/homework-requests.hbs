@@ -13,7 +13,7 @@
 {{#if currentRequest}}
 <ul>
     <li>
-        <a href="/teme/{{currentRequest._id}}">{{currentRequest.name}}:</a>
+        <a href="/clase/{{@root.class._id}}/teme/{{currentRequest._id}}">{{currentRequest.name}}:</a>
         <span class="text-muted">{{currentRequest.description}}</span>
         <div class="ml-4">
             <span class2="font-weight-bold">exerciții propuse</span>:
@@ -40,7 +40,7 @@ Nu există temă pentru perioada curentă!
 <ul>
     {{#each homeworkRequests}}
     <li class="mb-3">
-        <a href="/teme/{{_id}}">{{name}}:</a>
+        <a href="/clase/{{@root.class._id}}/teme/{{_id}}">{{name}}:</a>
         <span class="text-muted">{{description}}</span>
         <div class="ml-4">
             <span class2="font-weight-bold">exerciții propuse</span>:

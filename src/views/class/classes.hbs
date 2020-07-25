@@ -20,61 +20,28 @@
 {{!-- <h3< class="mt-4">>Ediția curentă:</h3> --}}
 {{#if activeClasses}}
 <ul>
-    <li>
-        <a href="/clase/{{_id}}">Clasa a {{grade}}-a, {{level}}:</a>
-        {{!-- <span class="text-muted">{{currentRequest.description}}</span>
-        <div class="ml-4">
-            <span class2="font-weight-bold">exerciții propuse</span>:
-            {{#each currentRequest.documents}}
-            <span>
-                <a href="{{url}}">subiecte</a>
-            </span>
-            {{/each}}
-            ({{currentRequest.totalRequestedQuestions}} ex.)
-        </div>
-        <div class="ml-4">
-            <span class2="font-weight-bold">termen de predare</span>: {{currentRequest.dueDateAsString}}
-        </div> --}}
-
-    </li>
+    {{#each values}}
+    <li><a href="/clase/{{_id}}">{{name}} </a><span class="text-muted font-weight-light"> (nivel
+            {{level}})</span></li>
+    {{/each}}
 </ul>
 {{else}}
 <div class="mt-4">Nu au fost definite clasele pentru ediția curentă!</div>
 {{/if}}
 
 
-{{#if archivedClasses}}
+{{#if orderedArchivedClasses}}
 <h3 class="mt-4">Arhivă:</h3>
 
-{{#each archivedClasses}}
-{{!-- <span>
-        <a href="{{url}}">subiecte</a>
-    </span> --}}
+{{#each orderedArchivedClasses}}
+<h5>Editia {{editionNumber}} <span class="text-muted font-weight-light"> ({{editionInterval}})</span>:</h5>
 
-{{!-- <a href="/clase/{{_id}}">Clasa a {{grade}}-a, {{level}}:</a> --}}
-
-<h5>Editia {{editionNumber}} <span class="text-muted font-weight-light"> ({{key}})</span> :</h5>
-{{!-- <span class="text-muted">{{currentRequest.description}}</span>
-        <div class="ml-4">
-            <span class2="font-weight-bold">exerciții propuse</span>:
-            {{#each currentRequest.documents}}
-            <span>
-                <a href="{{url}}">subiecte</a>
-            </span>
-            {{/each}}
-            ({{currentRequest.totalRequestedQuestions}} ex.)
-        </div>
-        <div class="ml-4">
-            <span class2="font-weight-bold">termen de predare</span>: {{currentRequest.dueDateAsString}}
-        </div> --}}
 <ul>
     {{#each values}}
-    <li><a href="/clase/{{_id}}">Cls {{grade}} - {{name}} </a><span class="text-muted font-weight-light"> (nivel
+    <li><a href="/clase/{{_id}}">{{name}} </a><span class="text-muted font-weight-light"> (nivel
             {{level}})</span></li>
     {{/each}}
 </ul>
-
-
 {{/each}}
 
 

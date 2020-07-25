@@ -15,3 +15,12 @@ exports.getAll = async () => {
         .find()
         .toArray();
 };
+
+exports.getClassesByIds = async ids => {
+    const idsAsObjectID = ids.map(x => new ObjectID(x));
+    const db = await mongoHelper.getDb();
+    return db
+        .collection(classesCollection)
+        .find({ _id: { $in: idsAsObjectID } })
+        .toArray();
+};

@@ -9,37 +9,17 @@ const studentsAndClassesService = require("../services/studentsAndClasses.servic
 const dateTimeHelper = require("../helpers/date-time.helper");
 
 exports.getHomeworkSubmissionsPerStudent = async (req, res) => {
-    const studentId = req.params.studentId;
-    let academicYear = "201920";
+    const { studentId, classId } = req.params;
 
     let student = null;
-    let classMapByStudent = null;
     let cls = null;
     let homeworkRequests = null;
 
-    [student, classMapByStudent] = await Promise.all([
+    [student, homeworkRequests, cls] = await Promise.all([
         await personService.getPersonById(studentId),
-        await studentsAndClassesService.getClassMapByStudentId(academicYear, studentId)
+        await homeworkService.getHomeworRequestsByClassId(classId),
+        await classService.getClassById(classId)
     ]);
-
-    if (classMapByStudent) {
-        // cls = await classService.getClassById(classMapByStudent.classId);
-        [cls, homeworkRequests] = await Promise.all([
-            await classService.getClassById(classMapByStudent.classId),
-            await homeworkService.getHomeworRequestsByClassId(classMapByStudent.classId)
-        ]);
-    }
-
-    if (!cls && student.academicYearRelatedInfo) {
-        // maybe a graduated student
-        const academicYears = Object.keys(student.academicYearRelatedInfo);
-        // overwrite the existing class and academicYear
-        if (academicYears.length > 0) {
-            academicYear = academicYears.sort()[0];
-            classMapByStudent = await studentsAndClassesService.getClassMapByStudentId(academicYear, studentId);
-            cls = await classService.getClassById(classMapByStudent.classId);
-        }
-    }
 
     if (homeworkRequests) {
         homeworkRequests.forEach(homeworkRequest => {
@@ -90,8 +70,6 @@ exports.getHomeworkSubmissionsPerStudent = async (req, res) => {
 
     // add "shortName" (e.g.  "Vali M.")
     student.shortName = studentHelper.getShortNameForStudent(student);
-    // add "gradeAndLetter" (e.g.  "8A")
-    student.gradeAndLetter = studentHelper.getGradeAndLetterForStudent(student, academicYear);
 
     // // add aggregated values
     // const totalCourses = presencesPerStudent.length;

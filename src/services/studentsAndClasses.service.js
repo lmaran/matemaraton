@@ -14,9 +14,17 @@ exports.getStudentsMapByClassId = async classId => {
     // return result.map(x => x.studentId);
 };
 
-exports.getClassMapByStudentId = async (academicYear, studentId) => {
+exports.getClassMapByStudentId = async (classId, studentId) => {
     const db = await mongoHelper.getDb();
-    return db.collection(studentsAndClassesCollection).findOne({ academicYear, studentId });
+    return db.collection(studentsAndClassesCollection).findOne({ classId, studentId });
+};
+
+exports.getClassesByStudentId = async studentId => {
+    const db = await mongoHelper.getDb();
+    return db
+        .collection(studentsAndClassesCollection)
+        .find({ studentId })
+        .toArray();
 };
 
 exports.insertManyStudentsAndClasses = async studentsAndClasses => {

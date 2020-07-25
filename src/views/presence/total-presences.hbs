@@ -23,7 +23,7 @@
 <div>
     <a href="/elevi/{{student.id}}">{{student.shortName}}</a>
     {{#if student.gradeAndLetter}} ({{student.gradeAndLetter}}){{/if}}
-    - prezențe: <a href="/elevi/{{student.id}}/prezenta">{{totalPresences}}</a> din
+    - prezențe: <a href="/clase/{{@root.class._id}}/elevi/{{student.id}}/prezenta">{{totalPresences}}</a> din
     {{totalCourses}} ({{totalPresencesAsPercent}}%)
     <div class="progress mb-2">
         <div class="progress-bar" role="progressbar" style="width: {{totalPresencesAsPercent}}%" aria-valuenow="25"
