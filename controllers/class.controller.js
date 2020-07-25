@@ -32,22 +32,24 @@ exports.getClasses = async (req, res) => {
         }
     });
 
-    const unordered = arrayHelper.groupBy(archivedClasses, "academicYear");
+    const unorderedArchivedClasses = arrayHelper.groupBy(archivedClasses, "academicYear");
 
     // sort by academicYear, desc
-    const ordered = [];
-    const keys = Object.keys(unordered);
-    keys.sort((a, b) => b - a).forEach(function(key, idx) {
-        ordered.push({
-            editionNumber: keys.length - idx + 1,
-            key: stringHelper.getIntervalFromAcademicYear(key),
-            values: unordered[key]
+    const orderedArchivedClasses = [];
+    const academicYears = Object.keys(unorderedArchivedClasses);
+    academicYears
+        .sort((a, b) => b - a)
+        .forEach(function(academicYear, idx) {
+            orderedArchivedClasses.push({
+                editionNumber: academicYears.length - idx,
+                editionInterval: stringHelper.getIntervalFromAcademicYear(academicYear),
+                values: unorderedArchivedClasses[academicYear]
+            });
         });
-    });
 
     const data = {
         activeClasses,
-        archivedClasses: ordered
+        orderedArchivedClasses: orderedArchivedClasses
 
         // ctx: req.ctx,
         // can: {

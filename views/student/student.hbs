@@ -2,29 +2,33 @@
     <ol class="breadcrumb">
         {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
-        <li class="breadcrumb-item"><a href="/clase/{{class._id}}">Clasa:
-                {{class.grade}}-{{class.name}}</a></li>
+        {{#if lastClass}}
+        <li class="breadcrumb-item"><a href="/clase/{{lastClass._id}}">{{lastClass.name}}</a></li>
+        {{/if}}
         <li class="breadcrumb-item active" aria-current="page">{{student.shortName}}</li>
     </ol>
 </nav>
 
 
 {{!-- <h1>Prezența</h1> --}}
-<h1>{{student.shortName}} ({{student.gradeAndLetter}})</h1>
-<h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2>
+<h1>{{student.shortName}}</h1>
+<h2 class="mb-5">{{class.name}}</h2>
 
+{{#each sortedClasses}}
+<h5>{{editionInterval}}:</h5>
 <ul>
-    <li><a href="/elevi/{{student._id}}/prezenta">Prezența</a></li>
-    <li><a href="/elevi/{{student._id}}/teme-predate">Teme predate <span class="text-muted">(făcute
+    <li>Clasa: <a href="/clase/{{_id}}">{{name}}</a> <span class="text-muted font-weight-light">(nivel
+            avansat)</span>
+    </li>
+
+    <li><a href="/clase/{{_id}}/elevi/{{@root.student._id}}/prezenta">Prezența</a></li>
+    <li><a href="/clase/{{_id}}/elevi/{{@root.student._id}}/teme-predate">Teme predate <span class="text-muted">(făcute
                 acasă)</span></a></li>
-
-    {{!-- <li>Cursuri <span class="text-muted">(poze de pe tabla, in curand)</span></li> --}}
-    {{!-- <li>Teme <span class="text-muted">(în curând)</span> </li> --}}
-
 </ul>
+{{/each}}
 
 {{#if can.viewParentsLink}}
-<h5>Părinți/tutori</h5>
+<h5>Părinți/tutori:</h5>
 <ul>
     {{#each parents}}
     <li><a href="/parinti/{{_id}}">{{lastName}} {{firstName}}</a></li>

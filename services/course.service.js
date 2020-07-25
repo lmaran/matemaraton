@@ -21,7 +21,7 @@ exports.getCoursesByClassId = async classId => {
     const db = await mongoHelper.getDb();
     return db
         .collection(coursesCollection)
-        .find({ "class.id": classId })
+        .find({ classId })
         .sort({ date: -1 })
         .toArray();
 };
@@ -48,7 +48,7 @@ exports.getCoursesByClassIds = async classIds => {
     const db = await mongoHelper.getDb();
     return db
         .collection(coursesCollection)
-        .find({ "class.id": { $in: classIds } })
+        .find({ classId: { $in: classIds } })
         .toArray();
 };
 
@@ -56,7 +56,7 @@ exports.getCoursesByClassIdAndStudentId = async (classId, studentId) => {
     const db = await mongoHelper.getDb();
     return db
         .collection(coursesCollection)
-        .find({ "class.id": classId, studentsIds: studentId })
+        .find({ classId: classId, studentsIds: studentId })
         .toArray();
 };
 

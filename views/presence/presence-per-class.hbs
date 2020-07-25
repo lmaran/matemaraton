@@ -1,14 +1,13 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
-        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">Clasa:
-                {{class.grade}}-{{class.name}}</a></li>
+        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">{{class.name}}</a></li>
         <li class="breadcrumb-item active" aria-current="page">Prezența</li>
     </ol>
 </nav>
 
 <h1>Prezența</h1>
-<h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2>
+<h2 class="mb-5">{{class.name}}</h2>
 
 {{#unless courses.length}}
 <p>Nu exista date.</p>
@@ -28,7 +27,7 @@
 
 <ul class="mb-5">
     {{#each presences}}
-    <li><a href="/elevi/{{student._id}}/prezenta">{{student.shortName}}</a>
+    <li><a href="/clase/{{@root.class._id}}/elevi/{{student._id}}/prezenta">{{student.shortName}}</a>
         {{#if student.gradeAndLetter}}
         ({{student.gradeAndLetter}}){{/if}}{{#if isTemporaryPresenceFromOtherCourse}}, temporar{{/if}}
     </li>

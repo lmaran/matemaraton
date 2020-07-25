@@ -3,8 +3,7 @@
         {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
 
-        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">Clasa:
-                {{class.grade}}-{{class.name}}</a></li>
+        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">{{class.name}}</a></li>
         <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}/cursuri">Cursuri</a></li>
         <li class="breadcrumb-item active" aria-current="page">Toate pozele</li>
 
@@ -12,7 +11,7 @@
 </nav>
 
 <h1>Cursuri <span class="h3 font-weight-light text-muted">(toate pozele)</span></h1>
-<h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2>
+<h2 class="mb-5">{{class.name}}</h2>
 
 
 {{#each courses}}

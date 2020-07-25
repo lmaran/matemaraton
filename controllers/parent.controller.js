@@ -50,7 +50,6 @@ exports.getParentsPerClass = async (req, res) => {
 
 exports.getParent = async (req, res) => {
     const parentId = req.params.parentId;
-    // const academicYear = "201920";
 
     // const parentAndTheirStudents = await personService.getParentAndTheirStudentsById(parentId);
 

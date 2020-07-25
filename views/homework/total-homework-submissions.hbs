@@ -1,20 +1,19 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
-        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">Clasa:
-                {{class.grade}}-{{class.name}}</a></li>
+        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">{{class.name}}</a></li>
         <li class="breadcrumb-item active" aria-current="page">Total teme predate</li>
     </ol>
 </nav>
 
 <h1>Total teme predate</h1>
-<h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2>
+<h2 class="mb-5">{{class.name}}</h2>
 
 {{#each activeStudents}}
 <div>
     <a href="/elevi/{{_id}}">{{shortName}}</a>
     {{#if gradeAndLetter}} ({{gradeAndLetter}}){{/if}}
-    - exerciții: <a href="/elevi/{{_id}}/teme-predate">{{totalSubmittedQuestions}}</a> din <a
+    - exerciții: <a href="/clase/{{@root.class._id}}/elevi/{{_id}}/teme-predate">{{totalSubmittedQuestions}}</a> din <a
         href="/clase/{{@root.class._id}}/teme-propuse">{{@root.totalQuestions}}</a>
     ({{totalSubmittedQuestionsAsPercent}}%)
     <div class="progress mb-2">

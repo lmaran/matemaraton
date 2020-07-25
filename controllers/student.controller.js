@@ -5,6 +5,7 @@ const studentHelper = require("../helpers/student.helper");
 const studentsAndClassesService = require("../services/studentsAndClasses.service");
 const autz = require("../services/autz.service");
 //const { can } = require("../services/autz.service");
+const stringHelper = require("../helpers/string.helper");
 
 exports.getStudentsPerClass = async (req, res) => {
     const classId = req.params.classId;
@@ -52,37 +53,41 @@ exports.getStudentsPerClass = async (req, res) => {
 
 exports.getStudent = async (req, res) => {
     const studentId = req.params.studentId;
-    const academicYear = "201920";
+
     // const student = await personService.getPersonById(studentId);
-    const [clsMapLine, studentAndTheirParents] = await Promise.all([
-        await studentsAndClassesService.getClassMapByStudentId(academicYear, studentId),
+    const [clsMapLines, studentAndTheirParents] = await Promise.all([
+        await studentsAndClassesService.getClassesByStudentId(studentId),
         await personService.getStudentAndTheirParentsById(studentId)
     ]);
 
     const student = studentAndTheirParents.find(x => x._id.toString() === studentId);
     const parents = studentAndTheirParents.filter(x => x.studentIds && x.studentIds.length > 0);
 
-    let cls = {};
-    if (clsMapLine) {
-        cls = await classService.getClassById(clsMapLine.classId);
-    }
+    const classes = await classService.getClassesByIds(clsMapLines.map(x => x.classId));
 
     // add "shortName" (e.g.  "Vali M.")
     student.shortName = studentHelper.getShortNameForStudent(student);
     // parents.forEach(p => p.displayName = );
 
     // add "gradeAndLetter" (e.g.  "8A")
-    student.gradeAndLetter = studentHelper.getGradeAndLetterForStudent(student, academicYear);
+
+    const sortedClasses = classes.sort((a, b) => (a.academicYear < b.academicYear ? 1 : -1)); // sort descendent by academicYear
+    sortedClasses.forEach(x => (x.editionInterval = stringHelper.getIntervalFromAcademicYear(x.academicYear)));
 
     const data = {
         student,
-        class: cls,
+        sortedClasses,
         parents,
         studentAndTheirParents,
         can: {
             viewParentsLink: await autz.can(req.user, "read:parents")
         }
     };
+
+    if (sortedClasses.length > 0) {
+        data.lastClass = sortedClasses[0];
+    }
+
     //res.send(data);
     res.render("student/student", data);
 };
