@@ -6,6 +6,7 @@ const studentsAndClassesService = require("../services/studentsAndClasses.servic
 const autz = require("../services/autz.service");
 //const { can } = require("../services/autz.service");
 const stringHelper = require("../helpers/string.helper");
+const arrayHelper = require("../helpers/array.helper");
 
 exports.getStudentsPerClass = async (req, res) => {
     const classId = req.params.classId;
@@ -21,6 +22,8 @@ exports.getStudentsPerClass = async (req, res) => {
 
     const canReadStudentFullName = await autz.can(req.user, "read:student/full-name");
 
+    const studentsMapByClassIdObj = arrayHelper.arrayToObject(studentsMapByClassId, "studentId");
+
     students = students
         .map(student => {
             // add "displayName" (e.g.  "Vali M.")
@@ -28,16 +31,12 @@ exports.getStudentsPerClass = async (req, res) => {
                 ? studentHelper.getFullNameForStudent(student)
                 : studentHelper.getShortNameForStudent(student);
 
-            if (
-                student.academicYearRelatedInfo &&
-                student.academicYearRelatedInfo[cls.academicYear] &&
-                student.academicYearRelatedInfo[cls.academicYear].droppedOut
-            ) {
-                student.droppedOut = true;
-            }
+            const studentInfoInClass = studentsMapByClassIdObj[student._id];
 
-            // add "gradeAndLetter" (e.g.  "8A")
-            student.gradeAndLetter = studentHelper.getGradeAndLetterForStudent(student, cls.academicYear);
+            student.droppedOut = studentInfoInClass && studentInfoInClass.droppedOut;
+            student.gradeAndLetter =
+                studentInfoInClass && `${studentInfoInClass.grade}${studentInfoInClass.classLetter}`; // e.g.  "8A"
+
             return student;
         })
         .sort((a, b) => (a.displayName > b.displayName ? 1 : -1));

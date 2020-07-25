@@ -28,8 +28,8 @@ const idGeneratorController = require("./controllers/id-generator.controller");
 router.get("/", homeController.getHomePage);
 
 // uncomment this route in order to make upgrade operations
-// const upgradeOperationController = require("./controllers/upgrade-operation.controller");
-// router.get("/upgrade-operation", upgradeOperationController.removeParentDetails);
+const upgradeOperationController = require("./controllers/upgrade-operation.controller");
+router.get("/upgrade-operation", upgradeOperationController.upgradeOperation);
 
 // my page
 router.get("/pagina-mea", meController.getMyPage);

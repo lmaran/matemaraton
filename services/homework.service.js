@@ -16,7 +16,7 @@ exports.getAll = async () => {
         .toArray();
 };
 
-exports.getHomeworRequestsByClassId = async classId => {
+exports.getHomeworkRequestsByClassId = async classId => {
     const db = await mongoHelper.getDb();
     return db
         .collection(homeworkCollection)
