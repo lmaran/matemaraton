@@ -293,7 +293,7 @@ const getCoursesDateByDate = (classIdsPerIntervals, allCoursesForStudent) => {
     classIdsPerIntervals.forEach(classIdPerInterval => {
         const courses = allCoursesForStudent.filter(
             x =>
-                x.class.id === classIdPerInterval.classId &&
+                x.classId === classIdPerInterval.classId &&
                 x.date >= classIdPerInterval.startDate &&
                 x.date < classIdPerInterval.endDate
         );
@@ -327,11 +327,11 @@ const getPresencesPerStudent = (coursesDateByDate, studentId, coursesWithPresenc
         });
 
         // "8 - Grupa 2" -> "Grupa 2"
-        let className = course.class.name;
-        const classNameParts = className.split("-");
-        if (classNameParts.length > 1) {
-            className = classNameParts[classNameParts.length - 1].trim();
-        }
+        //let className = course.class.name;
+        // const classNameParts = className.split("-");
+        // if (classNameParts.length > 1) {
+        //     className = classNameParts[classNameParts.length - 1].trim();
+        // }
 
         const presencePerCourse = {
             date: course.date,
@@ -340,10 +340,10 @@ const getPresencesPerStudent = (coursesDateByDate, studentId, coursesWithPresenc
             courseNumber: course.course,
             courseId: course._id,
             description: course.description,
-            classId: course.class.id,
-            className,
+            classId: course.classId,
+            //className,
             isTemporaryCreditFromOtherCourse: course._id.toString() !== courseOriginalId,
-            isCreditFromOtherClass: lastClassId.toString() !== course.class.id
+            isCreditFromOtherClass: lastClassId.toString() !== course.classId
         };
 
         presencesPerStudent.push(presencePerCourse);

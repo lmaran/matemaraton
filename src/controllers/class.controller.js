@@ -39,7 +39,7 @@ exports.getClasses = async (req, res) => {
     const keys = Object.keys(unordered);
     keys.sort((a, b) => b - a).forEach(function(key, idx) {
         ordered.push({
-            editionNumber: keys.length - idx + 1,
+            editionNumber: keys.length - idx,
             key: stringHelper.getIntervalFromAcademicYear(key),
             values: unordered[key]
         });
