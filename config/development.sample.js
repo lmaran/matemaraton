@@ -26,6 +26,8 @@ const config = {
             body: false
         }
     },
-    azureBlobStorageConnectionString: "<azure-blob-storage-connection-string>"
+    azureBlobStorageConnectionString: "<azure-blob-storage-connection-string>",
+    recaptchaSiteKey: "recaptcha-site-key",
+    recaptchaSecretKey: "recaptcha-secret-key"
 };
 module.exports = config;

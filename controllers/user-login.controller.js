@@ -2,6 +2,8 @@ const validator = require("validator");
 const authService = require("../services/auth.service");
 const arrayHelper = require("../helpers/array.helper");
 const cookieHelper = require("../helpers/cookie.helper");
+const config = require("../config");
+const recaptchaService = require("../services/recaptcha.service");
 
 exports.getLogin = (req, res) => {
     if (req.user) {
@@ -22,6 +24,7 @@ exports.getLogin = (req, res) => {
 
     // save into an hidden field to be sent at POST
     data.redirectUri = req.query.redirect_uri;
+    data.recaptchaSiteKey = config.recaptchaSiteKey;
 
     // set autofocus
     const uiData = {};
@@ -37,6 +40,16 @@ exports.getLogin = (req, res) => {
 exports.postLogin = async (req, res) => {
     try {
         const { email, password, redirectUri } = req.body;
+
+        // recaptcha verification
+        const captchaResponse = await recaptchaService.checkResponse(req.body["g-recaptcha-response"]);
+        console.log(captchaResponse);
+        if (!captchaResponse.success || captchaResponse.score <= 0.5) {
+            // over 50% chance to be be a bot
+            const validationErrors = [{ field: "page", msg: "Nu ai trecut de validarea captcha. Mai încearcă odată!" }];
+            return flashAndReloadLoginPage(req, res, validationErrors);
+        }
+
         // handle static validation errors
         const validationErrors = getLoginStaticValidationErrors(email, password);
         if (validationErrors.length) {
