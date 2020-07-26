@@ -1,11 +1,17 @@
 <div class="container-fluid">
 
+    {{#if errors.page}}
+    <div class="alert alert-danger">
+        <i class="fa fa-exclamation-circle fa-lg mr-2"></i> {{errors.page.msg}}
+    </div>
+    {{/if}}
+
     <h1>Login</h1>
 
     {{!-- <p>{{toJSON data}}</p> --}}
     {{!-- <p>{{toJSON errors}}</p> --}}
 
-    <form method="post" action="/login" novalidate onsubmit="saveBtn.disabled = true; return true;">
+    <form method="post" id="loginForm" action="/login" novalidate onsubmit="saveBtn.disabled = true; return true;">
         <div class="form-group row">
             <label for="email" class="col-md-3 col-form-label required">Email</label>
             <div class="col-md-7">
@@ -26,6 +32,7 @@
         </div>
 
         <input type="hidden" name="redirectUri" value="{{data.redirectUri}}" />
+        <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response" />
 
         <div class="form-group row">
             <div class="col-md-7 offset-md-3">
@@ -45,3 +52,27 @@
     </div>
 
 </div>
+
+{{#section 'script-after'}}
+{{!-- https://developers.google.com/recaptcha/docs/v3#programmatically_invoke_the_challenge --}}
+<script src="https://www.google.com/recaptcha/api.js?render={{data.recaptchaSiteKey}}"></script>
+<script>
+
+    // intercepts the form submit event
+    const form = document.getElementById("loginForm");
+    form.addEventListener("submit", onSubmit);
+
+    // https://developers.google.com/recaptcha/docs/v3#programmatically_invoke_the_challenge
+    // https://code.tutsplus.com/tutorials/example-of-how-to-add-google-recaptcha-v3-to-a-php-form--cms-33752
+    function onSubmit(e) {
+        e.preventDefault(); // prevent submitting the form
+        grecaptcha.ready(function () {
+            grecaptcha.execute('{{data.recaptchaSiteKey}}', { action: 'login' }).then(function (token) {
+                document.getElementById('g-recaptcha-response').value = token;
+                form.submit();
+            });
+        });
+    }
+
+</script>
+{{/section}}

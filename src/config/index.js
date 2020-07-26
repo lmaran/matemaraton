@@ -48,7 +48,9 @@ const common = {
 
     externalUrl: "http://localhost:1417",
     azureBlobStorageConnectionString: process.env.AZURE_BLOB_STORAGE_CONNECTION_STRING || "",
-    idGenerator: { defaultBatchSize: 10, specificBatchSize: { exercises: 1 } }
+    idGenerator: { defaultBatchSize: 10, specificBatchSize: { exercises: 1 } },
+    recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY,
+    recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY
 };
 
 // Merge a `source` object to a `target` recursively
