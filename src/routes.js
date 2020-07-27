@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const isAuthenticated = require("./middlewares/is-authenticated.middleware").isAuthenticated;
 
+const upgradeOperationController = require("./controllers/upgrade-operation.controller");
 const homeController = require("./controllers/home.controller");
 const editionController = require("./controllers/edition.controller");
 const meController = require("./controllers/me.controller");
@@ -9,27 +11,20 @@ const exerciseController = require("./controllers/exercise.controller");
 const classController = require("./controllers/class.controller");
 const studentController = require("./controllers/student.controller");
 const parentController = require("./controllers/parent.controller");
-
 const contactController = require("./controllers/contact.controller");
 const userResetPasswordController = require("./controllers/user-reset-password.controller");
 const userChangePasswordController = require("./controllers/user-change-password.controller");
 const userSignupController = require("./controllers/user-signup.controller");
 const userLoginController = require("./controllers/user-login.controller");
 const userLogoutController = require("./controllers/user-logout.controller");
-
-const isAuthenticated = require("./middlewares/is-authenticated.middleware").isAuthenticated;
 const presenceController = require("./controllers/presence.controller");
 const courseController = require("./controllers/course.controller");
 const homeworkController = require("./controllers/homework.controller");
 
-const idGeneratorController = require("./controllers/id-generator.controller");
-
 // home
 router.get("/", homeController.getHomePage);
 
-// uncomment this route in order to make upgrade operations
-const upgradeOperationController = require("./controllers/upgrade-operation.controller");
-router.get("/upgrade-operation", upgradeOperationController.upgradeOperation);
+router.get("/upgrade-operation", isAuthenticated, upgradeOperationController.upgradeOperation);
 
 // my page
 router.get("/pagina-mea", meController.getMyPage);
@@ -62,10 +57,10 @@ router.get("/cursuri/:courseId", courseController.getCourse);
 router.get("/clase/:classId/elevi", studentController.getStudentsPerClass);
 router.get("/elevi/:studentId", studentController.getStudent);
 
+// individual pages
 router.get("/program-simulare-en-editia-2", matemaratonController.getTrainingProgramForENSimulationEdition2);
 router.get("/program-teza-s1-editia-3", matemaratonController.getTrainingProgramForSemestrialPaperEdition3);
 router.get("/materiale-teza-s1", matemaratonController.getDocumentsForSemestrialPaper);
-
 router.get("/program-simulare-en-editia-3", matemaratonController.getProgramSimulareEnEditia3);
 router.get("/materiale-simulare-en-editia-3", matemaratonController.getMaterialeSimulareEnEditia3);
 
@@ -73,23 +68,23 @@ router.get("/materiale-simulare-en-editia-3", matemaratonController.getMateriale
 router.get("/contact", contactController.getContact);
 
 // exercises
-router.get("/exercitii/edit/:code", exerciseController.createOrEditExerciseGet);
-router.get("/exercitii/adauga", exerciseController.createOrEditExerciseGet);
-router.post("/exercitii/createoredit", exerciseController.createOrEditExercisePost);
-router.get("/exercitii/:code", exerciseController.getExerciseByCode);
-router.put("/exercitii/statement/:id", exerciseController.updateStatement);
-router.get("/exercitii", exerciseController.getExercises);
-router.post("/exercitii/katex-preview", exerciseController.createKatekPreview);
-router.post("/exercitii/delete", exerciseController.deleteExercise);
+router.get("/exercitii/edit/:code", isAuthenticated, exerciseController.createOrEditExerciseGet);
+router.get("/exercitii/adauga", isAuthenticated, exerciseController.createOrEditExerciseGet);
+router.post("/exercitii/createoredit", isAuthenticated, exerciseController.createOrEditExercisePost);
+router.get("/exercitii/:code", isAuthenticated, exerciseController.getExerciseByCode);
+router.put("/exercitii/statement/:id", isAuthenticated, exerciseController.updateStatement);
+router.get("/exercitii", isAuthenticated, exerciseController.getExercises);
+router.post("/exercitii/katex-preview", isAuthenticated, exerciseController.createKatekPreview);
+router.post("/exercitii/delete", isAuthenticated, exerciseController.deleteExercise);
 
 // user-login/logout
 router.get("/login", userLoginController.getLogin);
 router.post("/login", userLoginController.postLogin);
-router.get("/logout", isAuthenticated, userLogoutController.logout);
+router.get("/logout", userLogoutController.logout);
 
 // user-signup
-router.post("/signup/invite", userSignupController.postInviteToSignup);
-router.get("/signup/invitation-sent", userSignupController.displaySignupInvitationSent);
+router.post("/signup/invite", isAuthenticated, userSignupController.postInviteToSignup);
+router.get("/signup/invitation-sent", isAuthenticated, userSignupController.displaySignupInvitationSent);
 router.get("/signup", userSignupController.getSignup);
 router.post("/signup", userSignupController.postSignup);
 router.get("/signup/ask-to-confirm", userSignupController.displaySignupAskToConfirm);
@@ -106,8 +101,6 @@ router.post("/reset-password", userResetPasswordController.postResetPassword);
 router.get("/reset-password/ask-to-confirm", userResetPasswordController.displayResetPasswordAskToConfirm);
 router.get("/reset-password/confirm/:resetPasswordCode", userResetPasswordController.getResetPasswordConfirm);
 router.get("/reset-password/confirm-success", userResetPasswordController.getResetPasswordConfirmSuccess);
-
-router.get("/test-id-generator", idGeneratorController.getNextId);
 
 router.get("/editia-[1|2|3]", editionController.getEdition);
 

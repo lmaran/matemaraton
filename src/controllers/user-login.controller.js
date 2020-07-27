@@ -43,7 +43,7 @@ exports.postLogin = async (req, res) => {
 
         // recaptcha verification
         const captchaResponse = await recaptchaService.checkResponse(req.body["g-recaptcha-response"]);
-        console.log(captchaResponse);
+        // console.log(captchaResponse);
         if (!captchaResponse.success || captchaResponse.score <= 0.5) {
             // over 50% chance to be be a bot
             const validationErrors = [{ field: "page", msg: "Nu ai trecut de validarea captcha. Mai încearcă odată!" }];

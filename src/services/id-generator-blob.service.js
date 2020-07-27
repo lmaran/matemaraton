@@ -11,28 +11,15 @@
 // Quick start: https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-nodejs
 
 // Azure AutoNumber in C#: https://itnext.io/generate-auto-increment-id-on-azure-62cc962b6fa6
+// concurrency with blob and ETag in c#: https://docs.microsoft.com/en-us/azure/storage/common/storage-concurrency
 
 const config = require("../config");
 const streamHelper = require("../helpers/stream.helper");
 const { BlobServiceClient } = require("@azure/storage-blob");
 
+// run only one time
 const blobServiceClient = BlobServiceClient.fromConnectionString(config.azureBlobStorageConnectionString);
-
-// Get a reference to a container
 const containerClient = blobServiceClient.getContainerClient("counters");
-
-exports.init = async () => {
-    // const blobServiceClient = BlobServiceClient.fromConnectionString(config.azureBlobStorageConnectionString);
-    // // Get a reference to a container
-    // const containerClient = blobServiceClient.getContainerClient("counters");
-    // Upload blob to a container
-    // const blobName = "exercises.txt";
-    // const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-    // // Upload data to the blob
-    // const data = "Hello, World!";
-    // const uploadBlobResponse = await blockBlobClient.upload(data, data.length);
-    // console.log(uploadBlobResponse);
-};
 
 let currentId = 0;
 let maxId = 0; // exclusive (actually the max id that can be used without a roundtrip to the blob is maxId-1)
@@ -50,9 +37,6 @@ exports.getNextId = async scope => {
         await this.uploadInMemoryCountersFromBlob(scope, writeAttempts);
     }
 
-    // console.log("maxId: " + maxId);
-    // console.log("currentId: " + currentId);
-
     // get from memory
     const nextId = currentId;
     currentId++;
@@ -60,25 +44,19 @@ exports.getNextId = async scope => {
     return `Counter value for  ${scope}: ${nextId}`;
 };
 
-// concurrency with blob and ETag in c#: https://docs.microsoft.com/en-us/azure/storage/common/storage-concurrency
 exports.uploadInMemoryCountersFromBlob = async (scope, writeAttempts) => {
     try {
         // read the current counter from blob
-
         const blockBlobClient = containerClient.getBlockBlobClient(`${scope}.txt`);
-
         const downloadBlockBlobResponse = await blockBlobClient.download(0);
 
         const originalETag = downloadBlockBlobResponse.originalResponse.etag; // etag: '"0x8D821EA1A932960"',
-        //const originalETag = "wrong-etag";
 
         const oldValueInBlobAsString = await streamHelper.streamToString(downloadBlockBlobResponse.readableStreamBody);
-
         const oldValueInBlob = Number(oldValueInBlobAsString);
 
         // calculate the new counter
         const batchSize = this.getBatchSize(scope, config);
-
         const newValueInBlob = oldValueInBlob + batchSize;
 
         // write new counter to the blob
@@ -87,19 +65,17 @@ exports.uploadInMemoryCountersFromBlob = async (scope, writeAttempts) => {
         // await timeHelper.sleepAsync(20000); // 20 sec
 
         const data = newValueInBlob.toString();
-
         await blockBlobClient.upload(data, data.length, { conditions: { ifMatch: originalETag } });
+
         // update the "max" and "current" counters in memory
         maxId = newValueInBlob;
         currentId = oldValueInBlob;
     } catch (err) {
-        /// daca cineva modifica blobul in intervalul de cand citesti pana updatezi => HTTP Status code 412 - precondition failed
+        // daca cineva modifica blobul in intervalul de cand citesti pana updatezi => HTTP Status code 412 - precondition failed
         if (err.statusCode === 412) {
-            console.log("Retry due to a concurrency conflict");
-
+            // Retry due to a concurrency conflict
             const maxWriteAttempts = 5;
             if (writeAttempts < maxWriteAttempts) {
-                // retry
                 writeAttempts++;
                 await this.uploadInMemoryCountersFromBlob(scope, writeAttempts);
             } else {
@@ -119,6 +95,5 @@ exports.getBatchSize = (scope, config) => {
             batchSize = config.idGenerator.defaultBatchSize;
         }
     }
-    //console.log("new batchSize: " + batchSize);
     return batchSize;
 };
