@@ -8,7 +8,9 @@
         "source.fixAll.eslint": false
     },
     "cSpell.words": [
+        "grecaptcha",
         "matemaraton",
-        "recaptcha"
+        "recaptcha",
+        "signup"
     ]
 }

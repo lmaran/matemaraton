@@ -18,16 +18,15 @@
         <i class="fa fa-info mr-2"></i> <strong>Success!</strong> Account Activated Successfully !!
     </div> --}}
 
-    {{#if errors.isPageError}}
-    <div class="alert alert-info">
-        {{!-- <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> --}}
-        <i class="fa fa-info mr-2"></i> {{errors.isPageError.msg}}
+    {{#if errors.page}}
+    <div class="alert alert-danger">
+        <i class="fa fa-exclamation-circle fa-lg mr-2"></i> {{errors.page.msg}}
     </div>
     {{/if}}
 
     <h1>Crează cont nou</h1>
 
-    <form method="post" action="/signup" novalidate onsubmit="saveBtn.disabled = true; return true;">
+    <form method="post" id="signupForm" action="/signup" novalidate onsubmit="saveBtn.disabled = true; return true;">
         <div class="form-group row">
             <label for="lastName" class="col-md-3 col-form-label required">Nume</label>
             <div class="col-md-7">
@@ -80,6 +79,7 @@
         </div>
 
         <input type="hidden" name="invitationCode" value="{{data.invitationCode}}" />
+        <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response" />
 
         <div class="form-group row">
             <div class="col-md-7 offset-md-3">
@@ -98,5 +98,28 @@
         </div>
     </div>
 
-
 </div>
+
+{{#section 'script-after'}}
+{{!-- https://developers.google.com/recaptcha/docs/v3#programmatically_invoke_the_challenge --}}
+<script src="https://www.google.com/recaptcha/api.js?render={{data.recaptchaSiteKey}}"></script>
+<script>
+
+    // intercepts the form submit event
+    const form = document.getElementById("signupForm");
+    form.addEventListener("submit", onSubmit);
+
+    // https://developers.google.com/recaptcha/docs/v3#programmatically_invoke_the_challenge
+    // https://code.tutsplus.com/tutorials/example-of-how-to-add-google-recaptcha-v3-to-a-php-form--cms-33752
+    function onSubmit(e) {
+        e.preventDefault(); // prevent submitting the form
+        grecaptcha.ready(function () {
+            grecaptcha.execute('{{data.recaptchaSiteKey}}', { action: 'signup' }).then(function (token) {
+                document.getElementById('g-recaptcha-response').value = token;
+                form.submit();
+            });
+        });
+    }
+
+</script>
+{{/section}}
