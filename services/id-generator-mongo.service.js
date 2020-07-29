@@ -19,14 +19,10 @@ exports.getNextId = async scope => {
         await this.uploadInMemoryCountersFromMongo(scope);
     }
 
-    // console.log("maxId: " + maxId);
-    // console.log("currentId: " + currentId);
-
     // get from memory
     const nextId = currentId;
     currentId++; // set this id "as taken"
 
-    // return `Counter value for  ${scope}: ${nextId}`;
     return nextId.toString();
 };
 
@@ -42,8 +38,6 @@ exports.uploadInMemoryCountersFromMongo = async scope => {
 
     const newValueInBlob = result.value.nextId;
 
-    //console.log("The new upper limit from  MongoDB: " + newValueInBlob);
-
     // update the "max" and "current" counters in memory
     currentId = newValueInBlob - batchSize; // set the start value of the new interval
     maxId = newValueInBlob; // set the end value of the new interval
@@ -58,7 +52,5 @@ exports.getBatchSize = (scope, config) => {
             batchSize = config.idGenerator.defaultBatchSize;
         }
     }
-    //console.log("new batchSize: " + batchSize);
     return batchSize;
-    //return 3;
 };

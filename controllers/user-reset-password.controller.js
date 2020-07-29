@@ -4,6 +4,7 @@ const emailService = require("../services/email.service");
 const config = require("../config");
 const arrayHelper = require("../helpers/array.helper");
 const cookieHelper = require("../helpers/cookie.helper");
+const recaptchaService = require("../services/recaptcha.service");
 
 exports.getResetPassword = async (req, res) => {
     try {
@@ -23,6 +24,9 @@ exports.getResetPassword = async (req, res) => {
                 val: req.user.email
             };
         }
+
+        // save into an hidden field to be sent at POST
+        data.recaptchaSiteKey = config.recaptchaSiteKey;
 
         // set autofocus properties
         if (validationErrors.length) {
@@ -50,6 +54,15 @@ exports.getResetPassword = async (req, res) => {
 exports.postResetPassword = async (req, res) => {
     try {
         const { email, password, confirmPassword } = req.body;
+
+        // recaptcha verification
+        const captchaResponse = await recaptchaService.checkResponse(req.body["g-recaptcha-response"]);
+        // console.log(captchaResponse);
+        if (!captchaResponse.success || captchaResponse.score <= 0.5) {
+            // over 50% chance to be be a bot
+            const validationErrors = [{ field: "page", msg: "Nu ai trecut de validarea captcha. Mai încearcă odată!" }];
+            return flashAndReloadResetPasswordPage(req, res, validationErrors);
+        }
 
         // handle static validation errors
         const validationErrors = getResetPasswordStaticValidationErrors(email, password, confirmPassword);
@@ -150,7 +163,7 @@ const flashAndReloadResetPasswordPage = (req, res, validationErrors) => {
     // keep old values at page reload by setting a flash message (a key, followed by a value)
     req.flash("validationErrors", validationErrors);
     req.flash("initialValues", initialValues);
-    const currentUrl = req.get("referer"); // "/signup?invitationCode=..."
+    const currentUrl = req.get("referer");
     return res.redirect(currentUrl);
 };
 

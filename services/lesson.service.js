@@ -1,21 +1,26 @@
-const mongoHelper = require("../../shared/helpers/mongo.helper");
+const mongoHelper = require("../helpers/mongo.helper");
+const { ObjectID } = require("mongodb");
 
 const collection = "lessons";
 
-exports.getLessonsForClass = async classId => {
+exports.getById = async id => {
+    const db = await mongoHelper.getDb();
+    return db.collection(collection).findOne({ _id: new ObjectID(id) });
+};
+
+exports.getAll = async () => {
     const db = await mongoHelper.getDb();
     return db
         .collection(collection)
-        .find({ "class.id": classId.toString() })
-        .sort({ subjectOrderInGradebook: 1 })
+        .find()
         .toArray();
 };
 
-exports.getLessonsForTeacher = async (teacherId, academicYear) => {
+exports.getByIds = async ids => {
+    const idsAsObjectID = ids.map(x => new ObjectID(x));
     const db = await mongoHelper.getDb();
     return db
         .collection(collection)
-        .find({ academicYear: academicYear, "teacher.id": teacherId })
-        .sort({ "class.name": 1 })
+        .find({ _id: { $in: idsAsObjectID } })
         .toArray();
 };

@@ -1,0 +1,30 @@
+{{!-- <style>
+    .source {
+        _font-style: italic;
+        _font-size: 8px;
+    }
+</style> --}}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Lecții</li>
+    </ol>
+</nav>
+
+<h1>Lecții</h1>
+
+{{!-- {{#if canCreateOrEditExercise}}
+<a href="/exercitii/adauga" class="btn btn-primary mt-2 mb-4"><i class="fa fa-plus"></i> Adaugă exercițiu</a>
+{{/if}} --}}
+
+{{!-- <h3< class="mt-4">>Ediția curentă:</h3> --}}
+{{#if lessons}}
+<ul>
+    {{#each lessons}}
+    <li><a href="/lectii/{{_id}}">{{title}} </a><span class="text-muted font-weight-light"> (
+            {{scope}})</span></li>
+    {{/each}}
+</ul>
+{{else}}
+<div class="mt-4">Nu există lecții!</div>
+{{/if}}

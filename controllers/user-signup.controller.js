@@ -6,6 +6,7 @@ const config = require("../config");
 const arrayHelper = require("../helpers/array.helper");
 const cookieHelper = require("../helpers/cookie.helper");
 const uuid = require("uuid/v4");
+const recaptchaService = require("../services/recaptcha.service");
 
 exports.postInviteToSignup = async (req, res) => {
     try {
@@ -122,13 +123,24 @@ exports.getSignup = async (req, res) => {
         data.invitationCode = invitationCode;
     }
 
-    //res.send(errors);
+    data.recaptchaSiteKey = config.recaptchaSiteKey;
+
+    //res.send(data);
     res.render("user/signup", { data, uiData, errors });
 };
 
 exports.postSignup = async (req, res) => {
     try {
         const { firstName, lastName, email, password, confirmPassword, invitationCode } = req.body;
+
+        // recaptcha verification
+        const captchaResponse = await recaptchaService.checkResponse(req.body["g-recaptcha-response"]);
+        // console.log(captchaResponse);
+        if (!captchaResponse.success || captchaResponse.score <= 0.5) {
+            // over 50% chance to be be a bot
+            const validationErrors = [{ field: "page", msg: "Nu ai trecut de validarea captcha. Mai încearcă odată!" }];
+            return flashAndReloadSignupPage(req, res, validationErrors);
+        }
 
         // handle static validation errors
         const validationErrors = getSignupStaticValidationErrors(firstName, lastName, email, password, confirmPassword);
@@ -147,7 +159,7 @@ exports.postSignup = async (req, res) => {
 
             cookieHelper.setCookies(res, token, refreshToken);
 
-            res.redirect("/signup/confirm-invitation-done");
+            res.redirect("/signup/confirm-success");
         } else {
             const activationCode = await authService.signupByUserRegistration(firstName, lastName, email, password);
             // Send this code on email
@@ -189,7 +201,7 @@ exports.getSignupConfirm = async (req, res) => {
         const { token, refreshToken } = await authService.signupByActivationCode(activationCode);
 
         cookieHelper.setCookies(res, token, refreshToken);
-        res.redirect("/signup/confirm-invitation-done");
+        res.redirect("/signup/confirm-success");
     } catch (err) {
         const data = { message: err.message, userIsNotAuthenticated: !req.user };
 

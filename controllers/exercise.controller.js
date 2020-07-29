@@ -146,55 +146,7 @@ exports.createOrEditExercisePost = async (req, res) => {
 
         //res.send(exercise);
         res.redirect(`/exercitii/edit/${exercise.code}`);
-
-        // // handle static validation errors
-        // const validationErrors = getSignupStaticValidationErrors(firstName, lastName, email, password, confirmPassword);
-        // if (validationErrors.length) {
-        //     return flashAndReloadSignupPage(req, res, validationErrors);
-        // }
-
-        // if (invitationCode) {
-        //     const { token, refreshToken } = await authService.signupByInvitationCode(
-        //         firstName,
-        //         lastName,
-        //         // email,
-        //         password,
-        //         invitationCode
-        //     );
-
-        //     cookieHelper.setCookies(res, token, refreshToken);
-
-        //     res.redirect("/signup/confirm-invitation-done");
-        // } else {
-        //     const activationCode = await authService.signupByUserRegistration(firstName, lastName, email, password);
-        //     // Send this code on email
-        //     const rootUrl = config.externalUrl; // e.g. http://localhost:1417
-        //     const link = `${rootUrl}/signup/confirm/${activationCode}`;
-
-        //     const data = {
-        //         to: email,
-        //         subject: "Activare cont",
-        //         html: `<html>Pentru activarea contului te rugăm să accesezi
-        //     <a href="${link}">link-ul de activare</a>!
-        //     </html>`
-        //     };
-
-        //     await emailService.sendEmail(data);
-
-        //     res.redirect("/signup/ask-to-confirm");
-        // }
     } catch (err) {
-        // // handle dynamic validation errors
-        // const validationErrors = [];
-        // if (err.message === "EmailAlreadyExists") {
-        //     validationErrors.push({ field: "email", msg: "Există deja un cont cu acest email" });
-        // }
-
-        // if (validationErrors.length) {
-        //     return flashAndReloadSignupPage(req, res, validationErrors);
-        // }
-
-        // @TODO display an error message (without details) and log the details
         return res.status(500).json(err.message);
     }
 };
@@ -248,7 +200,7 @@ exports.getExerciseByCode = async (req, res) => {
 //     res.render("exercise/exercise-edit", data);
 // };
 
-exports.createKatekPreview = async (req, res) => {
+exports.createKatexPreview = async (req, res) => {
     const katex = req.body.katex;
     const html = md.render(katex);
     res.status(201).json(html);
