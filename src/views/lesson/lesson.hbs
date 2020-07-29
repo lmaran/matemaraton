@@ -1,0 +1,26 @@
+<style>
+</style>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/lectii/">Lecții</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{lesson.title}}</li>
+    </ol>
+</nav>
+
+<h1><span class="font-weight-light text-secondary h4">{{lesson.title}}</span>
+</h1>
+{{!-- <h2 class="mb-5">{{class.name}}</h2> --}}
+
+
+{{!-- <h3 class="mt-5" {{#if noCourse}} class="text-muted" {{/if}}>{{course.dateAsString}}</h3> --}}
+
+
+
+{{!-- <div class="h4 font-weight-light">{{course.description}}</div> --}}
+
+Scop: {{lesson.scope}} </br>
+Clasa: {{lesson.grade}} </br>
+Area: {{lesson.area}} </br>
+Chapter: {{lesson.chapter}} </br>

@@ -19,7 +19,9 @@ const userLoginController = require("./controllers/user-login.controller");
 const userLogoutController = require("./controllers/user-logout.controller");
 const presenceController = require("./controllers/presence.controller");
 const courseController = require("./controllers/course.controller");
+const course2Controller = require("./controllers/course2.controller");
 const homeworkController = require("./controllers/homework.controller");
+const lessonController = require("./controllers/lesson.controller");
 
 // home
 router.get("/", homeController.getHomePage);
@@ -31,6 +33,13 @@ router.get("/pagina-mea", meController.getMyPage);
 
 // class
 router.get("/clase/:classId", classController.getClass);
+
+// courses
+router.get("/cursuri2", course2Controller.getCourses);
+router.get("/cursuri2/:id", course2Controller.getCourse);
+
+router.get("/lectii", lessonController.getLessons);
+router.get("/lectii/:id", lessonController.getLesson);
 
 // presence
 router.get("/clase", classController.getClasses);
@@ -74,7 +83,7 @@ router.post("/exercitii/createoredit", isAuthenticated, exerciseController.creat
 router.get("/exercitii/:code", isAuthenticated, exerciseController.getExerciseByCode);
 router.put("/exercitii/statement/:id", isAuthenticated, exerciseController.updateStatement);
 router.get("/exercitii", isAuthenticated, exerciseController.getExercises);
-router.post("/exercitii/katex-preview", isAuthenticated, exerciseController.createKatekPreview);
+router.post("/exercitii/katex-preview", isAuthenticated, exerciseController.createKatexPreview);
 router.post("/exercitii/delete", isAuthenticated, exerciseController.deleteExercise);
 
 // user-login/logout

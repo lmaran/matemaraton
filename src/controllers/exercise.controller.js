@@ -200,7 +200,7 @@ exports.getExerciseByCode = async (req, res) => {
 //     res.render("exercise/exercise-edit", data);
 // };
 
-exports.createKatekPreview = async (req, res) => {
+exports.createKatexPreview = async (req, res) => {
     const katex = req.body.katex;
     const html = md.render(katex);
     res.status(201).json(html);

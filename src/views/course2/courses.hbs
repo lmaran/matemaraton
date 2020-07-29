@@ -1,0 +1,42 @@
+{{!-- <style>
+    .source {
+        _font-style: italic;
+        _font-size: 8px;
+    }
+</style> --}}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Cursuri</li>
+    </ol>
+</nav>
+
+<h1>Cursuri</h1>
+
+{{!-- {{#if canCreateOrEditExercise}}
+<a href="/exercitii/adauga" class="btn btn-primary mt-2 mb-4"><i class="fa fa-plus"></i> Adaugă exercițiu</a>
+{{/if}} --}}
+
+{{!-- <h3< class="mt-4">>Ediția curentă:</h3> --}}
+{{#if activeCourses}}
+<ul>
+    {{#each activeCourses}}
+    <li><a href="/cursuri2/{{_id}}">{{name}} </a><span class="text-muted font-weight-light"> (nivel
+            {{level}})</span></li>
+    {{/each}}
+</ul>
+{{else}}
+<div class="mt-4">Nu există cursuri active!</div>
+{{/if}}
+
+
+{{#if archivedCourses}}
+<h3 class="mt-4">Arhivă:</h3>
+
+<ul>
+    {{#each archivedCourses}}
+    <li><a href="/cursuri2/{{_id}}">{{name}} </a><span class="text-muted font-weight-light"> (nivel
+            {{level}})</span></li>
+    {{/each}}
+</ul>
+{{/if}}
