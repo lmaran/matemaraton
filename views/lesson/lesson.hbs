@@ -4,12 +4,17 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        {{#if course}}
+        <li class="breadcrumb-item"><a href="/cursuri2/">Cursuri</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri2/{{course._id}}/">{{course.code}}</a></li>
+        {{else}}
         <li class="breadcrumb-item"><a href="/lectii/">Lecții</a></li>
-        <li class="breadcrumb-item active" aria-current="page">{{lesson.title}}</li>
+        {{/if}}
+        <li class="breadcrumb-item active" aria-current="page">{{lesson.name}}</li>
     </ol>
 </nav>
 
-<h1><span class="font-weight-light text-secondary h4">{{lesson.title}}</span>
+<h1><span class="font-weight-light text-secondary h4">{{lesson.name}}</span>
 </h1>
 {{!-- <h2 class="mb-5">{{class.name}}</h2> --}}
 

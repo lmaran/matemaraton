@@ -39,7 +39,8 @@ router.get("/cursuri2", course2Controller.getCourses);
 router.get("/cursuri2/:id", course2Controller.getCourse);
 
 router.get("/lectii", lessonController.getLessons);
-router.get("/lectii/:id", lessonController.getLesson);
+router.get("/lectii/:lessonId", lessonController.getLesson);
+router.get("/cursuri2/:courseId/lectii/:lessonId", lessonController.getLesson);
 
 // presence
 router.get("/clase", classController.getClasses);

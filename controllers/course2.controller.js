@@ -28,39 +28,54 @@ exports.getCourse = async (req, res) => {
     const courseId = req.params.id;
     const course = await course2Service.getById(courseId);
 
-    const lessons = await lessonService.getByIds(course.lessonsIds);
+    // 1. create a list of all unique lessonIds used in this course
+    if (course.agenda) {
+        const lessonsIds = [];
+        course.agenda.forEach(item => {
+            this.addLessonsIdsRecursively(item, lessonsIds);
+        });
+        const uniqueLessonsIds = [...new Set(lessonsIds)]; // remove duplicates (if exists)
 
-    const lessonsByAreaObj = arrayHelper.groupBy(lessons, "area");
+        // 2. get details (_id + name) for each lesson
+        const lessons = await lessonService.getLessonNamesByIds(uniqueLessonsIds);
+        const lessonsObj = arrayHelper.arrayToObject(lessons, "_id");
 
-    // lessonsTree: {
-    //     teoria-numerelor: {
-    //         numere-intregi: [
-    //             {
-    //                 _id: "5f21cf3ae0e6246b5ca2e2f7",
-    //                 scope: "olimpiada",
-    //                 clasa: "7",
-    //                 area: "teoria-numerelor",
-    //                 chapter: "numere-intregi",
-    //                 title: "Ecuații diofantice"
-    //             }
-    //         ],
-    //         numere-rationale: [{...}]
-    //     },
-    //     geometrie: {
-    //         Triunghiul: [{..}]
-    //     }
-    // }
-    const lessonsTree = {};
-    Object.keys(lessonsByAreaObj).forEach(key => {
-        const areaValues = lessonsByAreaObj[key];
-        const areaValuesByChapter = arrayHelper.groupBy(areaValues, "chapter");
-        lessonsTree[key] = areaValuesByChapter;
-    });
+        // 3. add lessonName for each lesson
+        course.agenda.forEach(item => {
+            this.addLessonNameRecursively(item, lessonsObj);
+        });
+    }
 
     const data = {
-        course,
-        lessonsTree
+        course
     };
     //res.send(data);
     res.render("course2/course", data);
+};
+
+exports.addLessonsIdsRecursively = (item, result) => {
+    if (item.lessonId) {
+        result.push(item.lessonId);
+    } else {
+        if (item.folderItems) {
+            item.folderItems.forEach(item => {
+                this.addLessonsIdsRecursively(item, result);
+            });
+        }
+    }
+};
+
+exports.addLessonNameRecursively = (item, lessonsObj) => {
+    if (item.lessonId) {
+        const lesson = lessonsObj[item.lessonId];
+        if (lesson) {
+            item.lessonName = lesson.name;
+        }
+    } else {
+        if (item.folderItems) {
+            item.folderItems.forEach(item => {
+                this.addLessonNameRecursively(item, lessonsObj);
+            });
+        }
+    }
 };

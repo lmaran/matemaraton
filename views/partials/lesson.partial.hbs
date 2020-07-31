@@ -1,0 +1,34 @@
+{{!-- OK(ver.1)
+ <li>
+    {{#if lessonName}}
+    <a href="/cursuri2/{{@root.course._id}}/lectii/{{lessonId}}">{{lessonName}}</a>
+    {{else}}
+    {{folderName}}
+    <ol>
+        {{#each folderItems}}
+        {{> lesson.partial}}
+        {{/each}}
+    </ol>
+    {{/if}}
+</li> --}}
+
+{{#if lessonName}}
+<li>
+    {{#if lessonId}}
+    <a class="pl-1" href="/cursuri2/{{@root.course._id}}/lectii/{{lessonId}}">{{lessonName}}</a>
+    {{else}}
+    {{lessonName}}
+    {{/if}}
+</li>
+{{else}}
+<li>
+    <span class="pl-1  text-muted2 font-weight-light text-uppercase">{{folderName}}
+        <span class="text-lowercase">({{totalHours}} s.)</span>
+    </span>
+    <ol>
+        {{#each folderItems}}
+        {{> lesson.partial}}
+        {{/each}}
+    </ol>
+</li>
+{{/if}}

@@ -1,4 +1,4 @@
-//const course2Service = require("../services/course2.service");
+const course2Service = require("../services/course2.service");
 const lessonService = require("../services/lesson.service");
 // const dateTimeHelper = require("../helpers/date-time.helper");
 //const arrayHelper = require("../helpers/array.helper");
@@ -26,12 +26,23 @@ exports.getLessons = async (req, res) => {
 };
 
 exports.getLesson = async (req, res) => {
-    const id = req.params.id;
-    const lesson = await lessonService.getById(id);
+    const lessonId = req.params.lessonId;
+    const courseId = req.params.courseId;
+
+    let lesson, course;
+    if (courseId) {
+        [lesson, course] = await Promise.all([
+            await lessonService.getById(lessonId),
+            await course2Service.getById(courseId)
+        ]);
+    } else {
+        lesson = await lessonService.getById(lessonId);
+    }
 
     const data = {
-        lesson
+        lesson,
+        course
     };
-    //res.send(data);
+    // res.send(data);
     res.render("lesson/lesson", data);
 };
