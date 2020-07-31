@@ -24,3 +24,21 @@ exports.getByIds = async ids => {
         .find({ _id: { $in: idsAsObjectID } })
         .toArray();
 };
+exports.getByIds = async ids => {
+    const idsAsObjectID = ids.map(x => new ObjectID(x));
+    const db = await mongoHelper.getDb();
+    return db
+        .collection(collection)
+        .find({ _id: { $in: idsAsObjectID } })
+        .toArray();
+};
+
+exports.getLessonNamesByIds = async ids => {
+    const idsAsObjectID = ids.map(x => new ObjectID(x));
+    const db = await mongoHelper.getDb();
+    return db
+        .collection(collection)
+        .find({ _id: { $in: idsAsObjectID } })
+        .project({ name: 1 })
+        .toArray();
+};
