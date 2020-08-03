@@ -19,16 +19,112 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/Clase/">Clase</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{class.name}}</li>
     </ol>
 </nav>
 
-<h1>{{class.name}}</h1>
-{{!-- <h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2> --}}
+<h1>{{class.name}} <small class="text-muted font-weight-light">(nivel {{class.level}})</small></h1>
+{{#if courseSummary}}
+<h5>Curs: <a href="/cursuri2/{{courseSummary._id}}">{{courseSummary.code}}</a> - {{courseSummary.name}}</h5>
+{{/if}}
+<div class="text-muted font-weight-light mb-4">{{class.description}}</div>
 
+{{#if (or class.startDate class.numberOfSessions)}}
+<h5>Durata cursului:</h5>
+<ul>
+    {{#if class.startDate}}<li>{{class.startDate}} - {{class.endDate}}</li> {{/if}}
+    {{#if class.numberOfSessions}}<li>{{class.numberOfSessions}} sesiuni de curs</li> {{/if}}
+</ul>
+{{/if}}
+
+
+
+
+{{!-- <h5>Structura cursului:</h5>
+<ul>
+    <li>AAA</li>
+    <li>Locație: {{class.scheduleInfo.place}} (în fiecare {{class.scheduleInfo.day}})</li>
+</ul> --}}
+
+
+{{#if class.scheduleInfo}}
+<h5>Orar:</h5>
+<ul>
+    <li>{{class.scheduleInfo.timeSlot}} (în fiecare {{class.scheduleInfo.day}})</li>
+    <li><strong>Locație: </strong>{{class.scheduleInfo.place}}</li>
+</ul>
+{{/if}}
+
+
+
+<h5>Comunicare:</h5>
+<ul>
+    <li><a href="https://matemaraton.ro">matemaraton.ro</a> - materiale de lucru, rapoarte, statistici
+    <li><a href="https://www.whatsapp.com" target="_blank">whatsapp</a> - grup de lucru cu elevii
+        (<strong>{{class.whatsappGroupName}}</strong>)
+    </li>
+    <li><a href="https://www.facebook.com/matemaraton" target="_blank">facebook.com/matemaraton</a> - comunicare cu
+        părinții
+    </li>
+    <li><a href="https://www.facebook.com/groups/417125302327211" target="_blank">facebook</a> "<span
+            class="font-weight-bold">MateMaraton: ajutor la teme</span>" - trimite o
+        poză și precizează clasa. Atât! </li>
+</ul>
+
+<h5>Mentor:</h5>
+<ul>
+    <li>ing. Lucian Măran</li>
+    <li>lucian.maran@gmail.com</li>
+</ul>
+
+
+<h5>Pret: <small>Gratuit</small></h5>
+
+
+{{#if class.enrolmentInfo}}
+<h5>Inscriere:</h5>
+<ul>
+    <li><strong>Locuri disponibile: </strong>{{class.enrolmentInfo.availablePlaces}}</li>
+    <li><strong>Condiții de participare: </strong>{{class.enrolmentInfo.conditionsOfParticipation}}</li>
+
+    {{#if class.enrolmentInfo.tieBreakingConditions}}
+    <li><strong>Condiții de departajare: </strong> În cazul în care numărul de elevi înscriși depășește numărul de
+        locuri disponibile, se va proceda la o selecție bazată, în ordine, pe următoarele criterii:</li>
+
+    <ul>
+        {{#each class.enrolmentInfo.tieBreakingConditions}}
+        <li>{{this}}</li>
+        {{/each}}
+    </ul>
+    {{/if}}
+
+    <li><strong>Perioada de înscriere: </strong>{{class.enrolmentInfo.enrolmentPeriod}}</li>
+
+    {{#if (eq class.enrolmentInfo.status  "completed")}}
+    <li>Perioada de înscrieri s-a încheiat.</li>
+    {{else}}
+    <li>Adresa pentru înscriere:
+        {{#if (eq class.enrolmentInfo.status "draft")}}
+        Va urma!
+        {{else}}
+        {{class.enrolmentInfo.enrolmentUrl}}
+        {{/if}}
+
+
+    </li>
+
+    {{/if}}
+
+</ul>
+{{/if}}
+
+
+{{#unless (eq class.enrolmentInfo.status "draft")}}
+<h5>Rapoarte:</h5>
 <ul>
     <li><a href="/clase/{{class._id}}/elevi">Elevi</a></li>
-    <li class="mb-3"><a href="/clase/{{class._id}}/cursuri">Cursuri
+    <li class="mb-3"><a href="/clase/{{class._id}}/cursuri">Sesiuni de curs
             <span class="text-muted">(poze de pe tablă
                 {{#if (or (eq2 class._id "5d92db9ba0da913a67b9a711") (eq2 class._id "5d92dc63a0da913a67b9a713"))}}
                 <span class="font-weight-bold">și video</span>
@@ -50,6 +146,7 @@
     {{!-- <li>Teme <span class="text-muted">(în curând)</span> </li> --}}
 
 </ul>
+{{/unless}}
 
 {{!-- <hr />
 <h5>Rapoarte</h5>
