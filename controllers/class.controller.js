@@ -1,4 +1,6 @@
 const classService = require("../services/class.service");
+const course2Service = require("../services/course2.service");
+const editionService = require("../services/edition.service");
 const autz = require("../services/autz.service");
 const arrayHelper = require("../helpers/array.helper");
 const stringHelper = require("../helpers/string.helper");
@@ -7,8 +9,11 @@ exports.getClass = async (req, res) => {
     const classId = req.params.classId;
     const cls = await classService.getClassById(classId);
 
+    const courseSummary = await course2Service.getCourseSummaryByCode(cls.courseCode);
+
     const data = {
         class: cls,
+        courseSummary,
         ctx: req.ctx,
         can: {
             viewParentsLink: await autz.can(req.user, "read:parents", { classId })
@@ -20,7 +25,10 @@ exports.getClass = async (req, res) => {
 };
 
 exports.getClasses = async (req, res) => {
-    const classes = await classService.getAll();
+    //const classes = await classService.getAll();
+
+    const [classes, editions] = await Promise.all([await classService.getAll(), await editionService.getAll()]);
+    const editionsObj = arrayHelper.arrayToObject(editions, "academicYear");
 
     const activeClasses = [];
     const archivedClasses = [];
@@ -32,13 +40,24 @@ exports.getClasses = async (req, res) => {
         }
     });
 
-    const unorderedArchivedClasses = arrayHelper.groupBy(archivedClasses, "academicYear");
+    const unorderedActiveClasses = arrayHelper.groupBy(activeClasses, "academicYear");
+    const orderedActiveClasses = [];
+    const academicYears1 = Object.keys(unorderedActiveClasses);
+    academicYears1
+        .sort((a, b) => b - a) // sort by academicYear, desc
+        .forEach(function(academicYear) {
+            orderedActiveClasses.push({
+                editionNumber: editionsObj[academicYears1] && editionsObj[academicYears1].number,
+                editionInterval: stringHelper.getIntervalFromAcademicYear(academicYear),
+                values: unorderedActiveClasses[academicYear]
+            });
+        });
 
-    // sort by academicYear, desc
+    const unorderedArchivedClasses = arrayHelper.groupBy(archivedClasses, "academicYear");
     const orderedArchivedClasses = [];
     const academicYears = Object.keys(unorderedArchivedClasses);
     academicYears
-        .sort((a, b) => b - a)
+        .sort((a, b) => b - a) // sort by academicYear, desc
         .forEach(function(academicYear, idx) {
             orderedArchivedClasses.push({
                 editionNumber: academicYears.length - idx,
@@ -48,8 +67,9 @@ exports.getClasses = async (req, res) => {
         });
 
     const data = {
-        activeClasses,
-        orderedArchivedClasses: orderedArchivedClasses
+        //activeClasses,
+        orderedActiveClasses,
+        orderedArchivedClasses
 
         // ctx: req.ctx,
         // can: {

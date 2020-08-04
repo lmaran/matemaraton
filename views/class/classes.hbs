@@ -4,6 +4,7 @@
         _font-size: 8px;
     }
 </style> --}}
+
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
@@ -18,19 +19,29 @@
 {{/if}} --}}
 
 {{!-- <h3< class="mt-4">>Ediția curentă:</h3> --}}
-{{#if activeClasses}}
+{{#if orderedActiveClasses}}
+{{#each orderedActiveClasses}}
+<h5>Editia {{editionNumber}} <span class="text-muted font-weight-light"> ({{editionInterval}})</span>:</h5>
+
 <ul>
     {{#each values}}
-    <li><a href="/clase/{{_id}}">{{name}} </a><span class="text-muted font-weight-light"> (nivel
-            {{level}})</span></li>
+    <li><a href="/clase/{{_id}}">{{name}} </a>
+        <span class="text-muted font-weight-light"> (nivel {{level}})</span>
+        {{#if scheduleInfo}}
+        <div class="ml-4">{{scheduleInfo.timeSlot}}, {{scheduleInfo.day}}, {{scheduleInfo.place}}</div>
+        {{/if}}
+    </li>
     {{/each}}
 </ul>
+{{/each}}
 {{else}}
 <div class="mt-4">Nu au fost definite clasele pentru ediția curentă!</div>
 {{/if}}
 
 
 {{#if orderedArchivedClasses}}
+<hr class="mt-4">
+
 <h3 class="mt-4">Arhivă:</h3>
 
 {{#each orderedArchivedClasses}}
