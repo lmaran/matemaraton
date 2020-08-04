@@ -7,11 +7,12 @@
 
 <div class="alert alert-info" role="alert">
     <i class="fa fa-info-circle mr-2 fa-lg"></i>
-    Inscrierile pentru grupele din <span class="font-weight-bold">ediția 4</span> se vor face astfel:
+    Am afișat <a href="/clase">clasele</a> disponibile pt. <strong>Ediția 4</strong> (an școlar 2020 - 2021).
+    {{!-- Inscrierile pentru grupele din <span class="font-weight-bold">ediția 4</span> se vor face astfel:
     <ul>
         <li>14 - 18 Sep. 2020: pt. grupele 1, 2 și 4 </li>
         <li>12 - 16 Oct. 2020: pt. grupa 3 </li>
-    </ul>
+    </ul> --}}
 </div>
 
 {{!-- <div class="alert alert-info" role="alert">
@@ -29,9 +30,12 @@
 </div> --}}
 
 <div class="starter-template">
-    <h1>MateMaraton - Matematică pentru Evaluarea Națională</h1>
-    <h5 class="font-italic2 font-weight-light"> Un proiect implementat de voluntari, în parteneriat cu Școala 21
+    {{!-- <h1>MateMaraton - Matematică pentru Evaluarea Națională</h1> --}}
+    <h1>MateMaraton - Cursuri de matematică pentru gimnaziu</h1>
+    <h5 class="font-weight-light"> Un proiect implementat de voluntari, în parteneriat cu Școala 21
         "Vicențiu Babeș", Timișoara.</h5>
+    <h5 class="mt-4">Ediția 4 (2020-2021)</h5>
+
 
 </div>
 
@@ -42,11 +46,77 @@
     </ol>
 </nav> --}}
 
-<h2>Ediția 4 (2020-2021)</h2>
-Va urma!
-<hr>
 
-<h5>Ediții anterioare:</h5>
+
+<div class="card-deck">
+    <div class="card">
+        {{!-- <img src="..." class="card-img-top" alt="..."> --}}
+        <div class="text-center pt-3 text-muted">
+            <i class="fas fa-chalkboard-teacher fa-2x"></i>
+        </div>
+        <div class="card-body">
+            <h3 class="card-title text-center">Clase</h3>
+            <p class="card-text font-weight-light">Grupe de 8-12 elevi care se pregătesc la matematică sub
+                îndrumarea unui
+                instructor.
+                Activitățile se desfășoară în format online sau într-o sală de clasă. Totul gratuit.
+            </p>
+            {{!-- <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p> --}}
+        </div>
+        <div class="card-footer">
+            {{!-- <small class="text-muted">Last updated 3 mins ago</small> --}}
+            <a href="/clase">Află mai multe</a>
+        </div>
+    </div>
+    <div class="card">
+        {{!-- <img src="..." class="card-img-top" alt="..."> --}}
+        <div class="text-center pt-3 text-muted">
+            <i class="far fa-newspaper fa-2x"></i>
+        </div>
+
+        {{!-- <div class="card-header2 text-center pt2-3 font-weight-light">
+            <i class="fas fa-newspaper fa-3x font-weight-light"></i>aaa
+        </div> --}}
+
+        <div class="card-body">
+            <h3 class="card-title text-center">Cursuri</h3>
+            <p class="card-text">Suporturi de curs (lecții, exerciții rezolvate și teme propuse pentru acasă), toate
+                grupate pe ani de studiu, nivel de
+                dificultate și unități de învățare. </p>
+            <p class="card-text"><small class="text-muted font-weight-light2">Utile și celor care se
+                    pregătesc fără
+                    instructor.</small></p>
+        </div>
+        <div class="card-footer">
+            <span class="text-muted">In curând</span>
+        </div>
+    </div>
+    <div class="card">
+        {{!-- <img src="..." class="card-img-top" alt="..."> --}}
+        <div class="text-center pt-3 text-muted">
+            <i class="far fa-comments fa-2x"></i>
+        </div>
+
+        <div class="card-body">
+            <h3 class="card-title text-center">Comunitate</h3>
+            <p class="card-text">Dacă ai nevoie de ajutor, trimite o poză cu exercițiul pe care nu știi să-l faci și
+                precizează clasa. Atât!.
+
+                {{!-- <p class="card-text"><small class="text-muted">Pentru toți elevii (și părinții) școlii 21,
+                    Timișoara.</small></p> --}}
+            <p class="card-text"><small class="text-muted">Inclusiv pentru părinții care vor să se ajute între
+                    ei.</small></p>
+        </div>
+        <div class="card-footer">
+            {{!-- <small class="text-muted">Last updated 3 mins ago</small> --}}
+            {{!-- <a href="/clase">Află mai multe</a> --}}
+            <a href="https://www.facebook.com/groups/417125302327211" target="_blank">facebook/ajutor-la-teme</a>
+            <small><i class="fas fa-external-link-alt text-muted text-small" aria-hidden="true"></i></small>
+        </div>
+    </div>
+</div>
+
+<h5 class="mt-5">Ediții anterioare:</h5>
 <ul>
     <li><a href="/editia-3">Ediția 3</a> (2019 - 2020)</li>
     <li><a href="/editia-2">Ediția 2</a> (2018 - 2019)</li>
@@ -84,17 +154,21 @@ Va urma!
             class="font-weight-bold">MateMaraton: ajutor la teme</span>" - trimite o
         poză și precizează clasa. Atât! </li>
 </ul>
+--}}
 
-<h5>Mentor:</h5>
+<h5>Contact:</h5>
 <ul>
     <li>ing. Lucian Măran</li>
     <li>lucian.maran@gmail.com</li>
-</ul> --}}
+    <li><a href="https://www.facebook.com/matemaraton" target="_blank">facebook/matemaraton</a>
+        <small><i class="fas fa-external-link-alt text-muted" aria-hidden="true"></i></small>
+    </li>
+</ul>
 
-<hr>
+{{!-- <hr> --}}
 
 {{#if @root.user.isAdmin}}
-<h5>Admin:</h5>
+<h5 class="mt-5">Admin:</h5>
 <ul>
     <li><a href='/exercitii'>Exerciții</a></li>
     <li><a href='/clase'>Clase</a></li>
