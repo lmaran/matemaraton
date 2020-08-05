@@ -14,18 +14,18 @@
 
 
 <div class="mb-5">Vezi pozele de la toate cursurile <span class="font-weight-bold">pe o singură pagină</span> <a
-        href="/clase/{{class._id}}/cursuri/poze">aici</a>.</div>
+        href="/clase/{{class._id}}/sesiuni-curs/poze">aici</a>.</div>
 <hr />
 
 {{#each courses}}
 <div class="h4">
-    <a href="/cursuri/{{_id}}">Curs{{course}}</a>
+    <a href="/sesiuni-curs/{{_id}}">Curs{{course}}</a>
     <span class="h5 font-weight-light text-muted"> - {{dateAsString}}
         {{#if videos}}
-        <a href="/cursuri/{{_id}}"><i class="fab fa-youtube" style="color:red"></i></a>
+        <a href="/sesiuni-curs/{{_id}}"><i class="fab fa-youtube" style="color:red"></i></a>
         {{/if}}
         {{#if images}}
-        <a href="/cursuri/{{_id}}"><i class="fas fa-camera" style="color:rgb(90, 143, 5)"></i></a>
+        <a href="/sesiuni-curs/{{_id}}"><i class="fas fa-camera" style="color:rgb(90, 143, 5)"></i></a>
         {{/if}}
     </span>
 </div>
@@ -35,4 +35,4 @@
 
 <hr />
 <div class="mb-5">Vezi pozele de la toate cursurile <span class="font-weight-bold">pe o singură pagină</span> <a
-        href="/clase/{{class._id}}/cursuri/poze">aici</a>.</div>
+        href="/clase/{{class._id}}/sesiuni-curs/poze">aici</a>.</div>

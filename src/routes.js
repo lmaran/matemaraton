@@ -59,9 +59,9 @@ router.get("/clase/:classId/parinti", parentController.getParentsPerClass);
 router.get("/parinti/:parentId", parentController.getParent);
 
 // courseSessions
-router.get("/clase/:classId/cursuri", courseSessionController.getCourseSessionsPerClass);
-router.get("/clase/:classId/cursuri/poze", courseSessionController.getCourseSessionsPerClassWithPhotos);
-router.get("/cursuri/:courseId", courseSessionController.getCourseSession);
+router.get("/clase/:classId/sesiuni-curs", courseSessionController.getCourseSessionsPerClass);
+router.get("/clase/:classId/sesiuni-curs/poze", courseSessionController.getCourseSessionsPerClassWithPhotos);
+router.get("/sesiuni-curs/:courseSessionId", courseSessionController.getCourseSession);
 
 // students
 router.get("/clase/:classId/elevi", studentController.getStudentsPerClass);

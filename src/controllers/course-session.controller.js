@@ -52,9 +52,9 @@ exports.getCourseSessionsPerClassWithPhotos = async (req, res) => {
 };
 
 exports.getCourseSession = async (req, res) => {
-    const courseId = req.params.courseId;
+    const courseSessionId = req.params.courseSessionId;
 
-    const course = await courseSessionService.getCourseSessionById(courseId);
+    const course = await courseSessionService.getCourseSessionById(courseSessionId);
     const cls = await classService.getClassById(course.classId);
 
     course.dateAsString = dateTimeHelper.getStringFromStringNoDay(course.date);
