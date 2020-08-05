@@ -17,7 +17,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
-        <li class="breadcrumb-item"><a href="/cursuri2/">Cursuri</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{course.code}}</li>
     </ol>
 </nav>
@@ -48,7 +48,7 @@ In curând!
 
 {{#each course.agenda}}
 {{#if lessonName}}
-<a href="/cursuri2/{{@root.course._id}}/lectii/{{lessonId}}">{{lessonName}}</a>
+<a href="/cursuri/{{@root.course._id}}/lectii/{{lessonId}}">{{lessonName}}</a>
 {{else}}
 <h5>{{folderName}}<span class="font-weight-light text-lowercase"> ({{totalHours}} sesiuni)</span></h5>
 <ol id="agenda" class="pl-0">

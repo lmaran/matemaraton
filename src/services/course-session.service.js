@@ -1,7 +1,7 @@
 const mongoHelper = require("../helpers/mongo.helper");
 const { ObjectID } = require("mongodb");
 
-const coursesCollection = "courses";
+const coursesCollection = "course-sessions";
 
 exports.getCourseSessionById = async id => {
     const db = await mongoHelper.getDb();

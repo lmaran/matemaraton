@@ -1,4 +1,4 @@
-const course2Service = require("../services/course2.service");
+const courseService = require("../services/course.service");
 const lessonService = require("../services/lesson.service");
 // const dateTimeHelper = require("../helpers/date-time.helper");
 //const arrayHelper = require("../helpers/array.helper");
@@ -33,7 +33,7 @@ exports.getLesson = async (req, res) => {
     if (courseId) {
         [lesson, course] = await Promise.all([
             await lessonService.getById(lessonId),
-            await course2Service.getById(courseId)
+            await courseService.getById(courseId)
         ]);
     } else {
         lesson = await lessonService.getById(lessonId);

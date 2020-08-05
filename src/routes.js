@@ -19,7 +19,7 @@ const userLoginController = require("./controllers/user-login.controller");
 const userLogoutController = require("./controllers/user-logout.controller");
 const presenceController = require("./controllers/presence.controller");
 const courseSessionController = require("./controllers/course-session.controller");
-const course2Controller = require("./controllers/course2.controller");
+const courseController = require("./controllers/course.controller");
 const homeworkController = require("./controllers/homework.controller");
 const lessonController = require("./controllers/lesson.controller");
 
@@ -35,12 +35,12 @@ router.get("/pagina-mea", meController.getMyPage);
 router.get("/clase/:classId", classController.getClass);
 
 // courses
-router.get("/cursuri2", course2Controller.getCourses);
-router.get("/cursuri2/:id", course2Controller.getCourse);
+router.get("/cursuri", courseController.getCourses);
+router.get("/cursuri/:id", courseController.getCourse);
 
 router.get("/lectii", lessonController.getLessons);
 router.get("/lectii/:lessonId", lessonController.getLesson);
-router.get("/cursuri2/:courseId/lectii/:lessonId", lessonController.getLesson);
+router.get("/cursuri/:courseId/lectii/:lessonId", lessonController.getLesson);
 
 // presence
 router.get("/clase", classController.getClasses);

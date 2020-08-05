@@ -1,10 +1,10 @@
-const course2Service = require("../services/course2.service");
+const courseService = require("../services/course.service");
 const lessonService = require("../services/lesson.service");
 // const dateTimeHelper = require("../helpers/date-time.helper");
 const arrayHelper = require("../helpers/array.helper");
 
 exports.getCourses = async (req, res) => {
-    const courses = await course2Service.getAll();
+    const courses = await courseService.getAll();
 
     const generalCourses = [];
     const highLevelCourses = [];
@@ -23,12 +23,12 @@ exports.getCourses = async (req, res) => {
         highLevelCourses
     };
     //res.send(data);
-    res.render("course2/courses", data);
+    res.render("course/courses", data);
 };
 
 exports.getCourse = async (req, res) => {
     const courseId = req.params.id;
-    const course = await course2Service.getById(courseId);
+    const course = await courseService.getById(courseId);
 
     // 1. create a list of all unique lessonIds used in this course
     if (course.agenda) {
@@ -52,7 +52,7 @@ exports.getCourse = async (req, res) => {
         course
     };
     //res.send(data);
-    res.render("course2/course", data);
+    res.render("course/course", data);
 };
 
 exports.addLessonsIdsRecursively = (item, result) => {

@@ -1,7 +1,7 @@
 const mongoHelper = require("../helpers/mongo.helper");
 const { ObjectID } = require("mongodb");
 
-const collection = "courses2";
+const collection = "courses";
 
 /**
  * CRUD operations
