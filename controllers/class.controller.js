@@ -1,5 +1,5 @@
 const classService = require("../services/class.service");
-const course2Service = require("../services/course2.service");
+const courseService = require("../services/course.service");
 const editionService = require("../services/edition.service");
 const autz = require("../services/autz.service");
 const arrayHelper = require("../helpers/array.helper");
@@ -9,7 +9,7 @@ exports.getClass = async (req, res) => {
     const classId = req.params.classId;
     const cls = await classService.getClassById(classId);
 
-    const courseSummary = await course2Service.getCourseSummaryByCode(cls.courseCode);
+    const courseSummary = await courseService.getCourseSummaryByCode(cls.courseCode);
 
     const data = {
         class: cls,

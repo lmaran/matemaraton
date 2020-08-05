@@ -1,4 +1,4 @@
-const courseService = require("../services/course.service");
+const courseSessionService = require("../services/course-session.service");
 const personService = require("../services/person.service");
 const classService = require("../services/class.service");
 const homeworkService = require("../services/homework.service");
@@ -62,7 +62,7 @@ exports.getHomeworkSubmissionsPerStudent = async (req, res) => {
     // let allClassIdsForStudent = classIdsPerIntervals.map(x => x.classId);
     // allClassIdsForStudent = [...new Set(allClassIdsForStudent)]; // remove duplicates (if exists)
 
-    // const allCoursesForStudent = await courseService.getCoursesByClassIds(allClassIdsForStudent);
+    // const allCoursesForStudent = await courseSessionService.getCourseSessionsByClassIds(allClassIdsForStudent);
 
     // const coursesDateByDate = getCoursesDateByDate(classIdsPerIntervals, allCoursesForStudent);
 
@@ -109,7 +109,7 @@ exports.getHomeworkRequest = async (req, res) => {
     const [cls, students, courses] = await Promise.all([
         await classService.getClassById(classId),
         await personService.getPersonsByIds(studentsIds),
-        await courseService.getCoursesByIds(coursesIds)
+        await courseSessionService.getCourseSessionsByIds(coursesIds)
     ]);
 
     homeworkRequest.submissions.forEach(submission => {

@@ -1,0 +1,64 @@
+<style>
+    .hidePresence {
+        display: none;
+    }
+
+    .hideStudent {
+        display: none;
+    }
+
+    .responsive {
+        width: 100%;
+        height: 0;
+        padding-bottom: 56.25%;
+        position: relative;
+    }
+
+    .responsive iframe {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/clase/{{class._id}}">{{class.name}}</a></li>
+        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}/sesiuni-curs">Cursuri</a></li>
+        <li class="breadcrumb-item active" aria-current="page">curs {{course.course}}</li>
+    </ol>
+</nav>
+
+<h1>Curs {{course.course}} <span class="font-weight-light text-secondary h4"> - {{course.dateAsString}}</span>
+</h1>
+<h2 class="mb-5">{{class.name}}</h2>
+
+
+{{!-- <h3 class="mt-5" {{#if noCourse}} class="text-muted" {{/if}}>{{course.dateAsString}}</h3> --}}
+
+
+
+<div class="h4 font-weight-light">{{course.description}}</div>
+
+{{#each course.videos}}
+<div class="mt-2">Partea {{inc @index}}:</div>
+<div class="responsive">
+    <iframe width="560" height2="315" src="{{url}}" frameborder="0"
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+    </iframe>
+</div>
+{{/each}}
+
+{{#if course.videos}}
+<p class="h4 mt-5 mb-1">Varianta scrisă:</p>
+{{/if}}
+
+{{#each course.images}}
+<p>{{course.description}}</p>
+<img src={{url}} class="img-fluid" alt="">
+<a style="display: block;" href={{highQualityUrl}}>Vezi poza la calitate maximă</a>
+{{/each}}
+<br>
+<br>

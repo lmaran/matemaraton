@@ -26,7 +26,7 @@
 
 <h1>{{class.name}} <small class="text-muted font-weight-light">(nivel {{class.level}})</small></h1>
 {{#if courseSummary}}
-<h5>Curs: <a href="/cursuri2/{{courseSummary._id}}">{{courseSummary.code}}</a> - {{courseSummary.name}}</h5>
+<h5>Curs: <a href="/cursuri/{{courseSummary._id}}">{{courseSummary.code}}</a> - {{courseSummary.name}}</h5>
 {{/if}}
 <div class="text-muted font-weight-light mb-4">{{class.description}}</div>
 
@@ -124,7 +124,7 @@
 <h5>Rapoarte:</h5>
 <ul>
     <li><a href="/clase/{{class._id}}/elevi">Elevi</a></li>
-    <li class="mb-3"><a href="/clase/{{class._id}}/cursuri">Sesiuni de curs
+    <li class="mb-3"><a href="/clase/{{class._id}}/sesiuni-curs">Sesiuni de curs
             <span class="text-muted">(poze de pe tablă
                 {{#if (or (eq2 class._id "5d92db9ba0da913a67b9a711") (eq2 class._id "5d92dc63a0da913a67b9a713"))}}
                 <span class="font-weight-bold">și video</span>

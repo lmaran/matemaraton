@@ -1,4 +1,4 @@
-const courseService = require("../services/course.service");
+const courseSessionService = require("../services/course-session.service");
 const personService = require("../services/person.service");
 const classService = require("../services/class.service");
 const dateTimeHelper = require("../helpers/date-time.helper");
@@ -25,9 +25,9 @@ exports.getTotalPresences = async (req, res) => {
     const studentsIds = studentsMapByClassId.map(x => x.studentId);
 
     const [allCoursesForStudents, students, coursesWithPresenceForStudents] = await Promise.all([
-        await courseService.getCoursesByClassIds(allUniqueClassIdsForAllStudents),
+        await courseSessionService.getCourseSessionsByClassIds(allUniqueClassIdsForAllStudents),
         await personService.getPersonsByIds(studentsIds),
-        await courseService.getCoursesByStudentsIds(studentsIds)
+        await courseSessionService.getCourseSessionsByStudentsIds(studentsIds)
     ]);
 
     const studentsObj = arrayHelper.arrayToObject(students, "_id") || {};
@@ -88,7 +88,7 @@ exports.getPresencePerClass = async (req, res) => {
 
     const [cls, courses, studentsMapByClassId] = await Promise.all([
         await classService.getClassById(classId),
-        await courseService.getCoursesByClassId(classId),
+        await courseSessionService.getCourseSessionsByClassId(classId),
         await studentsAndClassesService.getStudentsMapByClassId(classId)
     ]);
 
@@ -161,7 +161,7 @@ exports.getPresencePerStudent = async (req, res) => {
     [student, classMapByStudent, coursesWithPresence, cls] = await Promise.all([
         await personService.getPersonById(studentId),
         await studentsAndClassesService.getClassMapByStudentId(classId, studentId),
-        await courseService.getCoursesByStudentId(studentId),
+        await courseSessionService.getCourseSessionsByStudentId(studentId),
         await classService.getClassById(classId)
     ]);
 
@@ -170,7 +170,7 @@ exports.getPresencePerStudent = async (req, res) => {
     let allClassIdsForStudent = classIdsPerIntervals.map(x => x.classId);
     allClassIdsForStudent = [...new Set(allClassIdsForStudent)]; // remove duplicates (if exists)
 
-    const allCoursesForStudent = await courseService.getCoursesByClassIds(allClassIdsForStudent);
+    const allCoursesForStudent = await courseSessionService.getCourseSessionsByClassIds(allClassIdsForStudent);
 
     const coursesDateByDate = getCoursesDateByDate(classIdsPerIntervals, allCoursesForStudent);
 

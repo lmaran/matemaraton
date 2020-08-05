@@ -1,70 +1,83 @@
 const courseService = require("../services/course.service");
-const classService = require("../services/class.service");
-const dateTimeHelper = require("../helpers/date-time.helper");
+const lessonService = require("../services/lesson.service");
+// const dateTimeHelper = require("../helpers/date-time.helper");
+const arrayHelper = require("../helpers/array.helper");
 
-exports.getCoursesPerClass = async (req, res) => {
-    const classId = req.params.classId;
+exports.getCourses = async (req, res) => {
+    const courses = await courseService.getAll();
 
-    const [cls, courses] = await Promise.all([
-        await classService.getClassById(classId),
-        await courseService.getCoursesByClassId(classId)
-    ]);
-
-    const newCourses = courses
-        .filter(x => !x.noCourse)
-        .map(x => {
-            x.dateAsString = dateTimeHelper.getStringFromStringNoDay(x.date);
-            return x;
+    const generalCourses = [];
+    const highLevelCourses = [];
+    courses
+        .sort((a, b) => (a.code > b.code ? 1 : -1))
+        .forEach(course => {
+            if (course.level === "Evaluare Națională") {
+                generalCourses.push(course);
+            } else if (course.level === "Olimpiadă") {
+                highLevelCourses.push(course);
+            }
         });
 
     const data = {
-        class: cls,
-        courses: newCourses,
-        totalCourses: newCourses.length
+        generalCourses,
+        highLevelCourses
     };
     //res.send(data);
-    res.render("course/courses-per-class", data);
-};
-
-exports.getCoursesPerClassWithPhotos = async (req, res) => {
-    const classId = req.params.classId;
-
-    const [cls, courses] = await Promise.all([
-        await classService.getClassById(classId),
-        await courseService.getCoursesByClassId(classId)
-    ]);
-
-    const newCourses = courses
-        .filter(x => !x.noCourse)
-        .map(x => {
-            x.dateAsString = dateTimeHelper.getStringFromStringNoDay(x.date);
-            x.images.forEach(image => (image.highQualityUrl = image.url.replace("courses-lg", "courses")));
-            return x;
-        });
-
-    const data = {
-        class: cls,
-        courses: newCourses,
-        totalCourses: newCourses.length
-    };
-    //res.send(data);
-    res.render("course/courses-with-all-photos", data);
+    res.render("course/courses", data);
 };
 
 exports.getCourse = async (req, res) => {
-    const courseId = req.params.courseId;
+    const courseId = req.params.id;
+    const course = await courseService.getById(courseId);
 
-    const course = await courseService.getCourseById(courseId);
-    const cls = await classService.getClassById(course.classId);
+    // 1. create a list of all unique lessonIds used in this course
+    if (course.agenda) {
+        const lessonsIds = [];
+        course.agenda.forEach(item => {
+            this.addLessonsIdsRecursively(item, lessonsIds);
+        });
+        const uniqueLessonsIds = [...new Set(lessonsIds)]; // remove duplicates (if exists)
 
-    course.dateAsString = dateTimeHelper.getStringFromStringNoDay(course.date);
+        // 2. get details (_id + name) for each lesson
+        const lessons = await lessonService.getLessonNamesByIds(uniqueLessonsIds);
+        const lessonsObj = arrayHelper.arrayToObject(lessons, "_id");
 
-    course.images.forEach(image => (image.highQualityUrl = image.url.replace("courses-lg", "courses")));
+        // 3. add lessonName for each lesson
+        course.agenda.forEach(item => {
+            this.addLessonNameRecursively(item, lessonsObj);
+        });
+    }
 
     const data = {
-        class: cls,
         course
     };
     //res.send(data);
     res.render("course/course", data);
+};
+
+exports.addLessonsIdsRecursively = (item, result) => {
+    if (item.lessonId) {
+        result.push(item.lessonId);
+    } else {
+        if (item.folderItems) {
+            item.folderItems.forEach(item => {
+                this.addLessonsIdsRecursively(item, result);
+            });
+        }
+    }
+};
+
+exports.addLessonNameRecursively = (item, lessonsObj) => {
+    if (item.lessonId) {
+        const lesson = lessonsObj[item.lessonId];
+        if (lesson) {
+            item.lessonName = lesson.name;
+        }
+    } else {
+        if (item.folderItems) {
+            item.folderItems.forEach(item => {
+                this.addLessonNameRecursively(item, lessonsObj);
+            });
+        }
+    }
 };

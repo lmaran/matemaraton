@@ -4,7 +4,7 @@
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
 
         <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">{{class.name}}</a></li>
-        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}/cursuri">Cursuri</a></li>
+        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}/sesiuni-curs">Cursuri</a></li>
         <li class="breadcrumb-item active" aria-current="page">Toate pozele</li>
 
     </ol>
@@ -16,10 +16,10 @@
 
 {{#each courses}}
 <div class="h4 mt-5">
-    <a href="/cursuri/{{_id}}">Curs{{course}}</a>
+    <a href="/sesiuni-curs/{{_id}}">Curs{{course}}</a>
     <span class="h5 font-weight-light text-muted"> - {{dateAsString}}
         {{#if videos}}
-        <a href="/cursuri/{{_id}}"><i class="fab fa-youtube" style="color:red"></i></a>
+        <a href="/sesiuni-curs/{{_id}}"><i class="fab fa-youtube" style="color:red"></i></a>
         {{/if}}
     </span>
 </div>

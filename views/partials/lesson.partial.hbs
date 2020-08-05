@@ -1,7 +1,7 @@
 {{!-- OK(ver.1)
  <li>
     {{#if lessonName}}
-    <a href="/cursuri2/{{@root.course._id}}/lectii/{{lessonId}}">{{lessonName}}</a>
+    <a href="/cursuri/{{@root.course._id}}/lectii/{{lessonId}}">{{lessonName}}</a>
     {{else}}
     {{folderName}}
     <ol>
@@ -15,7 +15,7 @@
 {{#if lessonName}}
 <li>
     {{#if lessonId}}
-    <a class="pl-1" href="/cursuri2/{{@root.course._id}}/lectii/{{lessonId}}">{{lessonName}}</a>
+    <a class="pl-1" href="/cursuri/{{@root.course._id}}/lectii/{{lessonId}}">{{lessonName}}</a>
     {{else}}
     {{lessonName}}
     {{/if}}
