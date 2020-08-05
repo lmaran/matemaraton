@@ -6,19 +6,21 @@ const arrayHelper = require("../helpers/array.helper");
 exports.getCourses = async (req, res) => {
     const courses = await course2Service.getAll();
 
-    const activeCourses = [];
-    const archivedCourses = [];
-    courses.forEach(course => {
-        if (course.isActive) {
-            activeCourses.push(course);
-        } else {
-            archivedCourses.push(course);
-        }
-    });
+    const generalCourses = [];
+    const highLevelCourses = [];
+    courses
+        .sort((a, b) => (a.code > b.code ? 1 : -1))
+        .forEach(course => {
+            if (course.level === "Evaluare Națională") {
+                generalCourses.push(course);
+            } else if (course.level === "Olimpiadă") {
+                highLevelCourses.push(course);
+            }
+        });
 
     const data = {
-        activeCourses,
-        archivedCourses
+        generalCourses,
+        highLevelCourses
     };
     //res.send(data);
     res.render("course2/courses", data);
