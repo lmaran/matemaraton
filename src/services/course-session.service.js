@@ -3,12 +3,12 @@ const { ObjectID } = require("mongodb");
 
 const coursesCollection = "courses";
 
-exports.getCourseById = async id => {
+exports.getCourseSessionById = async id => {
     const db = await mongoHelper.getDb();
     return db.collection(coursesCollection).findOne({ _id: new ObjectID(id) });
 };
 
-exports.getCoursesByIds = async ids => {
+exports.getCourseSessionsByIds = async ids => {
     const idsAsObjectID = ids.map(x => new ObjectID(x));
     const db = await mongoHelper.getDb();
     return db
@@ -17,16 +17,7 @@ exports.getCoursesByIds = async ids => {
         .toArray();
 };
 
-exports.getCoursesByClassId = async classId => {
-    const db = await mongoHelper.getDb();
-    return db
-        .collection(coursesCollection)
-        .find({ classId })
-        .sort({ date: -1 })
-        .toArray();
-};
-
-exports.getCoursesByStudentId = async studentId => {
+exports.getCourseSessionsByStudentId = async studentId => {
     const db = await mongoHelper.getDb();
     return db
         .collection(coursesCollection)
@@ -34,7 +25,7 @@ exports.getCoursesByStudentId = async studentId => {
         .toArray();
 };
 
-exports.getCoursesByStudentsIds = async studentsIds => {
+exports.getCourseSessionsByStudentsIds = async studentsIds => {
     const db = await mongoHelper.getDb();
     return db
         .collection(coursesCollection)
@@ -44,7 +35,16 @@ exports.getCoursesByStudentsIds = async studentsIds => {
         .toArray();
 };
 
-exports.getCoursesByClassIds = async classIds => {
+exports.getCourseSessionsByClassId = async classId => {
+    const db = await mongoHelper.getDb();
+    return db
+        .collection(coursesCollection)
+        .find({ classId })
+        .sort({ date: -1 })
+        .toArray();
+};
+
+exports.getCourseSessionsByClassIds = async classIds => {
     const db = await mongoHelper.getDb();
     return db
         .collection(coursesCollection)
@@ -52,13 +52,13 @@ exports.getCoursesByClassIds = async classIds => {
         .toArray();
 };
 
-exports.getCoursesByClassIdAndStudentId = async (classId, studentId) => {
-    const db = await mongoHelper.getDb();
-    return db
-        .collection(coursesCollection)
-        .find({ classId: classId, studentsIds: studentId })
-        .toArray();
-};
+// exports.getCourseSessionsByClassIdAndStudentId = async (classId, studentId) => {
+//     const db = await mongoHelper.getDb();
+//     return db
+//         .collection(coursesCollection)
+//         .find({ classId: classId, studentsIds: studentId })
+//         .toArray();
+// };
 
 exports.bulkWriteCourses = async mongoOps => {
     const db = await mongoHelper.getDb();

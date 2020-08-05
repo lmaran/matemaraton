@@ -18,7 +18,7 @@ const userSignupController = require("./controllers/user-signup.controller");
 const userLoginController = require("./controllers/user-login.controller");
 const userLogoutController = require("./controllers/user-logout.controller");
 const presenceController = require("./controllers/presence.controller");
-const courseController = require("./controllers/course.controller");
+const courseSessionController = require("./controllers/course-session.controller");
 const course2Controller = require("./controllers/course2.controller");
 const homeworkController = require("./controllers/homework.controller");
 const lessonController = require("./controllers/lesson.controller");
@@ -58,10 +58,10 @@ router.get("/clase/:classId/elevi/:studentId/teme-predate", homeworkController.g
 router.get("/clase/:classId/parinti", parentController.getParentsPerClass);
 router.get("/parinti/:parentId", parentController.getParent);
 
-// courses
-router.get("/clase/:classId/cursuri", courseController.getCoursesPerClass);
-router.get("/clase/:classId/cursuri/poze", courseController.getCoursesPerClassWithPhotos);
-router.get("/cursuri/:courseId", courseController.getCourse);
+// courseSessions
+router.get("/clase/:classId/cursuri", courseSessionController.getCourseSessionsPerClass);
+router.get("/clase/:classId/cursuri/poze", courseSessionController.getCourseSessionsPerClassWithPhotos);
+router.get("/cursuri/:courseId", courseSessionController.getCourseSession);
 
 // students
 router.get("/clase/:classId/elevi", studentController.getStudentsPerClass);

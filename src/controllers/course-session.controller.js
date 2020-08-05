@@ -1,13 +1,13 @@
-const courseService = require("../services/course.service");
+const courseSessionService = require("../services/course-session.service");
 const classService = require("../services/class.service");
 const dateTimeHelper = require("../helpers/date-time.helper");
 
-exports.getCoursesPerClass = async (req, res) => {
+exports.getCourseSessionsPerClass = async (req, res) => {
     const classId = req.params.classId;
 
     const [cls, courses] = await Promise.all([
         await classService.getClassById(classId),
-        await courseService.getCoursesByClassId(classId)
+        await courseSessionService.getCourseSessionsByClassId(classId)
     ]);
 
     const newCourses = courses
@@ -23,15 +23,15 @@ exports.getCoursesPerClass = async (req, res) => {
         totalCourses: newCourses.length
     };
     //res.send(data);
-    res.render("course/courses-per-class", data);
+    res.render("course-session/course-sessions-per-class", data);
 };
 
-exports.getCoursesPerClassWithPhotos = async (req, res) => {
+exports.getCourseSessionsPerClassWithPhotos = async (req, res) => {
     const classId = req.params.classId;
 
     const [cls, courses] = await Promise.all([
         await classService.getClassById(classId),
-        await courseService.getCoursesByClassId(classId)
+        await courseSessionService.getCourseSessionsByClassId(classId)
     ]);
 
     const newCourses = courses
@@ -48,13 +48,13 @@ exports.getCoursesPerClassWithPhotos = async (req, res) => {
         totalCourses: newCourses.length
     };
     //res.send(data);
-    res.render("course/courses-with-all-photos", data);
+    res.render("course-session/course-sessions-with-all-photos", data);
 };
 
-exports.getCourse = async (req, res) => {
+exports.getCourseSession = async (req, res) => {
     const courseId = req.params.courseId;
 
-    const course = await courseService.getCourseById(courseId);
+    const course = await courseSessionService.getCourseSessionById(courseId);
     const cls = await classService.getClassById(course.classId);
 
     course.dateAsString = dateTimeHelper.getStringFromStringNoDay(course.date);
@@ -66,5 +66,5 @@ exports.getCourse = async (req, res) => {
         course
     };
     //res.send(data);
-    res.render("course/course", data);
+    res.render("course-session/course-session", data);
 };
