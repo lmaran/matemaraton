@@ -22,15 +22,17 @@
     </ol>
 </nav>
 
-<h1>Curs {{course.code}} <span class="font-weight-light text-secondary h4"> - {{course.name}}</span>
-</h1>
+<h1>Curs {{course.code}}</h1>
+
+<h3 class="font-weight-light">{{course.name}}</h3>
 
 <div class="h4 font-weight-light">{{course.description}}</div>
 
-Clasa: {{course.grade}} </br>
+{{!-- Clasa: {{course.grade}} </br>
 Nivel: {{course.level}} </br>
 Durata: {{course.duration}} </br>
-</br></br>
+</br></br> --}}
+In curând!
 
 {{#if course.agenda}}
 <h4 class="mb-4">Structura cursului: <span class="font-weight-light">({{course.totalHours}} sesiuni)</span></h4>
