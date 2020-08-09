@@ -4,42 +4,49 @@ import { domHelper } from "../helpers/dom.helper.js";
 /**
  * DOM elements
  */
-const exerciseStatementTxt = document.getElementById("exercise-statement-txt");
-const exerciseIdContainer = document.getElementById("exercise-id-container");
+//const exerciseStatementTxt = document.getElementById("statement-editor-txt");
+// const exerciseIdContainer = document.getElementById("exercise-id-container");
 const statementPreviewDiv = document.getElementById("statement-preview-div");
-const saveStatementStatusIcon = document.getElementById("save-statement-status-icon");
+//const saveStatementStatusIcon = document.getElementById("save-statement-status-icon");
 
-const exerciseSolutionTxt = document.getElementById("exercise-solution-txt");
+//const exerciseSolutionTxt = document.getElementById("solution-editor-txt");
 const solutionPreviewDiv = document.getElementById("solution-preview-div");
 
 /**
  * event handlers (alias 'controller')
  */
 export const eventHandlers = {
-    getStatementPreview: async () => {
-        const data = { katex: exerciseStatementTxt.value };
+    getStatementPreview: async event => {
+        const data = { katex: event.target.value };
         statementPreviewDiv.innerHTML = await exerciseService.getKatexPreview(data);
     },
-    getSolutionPreview: async () => {
-        const data = { katex: exerciseSolutionTxt.value };
+    getSolutionPreview: async event => {
+        const data = { katex: event.target.value };
         solutionPreviewDiv.innerHTML = await exerciseService.getKatexPreview(data);
     },
-    saveExercise: async () => {
-        const data = {
-            exerciseId: exerciseIdContainer.dataset.exerciseId,
-            exerciseStatement: exerciseStatementTxt.value,
-            exerciseSolution: exerciseSolutionTxt.value
-        };
-        const newExercise = await exerciseService.saveExercise(data);
-        statementPreviewDiv.innerHTML = newExercise.question.statement.textPreview;
-        solutionPreviewDiv.innerHTML = newExercise.question.solution.textPreview;
+    getHintPreview: async event => {
+        const data = { katex: event.target.value };
 
-        // show and fadeOut status icon
-        domHelper.showAndFadeOut(saveStatementStatusIcon, 500);
+        const hintParentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
+        const hintPreviewDiv = hintParentDiv.querySelector(".hint-preview-div");
+        hintPreviewDiv.innerHTML = await exerciseService.getKatexPreview(data);
     },
-    setDefaultContestName: async evt => {
-        const selectedContestType = evt.target.value;
-        const selectedContestName = evt.target.options[evt.target.selectedIndex].text;
+    // saveExercise: async () => {
+    //     const data = {
+    //         exerciseId: exerciseIdContainer.dataset.exerciseId,
+    //         exerciseStatement: exerciseStatementTxt.value,
+    //         exerciseSolution: exerciseSolutionTxt.value
+    //     };
+    //     const newExercise = await exerciseService.saveExercise(data);
+    //     statementPreviewDiv.innerHTML = newExercise.question.statement.textPreview;
+    //     solutionPreviewDiv.innerHTML = newExercise.question.solution.textPreview;
+
+    //     // show and fadeOut status icon
+    //     domHelper.showAndFadeOut(saveStatementStatusIcon, 500);
+    // },
+    setDefaultContestName: async event => {
+        const selectedContestType = event.target.value;
+        const selectedContestName = event.target.options[event.target.selectedIndex].text;
         const contestNameInput = document.getElementById("contestNameInput");
 
         switch (selectedContestType) {
@@ -59,9 +66,9 @@ export const eventHandlers = {
                 contestNameInput.value = "";
         }
     },
-    setDefaultSourceName: async evt => {
-        const selectedSourceType = evt.target.value;
-        const selectedSourceName = evt.target.options[evt.target.selectedIndex].text;
+    setDefaultSourceName: async event => {
+        const selectedSourceType = event.target.value;
+        const selectedSourceName = event.target.options[event.target.selectedIndex].text;
         const sourceNameInput = document.getElementById("sourceNameInput");
 
         switch (selectedSourceType) {
@@ -84,6 +91,35 @@ export const eventHandlers = {
             default:
                 sourceNameInput.value = "";
         }
+    },
+    toggleStatementEditor: async event => {
+        const editorDiv = document.getElementById("statement-editor-div");
+        editorDiv.classList.toggle("hide-statement-editor");
+
+        const editorIsHide = editorDiv.classList.contains("hide-statement-editor");
+        event.target.textContent = editorIsHide ? "Editează" : "Ascunde";
+
+        const previewDiv = document.getElementById("statement-preview-div");
+        previewDiv.style.borderTopStyle = editorIsHide ? "solid" : "dashed";
+    },
+    toggleSolutionEditor: async event => {
+        const editorDiv = document.getElementById("solution-editor-div");
+        editorDiv.classList.toggle("hide-solution-editor");
+
+        const editorIsHide = editorDiv.classList.contains("hide-solution-editor");
+        event.target.textContent = editorIsHide ? "Editează" : "Ascunde";
+
+        const previewDiv = document.getElementById("solution-preview-div");
+        previewDiv.style.borderTopStyle = editorIsHide ? "solid" : "dashed";
+    },
+    toggleHintEditor: async event => {
+        const hintParentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
+        const editorDiv = hintParentDiv.querySelector(".hint-editor-div");
+
+        editorDiv.classList.toggle("hide-hint-editor");
+
+        const editorIsHide = editorDiv.classList.contains("hide-hint-editor");
+        event.target.textContent = editorIsHide ? "Editează" : "Ascunde";
     }
 };
 

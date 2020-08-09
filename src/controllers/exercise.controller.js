@@ -91,9 +91,17 @@ exports.createOrEditExerciseGet = async (req, res) => {
 
         exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
         exercise.question.solution.textPreview = md.render(exercise.question.solution.text);
+
+        if (exercise.question.hints) {
+            exercise.question.hints.forEach(hint => {
+                hint.textPreview = md.render(hint.text);
+            });
+        }
+
         data.exercise = exercise;
     }
 
+    //res.send(data);
     res.render("exercise/exercise-create-or-edit", data);
 };
 
@@ -137,6 +145,14 @@ exports.createOrEditExercisePost = async (req, res) => {
         exercise.question.statement.text = req.body.statement;
         exercise.question.solution.text = req.body.solution;
 
+        if (req.body.hints) {
+            exercise.question.hints = [];
+            req.body.hints.forEach(hint => {
+                exercise.question.hints.push({ text: hint });
+            });
+        }
+        // console.log(req.body);
+
         if (isEditMode) {
             exerciseService.updateOneByCode(exercise);
         } else {
@@ -164,7 +180,7 @@ exports.getExercises = async (req, res) => {
         exercises,
         canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise")
     };
-    //res.send(data);
+    // res.send(data);
     res.render("exercise/exercises", data);
 };
 
@@ -185,8 +201,8 @@ exports.getExerciseByCode = async (req, res) => {
         exercise,
         canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise")
     };
-    //res.send(data);
-    res.render("exercise/exercise", data);
+    res.send(data);
+    //res.render("exercise/exercise", data);
 };
 
 // exports.editExerciseByCode = async (req, res) => {

@@ -1,20 +1,14 @@
 <style>
-    .hidePresence {
+    .hide-statement-editor {
         display: none;
     }
 
-    .hideStudent {
+    .hide-solution-editor {
         display: none;
     }
 
-
-    .show {
-        opacity: 1;
-    }
-
-    .hide {
-        opacity: 0;
-        transition: opacity 800ms;
+    .hide-hint-editor {
+        display: none;
     }
 </style>
 
@@ -40,56 +34,96 @@
 
 <form method="post" action="/exercitii/createoredit" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
-    <div class="form-group row2">
-        <label for="exercise-statement-txt" class="col-md-3s col-form-label required"> Enunț:
+    {{!-- statement --}}
+    <div class="form-group">
+        <label for="statement-editor-txt" class="col-md-3s col-form-label required"> Enunț:
             (<a href="https://markdown-it.github.io/" target="_blank">markdon</a>
             <small><i class="fas fa-external-link-alt text-muted text-small" aria-hidden="true"></i></small>
             +
             <a href="https://katex.org/docs/supported.html" target="_blank">latex </a>
             <small><i class="fas fa-external-link-alt text-muted text-small" aria-hidden="true"></i></small>)</label>
-        <div class="col-md-7s">
-            {{!-- <input type="text" name="lastName" id="lastName"
-                class="form-control {{#if errors.lastName}}is-invalid {{/if}}" value="{{data.lastName.val}}"
-                {{#if uiData.lastName.hasAutofocus}}autofocus {{/if}} /> --}}
-            <textarea id="exercise-statement-txt" rows="8" name="statement"
-                class="form-control {{#if errors.lastName}}is-invalid {{/if}}" value="{{data.lastName.val}}"
-                cols2="150">{{{exercise.question.statement.text}}}</textarea>
+
+        <div id="statement-editor-div" class="col-md-7s {{#if isEditMode}}hide-statement-editor{{/if}}">
+            <textarea id="statement-editor-txt" rows="8" name="statement"
+                style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
+                class="form-control {{#if errors.lastName}}is-invalid {{/if}}"
+                value="{{data.lastName.val}}">{{{exercise.question.statement.text}}}</textarea>
             <div class="invalid-feedback">{{errors.statement.msg}}</div>
         </div>
-    </div>
 
-    <div class="form-group row2">
-        {{!-- <label for="lastName" class="col-md-3s col-form-label required">Preview:</label> --}}
         <div class="col-md-7s">
-            <div id="statement-preview-div" class="border p-2" style="background-color: #f7f7f7; min-height:58px"
-                style2="font-family: KaTeX_Main; font-size: 1.1em;">
-                {{{exercise.question.statement.textPreview}}}</div>
-            <div class="invalid-feedback">{{errors.lastName.msg}}</div>
+            <div id="statement-preview-div"
+                style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
+                {{{exercise.question.statement.textPreview}}}
+            </div>
+            {{#if isEditMode}}
+            <div class="text-right text-muted">
+                <button id="toggle-statement-editor-btn" type="button" class="btn btn-link p-0 mt-n1">Editează</button>
+            </div>
+            <div class="invalid-feedback">{{errors.statement.msg}}</div>
+            {{/if}}
         </div>
     </div>
 
-    <div class="form-group row2">
-        <label for="exercise-solution-txt" class="col-md-3s col-form-label required"> Soluție: </label>
-        <div class="col-md-7s">
-            {{!-- <input type="text" name="lastName" id="lastName"
-                class="form-control {{#if errors.lastName}}is-invalid {{/if}}" value="{{data.lastName.val}}"
-                {{#if uiData.lastName.hasAutofocus}}autofocus {{/if}} /> --}}
-            <textarea id="exercise-solution-txt" rows="8" name="solution"
-                class="form-control {{#if errors.solution}}is-invalid {{/if}}" value="{{data.solution.val}}"
-                cols2="150">{{{exercise.question.solution.text}}}</textarea>
+
+    {{!-- solution --}}
+    <div class="form-group">
+        <label for="solution-editor-txt" class="col-md-3s col-form-label required"> Soluție: </label>
+
+        <div id="solution-editor-div" class="col-md-7s {{#if isEditMode}}hide-solution-editor{{/if}}">
+            <textarea id="solution-editor-txt" rows="8" name="solution"
+                style="border-radius:0; border-bottom-width:0; border-color:#008000"
+                class="form-control {{#if errors.solution}}is-invalid {{/if}}"
+                value="{{data.solution.val}}">{{{exercise.question.solution.text}}}</textarea>
             <div class="invalid-feedback">{{errors.solution.msg}}</div>
         </div>
-    </div>
 
-    <div class="form-group row2">
-        {{!-- <label for="lastName" class="col-md-3s col-form-label required">Preview:</label> --}}
         <div class="col-md-7s">
-            <div id="solution-preview-div" class="border p-2" style="background-color: #f7f7f7; min-height:58px"
-                style2="font-family: KaTeX_Main; font-size: 1.1em;">
-                {{{exercise.question.solution.textPreview}}}</div>
+            <div id="solution-preview-div"
+                style="border: 1px solid #008000; padding: 6px 12px; background-color: #f5fff5; min-height:58px">
+                {{{exercise.question.solution.textPreview}}}
+            </div>
+            {{#if isEditMode}}
+            <div class="text-right text-muted">
+                <button id="toggle-solution-editor-btn" type="button" class="btn btn-link p-0 mt-n1">Editează</button>
+            </div>
             <div class="invalid-feedback">{{errors.solution.msg}}</div>
+            {{/if}}
         </div>
     </div>
+
+
+    {{!-- hints --}}
+    <div class="form-group">
+        {{!-- <label class="col-md-3s col-form-label"> Indicații: </label> --}}
+        {{#each exercise.question.hints}}
+        {{!-- <div>Indicația 1:</div> --}}
+        <div class="hint-parent-div">
+            <label class="col-form-label"> Indicația 1: </label>
+
+            <div class="hint-editor-div col-md-7s {{#if @root.isEditMode}}hide-hint-editor{{/if}}">
+                <textarea rows="2" name="hints" style="border-radius:0; border-bottom-width:0; border-color:#007bff"
+                    class="hint-txt form-control {{#if errors.solution}}is-invalid {{/if}}"
+                    value="{{data.solution.val}}">{{{text}}}</textarea>
+            </div>
+
+            <div class="col-md-7s mb-3">
+                <div class="hint-preview-div"
+                    style="border: 1px solid #007bff; padding: 6px 12px; background-color: #f5faff; min-height:58px">
+                    {{{textPreview}}}</div>
+
+                {{#if @root.isEditMode}}
+                <div class="text-right text-muted">
+                    <button type="button" class="toggle-hint-editor-btn btn btn-link p-0 mt-n1">Editează</button>
+                </div>
+                <div class="invalid-feedback">{{errors.solution.msg}}</div>
+                {{/if}}
+            </div>
+
+        </div>
+        {{/each}}
+    </div>
+
 
     {{!-- {{#if isEditMode}}
     <div class="form-group row2">
@@ -227,7 +261,7 @@
 
 
 {{!-- Enunț:
-<textarea id="exercise-statement-txt" rows="15" cols="150">{{{exercise.question.statement.text}}}</textarea>
+<textarea id="statement-editor-txt" rows="15" cols="150">{{{exercise.question.statement.text}}}</textarea>
 
 <button id="save-btn">Salvează</button> <i id="save-statement-status-icon" class="fa fa-check mr-2 fa-lg hide"
     style="color:green;"></i>
