@@ -1,5 +1,5 @@
 import { exerciseService } from "./exercise.service.js";
-import { domHelper } from "../helpers/dom.helper.js";
+// import { domHelper } from "../helpers/dom.helper.js";
 
 /**
  * DOM elements
@@ -24,13 +24,22 @@ export const eventHandlers = {
         const data = { katex: event.target.value };
         solutionPreviewDiv.innerHTML = await exerciseService.getKatexPreview(data);
     },
-    getHintPreview: async event => {
-        const data = { katex: event.target.value };
-
-        const hintParentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
-        const hintPreviewDiv = hintParentDiv.querySelector(".hint-preview-div");
-        hintPreviewDiv.innerHTML = await exerciseService.getKatexPreview(data);
+    handleKeyupForAllHints: async event => {
+        if (event.target && event.target.classList.contains("hint-editor-txt")) {
+            const data = { katex: event.target.value };
+            const hintParentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
+            const hintPreviewDiv = hintParentDiv.querySelector(".hint-preview-div");
+            hintPreviewDiv.innerHTML = await exerciseService.getKatexPreview(data);
+        }
     },
+    // getHintPreview: async event => {
+    //     const data = { katex: event.target.value };
+
+    //     const hintParentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
+    //     const hintPreviewDiv = hintParentDiv.querySelector(".hint-preview-div");
+    //     hintPreviewDiv.innerHTML = await exerciseService.getKatexPreview(data);
+    // },
+
     // saveExercise: async () => {
     //     const data = {
     //         exerciseId: exerciseIdContainer.dataset.exerciseId,
@@ -93,63 +102,83 @@ export const eventHandlers = {
         }
     },
     toggleStatementEditor: async event => {
-        const editorDiv = document.getElementById("statement-editor-div");
-        editorDiv.classList.toggle("hide-statement-editor");
+        const editorTxt = document.getElementById("statement-editor-txt");
+        editorTxt.classList.toggle("hide-statement-editor");
 
-        const editorIsHide = editorDiv.classList.contains("hide-statement-editor");
+        const editorIsHide = editorTxt.classList.contains("hide-statement-editor");
         event.target.textContent = editorIsHide ? "Editează" : "Ascunde";
 
         const previewDiv = document.getElementById("statement-preview-div");
         previewDiv.style.borderTopStyle = editorIsHide ? "solid" : "dashed";
     },
     toggleSolutionEditor: async event => {
-        const editorDiv = document.getElementById("solution-editor-div");
-        editorDiv.classList.toggle("hide-solution-editor");
+        const editorTxt = document.getElementById("solution-editor-txt");
+        editorTxt.classList.toggle("hide-solution-editor");
 
-        const editorIsHide = editorDiv.classList.contains("hide-solution-editor");
+        const editorIsHide = editorTxt.classList.contains("hide-solution-editor");
         event.target.textContent = editorIsHide ? "Editează" : "Ascunde";
 
         const previewDiv = document.getElementById("solution-preview-div");
         previewDiv.style.borderTopStyle = editorIsHide ? "solid" : "dashed";
     },
-    toggleHintEditor: async event => {
-        const hintParentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
-        const editorDiv = hintParentDiv.querySelector(".hint-editor-div");
+    handleClickForAllHints: async event => {
+        // handle 'toggle edit' and 'delete' events
+        if (event.target) {
+            if (event.target.classList.contains("toggle-hint-editor-btn")) {
+                const hintParentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
+                const editorTxt = hintParentDiv.querySelector(".hint-editor-txt");
 
-        editorDiv.classList.toggle("hide-hint-editor");
+                editorTxt.classList.toggle("hide-hint-editor");
 
-        const editorIsHide = editorDiv.classList.contains("hide-hint-editor");
-        event.target.textContent = editorIsHide ? "Editează" : "Ascunde";
+                const editorIsHide = editorTxt.classList.contains("hide-hint-editor");
+                event.target.textContent = editorIsHide ? "Editează" : "Ascunde";
+            } else if (event.target.classList.contains("delete-hint-btn")) {
+                const hintParentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
+                hintParentDiv.remove(); // remove element from DOM (ES6 way)
+
+                updateHintLabels(); // update label for remaining hints
+            }
+        }
+    },
+
+    addHintHtmlNode: async event => {
+        event.preventDefault();
+        const hintMainDiv = document.getElementById("hint-main-div");
+        const NrOfHints = hintMainDiv.childElementCount;
+
+        const markup = `
+            <div class="hint-parent-div mb-4">
+                <label class="col-form-label font-weight-bold"> Indicația ${NrOfHints + 1}: </label>
+
+                <textarea
+                    rows="2"
+                    name="hints"
+                    style="border-radius:0; border-bottom-width:0; border-color:#007bff"
+                    class="hint-editor-txt form-control"
+                    value="{{data.solution.val}}"
+                ></textarea>
+
+                <div
+                    class="hint-preview-div"
+                    style="border: 1px solid #007bff; padding: 6px 12px; background-color: #f5faff; min-height:58px"
+                ></div>
+
+                <button type="button" class="delete-hint-btn btn btn-link p-0 mt-n1 float-right">Șterge</button>
+                <span class="float-right mt-n1 ml-2 mr-2 text-muted"> | </span>
+                <button type="button" class="toggle-hint-editor-btn btn btn-link p-0 mt-n1 float-right">Ascunde</button>
+            </div>
+        `;
+
+        hintMainDiv.insertAdjacentHTML("beforeend", markup); // much faster that innerHTML
     }
 };
 
-// const sourceTypeAvailableOptions = [
-//     { text: "Gazeta Matematică", value: "gazeta-matematica" },
-//     { text: "Revista de Matematică din Timișoara", value: "revista-matematică-tm" },
-//     { text: "Culegere 'Teme supliment Gazeta Matematică'", value: "teme-supliment-gazeta-matematica" },
-//     { text: "Culegere 'Matematică de excelență', Ed. Paralela 45", value: "mate2000-excelenta" },
-//     {
-//         text: "Culegere 'Matematică pt. olimpiade și concursuri', N. Grigore, Ed. Nomina",
-//         value: "mate-olimpiade-ngrigore"
-//     },
-//     {
-//         text: "Culegere 'Exerciții pt. cercurile de matematică', P. Năchilă, Ed. Nomina",
-//         value: "cercuri-mate-pnachila"
-//     },
-//     { text: "Culegere 'Matematică de consolidare', Ed. Paralela 45", value: "mate2000-consolidare" },
-//     { text: "Culegere 'Evaluarea Națională', Ed. Paralela 45", value: "evaluare-nationala-p45" }
-// ];
+const updateHintLabels = () => {
+    const hintMainDiv = document.getElementById("hint-main-div");
 
-/**
- * internal helpers
- */
-
-// async function showAndFadeOut(elem, milliseconds) {
-//     elem.classList.add("show");
-//     elem.classList.remove("hide");
-
-//     await dateTimeHelper.sleepAsync(milliseconds); // fade out after x milliseconds (instead of using setTimeout)
-
-//     elem.classList.add("hide");
-//     elem.classList.remove("show");
-// }
+    let idx = 0;
+    for (const hintParent of hintMainDiv.children) {
+        const hintLabel = hintParent.querySelector("label");
+        hintLabel.innerHTML = `Indicația ${++idx}:`;
+    }
+};

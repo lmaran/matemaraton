@@ -28,100 +28,80 @@
 </h1>
 
 
-
-{{!-- <div>{{id}}</div> --}}
-
-
 <form method="post" action="/exercitii/createoredit" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
     {{!-- statement --}}
     <div class="form-group">
-        <label for="statement-editor-txt" class="col-md-3s col-form-label required"> Enunț:
-            (<a href="https://markdown-it.github.io/" target="_blank">markdon</a>
-            <small><i class="fas fa-external-link-alt text-muted text-small" aria-hidden="true"></i></small>
-            +
-            <a href="https://katex.org/docs/supported.html" target="_blank">latex </a>
-            <small><i class="fas fa-external-link-alt text-muted text-small" aria-hidden="true"></i></small>)</label>
+        <label for="statement-editor-txt" class="required font-weight-bold"> Enunț: </label>
 
-        <div id="statement-editor-div" class="col-md-7s {{#if isEditMode}}hide-statement-editor{{/if}}">
-            <textarea id="statement-editor-txt" rows="8" name="statement"
-                style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
-                class="form-control {{#if errors.lastName}}is-invalid {{/if}}"
-                value="{{data.lastName.val}}">{{{exercise.question.statement.text}}}</textarea>
-            <div class="invalid-feedback">{{errors.statement.msg}}</div>
+        <textarea id="statement-editor-txt" rows="8" name="statement"
+            style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
+            class="form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}hide-statement-editor{{/if}}"
+            value="{{data.lastName.val}}">{{{exercise.question.statement.text}}}</textarea>
+        <div class="invalid-feedback">{{errors.statement.msg}}</div>
+
+
+        <div id="statement-preview-div"
+            style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
+            {{{exercise.question.statement.textPreview}}}
         </div>
 
-        <div class="col-md-7s">
-            <div id="statement-preview-div"
-                style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
-                {{{exercise.question.statement.textPreview}}}
-            </div>
-            {{#if isEditMode}}
-            <div class="text-right text-muted">
-                <button id="toggle-statement-editor-btn" type="button" class="btn btn-link p-0 mt-n1">Editează</button>
-            </div>
-            <div class="invalid-feedback">{{errors.statement.msg}}</div>
-            {{/if}}
-        </div>
+        <button id="toggle-statement-editor-btn" type="button"
+            class="btn btn-link p-0 mt-n1 float-right">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</button>
     </div>
 
 
-    {{!-- solution --}}
     <div class="form-group">
-        <label for="solution-editor-txt" class="col-md-3s col-form-label required"> Soluție: </label>
+        <label for="solution-editor-txt" class="font-weight-bold"> Soluție: </label>
 
-        <div id="solution-editor-div" class="col-md-7s {{#if isEditMode}}hide-solution-editor{{/if}}">
-            <textarea id="solution-editor-txt" rows="8" name="solution"
-                style="border-radius:0; border-bottom-width:0; border-color:#008000"
-                class="form-control {{#if errors.solution}}is-invalid {{/if}}"
-                value="{{data.solution.val}}">{{{exercise.question.solution.text}}}</textarea>
-            <div class="invalid-feedback">{{errors.solution.msg}}</div>
+        <textarea id="solution-editor-txt" rows="8" name="solution"
+            style="border-radius:0; border-bottom-width:0; border-color:#008000"
+            class="form-control {{#if errors.solution}}is-invalid {{/if}} {{#if isEditMode}}hide-solution-editor{{/if}}"
+            value="{{data.solution.val}}">{{{exercise.question.solution.text}}}</textarea>
+        <div class="invalid-feedback">{{errors.solution.msg}}</div>
+
+        <div id="solution-preview-div"
+            style="border: 1px solid #008000; padding: 6px 12px; background-color: #f5fff5; min-height:58px">
+            {{{exercise.question.solution.textPreview}}}
         </div>
 
-        <div class="col-md-7s">
-            <div id="solution-preview-div"
-                style="border: 1px solid #008000; padding: 6px 12px; background-color: #f5fff5; min-height:58px">
-                {{{exercise.question.solution.textPreview}}}
-            </div>
-            {{#if isEditMode}}
-            <div class="text-right text-muted">
-                <button id="toggle-solution-editor-btn" type="button" class="btn btn-link p-0 mt-n1">Editează</button>
-            </div>
-            <div class="invalid-feedback">{{errors.solution.msg}}</div>
-            {{/if}}
-        </div>
+        <button id="toggle-solution-editor-btn" type="button"
+            class="btn btn-link p-0 mt-n1 float-right">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</button>
     </div>
 
 
     {{!-- hints --}}
-    <div class="form-group">
-        {{!-- <label class="col-md-3s col-form-label"> Indicații: </label> --}}
+    <div id="hint-main-div" class="form-group">
         {{#each exercise.question.hints}}
-        {{!-- <div>Indicația 1:</div> --}}
-        <div class="hint-parent-div">
-            <label class="col-form-label"> Indicația 1: </label>
+        <div class="hint-parent-div mb-4">
 
-            <div class="hint-editor-div col-md-7s {{#if @root.isEditMode}}hide-hint-editor{{/if}}">
-                <textarea rows="2" name="hints" style="border-radius:0; border-bottom-width:0; border-color:#007bff"
-                    class="hint-txt form-control {{#if errors.solution}}is-invalid {{/if}}"
-                    value="{{data.solution.val}}">{{{text}}}</textarea>
+            <label class="col-form-label font-weight-bold"> Indicația {{inc @index}}: </label>
+
+            <textarea rows="2" name="hints" style="border-radius:0; border-bottom-width:0; border-color:#007bff"
+                class="hint-editor-txt form-control {{#if errors.solution}}is-invalid {{/if}} {{#if @root.isEditMode}}hide-hint-editor{{/if}}"
+                value="{{data.solution.val}}">{{{text}}}</textarea>
+
+
+            <div class="hint-preview-div"
+                style="border: 1px solid #007bff; padding: 6px 12px; background-color: #f5faff; min-height:58px">
+                {{{textPreview}}}
             </div>
 
-            <div class="col-md-7s mb-3">
-                <div class="hint-preview-div"
-                    style="border: 1px solid #007bff; padding: 6px 12px; background-color: #f5faff; min-height:58px">
-                    {{{textPreview}}}</div>
-
-                {{#if @root.isEditMode}}
-                <div class="text-right text-muted">
-                    <button type="button" class="toggle-hint-editor-btn btn btn-link p-0 mt-n1">Editează</button>
-                </div>
-                <div class="invalid-feedback">{{errors.solution.msg}}</div>
-                {{/if}}
-            </div>
+            {{!-- {{#if @root.isEditMode}} --}}
+            <button type="button" class="delete-hint-btn btn btn-link p-0 mt-n1 float-right">Șterge</button>
+            <span class="float-right mt-n1 ml-2 mr-2 text-muted"> | </span>
+            <button type="button" class="toggle-hint-editor-btn btn btn-link p-0 mt-n1 float-right">Editează</button>
+            {{!-- {{/if}} --}}
 
         </div>
         {{/each}}
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-7s offset-md-3s">
+            <button id="add-hint-btn" class="btn btn-primary btn-sm" style="background-color: #f5faff; color: black">
+                Adaugă indicație</button>
+        </div>
     </div>
 
 
@@ -136,7 +116,7 @@
 
     <div class="form-row">
         <div class="form-group col-md-6">
-            <label for="gradeSelect">Clasa:</label>
+            <label for="gradeSelect" class="font-weight-bold">Clasa:</label>
             <select name="grade" class="form-control" id="gradeSelect">
                 {{#select exercise.grade}}
                 <option value=""></option>
@@ -149,7 +129,7 @@
         </div>
 
         <div class="form-group col-md-6">
-            <label for="branchSelect">Ramura:</label>
+            <label for="branchSelect" class="font-weight-bold">Ramura:</label>
             <select name="branch" class="form-control" id="branchSelect">
                 {{#select exercise.branch}}
                 <option value=""></option>
@@ -164,7 +144,7 @@
 
     <div class="form-row">
         <div class="form-group col-md-6">
-            <label for="contestTypeSelect">Tipul concursului
+            <label for="contestTypeSelect" class="font-weight-bold">Tipul concursului
                 <span class="text-muted">(la care a fost dat accest ex.)</span>:</label>
             <select name="contestType" class="form-control" id="contestTypeSelect">
                 {{#select exercise.contestType}}
@@ -177,7 +157,7 @@
         </div>
 
         <div class="form-group col-md-6">
-            <label for="contestNameInput">Numele concursului:</label>
+            <label for="contestNameInput" class="font-weight-bold">Numele concursului:</label>
             <input type="text" name="contestName" class="form-control" id="contestNameInput" placeholder=""
                 value="{{exercise.contestName}}">
         </div>
@@ -185,7 +165,7 @@
 
     <div class="form-row">
         <div class="form-group col-md-6">
-            <label for="sourceTypeSelect">Tipul sursei
+            <label for="sourceTypeSelect" class="font-weight-bold">Tipul sursei
                 <span class="text-muted">(de unde a fost copiat ex.)</span>:</label>
             <select name="sourceType" class="form-control" id="sourceTypeSelect">
                 {{#select exercise.sourceType}}
@@ -198,7 +178,7 @@
         </div>
 
         <div class="form-group col-md-6">
-            <label for="sourceNameInput">Numele sursei:</label>
+            <label for="sourceNameInput" class="font-weight-bold">Numele sursei:</label>
             <input type="text" name="sourceName" class="form-control" id="sourceNameInput" placeholder=""
                 value="{{exercise.sourceName}}">
         </div>
@@ -206,7 +186,7 @@
 
     <div class="form-row">
         <div class="form-group col-md-6">
-            <label for="chapterSelect">Capitol:
+            <label for="chapterSelect" class="font-weight-bold">Capitol:
                 {{!-- <span class="text-muted">(de unde a fost copiat ex.)</span>:--}}</label>
             <select name="chapter" class="form-control" id="chapterSelect">
                 {{#select exercise.chapter}}
@@ -219,7 +199,7 @@
         </div>
 
         <div class="form-group col-md-6">
-            <label for="authorInput">Autor:</label>
+            <label for="authorInput" class="font-weight-bold">Autor:</label>
             <input type="text" name="author" class="form-control" id="authorInput" placeholder=""
                 value="{{exercise.author}}">
         </div>
@@ -227,12 +207,12 @@
 
     <div class="form-row">
         <div class="form-group col-md-6">
-            <label for="tagsInput">Etichete:</label>
+            <label for="tagsInput" class="font-weight-bold">Etichete:</label>
             <input type="text" name="tags" class="form-control" id="tagsInput" placeholder="" value="{{exercise.tags}}">
         </div>
 
         <div class="form-group col-md-6">
-            <label for="obsInput">Observații:</label>
+            <label for="obsInput" class="font-weight-bold">Observații:</label>
             <input type="text" name="obs" class="form-control" id="obsInput" placeholder="" value="{{exercise.obs}}">
         </div>
     </div>
@@ -243,9 +223,6 @@
         <div class="col-md-7s offset-md-3s">
             <button type="submit" name="saveBtn" class="btn btn-primary"><i class="fas fa-save"></i>
                 Salveaza</button>
-            {{!-- <button type="button" class="btn btn-light" onclick='window.history.back();'>
-                <i class="fas fa-times"></i>
-                Renunta</button> --}}
             <a href="/exercitii" class="btn btn-light"><i class="fa fa-times"></i> Renunță</a>
             {{#if isEditMode}}
             <button type="submit" formaction="/exercitii/delete" name="deleteBtn" class="btn btn-link"
@@ -253,7 +230,15 @@
                     class="fas fa-trash-alt"></i>
                 Șterge</button>
             {{/if}}
+
+            <label for="statement-editor-txt" class="col-md-3s col-form-label float-right"> Help:
+                <a href="https://markdown-it.github.io/" target="_blank">markdon</a>
+                <small><i class="fas fa-external-link-alt text-muted text-small" aria-hidden="true"></i></small>
+                +
+                <a href="https://katex.org/docs/supported.html" target="_blank">latex </a>
+                <small><i class="fas fa-external-link-alt text-muted text-small" aria-hidden="true"></i></small></label>
         </div>
+
     </div>
 
 </form>

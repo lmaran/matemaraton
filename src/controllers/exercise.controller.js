@@ -148,7 +148,9 @@ exports.createOrEditExercisePost = async (req, res) => {
         if (req.body.hints) {
             exercise.question.hints = [];
             req.body.hints.forEach(hint => {
-                exercise.question.hints.push({ text: hint });
+                if (hint.trim()) {
+                    exercise.question.hints.push({ text: hint.trim() });
+                }
             });
         }
         // console.log(req.body);
@@ -187,22 +189,19 @@ exports.getExercises = async (req, res) => {
 exports.getExerciseByCode = async (req, res) => {
     const exercise = await exerciseService.getByCode(req.params.code);
 
-    // problem.question.statement.text = md.render(problem.question.statement.text);
+    if (exercise.question) {
+        if (exercise.question.statement)
+            exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
+        if (exercise.question.solution)
+            exercise.question.solution.textPreview = md.render(exercise.question.solution.text);
+    }
 
-    const q5 = `Fie mulțimile $A = \\{ x \\in \\mathbb{N} \\mid x+3<8 \\}$ si $B = \\{ x \\in \\mathbb{N}, \\medspace x$ divizor al lui 10 $\\}.$\\
-    a) Scrieți elementele mulțimilor $A$ si $B$.
-    `;
-
-    exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
-    exercise.question.solution.textPreview = md.render(exercise.question.solution.text);
-
-    // const data = { problem, testOriginal: q5, test: md.render(q5) };
     const data = {
         exercise,
         canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise")
     };
-    res.send(data);
-    //res.render("exercise/exercise", data);
+    //res.send(data);
+    res.render("exercise/exercise", data);
 };
 
 // exports.editExerciseByCode = async (req, res) => {
