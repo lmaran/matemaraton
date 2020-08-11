@@ -176,6 +176,14 @@ exports.getExercises = async (req, res) => {
         exercise.question.statement.textPreview = md.render(
             `**[E.${exercise.code}.](/exercitii/${exercise.code})** ${exercise.question.statement.text}`
         );
+        if (exercise.question.solution) {
+            exercise.question.solution.textPreview = md.render(`**Soluție:** ${exercise.question.solution.text}`);
+        }
+        if (exercise.question.hints) {
+            exercise.question.hints.forEach((hint, idx) => {
+                hint.textPreview = md.render(`**Hint ${idx + 1}:** ${hint.text}`);
+            });
+        }
     });
 
     const data = {

@@ -34,11 +34,21 @@
 {{#each exercises}}
 
 {{!-- <a href="/exercitii/{{code}}">Exercițiul {{code}}</a> --}}
-{{{question.statement.textPreview}}}
+<div style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
+    {{{question.statement.textPreview}}}</div>
 
-<div class="font-italic small text-right text-muted">Cls.{{grade}}, {{branch}}</div>
+
+{{!-- <div class="font-italic small text-right text-muted">Cls.{{grade}}, {{branch}}</div> --}}
 <div class="font-italic small text-right text-muted">{{contestName}}</div>
 <div class="font-italic small text-right text-muted">{{sourceName}}</div>
+
+{{#if question.hints}}
+{{#each question.hints}}
+<div>{{{textPreview}}}</div>
+{{/each}}
+{{/if}}
+
+<div>{{{question.solution.textPreview}}}</div>
 
 </br>
 </br>
