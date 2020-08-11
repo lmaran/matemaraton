@@ -91,9 +91,17 @@ exports.createOrEditExerciseGet = async (req, res) => {
 
         exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
         exercise.question.solution.textPreview = md.render(exercise.question.solution.text);
+
+        if (exercise.question.hints) {
+            exercise.question.hints.forEach(hint => {
+                hint.textPreview = md.render(hint.text);
+            });
+        }
+
         data.exercise = exercise;
     }
 
+    //res.send(data);
     res.render("exercise/exercise-create-or-edit", data);
 };
 
@@ -137,6 +145,16 @@ exports.createOrEditExercisePost = async (req, res) => {
         exercise.question.statement.text = req.body.statement;
         exercise.question.solution.text = req.body.solution;
 
+        if (req.body.hints) {
+            exercise.question.hints = [];
+            req.body.hints.forEach(hint => {
+                if (hint.trim()) {
+                    exercise.question.hints.push({ text: hint.trim() });
+                }
+            });
+        }
+        // console.log(req.body);
+
         if (isEditMode) {
             exerciseService.updateOneByCode(exercise);
         } else {
@@ -158,29 +176,34 @@ exports.getExercises = async (req, res) => {
         exercise.question.statement.textPreview = md.render(
             `**[E.${exercise.code}.](/exercitii/${exercise.code})** ${exercise.question.statement.text}`
         );
+        if (exercise.question.solution) {
+            exercise.question.solution.textPreview = md.render(`**Soluție:** ${exercise.question.solution.text}`);
+        }
+        if (exercise.question.hints) {
+            exercise.question.hints.forEach((hint, idx) => {
+                hint.textPreview = md.render(`**Hint ${idx + 1}:** ${hint.text}`);
+            });
+        }
     });
 
     const data = {
         exercises,
         canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise")
     };
-    //res.send(data);
+    // res.send(data);
     res.render("exercise/exercises", data);
 };
 
 exports.getExerciseByCode = async (req, res) => {
     const exercise = await exerciseService.getByCode(req.params.code);
 
-    // problem.question.statement.text = md.render(problem.question.statement.text);
+    if (exercise.question) {
+        if (exercise.question.statement)
+            exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
+        if (exercise.question.solution)
+            exercise.question.solution.textPreview = md.render(exercise.question.solution.text);
+    }
 
-    const q5 = `Fie mulțimile $A = \\{ x \\in \\mathbb{N} \\mid x+3<8 \\}$ si $B = \\{ x \\in \\mathbb{N}, \\medspace x$ divizor al lui 10 $\\}.$\\
-    a) Scrieți elementele mulțimilor $A$ si $B$.
-    `;
-
-    exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
-    exercise.question.solution.textPreview = md.render(exercise.question.solution.text);
-
-    // const data = { problem, testOriginal: q5, test: md.render(q5) };
     const data = {
         exercise,
         canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise")
