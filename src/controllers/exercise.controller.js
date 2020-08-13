@@ -3,7 +3,6 @@ const idGeneratorMongoService = require("../services/id-generator-mongo.service"
 const autz = require("../services/autz.service");
 
 const katex = require("katex");
-
 const tm = require("markdown-it-texmath").use(katex);
 const md = require("markdown-it")().use(tm, { delimiters: "dollars", macros: { "\\RR": "\\mathbb{R}" } });
 
@@ -195,7 +194,7 @@ exports.getExercises = async (req, res) => {
 exports.getExerciseByCode = async (req, res) => {
     const exercise = await exerciseService.getByCode(req.params.code);
 
-    if (exercise.question) {
+    if (exercise && exercise.question) {
         if (exercise.question.statement)
             exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
         if (exercise.question.solution)

@@ -3,6 +3,9 @@ const lessonService = require("../services/lesson.service");
 const autz = require("../services/autz.service");
 // const dateTimeHelper = require("../helpers/date-time.helper");
 //const arrayHelper = require("../helpers/array.helper");
+const katex = require("katex");
+const tm = require("markdown-it-texmath").use(katex);
+const md = require("markdown-it")().use(tm, { delimiters: "dollars", macros: { "\\RR": "\\mathbb{R}" } });
 
 exports.deleteLesson = async (req, res) => {
     const canDeleteLesson = await autz.can(req.user, "delete:lesson");
@@ -34,33 +37,6 @@ exports.createOrEditLessonGet = async (req, res) => {
         { text: "Analiză matematică", value: "analiza" }
     ];
 
-    // const contestTypeAvailableOptions = [
-    //     { text: "Olimpiadă, etapa locală", value: "olimpiada-locala" },
-    //     { text: "Olimpiadă, etapa județeană", value: "olimpiada-judeteana" },
-    //     { text: "Olimpiadă, etapa națională", value: "olimpiada-nationala" },
-    //     { text: "Evaluare Națională", value: "evaluare-nationala" },
-    //     { text: "Simulare Evaluare Națională", value: "simulare-evaluare-nationala" },
-    //     { text: "Alte concursuri", value: "alte-concursuri" }
-    // ];
-
-    // const sourceTypeAvailableOptions = [
-    //     { text: "Gazeta Matematică (GM)", value: "gazeta-matematica" },
-    //     { text: "Revista de Matematică din Timișoara (RMT)", value: "revista-matematică-tm" },
-    //     { text: "Culegere 'Teme supliment Gazeta Matematică'", value: "teme-supliment-gazeta-matematica" },
-    //     { text: "Culegere 'Mate2000 excelență'", value: "mate2000-excelenta" },
-    //     {
-    //         text: "Culegere 'Matematică pt. olimpiade și concursuri', N. Grigore",
-    //         value: "mate-olimpiade-ngrigore"
-    //     },
-    //     {
-    //         text: "Culegere 'Exerciții pt. cercurile de matematică', P. Năchilă",
-    //         value: "cercuri-mate-pnachila"
-    //     },
-    //     { text: "Culegere 'Mate2000 consolidare'", value: "mate2000-consolidare" },
-    //     { text: "Culegere 'Evaluarea Națională', Ed. Paralela 45", value: "evaluare-nationala-p45" },
-    //     { text: "Alte surse", value: "alte-surse" }
-    // ];
-
     const chapterAvailableOptions = [
         { text: "Numere Raționale", value: "numere-rationale" },
         { text: "Numere Reale", value: "numere-reale" }
@@ -83,6 +59,10 @@ exports.createOrEditLessonGet = async (req, res) => {
 
     if (isEditMode) {
         const lesson = await lessonService.getById(req.params.id);
+
+        if (lesson.content) {
+            lesson.content.textPreview = md.render(lesson.content.text);
+        }
 
         // lesson.textPreview = md.render(lesson.text);
 
@@ -117,11 +97,12 @@ exports.createOrEditLessonPost = async (req, res) => {
             lessonService.updateOne(lesson);
         } else {
             //exercise.code = await idGeneratorMongoService.getNextId("exercises");
-            lessonService.insertOne(lesson);
+            const result = await lessonService.insertOne(lesson);
+            lesson._id = result.insertedId;
         }
 
-        res.send(lesson);
-        //res.redirect(`/lectii/edit/${lesson._id}`);
+        //res.send(lesson);
+        res.redirect(`/lectii/edit/${lesson._id}`);
     } catch (err) {
         return res.status(500).json(err.message);
     }

@@ -1,5 +1,5 @@
 <style>
-    .hide-lesson-editor {
+    .hide-content-editor {
         display: none;
     }
 </style>
@@ -20,7 +20,7 @@
 </h1>
 
 
-<form method="post" action="/lectii/createoredit" novalidate onsubmit="saveBtn.disabled = true; return true;">
+<form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
     <div class="form-row">
         <div class="form-group col-md-6">
@@ -139,3 +139,7 @@
     </div>
 
 </form>
+
+{{#section 'script'}}
+<script type="module" src="/js/lesson/lesson.main.js"></script>
+{{/section}}

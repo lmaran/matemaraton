@@ -28,7 +28,7 @@
 </h1>
 
 
-<form method="post" action="/exercitii/createoredit" novalidate onsubmit="saveBtn.disabled = true; return true;">
+<form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
     {{!-- statement --}}
     <div class="form-group">
@@ -254,5 +254,5 @@
 
 
 {{#section 'script'}}
-<script type="module" src="/js/exercise/main.js"></script>
+<script type="module" src="/js/exercise/exercise.main.js"></script>
 {{/section}}
