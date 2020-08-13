@@ -3,7 +3,6 @@ const idGeneratorMongoService = require("../services/id-generator-mongo.service"
 const autz = require("../services/autz.service");
 
 const katex = require("katex");
-
 const tm = require("markdown-it-texmath").use(katex);
 const md = require("markdown-it")().use(tm, { delimiters: "dollars", macros: { "\\RR": "\\mathbb{R}" } });
 
@@ -123,14 +122,15 @@ exports.createOrEditExercisePost = async (req, res) => {
             chapter,
             author,
             tags,
-            obs
+            obs,
+            statement,
+            solution
         } = req.body;
         const isEditMode = !!code;
 
         const exercise = {
             code,
-            question: { statement: {}, solution: {} },
-            // source,
+            question: { statement: { text: statement }, solution: { text: solution } },
             grade,
             branch,
             contestType,
@@ -142,8 +142,6 @@ exports.createOrEditExercisePost = async (req, res) => {
             tags,
             obs
         };
-        exercise.question.statement.text = req.body.statement;
-        exercise.question.solution.text = req.body.solution;
 
         if (req.body.hints) {
             exercise.question.hints = [];
@@ -153,7 +151,6 @@ exports.createOrEditExercisePost = async (req, res) => {
                 }
             });
         }
-        // console.log(req.body);
 
         if (isEditMode) {
             exerciseService.updateOneByCode(exercise);
@@ -191,13 +188,13 @@ exports.getExercises = async (req, res) => {
         canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise")
     };
     // res.send(data);
-    res.render("exercise/exercises", data);
+    res.render("exercise/exercise-list", data);
 };
 
 exports.getExerciseByCode = async (req, res) => {
     const exercise = await exerciseService.getByCode(req.params.code);
 
-    if (exercise.question) {
+    if (exercise && exercise.question) {
         if (exercise.question.statement)
             exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
         if (exercise.question.solution)

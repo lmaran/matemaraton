@@ -22,6 +22,7 @@ const courseSessionController = require("./controllers/course-session.controller
 const courseController = require("./controllers/course.controller");
 const homeworkController = require("./controllers/homework.controller");
 const lessonController = require("./controllers/lesson.controller");
+const katexController = require("./controllers/katex.controller");
 
 // home
 router.get("/", homeController.getHomePage);
@@ -39,8 +40,26 @@ router.get("/cursuri", courseController.getCourses);
 router.get("/cursuri/:id", courseController.getCourse);
 
 router.get("/lectii", lessonController.getLessons);
+router.get("/lectii/edit/:id", isAuthenticated, lessonController.createOrEditLessonGet);
+router.post("/lectii/edit/:id", isAuthenticated, lessonController.createOrEditLessonPost);
+router.get("/lectii/adauga", isAuthenticated, lessonController.createOrEditLessonGet);
+router.post("/lectii/adauga", isAuthenticated, lessonController.createOrEditLessonPost);
 router.get("/lectii/:lessonId", lessonController.getLesson);
+router.post("/lectii/sterge", isAuthenticated, lessonController.deleteLesson);
+
+// exercises
+router.get("/exercitii", isAuthenticated, exerciseController.getExercises);
+router.get("/exercitii/edit/:code", isAuthenticated, exerciseController.createOrEditExerciseGet);
+router.post("/exercitii/edit/:code", isAuthenticated, exerciseController.createOrEditExercisePost);
+router.get("/exercitii/adauga", isAuthenticated, exerciseController.createOrEditExerciseGet);
+router.post("/exercitii/adauga", isAuthenticated, exerciseController.createOrEditExercisePost);
+router.get("/exercitii/:code", isAuthenticated, exerciseController.getExerciseByCode);
+//router.put("/exercitii/statement/:id", isAuthenticated, exerciseController.updateStatement);
+router.post("/exercitii/sterge", isAuthenticated, exerciseController.deleteExercise);
+
 router.get("/cursuri/:courseId/lectii/:lessonId", lessonController.getLesson);
+
+router.post("/katex/get-preview", isAuthenticated, katexController.getPreview);
 
 // presence
 router.get("/clase", classController.getClasses);
@@ -76,16 +95,6 @@ router.get("/materiale-simulare-en-editia-3", matemaratonController.getMateriale
 
 // contact
 router.get("/contact", contactController.getContact);
-
-// exercises
-router.get("/exercitii/edit/:code", isAuthenticated, exerciseController.createOrEditExerciseGet);
-router.get("/exercitii/adauga", isAuthenticated, exerciseController.createOrEditExerciseGet);
-router.post("/exercitii/createoredit", isAuthenticated, exerciseController.createOrEditExercisePost);
-router.get("/exercitii/:code", isAuthenticated, exerciseController.getExerciseByCode);
-router.put("/exercitii/statement/:id", isAuthenticated, exerciseController.updateStatement);
-router.get("/exercitii", isAuthenticated, exerciseController.getExercises);
-router.post("/exercitii/katex-preview", isAuthenticated, exerciseController.createKatexPreview);
-router.post("/exercitii/delete", isAuthenticated, exerciseController.deleteExercise);
 
 // user-login/logout
 router.get("/login", userLoginController.getLogin);
