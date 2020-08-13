@@ -22,6 +22,7 @@ const courseSessionController = require("./controllers/course-session.controller
 const courseController = require("./controllers/course.controller");
 const homeworkController = require("./controllers/homework.controller");
 const lessonController = require("./controllers/lesson.controller");
+const katexController = require("./controllers/katex.controller");
 
 // home
 router.get("/", homeController.getHomePage);
@@ -89,7 +90,9 @@ router.get("/exercitii/adauga", isAuthenticated, exerciseController.createOrEdit
 router.post("/exercitii/createoredit", isAuthenticated, exerciseController.createOrEditExercisePost);
 router.get("/exercitii/:code", isAuthenticated, exerciseController.getExerciseByCode);
 router.put("/exercitii/statement/:id", isAuthenticated, exerciseController.updateStatement);
-router.post("/exercitii/katex-preview", isAuthenticated, exerciseController.createKatexPreview);
+//router.post("/exercitii/katex-preview", isAuthenticated, exerciseController.createKatexPreview);
+router.post("/katex/get-preview", isAuthenticated, katexController.getPreview);
+
 router.post("/exercitii/sterge", isAuthenticated, exerciseController.deleteExercise);
 
 // user-login/logout
