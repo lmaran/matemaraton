@@ -42,3 +42,22 @@ exports.getLessonNamesByIds = async ids => {
         .project({ name: 1 })
         .toArray();
 };
+
+exports.insertOne = async item => {
+    const db = await mongoHelper.getDb();
+    item.createdOn = new Date();
+    return db.collection(collection).insertOne(item);
+};
+
+exports.updateOne = async item => {
+    const db = await mongoHelper.getDb();
+    //if (user.email) user.email = user.email.toLowerCase(); // ensures that the email is saved in lowerCase
+    item._id = new ObjectID(item._id);
+    //problem.modifiedOn = new Date();
+    return db.collection(collection).updateOne({ _id: item._id }, { $set: item });
+};
+
+exports.deleteOne = async id => {
+    const db = await mongoHelper.getDb();
+    return db.collection(collection).deleteOne({ _id: new ObjectID(id) });
+};

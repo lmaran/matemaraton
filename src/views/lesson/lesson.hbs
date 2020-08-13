@@ -25,7 +25,14 @@
 
 {{!-- <div class="h4 font-weight-light">{{course.description}}</div> --}}
 
-Scop: {{lesson.scope}} </br>
+
 Clasa: {{lesson.grade}} </br>
-Area: {{lesson.area}} </br>
+Scop: {{lesson.scope}} </br>
+Branch: {{lesson.branch}} </br>
 Chapter: {{lesson.chapter}} </br>
+Title: {{lesson.title}} </br>
+Content: {{lesson.content}} </br>
+
+{{#if canCreateOrEditLesson}}
+<a href="/lectii/edit/{{lesson._id}}">Edit</a>
+{{/if}}

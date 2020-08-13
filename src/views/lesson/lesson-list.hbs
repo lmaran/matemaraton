@@ -13,15 +13,15 @@
 
 <h1>Lecții</h1>
 
-{{!-- {{#if canCreateOrEditExercise}}
-<a href="/exercitii/adauga" class="btn btn-primary mt-2 mb-4"><i class="fa fa-plus"></i> Adaugă exercițiu</a>
-{{/if}} --}}
+{{#if canCreateOrEditLesson}}
+<a href="/lectii/adauga" class="btn btn-primary mt-2 mb-4"><i class="fa fa-plus"></i> Adaugă lecție</a>
+{{/if}}
 
 {{!-- <h3< class="mt-4">>Ediția curentă:</h3> --}}
 {{#if lessons}}
 <ul>
     {{#each lessons}}
-    <li><a href="/lectii/{{_id}}">{{name}} </a><span class="text-muted font-weight-light"> (
+    <li><a href="/lectii/{{_id}}">{{title}} </a><span class="text-muted font-weight-light"> (
             {{scope}})</span></li>
     {{/each}}
 </ul>

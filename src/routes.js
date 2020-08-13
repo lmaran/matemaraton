@@ -39,7 +39,12 @@ router.get("/cursuri", courseController.getCourses);
 router.get("/cursuri/:id", courseController.getCourse);
 
 router.get("/lectii", lessonController.getLessons);
+router.get("/lectii/edit/:id", isAuthenticated, lessonController.createOrEditLessonGet);
+router.get("/lectii/adauga", isAuthenticated, lessonController.createOrEditLessonGet);
+router.post("/lectii/createoredit", isAuthenticated, lessonController.createOrEditLessonPost);
 router.get("/lectii/:lessonId", lessonController.getLesson);
+router.post("/lectii/sterge", isAuthenticated, lessonController.deleteLesson);
+
 router.get("/cursuri/:courseId/lectii/:lessonId", lessonController.getLesson);
 
 // presence
@@ -78,14 +83,14 @@ router.get("/materiale-simulare-en-editia-3", matemaratonController.getMateriale
 router.get("/contact", contactController.getContact);
 
 // exercises
+router.get("/exercitii", isAuthenticated, exerciseController.getExercises);
 router.get("/exercitii/edit/:code", isAuthenticated, exerciseController.createOrEditExerciseGet);
 router.get("/exercitii/adauga", isAuthenticated, exerciseController.createOrEditExerciseGet);
 router.post("/exercitii/createoredit", isAuthenticated, exerciseController.createOrEditExercisePost);
 router.get("/exercitii/:code", isAuthenticated, exerciseController.getExerciseByCode);
 router.put("/exercitii/statement/:id", isAuthenticated, exerciseController.updateStatement);
-router.get("/exercitii", isAuthenticated, exerciseController.getExercises);
 router.post("/exercitii/katex-preview", isAuthenticated, exerciseController.createKatexPreview);
-router.post("/exercitii/delete", isAuthenticated, exerciseController.deleteExercise);
+router.post("/exercitii/sterge", isAuthenticated, exerciseController.deleteExercise);
 
 // user-login/logout
 router.get("/login", userLoginController.getLogin);

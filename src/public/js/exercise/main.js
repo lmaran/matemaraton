@@ -3,12 +3,8 @@ import { dateTimeHelper } from "../helpers/date-time.helper.js";
 import { domHelper } from "../helpers/dom.helper.js";
 
 /**
- * event binders (alias 'routes')
+ * event binders
  */
-// const saveBtn = document.getElementById("save-btn");
-// if (saveBtn) {
-//     saveBtn.addEventListener("click", eventHandlers.saveExercise);
-// }
 
 document
     .getElementById("statement-editor-txt")

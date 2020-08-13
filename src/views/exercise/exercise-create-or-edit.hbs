@@ -36,8 +36,7 @@
 
         <textarea id="statement-editor-txt" rows="8" name="statement"
             style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
-            class="form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}hide-statement-editor{{/if}}"
-            value="{{data.lastName.val}}">{{{exercise.question.statement.text}}}</textarea>
+            class="form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}hide-statement-editor{{/if}}">{{{exercise.question.statement.text}}}</textarea>
         <div class="invalid-feedback">{{errors.statement.msg}}</div>
 
 
@@ -56,8 +55,7 @@
 
         <textarea id="solution-editor-txt" rows="8" name="solution"
             style="border-radius:0; border-bottom-width:0; border-color:#008000"
-            class="form-control {{#if errors.solution}}is-invalid {{/if}} {{#if isEditMode}}hide-solution-editor{{/if}}"
-            value="{{data.solution.val}}">{{{exercise.question.solution.text}}}</textarea>
+            class="form-control {{#if errors.solution}}is-invalid {{/if}} {{#if isEditMode}}hide-solution-editor{{/if}}">{{{exercise.question.solution.text}}}</textarea>
         <div class="invalid-feedback">{{errors.solution.msg}}</div>
 
         <div id="solution-preview-div"
@@ -225,13 +223,13 @@
                 Salveaza</button>
             <a href="/exercitii" class="btn btn-light"><i class="fa fa-times"></i> Renunță</a>
             {{#if isEditMode}}
-            <button type="submit" formaction="/exercitii/delete" name="deleteBtn" class="btn btn-link"
+            <button type="submit" formaction="/exercitii/sterge" name="deleteBtn" class="btn btn-link"
                 onclick="return confirm('Ești sigur că vrei să ștergi acest exercițiu?');"><i
                     class="fas fa-trash-alt"></i>
                 Șterge</button>
             {{/if}}
 
-            <label for="statement-editor-txt" class="col-md-3s col-form-label float-right"> Help:
+            <label class="col-md-3s col-form-label float-right"> Help:
                 <a href="https://markdown-it.github.io/" target="_blank">markdon</a>
                 <small><i class="fas fa-external-link-alt text-muted text-small" aria-hidden="true"></i></small>
                 +
