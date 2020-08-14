@@ -1,7 +1,7 @@
 const exerciseService = require("../services/exercise.service");
 const idGeneratorMongoService = require("../services/id-generator-mongo.service");
 const autz = require("../services/autz.service");
-const katexService = require("../services/katex.service");
+const markdownService = require("../services/markdown.service");
 
 exports.deleteExercise = async (req, res) => {
     const canDeleteExercise = await autz.can(req.user, "delete:exercise");
@@ -84,12 +84,12 @@ exports.createOrEditExerciseGet = async (req, res) => {
     if (isEditMode) {
         const exercise = await exerciseService.getByCode(req.params.code);
 
-        exercise.question.statement.textPreview = katexService.render(exercise.question.statement.text);
-        exercise.question.solution.textPreview = katexService.render(exercise.question.solution.text);
+        exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
+        exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
 
         if (exercise.question.hints) {
             exercise.question.hints.forEach(hint => {
-                hint.textPreview = katexService.render(hint.text);
+                hint.textPreview = markdownService.render(hint.text);
             });
         }
 
@@ -166,17 +166,17 @@ exports.getExercises = async (req, res) => {
     const exercises = await exerciseService.getAll();
 
     exercises.forEach(exercise => {
-        exercise.question.statement.textPreview = katexService.render(
+        exercise.question.statement.textPreview = markdownService.render(
             `**[E.${exercise.code}.](/exercitii/${exercise.code})** ${exercise.question.statement.text}`
         );
         if (exercise.question.solution) {
-            exercise.question.solution.textPreview = katexService.render(
+            exercise.question.solution.textPreview = markdownService.render(
                 `**Soluție:** ${exercise.question.solution.text}`
             );
         }
         if (exercise.question.hints) {
             exercise.question.hints.forEach((hint, idx) => {
-                hint.textPreview = katexService.render(`**Hint ${idx + 1}:** ${hint.text}`);
+                hint.textPreview = markdownService.render(`**Hint ${idx + 1}:** ${hint.text}`);
             });
         }
     });
@@ -194,9 +194,9 @@ exports.getExerciseByCode = async (req, res) => {
 
     if (exercise && exercise.question) {
         if (exercise.question.statement)
-            exercise.question.statement.textPreview = katexService.render(exercise.question.statement.text);
+            exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
         if (exercise.question.solution)
-            exercise.question.solution.textPreview = katexService.render(exercise.question.solution.text);
+            exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
     }
 
     const data = {
@@ -218,6 +218,6 @@ exports.updateStatement = async (req, res) => {
     exerciseService.updateOne(exercise); // don't have to await
 
     // update preview field also
-    exercise.question.statement.textPreview = katexService.render(exercise.question.statement.text);
+    exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
     res.status(200).json(exercise); // or res.status(204).send();  for No Content
 };

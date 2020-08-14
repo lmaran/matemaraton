@@ -11,16 +11,16 @@ const contentPreviewDiv = document.getElementById("content-preview-div");
  */
 export const eventHandlers = {
     getContentPreview: async event => {
-        const data = { katex: event.target.value };
-        contentPreviewDiv.innerHTML = await lessonService.getKatexPreview(data);
+        const data = { markdown: event.target.value };
+        contentPreviewDiv.innerHTML = await lessonService.getRenderedMarkdown(data);
     },
 
     // getHintPreview: async event => {
-    //     const data = { katex: event.target.value };
+    //     const data = { markdown: event.target.value };
 
     //     const hintParentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
     //     const hintPreviewDiv = hintParentDiv.querySelector(".hint-preview-div");
-    //     hintPreviewDiv.innerHTML = await exerciseService.getKatexPreview(data);
+    //     hintPreviewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
     // },
 
     // saveExercise: async () => {

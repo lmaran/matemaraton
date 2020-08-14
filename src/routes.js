@@ -22,7 +22,7 @@ const courseSessionController = require("./controllers/course-session.controller
 const courseController = require("./controllers/course.controller");
 const homeworkController = require("./controllers/homework.controller");
 const lessonController = require("./controllers/lesson.controller");
-const katexController = require("./controllers/katex.controller");
+const markdownController = require("./controllers/markdown.controller");
 
 // home
 router.get("/", homeController.getHomePage);
@@ -59,7 +59,7 @@ router.post("/exercitii/sterge", isAuthenticated, exerciseController.deleteExerc
 
 router.get("/cursuri/:courseId/lectii/:lessonId", lessonController.getLesson);
 
-router.post("/katex/get-preview", isAuthenticated, katexController.getPreview);
+router.post("/markdown/get-rendered-markdown", isAuthenticated, markdownController.getGetRenderedMarkdown);
 
 // presence
 router.get("/clase", classController.getClasses);

@@ -17,27 +17,27 @@ const solutionPreviewDiv = document.getElementById("solution-preview-div");
  */
 export const eventHandlers = {
     getStatementPreview: async event => {
-        const data = { katex: event.target.value };
-        statementPreviewDiv.innerHTML = await exerciseService.getKatexPreview(data);
+        const data = { markdown: event.target.value };
+        statementPreviewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
     },
     getSolutionPreview: async event => {
-        const data = { katex: event.target.value };
-        solutionPreviewDiv.innerHTML = await exerciseService.getKatexPreview(data);
+        const data = { markdown: event.target.value };
+        solutionPreviewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
     },
     handleKeyupForAllHints: async event => {
         if (event.target && event.target.classList.contains("hint-editor-txt")) {
-            const data = { katex: event.target.value };
+            const data = { markdown: event.target.value };
             const hintParentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
             const hintPreviewDiv = hintParentDiv.querySelector(".hint-preview-div");
-            hintPreviewDiv.innerHTML = await exerciseService.getKatexPreview(data);
+            hintPreviewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
         }
     },
     // getHintPreview: async event => {
-    //     const data = { katex: event.target.value };
+    //     const data = { markdown: event.target.value };
 
     //     const hintParentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
     //     const hintPreviewDiv = hintParentDiv.querySelector(".hint-preview-div");
-    //     hintPreviewDiv.innerHTML = await exerciseService.getKatexPreview(data);
+    //     hintPreviewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
     // },
 
     // saveExercise: async () => {

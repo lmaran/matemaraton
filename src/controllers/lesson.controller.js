@@ -1,7 +1,7 @@
 const courseService = require("../services/course.service");
 const lessonService = require("../services/lesson.service");
 const autz = require("../services/autz.service");
-const katexService = require("../services/katex.service");
+const markdownService = require("../services/markdown.service");
 
 exports.deleteLesson = async (req, res) => {
     const canDeleteLesson = await autz.can(req.user, "delete:lesson");
@@ -54,7 +54,7 @@ exports.createOrEditLessonGet = async (req, res) => {
         const lesson = await lessonService.getById(req.params.id);
 
         if (lesson.content) {
-            lesson.content.textPreview = katexService.render(lesson.content.text);
+            lesson.content.textPreview = markdownService.render(lesson.content.text);
         }
         data.lesson = lesson;
     }
