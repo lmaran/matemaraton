@@ -1,10 +1,7 @@
 const exerciseService = require("../services/exercise.service");
 const idGeneratorMongoService = require("../services/id-generator-mongo.service");
 const autz = require("../services/autz.service");
-
-const katex = require("katex");
-const tm = require("markdown-it-texmath").use(katex);
-const md = require("markdown-it")().use(tm, { delimiters: "dollars", macros: { "\\RR": "\\mathbb{R}" } });
+const markdownService = require("../services/markdown.service");
 
 exports.deleteExercise = async (req, res) => {
     const canDeleteExercise = await autz.can(req.user, "delete:exercise");
@@ -23,7 +20,6 @@ exports.createOrEditExerciseGet = async (req, res) => {
 
     const isEditMode = !!req.params.code;
 
-    // const availableGrades = ["P", "5", "6", "7", "8", "9", "10", "11", "12"];
     const gradeAvailableOptions = [
         { text: "Primar", value: "P" },
         { text: "Clasa a V-a", value: "5" },
@@ -72,6 +68,7 @@ exports.createOrEditExerciseGet = async (req, res) => {
     ];
 
     const chapterAvailableOptions = [
+        { text: "Numere Naturale", value: "numere-naturale" },
         { text: "Numere Raționale", value: "numere-rationale" },
         { text: "Numere Reale", value: "numere-reale" }
     ];
@@ -88,12 +85,18 @@ exports.createOrEditExerciseGet = async (req, res) => {
     if (isEditMode) {
         const exercise = await exerciseService.getByCode(req.params.code);
 
-        exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
-        exercise.question.solution.textPreview = md.render(exercise.question.solution.text);
+        exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
+        exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
 
         if (exercise.question.hints) {
             exercise.question.hints.forEach(hint => {
-                hint.textPreview = md.render(hint.text);
+                hint.textPreview = markdownService.render(hint.text);
+            });
+        }
+
+        if (exercise.question.answerOptions) {
+            exercise.question.answerOptions.forEach(answerOption => {
+                answerOption.textPreview = markdownService.render(answerOption.text);
             });
         }
 
@@ -143,13 +146,61 @@ exports.createOrEditExercisePost = async (req, res) => {
             obs
         };
 
-        if (req.body.hints) {
+        const hints = req.body.hints;
+        if (hints) {
             exercise.question.hints = [];
-            req.body.hints.forEach(hint => {
-                if (hint.trim()) {
-                    exercise.question.hints.push({ text: hint.trim() });
+            if (Array.isArray(hints)) {
+                hints.forEach(hint => {
+                    if (hint.trim()) {
+                        exercise.question.hints.push({ text: hint.trim() });
+                    }
+                });
+            } else {
+                // an object with a single option
+                if (hints.trim()) {
+                    exercise.question.hints.push({ text: hints.trim() });
                 }
-            });
+            }
+        }
+
+        const answerOptions = req.body.answerOptions;
+        if (answerOptions) {
+            exercise.question.answerOptions = [];
+            if (Array.isArray(answerOptions)) {
+                answerOptions.forEach((answerOption, idx) => {
+                    if (answerOption.trim()) {
+                        const newAnswerOption = { text: answerOption.trim() };
+
+                        // set isCorrectAnswer (if apply)
+                        const isCorrectAnswerChecks = req.body.isCorrectAnswerChecks;
+                        if (isCorrectAnswerChecks) {
+                            if (Array.isArray(isCorrectAnswerChecks)) {
+                                if (isCorrectAnswerChecks.includes(String(idx + 1))) {
+                                    newAnswerOption.isCorrect = true;
+                                }
+                            } else {
+                                if (isCorrectAnswerChecks === String(idx + 1)) {
+                                    newAnswerOption.isCorrect = true;
+                                }
+                            }
+                        }
+
+                        exercise.question.answerOptions.push(newAnswerOption);
+                    }
+                });
+            } else {
+                // an object with a single option
+                if (answerOptions.trim()) {
+                    const newAnswerOption = { text: answerOptions.trim() };
+
+                    // set isCorrectAnswer (if apply)
+                    const isCorrectAnswerChecks = req.body.isCorrectAnswerChecks;
+                    if (isCorrectAnswerChecks && isCorrectAnswerChecks === "1") {
+                        newAnswerOption.isCorrect = true;
+                    }
+                    exercise.question.answerOptions.push(newAnswerOption);
+                }
+            }
         }
 
         if (isEditMode) {
@@ -170,15 +221,24 @@ exports.getExercises = async (req, res) => {
     const exercises = await exerciseService.getAll();
 
     exercises.forEach(exercise => {
-        exercise.question.statement.textPreview = md.render(
-            `**[E.${exercise.code}.](/exercitii/${exercise.code})** ${exercise.question.statement.text}`
-        );
+        let statement = `**[E.${exercise.code}.](/exercitii/${exercise.code})** ${exercise.question.statement.text}`;
+
+        if (exercise.question.answerOptions) {
+            exercise.question.answerOptions.forEach(answerOption => {
+                statement = statement + "\n" + "* " + answerOption.text;
+            });
+        }
+
+        exercise.question.statement.textPreview = markdownService.render(statement);
+
         if (exercise.question.solution) {
-            exercise.question.solution.textPreview = md.render(`**Soluție:** ${exercise.question.solution.text}`);
+            exercise.question.solution.textPreview = markdownService.render(
+                `**Soluție:** ${exercise.question.solution.text}`
+            );
         }
         if (exercise.question.hints) {
             exercise.question.hints.forEach((hint, idx) => {
-                hint.textPreview = md.render(`**Hint ${idx + 1}:** ${hint.text}`);
+                hint.textPreview = markdownService.render(`**Hint ${idx + 1}:** ${hint.text}`);
             });
         }
     });
@@ -196,9 +256,9 @@ exports.getExerciseByCode = async (req, res) => {
 
     if (exercise && exercise.question) {
         if (exercise.question.statement)
-            exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
+            exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
         if (exercise.question.solution)
-            exercise.question.solution.textPreview = md.render(exercise.question.solution.text);
+            exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
     }
 
     const data = {
@@ -207,23 +267,6 @@ exports.getExerciseByCode = async (req, res) => {
     };
     //res.send(data);
     res.render("exercise/exercise", data);
-};
-
-// exports.editExerciseByCode = async (req, res) => {
-//     const exercise = await exerciseService.getByCode(req.params.code);
-
-//     exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
-
-//     // const data = { problem, testOriginal: q5, test: md.render(q5) };
-//     const data = { exercise };
-//     //res.send(data);
-//     res.render("exercise/exercise-edit", data);
-// };
-
-exports.createKatexPreview = async (req, res) => {
-    const katex = req.body.katex;
-    const html = md.render(katex);
-    res.status(201).json(html);
 };
 
 exports.updateStatement = async (req, res) => {
@@ -237,6 +280,6 @@ exports.updateStatement = async (req, res) => {
     exerciseService.updateOne(exercise); // don't have to await
 
     // update preview field also
-    exercise.question.statement.textPreview = md.render(exercise.question.statement.text);
-    res.status(200).json(exercise); // or res.status(204).send();  fo No Content
+    exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
+    res.status(200).json(exercise); // or res.status(204).send();  for No Content
 };

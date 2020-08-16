@@ -1,11 +1,7 @@
 const courseService = require("../services/course.service");
 const lessonService = require("../services/lesson.service");
 const autz = require("../services/autz.service");
-// const dateTimeHelper = require("../helpers/date-time.helper");
-//const arrayHelper = require("../helpers/array.helper");
-const katex = require("katex");
-const tm = require("markdown-it-texmath").use(katex);
-const md = require("markdown-it")().use(tm, { delimiters: "dollars", macros: { "\\RR": "\\mathbb{R}" } });
+const markdownService = require("../services/markdown.service");
 
 exports.deleteLesson = async (req, res) => {
     const canDeleteLesson = await autz.can(req.user, "delete:lesson");
@@ -24,7 +20,6 @@ exports.createOrEditLessonGet = async (req, res) => {
 
     const isEditMode = !!req.params.id;
 
-    // // const availableGrades = ["P", "5", "6", "7", "8", "9", "10", "11", "12"];
     const gradeAvailableOptions = [
         { text: "Primar", value: "P" },
         { text: "Clasa a V-a", value: "5" },
@@ -38,6 +33,8 @@ exports.createOrEditLessonGet = async (req, res) => {
     ];
 
     const chapterAvailableOptions = [
+        { text: "Numere Naturale", value: "numere-rationale" },
+        { text: "Numere Întregi", value: "numere-intregi" },
         { text: "Numere Raționale", value: "numere-rationale" },
         { text: "Numere Reale", value: "numere-reale" }
     ];
@@ -51,8 +48,6 @@ exports.createOrEditLessonGet = async (req, res) => {
         isEditMode,
         gradeAvailableOptions,
         branchAvailableOptions,
-        // contestTypeAvailableOptions,
-        // sourceTypeAvailableOptions,
         chapterAvailableOptions,
         scopeAvailableOptions
     };
@@ -61,11 +56,8 @@ exports.createOrEditLessonGet = async (req, res) => {
         const lesson = await lessonService.getById(req.params.id);
 
         if (lesson.content) {
-            lesson.content.textPreview = md.render(lesson.content.text);
+            lesson.content.textPreview = markdownService.render(lesson.content.text);
         }
-
-        // lesson.textPreview = md.render(lesson.text);
-
         data.lesson = lesson;
     }
 
@@ -111,21 +103,9 @@ exports.createOrEditLessonPost = async (req, res) => {
 exports.getLessons = async (req, res) => {
     const lessons = await lessonService.getAll();
 
-    // const activeCourses = [];
-    // const archivedCourses = [];
-    // courses.forEach(course => {
-    //     if (course.isActive) {
-    //         activeCourses.push(course);
-    //     } else {
-    //         archivedCourses.push(course);
-    //     }
-    // });
-
     const data = {
         lessons,
         canCreateOrEditLesson: await autz.can(req.user, "create-or-edit:lesson")
-        // activeCourses,
-        // archivedCourses
     };
     //res.send(data);
     res.render("lesson/lesson-list", data);

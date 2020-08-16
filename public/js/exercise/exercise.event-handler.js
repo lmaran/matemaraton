@@ -17,27 +17,35 @@ const solutionPreviewDiv = document.getElementById("solution-preview-div");
  */
 export const eventHandlers = {
     getStatementPreview: async event => {
-        const data = { katex: event.target.value };
-        statementPreviewDiv.innerHTML = await exerciseService.getKatexPreview(data);
+        const data = { markdown: event.target.value };
+        statementPreviewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
     },
     getSolutionPreview: async event => {
-        const data = { katex: event.target.value };
-        solutionPreviewDiv.innerHTML = await exerciseService.getKatexPreview(data);
+        const data = { markdown: event.target.value };
+        solutionPreviewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
     },
     handleKeyupForAllHints: async event => {
         if (event.target && event.target.classList.contains("hint-editor-txt")) {
-            const data = { katex: event.target.value };
-            const hintParentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
-            const hintPreviewDiv = hintParentDiv.querySelector(".hint-preview-div");
-            hintPreviewDiv.innerHTML = await exerciseService.getKatexPreview(data);
+            const data = { markdown: event.target.value };
+            const parentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
+            const previewDiv = parentDiv.querySelector(".hint-preview-div");
+            previewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
+        }
+    },
+    handleKeyupForAllAnswerOptions: async event => {
+        if (event.target && event.target.classList.contains("answer-option-editor-txt")) {
+            const data = { markdown: event.target.value };
+            const parentDiv = event.target.closest(".answer-option-parent-div"); // find the closest ancestor which matches the selectors
+            const previewDiv = parentDiv.querySelector(".answer-option-preview-div");
+            previewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
         }
     },
     // getHintPreview: async event => {
-    //     const data = { katex: event.target.value };
+    //     const data = { markdown: event.target.value };
 
     //     const hintParentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
     //     const hintPreviewDiv = hintParentDiv.querySelector(".hint-preview-div");
-    //     hintPreviewDiv.innerHTML = await exerciseService.getKatexPreview(data);
+    //     hintPreviewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
     // },
 
     // saveExercise: async () => {
@@ -123,32 +131,53 @@ export const eventHandlers = {
     },
     handleClickForAllHints: async event => {
         // handle 'toggle edit' and 'delete' events
-        if (event.target) {
-            if (event.target.classList.contains("toggle-hint-editor-btn")) {
-                const hintParentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
-                const editorTxt = hintParentDiv.querySelector(".hint-editor-txt");
+        const target = event.target; // shortcut
+        if (target) {
+            if (target.classList.contains("toggle-hint-editor-btn")) {
+                const parentDiv = target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
+                const editorTxt = parentDiv.querySelector(".hint-editor-txt");
 
                 editorTxt.classList.toggle("hide-hint-editor");
 
                 const editorIsHide = editorTxt.classList.contains("hide-hint-editor");
-                event.target.textContent = editorIsHide ? "Editează" : "Ascunde";
-            } else if (event.target.classList.contains("delete-hint-btn")) {
-                const hintParentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
-                hintParentDiv.remove(); // remove element from DOM (ES6 way)
+                target.textContent = editorIsHide ? "Editează" : "Ascunde";
+            } else if (target.classList.contains("delete-hint-btn")) {
+                const parentDiv = target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
+                parentDiv.remove(); // remove element from DOM (ES6 way)
 
-                updateHintLabels(); // update label for remaining hints
+                updateHintLabels(); // update label for remaining elements
+            }
+        }
+    },
+    handleClickForAllAnswerOptions: async event => {
+        // handle 'toggle edit' and 'delete' events
+        const target = event.target; // shortcut
+        if (target) {
+            if (target.classList.contains("toggle-answer-option-editor-btn")) {
+                const parentDiv = target.closest(".answer-option-parent-div"); // find the closest ancestor which matches the selectors
+                const editorTxt = parentDiv.querySelector(".answer-option-editor-txt");
+
+                editorTxt.classList.toggle("hide-answer-option-editor");
+
+                const editorIsHide = editorTxt.classList.contains("hide-answer-option-editor");
+                target.textContent = editorIsHide ? "Editează" : "Ascunde";
+            } else if (target.classList.contains("delete-answer-option-btn")) {
+                const parentDiv = target.closest(".answer-option-parent-div"); // find the closest ancestor which matches the selectors
+                parentDiv.remove(); // remove element from DOM (ES6 way)
+
+                updateAnswerOptionLabels(); // update label for remaining elements
             }
         }
     },
 
     addHintHtmlNode: async event => {
         event.preventDefault();
-        const hintMainDiv = document.getElementById("hint-main-div");
-        const NrOfHints = hintMainDiv.childElementCount;
+        const mainDiv = document.getElementById("hint-main-div");
+        const nrOfElements = mainDiv.childElementCount;
 
         const markup = `
             <div class="hint-parent-div mb-4">
-                <label class="col-form-label font-weight-bold"> Indicația ${NrOfHints + 1}: </label>
+                <label class="col-form-label font-weight-bold"> Indicația ${nrOfElements + 1}: </label>
 
                 <textarea
                     rows="2"
@@ -169,16 +198,72 @@ export const eventHandlers = {
             </div>
         `;
 
-        hintMainDiv.insertAdjacentHTML("beforeend", markup); // much faster that innerHTML
+        mainDiv.insertAdjacentHTML("beforeend", markup); // much faster that innerHTML
+    },
+
+    addAnswerOptionHtmlNode: async event => {
+        event.preventDefault();
+        const mainDiv = document.getElementById("answer-option-main-div");
+        const nrOfElements = mainDiv.childElementCount;
+
+        const markup = `
+            <div class="answer-option-parent-div mb-4">
+                <label class="col-form-label font-weight-bold"> Răspunsul ${nrOfElements + 1}: </label>
+
+                <textarea
+                    rows="2"
+                    name="answerOptions"
+                    style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
+                    class="answer-option-editor-txt form-control"
+                    value="{{data.solution.val}}"
+                ></textarea>
+
+                <div
+                    class="answer-option-preview-div"
+                    style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px"
+                ></div>
+
+                <div class="float-right form-check-inline mr-0">
+                    <input class="form-check-input" type="checkbox" name="isCorrectAnswerChecks" value=${nrOfElements +
+                        1} id="defaultCheck${nrOfElements + 1}">
+                    <label class="form-check-label text-muted" for="defaultCheck${nrOfElements + 1}">
+                        Răspuns corect
+                    </label>
+                    <span class="ml-2 mr-2 text-muted"> | </span>
+                    <button type="button" class="toggle-answer-option-editor-btn btn btn-link p-0">Editează</button>
+                    <span class="ml-2 mr-2 text-muted"> | </span>
+                    <button type="button" class="delete-answer-option-btn btn btn-link p-0">Șterge</button>
+                </div>
+            </div>
+        `;
+
+        mainDiv.insertAdjacentHTML("beforeend", markup); // much faster that innerHTML
     }
 };
 
 const updateHintLabels = () => {
-    const hintMainDiv = document.getElementById("hint-main-div");
+    const mainDiv = document.getElementById("hint-main-div");
 
     let idx = 0;
-    for (const hintParent of hintMainDiv.children) {
-        const hintLabel = hintParent.querySelector("label");
-        hintLabel.innerHTML = `Indicația ${++idx}:`;
+    for (const parent of mainDiv.children) {
+        const label = parent.querySelector("label");
+        label.innerHTML = `Indicația ${++idx}:`;
+    }
+};
+
+const updateAnswerOptionLabels = () => {
+    const mainDiv = document.getElementById("answer-option-main-div");
+
+    let idx = 0;
+    for (const parent of mainDiv.children) {
+        idx++;
+        const label = parent.querySelector("label");
+        label.innerHTML = `Opțiunea ${idx}:`;
+
+        // update also checkbox values
+        const checkboxInput = parent.querySelector(".form-check-input");
+        if (checkboxInput.checked) {
+            checkboxInput.value = String(idx);
+        }
     }
 };
