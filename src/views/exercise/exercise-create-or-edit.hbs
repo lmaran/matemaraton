@@ -10,6 +10,10 @@
     .hide-hint-editor {
         display: none;
     }
+
+    .hide-answer-option-editor {
+        display: none;
+    }
 </style>
 
 <nav aria-label="breadcrumb">
@@ -49,7 +53,48 @@
             class="btn btn-link p-0 mt-n1 float-right">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</button>
     </div>
 
+    {{!-- answerOptions --}}
+    <div id="answer-option-main-div" class="form-group">
+        {{#each exercise.question.answerOptions}}
+        <div class="answer-option-parent-div mb-4">
 
+            <label class="col-form-label font-weight-bold"> Opțiunea {{inc @index}}: </label>
+
+            <textarea rows="2" name="answerOptions" style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
+                class="answer-option-editor-txt form-control {{#if errors.solution}}is-invalid {{/if}} {{#if @root.isEditMode}}hide-answer-option-editor{{/if}}"
+                value="{{data.solution.val}}">{{{text}}}</textarea>
+
+
+            <div class="answer-option-preview-div"
+                style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
+                {{{textPreview}}}
+            </div>
+
+            <div class="float-right form-check-inline mr-0">
+                <input class="form-check-input" type="checkbox" name="isCorrectAnswerChecks" value={{inc @index}}
+                    id="isCorrectAnswerCheck{{inc @index}}" {{#if isCorrect}}checked{{/if}}>
+                <label class="form-check-label text-muted" for="isCorrectAnswerCheck{{inc @index}}">
+                    Răspuns corect
+                </label>
+                <span class="ml-2 mr-2 text-muted"> | </span>
+                <button type="button" class="toggle-answer-option-editor-btn btn btn-link p-0">Editează</button>
+                <span class="ml-2 mr-2 text-muted"> | </span>
+                <button type="button" class="delete-answer-option-btn btn btn-link p-0">Șterge</button>
+            </div>
+
+        </div>
+        {{/each}}
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-7s offset-md-3s">
+            <button id="add-answer-option-btn" class="btn btn-sm"
+                style="border-color: #bb815d; background-color: #fff9f8; color: black">
+                Adaugă variantă de răspuns</button>
+        </div>
+    </div>
+
+    {{!-- solution --}}
     <div class="form-group">
         <label for="solution-editor-txt" class="font-weight-bold"> Soluție: </label>
 
@@ -97,7 +142,8 @@
 
     <div class="form-group">
         <div class="col-md-7s offset-md-3s">
-            <button id="add-hint-btn" class="btn btn-primary btn-sm" style="background-color: #f5faff; color: black">
+            <button id="add-hint-btn" class="btn btn-sm"
+                style="border-color: #007bff; background-color: #f5faff; color: black">
                 Adaugă indicație</button>
         </div>
     </div>

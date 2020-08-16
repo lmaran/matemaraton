@@ -33,6 +33,8 @@ exports.createOrEditLessonGet = async (req, res) => {
     ];
 
     const chapterAvailableOptions = [
+        { text: "Numere Naturale", value: "numere-rationale" },
+        { text: "Numere Întregi", value: "numere-intregi" },
         { text: "Numere Raționale", value: "numere-rationale" },
         { text: "Numere Reale", value: "numere-reale" }
     ];

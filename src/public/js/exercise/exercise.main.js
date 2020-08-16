@@ -35,12 +35,19 @@ document.getElementById("toggle-solution-editor-btn").addEventListener("click", 
 //     deleteHintBtn.addEventListener("click", eventHandlers.deleteHint);
 // }
 
+document.getElementById("add-hint-btn").addEventListener("click", eventHandlers.addHintHtmlNode);
 document.getElementById("hint-main-div").addEventListener("click", eventHandlers.handleClickForAllHints);
 document
     .getElementById("hint-main-div")
     .addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.handleKeyupForAllHints, 500));
 
-document.getElementById("add-hint-btn").addEventListener("click", eventHandlers.addHintHtmlNode);
+document.getElementById("add-answer-option-btn").addEventListener("click", eventHandlers.addAnswerOptionHtmlNode);
+document
+    .getElementById("answer-option-main-div")
+    .addEventListener("click", eventHandlers.handleClickForAllAnswerOptions);
+document
+    .getElementById("answer-option-main-div")
+    .addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.handleKeyupForAllAnswerOptions, 500));
 
 /**
  * Automatically expand a textarea as the user types

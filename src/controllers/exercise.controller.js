@@ -68,6 +68,7 @@ exports.createOrEditExerciseGet = async (req, res) => {
     ];
 
     const chapterAvailableOptions = [
+        { text: "Numere Naturale", value: "numere-naturale" },
         { text: "Numere Raționale", value: "numere-rationale" },
         { text: "Numere Reale", value: "numere-reale" }
     ];
@@ -90,6 +91,12 @@ exports.createOrEditExerciseGet = async (req, res) => {
         if (exercise.question.hints) {
             exercise.question.hints.forEach(hint => {
                 hint.textPreview = markdownService.render(hint.text);
+            });
+        }
+
+        if (exercise.question.answerOptions) {
+            exercise.question.answerOptions.forEach(answerOption => {
+                answerOption.textPreview = markdownService.render(answerOption.text);
             });
         }
 
@@ -139,13 +146,61 @@ exports.createOrEditExercisePost = async (req, res) => {
             obs
         };
 
-        if (req.body.hints) {
+        const hints = req.body.hints;
+        if (hints) {
             exercise.question.hints = [];
-            req.body.hints.forEach(hint => {
-                if (hint.trim()) {
-                    exercise.question.hints.push({ text: hint.trim() });
+            if (Array.isArray(hints)) {
+                hints.forEach(hint => {
+                    if (hint.trim()) {
+                        exercise.question.hints.push({ text: hint.trim() });
+                    }
+                });
+            } else {
+                // an object with a single option
+                if (hints.trim()) {
+                    exercise.question.hints.push({ text: hints.trim() });
                 }
-            });
+            }
+        }
+
+        const answerOptions = req.body.answerOptions;
+        if (answerOptions) {
+            exercise.question.answerOptions = [];
+            if (Array.isArray(answerOptions)) {
+                answerOptions.forEach((answerOption, idx) => {
+                    if (answerOption.trim()) {
+                        const newAnswerOption = { text: answerOption.trim() };
+
+                        // set isCorrectAnswer (if apply)
+                        const isCorrectAnswerChecks = req.body.isCorrectAnswerChecks;
+                        if (isCorrectAnswerChecks) {
+                            if (Array.isArray(isCorrectAnswerChecks)) {
+                                if (isCorrectAnswerChecks.includes(String(idx + 1))) {
+                                    newAnswerOption.isCorrect = true;
+                                }
+                            } else {
+                                if (isCorrectAnswerChecks === String(idx + 1)) {
+                                    newAnswerOption.isCorrect = true;
+                                }
+                            }
+                        }
+
+                        exercise.question.answerOptions.push(newAnswerOption);
+                    }
+                });
+            } else {
+                // an object with a single option
+                if (answerOptions.trim()) {
+                    const newAnswerOption = { text: answerOptions.trim() };
+
+                    // set isCorrectAnswer (if apply)
+                    const isCorrectAnswerChecks = req.body.isCorrectAnswerChecks;
+                    if (isCorrectAnswerChecks && isCorrectAnswerChecks === "1") {
+                        newAnswerOption.isCorrect = true;
+                    }
+                    exercise.question.answerOptions.push(newAnswerOption);
+                }
+            }
         }
 
         if (isEditMode) {
@@ -166,9 +221,16 @@ exports.getExercises = async (req, res) => {
     const exercises = await exerciseService.getAll();
 
     exercises.forEach(exercise => {
-        exercise.question.statement.textPreview = markdownService.render(
-            `**[E.${exercise.code}.](/exercitii/${exercise.code})** ${exercise.question.statement.text}`
-        );
+        let statement = `**[E.${exercise.code}.](/exercitii/${exercise.code})** ${exercise.question.statement.text}`;
+
+        if (exercise.question.answerOptions) {
+            exercise.question.answerOptions.forEach(answerOption => {
+                statement = statement + "\n" + "* " + answerOption.text;
+            });
+        }
+
+        exercise.question.statement.textPreview = markdownService.render(statement);
+
         if (exercise.question.solution) {
             exercise.question.solution.textPreview = markdownService.render(
                 `**Soluție:** ${exercise.question.solution.text}`
