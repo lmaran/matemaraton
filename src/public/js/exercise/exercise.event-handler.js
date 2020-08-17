@@ -1,5 +1,5 @@
 import { exerciseService } from "./exercise.service.js";
-// import { domHelper } from "../helpers/dom.helper.js";
+import { domHelper } from "../helpers/dom.helper.js";
 
 /**
  * DOM elements
@@ -238,6 +238,11 @@ export const eventHandlers = {
         `;
 
         mainDiv.insertAdjacentHTML("beforeend", markup); // much faster that innerHTML
+    },
+    autoExpandAllTextareas: async event => {
+        if (event.target.tagName.toLowerCase() === "textarea") {
+            domHelper.autoExpand(event.target);
+        }
     }
 };
 
