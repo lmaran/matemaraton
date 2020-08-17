@@ -22,6 +22,7 @@ const courseSessionController = require("./controllers/course-session.controller
 const courseController = require("./controllers/course.controller");
 const homeworkController = require("./controllers/homework.controller");
 const lessonController = require("./controllers/lesson.controller");
+const practiceTestController = require("./controllers/practice-test.controller");
 const markdownController = require("./controllers/markdown.controller");
 
 // home
@@ -39,6 +40,16 @@ router.get("/clase/:classId", classController.getClass);
 router.get("/cursuri", courseController.getCourses);
 router.get("/cursuri/:id", courseController.getCourse);
 
+// lessons
+router.get("/teste", practiceTestController.getAll);
+router.get("/teste/edit/:id", isAuthenticated, practiceTestController.createOrEditGet);
+//router.post("/teste/edit/:id", isAuthenticated, practiceTestController.createOrEditPost);
+router.get("/teste/adauga", isAuthenticated, practiceTestController.createOrEditGet);
+//router.post("/lectii/adauga", isAuthenticated, practiceTestController.createOrEditPost);
+router.get("/teste/:practiceTestId", practiceTestController.getOneById);
+router.post("/teste/sterge", isAuthenticated, practiceTestController.deleteOneById);
+
+// lessons
 router.get("/lectii", lessonController.getLessons);
 router.get("/lectii/edit/:id", isAuthenticated, lessonController.createOrEditLessonGet);
 router.post("/lectii/edit/:id", isAuthenticated, lessonController.createOrEditLessonPost);
