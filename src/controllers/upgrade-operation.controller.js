@@ -1,5 +1,4 @@
 // const { ObjectID } = require("mongodb");
-// const matemaratonService = require("../services/matemaraton.service");
 // const studentService = require("../services/student.service");
 // const personService = require("../services/person.service");
 // const classService = require("../services/class.service");

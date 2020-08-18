@@ -3,6 +3,7 @@
 
 const config = require("../config");
 const mongoHelper = require("../helpers/mongo.helper");
+const collection = "idGenerator";
 
 let currentId = 0;
 let maxId = 0; // exclusive (actually the max id that can be used without a roundtrip to the blob is maxId-1)
@@ -33,7 +34,7 @@ exports.uploadInMemoryCountersFromMongo = async scope => {
     // Increment nextId using findOneAndUpdate to ensure that the nextId field will be incremented atomically with the fetch of this document"
     const db = await mongoHelper.getDb();
     const result = await db
-        .collection("id-generator")
+        .collection(collection)
         .findOneAndUpdate({ _id: scope }, { $inc: { nextId: batchSize } }, { returnOriginal: false });
 
     const newValueInBlob = result.value.nextId;

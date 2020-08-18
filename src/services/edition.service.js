@@ -1,11 +1,11 @@
 const mongoHelper = require("../helpers/mongo.helper");
 
-const classesCollection = "editions";
+const collection = "editions";
 
 exports.getAll = async () => {
     const db = await mongoHelper.getDb();
     return db
-        .collection(classesCollection)
+        .collection(collection)
         .find()
         .toArray();
 };

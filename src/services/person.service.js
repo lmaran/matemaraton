@@ -1,17 +1,17 @@
 const mongoHelper = require("../helpers/mongo.helper");
 const { ObjectID } = require("mongodb");
 
-const personsCollection = "persons";
+const collection = "persons";
 
 exports.getPersonById = async id => {
     const db = await mongoHelper.getDb();
-    return db.collection(personsCollection).findOne({ _id: new ObjectID(id) });
+    return db.collection(collection).findOne({ _id: new ObjectID(id) });
 };
 
 exports.getAllPersons = async filter => {
     const db = await mongoHelper.getDb();
     return db
-        .collection(personsCollection)
+        .collection(collection)
         .find(filter)
         .toArray();
 };
@@ -20,21 +20,21 @@ exports.getPersonsByIds = async ids => {
     const idsAsObjectID = ids.map(x => new ObjectID(x));
     const db = await mongoHelper.getDb();
     return db
-        .collection(personsCollection)
+        .collection(collection)
         .find({ _id: { $in: idsAsObjectID } })
         .toArray();
 };
 
 exports.bulkWritePersons = async mongoOps => {
     const db = await mongoHelper.getDb();
-    return db.collection(personsCollection).bulkWrite(mongoOps, { ordered: false });
+    return db.collection(collection).bulkWrite(mongoOps, { ordered: false });
 };
 
 exports.getStudentsAndTheirParentsByIds = async studentsIds => {
     const studentsIdsAsObjectID = studentsIds.map(x => new ObjectID(x));
     const db = await mongoHelper.getDb();
     return db
-        .collection(personsCollection)
+        .collection(collection)
         .find({ $or: [{ _id: { $in: studentsIdsAsObjectID } }, { studentIds: { $in: studentsIds } }] })
         .toArray();
 };
@@ -43,7 +43,7 @@ exports.getStudentAndTheirParentsById = async studentId => {
     const studentIdAsObjectID = new ObjectID(studentId);
     const db = await mongoHelper.getDb();
     return db
-        .collection(personsCollection)
+        .collection(collection)
         .find({ $or: [{ _id: studentIdAsObjectID }, { studentIds: studentId }] })
         .toArray();
 };
@@ -60,7 +60,7 @@ exports.getStudentAndTheirParentsById = async studentId => {
 exports.getParentsByStudentId = async id => {
     const db = await mongoHelper.getDb();
     return db
-        .collection(personsCollection)
+        .collection(collection)
         .find({ studentIds: id })
         .toArray();
 };
