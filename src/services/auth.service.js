@@ -24,6 +24,7 @@ exports.changePassword = async (email, oldPassword, newPassword) => {
     } else {
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         existingUser.password = hashedPassword;
+        existingUser.modifiedOn = new Date();
 
         await userService.updateOne(existingUser);
 
@@ -44,6 +45,7 @@ exports.signupByInvitationCode = async (firstName, lastName, password, invitatio
         existingUser.status = "active";
         existingUser.activatedOn = new Date();
         existingUser.emailVerified = true;
+        existingUser.modifiedOn = new Date();
 
         await userService.updateOne(existingUser);
 
@@ -65,6 +67,7 @@ exports.signupByUserRegistration = async (firstName, lastName, email, psw) => {
         existingUser.password = password;
         existingUser.status = "registered";
         existingUser.signupCode = uniqueId;
+        existingUser.modifiedOn = new Date();
 
         await userService.updateOne(existingUser);
     } else {
@@ -74,8 +77,11 @@ exports.signupByUserRegistration = async (firstName, lastName, email, psw) => {
             password,
             status: "registered",
             signupCode: uniqueId,
-            email
+            createdOn: new Date()
         };
+        if (email) {
+            newUser.email = email.toLowerCase(); // ensures that the email is saved in lowerCase
+        }
 
         await userService.insertOne(newUser);
     }
@@ -94,6 +100,7 @@ exports.saveResetPasswordRequest = async (email, password) => {
         newPassword: await bcrypt.hash(password, 10),
         requestDate: new Date()
     };
+    existingUser.modifiedOn = new Date();
 
     await userService.updateOne(existingUser);
 
@@ -108,6 +115,7 @@ exports.signupByActivationCode = async activationCode => {
             existingUser.status = "active";
             existingUser.activatedOn = new Date();
             existingUser.emailVerified = true;
+            existingUser.modifiedOn = new Date();
 
             await userService.updateOne(existingUser);
 

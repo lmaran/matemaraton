@@ -20,7 +20,7 @@ exports.getOneById = async (req, res) => {
 
     if (practiceTest.exercises) {
         const codes = practiceTest.exercises.map(x => x.code);
-        practiceTest.exercises = await exerciseService.getByCodes(codes);
+        practiceTest.exercises = await exerciseService.getAllByCodes(codes);
     }
 
     //const courseId = req.params.courseId;
@@ -28,11 +28,11 @@ exports.getOneById = async (req, res) => {
     // let lesson, course;
     // if (courseId) {
     //     [lesson, course] = await Promise.all([
-    //         await lessonService.getById(lessonId),
-    //         await courseService.getById(courseId)
+    //         await lessonService.getOneById(lessonId),
+    //         await courseService.getOneById(courseId)
     //     ]);
     // } else {
-    //     lesson = await lessonService.getById(lessonId);
+    //     lesson = await lessonService.getOneById(lessonId);
     // }
 
     const data = {

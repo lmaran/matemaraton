@@ -3,44 +3,39 @@ const { ObjectID } = require("mongodb");
 
 const collection = "exercises";
 
-exports.getAll = async filter => {
+exports.getAll = async () => {
     const db = await mongoHelper.getDb();
     return db
         .collection(collection)
-        .find(filter)
+        .find()
         .toArray();
 };
 
-exports.getById = async id => {
+exports.getOneById = async id => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).findOne({ _id: new ObjectID(id) });
 };
 
-exports.getByCode = async code => {
+exports.getOneByCode = async code => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).findOne({ code });
 };
 
-exports.updateOne = async exercise => {
+exports.updateOne = async item => {
     const db = await mongoHelper.getDb();
-    //if (user.email) user.email = user.email.toLowerCase(); // ensures that the email is saved in lowerCase
-    exercise._id = new ObjectID(exercise._id);
-    //problem.modifiedOn = new Date();
-    return db.collection(collection).updateOne({ _id: exercise._id }, { $set: exercise });
+    item._id = new ObjectID(item._id);
+    return db.collection(collection).updateOne({ _id: item._id }, { $set: item });
 };
 
 exports.updateOneByCode = async exercise => {
     const db = await mongoHelper.getDb();
-    //if (user.email) user.email = user.email.toLowerCase(); // ensures that the email is saved in lowerCase
-    //exercise._id = new ObjectID(exercise._id);
-    //problem.modifiedOn = new Date();
     return db.collection(collection).updateOne({ code: exercise.code }, { $set: exercise });
 };
 
-exports.insertOne = async exercise => {
+exports.insertOne = async item => {
     const db = await mongoHelper.getDb();
-    exercise.createdOn = new Date();
-    return db.collection(collection).insertOne(exercise);
+    item.createdOn = new Date();
+    return db.collection(collection).insertOne(item);
 };
 
 exports.getObjectId = () => new ObjectID();
@@ -56,7 +51,7 @@ exports.deleteOneByCode = async code => {
     return db.collection(collection).deleteOne({ code });
 };
 
-exports.getByCodes = async codes => {
+exports.getAllByCodes = async codes => {
     //const idsAsObjectID = ids.map(x => new ObjectID(x));
     const db = await mongoHelper.getDb();
     return db

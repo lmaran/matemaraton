@@ -16,9 +16,9 @@ exports.getHomeworkSubmissionsPerStudent = async (req, res) => {
     let homeworkRequests = null;
 
     [student, homeworkRequests, cls] = await Promise.all([
-        await personService.getPersonById(studentId),
-        await homeworkService.getHomeworkRequestsByClassId(classId),
-        await classService.getClassById(classId)
+        await personService.getOneById(studentId),
+        await homeworkService.getAllByClassId(classId),
+        await classService.getOneById(classId)
     ]);
 
     if (homeworkRequests) {
@@ -98,7 +98,7 @@ exports.getHomeworkSubmissionsPerStudent = async (req, res) => {
 exports.getHomeworkRequest = async (req, res) => {
     const homeworkRequestId = req.params.homeworkRequestId;
 
-    const homeworkRequest = await homeworkService.getHomeworkRequestById(homeworkRequestId);
+    const homeworkRequest = await homeworkService.getOneById(homeworkRequestId);
     homeworkRequest.submissions = homeworkRequest.submissions || [];
     homeworkRequest.relatedCourses = homeworkRequest.relatedCourses || [];
 
@@ -107,9 +107,9 @@ exports.getHomeworkRequest = async (req, res) => {
     const coursesIds = homeworkRequest.relatedCourses;
 
     const [cls, students, courses] = await Promise.all([
-        await classService.getClassById(classId),
-        await personService.getPersonsByIds(studentsIds),
-        await courseSessionService.getCourseSessionsByIds(coursesIds)
+        await classService.getOneById(classId),
+        await personService.getAllByIds(studentsIds),
+        await courseSessionService.getAllByIds(coursesIds)
     ]);
 
     homeworkRequest.submissions.forEach(submission => {
@@ -141,14 +141,14 @@ exports.getHomeworkRequests = async (req, res) => {
     const classId = req.params.classId;
 
     const [cls, homeworkRequests] = await Promise.all([
-        await classService.getClassById(classId),
+        await classService.getOneById(classId),
         // await studentsAndClassesService.getStudentsMapByClassId(classId),
-        await homeworkService.getHomeworkRequestsByClassId(classId)
+        await homeworkService.getAllByClassId(classId)
     ]);
 
     // const studentsIds = studentsMapByClassId.map(x => x.studentId);
 
-    // const students = await personService.getPersonsByIds(studentsIds);
+    // const students = await personService.getAllByIds(studentsIds);
 
     homeworkRequests.forEach(x => {
         x.dueDateAsString = dateTimeHelper.getStringFromStringNoDay(x.dueDate);
@@ -174,14 +174,14 @@ exports.getTotalHomeworkSubmissions = async (req, res) => {
     const classId = req.params.classId;
 
     const [cls, studentsMapByClassId, homeworkRequests] = await Promise.all([
-        await classService.getClassById(classId),
+        await classService.getOneById(classId),
         await studentsAndClassesService.getStudentsMapByClassId(classId),
-        await homeworkService.getHomeworkRequestsByClassId(classId)
+        await homeworkService.getAllByClassId(classId)
     ]);
 
     const studentsIds = studentsMapByClassId.map(x => x.studentId);
 
-    const students = await personService.getPersonsByIds(studentsIds);
+    const students = await personService.getAllByIds(studentsIds);
 
     const today = dateTimeHelper.getFriendlyDate(new Date()).ymd; // 2020-02-17
     const closedRequests = homeworkRequests.filter(x => x.dueDate < today) || [];

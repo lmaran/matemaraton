@@ -35,9 +35,7 @@ exports.getByIdWithoutPsw2 = async id => {
 
 exports.updateOne = async user => {
     const db = await mongoHelper.getDb();
-    if (user.email) user.email = user.email.toLowerCase(); // ensures that the email is saved in lowerCase
     user._id = new ObjectID(user._id);
-    user.modifiedOn = new Date();
     return db.collection(collection).updateOne({ _id: user._id }, { $set: user });
 };
 
@@ -48,9 +46,7 @@ exports.resetPassword = async (userIdAsString, modifiedFields, removedFields) =>
         .updateOne({ _id: new ObjectID(userIdAsString) }, { $set: modifiedFields, $unset: removedFields });
 };
 
-exports.insertOne = async user => {
+exports.insertOne = async item => {
     const db = await mongoHelper.getDb();
-    if (user.email) user.email = user.email.toLowerCase(); // ensures that the email is saved in lowerCase
-    user.createdOn = new Date();
-    return db.collection(collection).insertOne(user);
+    return db.collection(collection).insertOne(item);
 };

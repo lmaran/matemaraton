@@ -3,12 +3,12 @@ const { ObjectID } = require("mongodb");
 
 const collection = "courseSessions";
 
-exports.getCourseSessionById = async id => {
+exports.getOneById = async id => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).findOne({ _id: new ObjectID(id) });
 };
 
-exports.getCourseSessionsByIds = async ids => {
+exports.getAllByIds = async ids => {
     const idsAsObjectID = ids.map(x => new ObjectID(x));
     const db = await mongoHelper.getDb();
     return db
@@ -51,14 +51,6 @@ exports.getCourseSessionsByClassIds = async classIds => {
         .find({ classId: { $in: classIds } })
         .toArray();
 };
-
-// exports.getCourseSessionsByClassIdAndStudentId = async (classId, studentId) => {
-//     const db = await mongoHelper.getDb();
-//     return db
-//         .collection(coursesCollection)
-//         .find({ classId: classId, studentsIds: studentId })
-//         .toArray();
-// };
 
 exports.bulkWriteCourses = async mongoOps => {
     const db = await mongoHelper.getDb();

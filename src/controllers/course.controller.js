@@ -28,7 +28,7 @@ exports.getCourses = async (req, res) => {
 
 exports.getCourse = async (req, res) => {
     const courseId = req.params.id;
-    const course = await courseService.getById(courseId);
+    const course = await courseService.getOneById(courseId);
 
     // 1. create a list of all unique lessonIds used in this course
     if (course.agenda) {

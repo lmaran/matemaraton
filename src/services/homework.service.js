@@ -3,7 +3,7 @@ const { ObjectID } = require("mongodb");
 
 const collection = "homework";
 
-exports.getHomeworkRequestById = async id => {
+exports.getOneById = async id => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).findOne({ _id: new ObjectID(id) });
 };
@@ -16,7 +16,7 @@ exports.getAll = async () => {
         .toArray();
 };
 
-exports.getHomeworkRequestsByClassId = async classId => {
+exports.getAllByClassId = async classId => {
     const db = await mongoHelper.getDb();
     return db
         .collection(collection)

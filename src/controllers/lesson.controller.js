@@ -8,7 +8,7 @@ exports.deleteLesson = async (req, res) => {
     if (!canDeleteLesson) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
-    lessonService.deleteOne(req.body._id);
+    lessonService.deleteOneById(req.body._id);
     res.redirect("/lectii");
 };
 
@@ -53,7 +53,7 @@ exports.createOrEditLessonGet = async (req, res) => {
     };
 
     if (isEditMode) {
-        const lesson = await lessonService.getById(req.params.id);
+        const lesson = await lessonService.getOneById(req.params.id);
 
         if (lesson.content) {
             lesson.content.textPreview = markdownService.render(lesson.content.text);
@@ -118,11 +118,11 @@ exports.getLesson = async (req, res) => {
     let lesson, course;
     if (courseId) {
         [lesson, course] = await Promise.all([
-            await lessonService.getById(lessonId),
-            await courseService.getById(courseId)
+            await lessonService.getOneById(lessonId),
+            await courseService.getOneById(courseId)
         ]);
     } else {
-        lesson = await lessonService.getById(lessonId);
+        lesson = await lessonService.getOneById(lessonId);
     }
 
     const data = {

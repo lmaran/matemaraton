@@ -3,20 +3,20 @@ const { ObjectID } = require("mongodb");
 
 const collection = "persons";
 
-exports.getPersonById = async id => {
+exports.getOneById = async id => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).findOne({ _id: new ObjectID(id) });
 };
 
-exports.getAllPersons = async filter => {
-    const db = await mongoHelper.getDb();
-    return db
-        .collection(collection)
-        .find(filter)
-        .toArray();
-};
+// exports.getAll = async () => {
+//     const db = await mongoHelper.getDb();
+//     return db
+//         .collection(collection)
+//         .find()
+//         .toArray();
+// };
 
-exports.getPersonsByIds = async ids => {
+exports.getAllByIds = async ids => {
     const idsAsObjectID = ids.map(x => new ObjectID(x));
     const db = await mongoHelper.getDb();
     return db

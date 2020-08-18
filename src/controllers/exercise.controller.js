@@ -83,7 +83,7 @@ exports.createOrEditExerciseGet = async (req, res) => {
     };
 
     if (isEditMode) {
-        const exercise = await exerciseService.getByCode(req.params.code);
+        const exercise = await exerciseService.getOneByCode(req.params.code);
 
         exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
         exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
@@ -252,7 +252,7 @@ exports.getExercises = async (req, res) => {
 };
 
 exports.getExerciseByCode = async (req, res) => {
-    const exercise = await exerciseService.getByCode(req.params.code);
+    const exercise = await exerciseService.getOneByCode(req.params.code);
 
     if (exercise && exercise.question) {
         if (exercise.question.statement)
@@ -273,7 +273,7 @@ exports.updateStatement = async (req, res) => {
     const exerciseId = req.params.id;
     const exerciseStatement = req.body.exerciseStatement;
 
-    const exercise = await exerciseService.getById(exerciseId);
+    const exercise = await exerciseService.getOneById(exerciseId);
 
     exercise.question.statement.text = exerciseStatement;
 

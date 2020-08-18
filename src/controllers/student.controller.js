@@ -12,13 +12,13 @@ exports.getStudentsPerClass = async (req, res) => {
     const classId = req.params.classId;
 
     const [cls, studentsMapByClassId] = await Promise.all([
-        await classService.getClassById(classId),
+        await classService.getOneById(classId),
         await studentsAndClassesService.getStudentsMapByClassId(classId)
     ]);
 
     const studentsIds = studentsMapByClassId.map(x => x.studentId);
 
-    let students = await personService.getPersonsByIds(studentsIds);
+    let students = await personService.getAllByIds(studentsIds);
 
     const canReadStudentFullName = await autz.can(req.user, "read:student/full-name");
 
@@ -53,7 +53,6 @@ exports.getStudentsPerClass = async (req, res) => {
 exports.getStudent = async (req, res) => {
     const studentId = req.params.studentId;
 
-    // const student = await personService.getPersonById(studentId);
     const [clsMapLines, studentAndTheirParents] = await Promise.all([
         await studentsAndClassesService.getClassesByStudentId(studentId),
         await personService.getStudentAndTheirParentsById(studentId)
@@ -62,7 +61,7 @@ exports.getStudent = async (req, res) => {
     const student = studentAndTheirParents.find(x => x._id.toString() === studentId);
     const parents = studentAndTheirParents.filter(x => x.studentIds && x.studentIds.length > 0);
 
-    const classes = await classService.getClassesByIds(clsMapLines.map(x => x.classId));
+    const classes = await classService.getAllByIds(clsMapLines.map(x => x.classId));
 
     // add "shortName" (e.g.  "Vali M.")
     student.shortName = studentHelper.getShortNameForStudent(student);
