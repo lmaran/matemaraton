@@ -55,3 +55,12 @@ exports.deleteOneByCode = async code => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).deleteOne({ code });
 };
+
+exports.getByCodes = async codes => {
+    //const idsAsObjectID = ids.map(x => new ObjectID(x));
+    const db = await mongoHelper.getDb();
+    return db
+        .collection(collection)
+        .find({ code: { $in: codes } })
+        .toArray();
+};

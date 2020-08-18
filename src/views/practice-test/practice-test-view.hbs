@@ -27,8 +27,10 @@
 
 
 Clasa: {{practiceTest.grade}} </br>
-Nume: {{practiceTest.name}} </br>
-Exercises: {{practiceTest.exercises}} </br>
+
+{{#each practiceTest.exercises}}
+<div>{{question.statement.text}}</div>
+{{/each}}
 
 {{#if canCreateOrEditPracticeTest}}
 <a href="/teste/edit/{{practiceTest._id}}">Edit</a>

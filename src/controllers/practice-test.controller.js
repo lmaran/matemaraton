@@ -1,4 +1,5 @@
 const practiceTestService = require("../services/practice-test.service");
+const exerciseService = require("../services/exercise.service");
 const autz = require("../services/autz.service");
 const markdownService = require("../services/markdown.service");
 
@@ -16,6 +17,11 @@ exports.getAll = async (req, res) => {
 exports.getOneById = async (req, res) => {
     const practiceTestId = req.params.practiceTestId;
     const practiceTest = await practiceTestService.getOneById(practiceTestId);
+
+    if (practiceTest.exercises) {
+        const codes = practiceTest.exercises.map(x => x.code);
+        practiceTest.exercises = await exerciseService.getByCodes(codes);
+    }
 
     //const courseId = req.params.courseId;
 
