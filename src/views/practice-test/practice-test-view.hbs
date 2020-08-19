@@ -29,7 +29,9 @@
 Clasa: {{practiceTest.grade}} </br>
 
 {{#each practiceTest.exercises}}
-<div>{{question.statement.text}}</div>
+{{!-- <div>{{question.statement.text}}</div> --}}
+<div style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
+    {{{question.statement.textPreview}}}</div> <br>
 {{/each}}
 
 {{#if canCreateOrEditPracticeTest}}

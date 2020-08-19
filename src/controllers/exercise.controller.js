@@ -3,7 +3,7 @@ const idGeneratorMongoService = require("../services/id-generator-mongo.service"
 const autz = require("../services/autz.service");
 const markdownService = require("../services/markdown.service");
 
-exports.deleteExercise = async (req, res) => {
+exports.deleteOneById = async (req, res) => {
     const canDeleteExercise = await autz.can(req.user, "delete:exercise");
     if (!canDeleteExercise) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
@@ -12,7 +12,7 @@ exports.deleteExercise = async (req, res) => {
     res.redirect("/exercitii");
 };
 
-exports.createOrEditExerciseGet = async (req, res) => {
+exports.createOrEditGet = async (req, res) => {
     const canCreateOrEditExercise = await autz.can(req.user, "create-or-edit:exercise");
     if (!canCreateOrEditExercise) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
@@ -107,7 +107,7 @@ exports.createOrEditExerciseGet = async (req, res) => {
     res.render("exercise/exercise-create-or-edit", data);
 };
 
-exports.createOrEditExercisePost = async (req, res) => {
+exports.createOrEditPost = async (req, res) => {
     try {
         const canCreateOrEditExercise = await autz.can(req.user, "create-or-edit:exercise");
         if (!canCreateOrEditExercise) {
@@ -217,7 +217,7 @@ exports.createOrEditExercisePost = async (req, res) => {
     }
 };
 
-exports.getExercises = async (req, res) => {
+exports.getAll = async (req, res) => {
     const exercises = await exerciseService.getAll();
 
     exercises.forEach(exercise => {
@@ -251,7 +251,7 @@ exports.getExercises = async (req, res) => {
     res.render("exercise/exercise-list", data);
 };
 
-exports.getExerciseByCode = async (req, res) => {
+exports.getOneByCode = async (req, res) => {
     const exercise = await exerciseService.getOneByCode(req.params.code);
 
     if (exercise && exercise.question) {

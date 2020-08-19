@@ -21,6 +21,29 @@ exports.getOneById = async (req, res) => {
     if (practiceTest.exercises) {
         const codes = practiceTest.exercises.map(x => x.code);
         practiceTest.exercises = await exerciseService.getAllByCodes(codes);
+
+        practiceTest.exercises.forEach(exercise => {
+            let statement = `**[E.${exercise.code}.](/exercitii/${exercise.code})** ${exercise.question.statement.text}`;
+
+            if (exercise.question.answerOptions) {
+                exercise.question.answerOptions.forEach(answerOption => {
+                    statement = statement + "\n" + "* " + answerOption.text;
+                });
+            }
+
+            exercise.question.statement.textPreview = markdownService.render(statement);
+
+            if (exercise.question.solution) {
+                exercise.question.solution.textPreview = markdownService.render(
+                    `**Soluție:** ${exercise.question.solution.text}`
+                );
+            }
+            if (exercise.question.hints) {
+                exercise.question.hints.forEach((hint, idx) => {
+                    hint.textPreview = markdownService.render(`**Hint ${idx + 1}:** ${hint.text}`);
+                });
+            }
+        });
     }
 
     //const courseId = req.params.courseId;
