@@ -19,11 +19,11 @@ exports.getOneById = async (req, res) => {
     const practiceTest = await practiceTestService.getOneById(practiceTestId);
 
     if (practiceTest.exercises) {
-        const codes = practiceTest.exercises.map(x => x.code);
-        practiceTest.exercises = await exerciseService.getAllByCodes(codes);
+        const ids = practiceTest.exercises.map(x => x.id);
+        practiceTest.exercises = await exerciseService.getAllByIds(ids);
 
         practiceTest.exercises.forEach(exercise => {
-            let statement = `**[E.${exercise.code}.](/exercitii/${exercise.code})** ${exercise.question.statement.text}`;
+            let statement = `**[E.${exercise.code}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
 
             if (exercise.question.answerOptions) {
                 exercise.question.answerOptions.forEach(answerOption => {

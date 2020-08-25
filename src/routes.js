@@ -50,26 +50,25 @@ router.get("/teste/:practiceTestId", practiceTestController.getOneById);
 router.post("/teste/sterge", isAuthenticated, practiceTestController.deleteOneById);
 
 // lessons
-router.get("/lectii", lessonController.getLessons);
-router.get("/lectii/edit/:id", isAuthenticated, lessonController.createOrEditLessonGet);
-router.post("/lectii/edit/:id", isAuthenticated, lessonController.createOrEditLessonPost);
-router.get("/lectii/adauga", isAuthenticated, lessonController.createOrEditLessonGet);
-router.post("/lectii/adauga", isAuthenticated, lessonController.createOrEditLessonPost);
-router.get("/lectii/:lessonId", lessonController.getLesson);
+router.get("/lectii", lessonController.getAll);
+router.get("/lectii/edit/:id", isAuthenticated, lessonController.createOrEditGet);
+router.post("/lectii/edit/:id", isAuthenticated, lessonController.createOrEditPost);
+router.get("/lectii/adauga", isAuthenticated, lessonController.createOrEditGet);
+router.post("/lectii/adauga", isAuthenticated, lessonController.createOrEditPost);
+router.get("/lectii/:id", lessonController.getOneById);
+router.get("/cursuri/:courseId/lectii/:id", lessonController.getOneById);
 router.post("/lectii/sterge", isAuthenticated, lessonController.deleteLesson);
 
 // exercises
 router.get("/exercitii", isAuthenticated, exerciseController.getAll);
-router.get("/exercitii/edit/:code", isAuthenticated, exerciseController.createOrEditGet);
-router.post("/exercitii/edit/:code", isAuthenticated, exerciseController.createOrEditPost);
+router.get("/exercitii/edit/:id", isAuthenticated, exerciseController.createOrEditGet);
+router.post("/exercitii/edit/:id", isAuthenticated, exerciseController.createOrEditPost);
 router.get("/exercitii/adauga", isAuthenticated, exerciseController.createOrEditGet);
 router.post("/exercitii/adauga", isAuthenticated, exerciseController.createOrEditPost);
-router.get("/exercitii/:code", isAuthenticated, exerciseController.getOneByCode);
-//router.put("/exercitii/statement/:id", isAuthenticated, exerciseController.updateStatement);
+router.get("/exercitii/:id", isAuthenticated, exerciseController.getOneById);
 router.post("/exercitii/sterge", isAuthenticated, exerciseController.deleteOneById);
 
-router.get("/cursuri/:courseId/lectii/:lessonId", lessonController.getLesson);
-
+// markdown
 router.post("/markdown/get-rendered-markdown", isAuthenticated, markdownController.getGetRenderedMarkdown);
 
 // presence

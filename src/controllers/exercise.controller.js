@@ -8,7 +8,7 @@ exports.deleteOneById = async (req, res) => {
     if (!canDeleteExercise) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
-    exerciseService.deleteOneByCode(req.body.code);
+    exerciseService.deleteOneById(req.body.id);
     res.redirect("/exercitii");
 };
 
@@ -18,7 +18,7 @@ exports.createOrEditGet = async (req, res) => {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
 
-    const isEditMode = !!req.params.code;
+    const isEditMode = !!req.params.id;
 
     const gradeAvailableOptions = [
         { text: "Primar", value: "P" },
@@ -83,7 +83,7 @@ exports.createOrEditGet = async (req, res) => {
     };
 
     if (isEditMode) {
-        const exercise = await exerciseService.getOneByCode(req.params.code);
+        const exercise = await exerciseService.getOneById(req.params.id);
 
         exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
         exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
@@ -115,7 +115,7 @@ exports.createOrEditPost = async (req, res) => {
         }
 
         const {
-            code,
+            id,
             grade,
             branch,
             contestType,
@@ -129,10 +129,9 @@ exports.createOrEditPost = async (req, res) => {
             statement,
             solution
         } = req.body;
-        const isEditMode = !!code;
+        const isEditMode = !!id;
 
         const exercise = {
-            code,
             question: { statement: { text: statement }, solution: { text: solution } },
             grade,
             branch,
@@ -204,14 +203,16 @@ exports.createOrEditPost = async (req, res) => {
         }
 
         if (isEditMode) {
-            exerciseService.updateOneByCode(exercise);
+            exercise._id = id;
+            exerciseService.updateOne(exercise);
         } else {
             exercise.code = await idGeneratorMongoService.getNextId("exercises");
-            exerciseService.insertOne(exercise);
+            const result = await exerciseService.insertOne(exercise);
+            exercise._id = result.insertedId;
         }
 
         //res.send(exercise);
-        res.redirect(`/exercitii/edit/${exercise.code}`);
+        res.redirect(`/exercitii/edit/${exercise._id}`);
     } catch (err) {
         return res.status(500).json(err.message);
     }
@@ -221,7 +222,7 @@ exports.getAll = async (req, res) => {
     const exercises = await exerciseService.getAll();
 
     exercises.forEach(exercise => {
-        let statement = `**[E.${exercise.code}.](/exercitii/${exercise.code})** ${exercise.question.statement.text}`;
+        let statement = `**[E.${exercise.code}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
 
         if (exercise.question.answerOptions) {
             exercise.question.answerOptions.forEach(answerOption => {
@@ -251,8 +252,8 @@ exports.getAll = async (req, res) => {
     res.render("exercise/exercise-list", data);
 };
 
-exports.getOneByCode = async (req, res) => {
-    const exercise = await exerciseService.getOneByCode(req.params.code);
+exports.getOneById = async (req, res) => {
+    const exercise = await exerciseService.getOneById(req.params.id);
 
     if (exercise && exercise.question) {
         if (exercise.question.statement)
@@ -267,19 +268,4 @@ exports.getOneByCode = async (req, res) => {
     };
     //res.send(data);
     res.render("exercise/exercise", data);
-};
-
-exports.updateStatement = async (req, res) => {
-    const exerciseId = req.params.id;
-    const exerciseStatement = req.body.exerciseStatement;
-
-    const exercise = await exerciseService.getOneById(exerciseId);
-
-    exercise.question.statement.text = exerciseStatement;
-
-    exerciseService.updateOne(exercise); // don't have to await
-
-    // update preview field also
-    exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
-    res.status(200).json(exercise); // or res.status(204).send();  for No Content
 };
