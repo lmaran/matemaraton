@@ -7,7 +7,7 @@ const stringHelper = require("../helpers/string.helper");
 
 exports.getClass = async (req, res) => {
     const classId = req.params.classId;
-    const cls = await classService.getClassById(classId);
+    const cls = await classService.getOneById(classId);
 
     const courseSummary = await courseService.getCourseSummaryByCode(cls.courseCode);
 

@@ -6,7 +6,7 @@ exports.getCourseSessionsPerClass = async (req, res) => {
     const classId = req.params.classId;
 
     const [cls, courses] = await Promise.all([
-        await classService.getClassById(classId),
+        await classService.getOneById(classId),
         await courseSessionService.getCourseSessionsByClassId(classId)
     ]);
 
@@ -30,7 +30,7 @@ exports.getCourseSessionsPerClassWithPhotos = async (req, res) => {
     const classId = req.params.classId;
 
     const [cls, courses] = await Promise.all([
-        await classService.getClassById(classId),
+        await classService.getOneById(classId),
         await courseSessionService.getCourseSessionsByClassId(classId)
     ]);
 
@@ -54,8 +54,8 @@ exports.getCourseSessionsPerClassWithPhotos = async (req, res) => {
 exports.getCourseSession = async (req, res) => {
     const courseSessionId = req.params.courseSessionId;
 
-    const course = await courseSessionService.getCourseSessionById(courseSessionId);
-    const cls = await classService.getClassById(course.classId);
+    const course = await courseSessionService.getOneById(courseSessionId);
+    const cls = await classService.getOneById(course.classId);
 
     course.dateAsString = dateTimeHelper.getStringFromStringNoDay(course.date);
 

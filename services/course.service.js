@@ -3,19 +3,15 @@ const { ObjectID } = require("mongodb");
 
 const collection = "courses";
 
-/**
- * CRUD operations
- */
-
-exports.getAll = async filter => {
+exports.getAll = async () => {
     const db = await mongoHelper.getDb();
     return db
         .collection(collection)
-        .find(filter)
+        .find()
         .toArray();
 };
 
-exports.getById = async id => {
+exports.getOneById = async id => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).findOne({ _id: new ObjectID(id) });
 };

@@ -1,5 +1,4 @@
 // const { ObjectID } = require("mongodb");
-// const matemaratonService = require("../services/matemaraton.service");
 // const studentService = require("../services/student.service");
 // const personService = require("../services/person.service");
 // const classService = require("../services/class.service");
@@ -11,7 +10,7 @@ exports.upgradeOperation = async (req, res) => {
 
 // exports.upgradeOperation = async (req, res) => {
 //     const studentsAndClasses = await studentsAndClassesService.getAll();
-//     const persons = await personService.getAllPersons();
+//     const persons = await personService.getAll();
 
 //     const mongoOps = [];
 //     studentsAndClasses.forEach(x => {
@@ -46,7 +45,7 @@ exports.upgradeOperation = async (req, res) => {
 
 // exports.removeParentDetails = async (req, res) => {
 //     // same for students. we'll keep only the IDs and drop all other details
-//     const persons = await personService.getAllPersons();
+//     const persons = await personService.getAll();
 
 //     const mongoOps = [];
 //     persons.forEach(person => {
@@ -113,7 +112,7 @@ exports.upgradeOperation = async (req, res) => {
 
 // exports.moveSchoolClassNameFromStudentToPerson = async (req, res) => {
 //     const students = await studentService.getAll();
-//     const persons = await personService.getAllPersons();
+//     const persons = await personService.getAll();
 
 //     const mongoOps = [];
 //     persons.forEach(person => {

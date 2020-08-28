@@ -3,27 +3,29 @@ const idGeneratorMongoService = require("../services/id-generator-mongo.service"
 const autz = require("../services/autz.service");
 const markdownService = require("../services/markdown.service");
 
-exports.deleteExercise = async (req, res) => {
+exports.deleteOneById = async (req, res) => {
     const canDeleteExercise = await autz.can(req.user, "delete:exercise");
     if (!canDeleteExercise) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
-    exerciseService.deleteOneByCode(req.body.code);
+    exerciseService.deleteOneById(req.body.id);
     res.redirect("/exercitii");
 };
 
-exports.createOrEditExerciseGet = async (req, res) => {
+exports.createOrEditGet = async (req, res) => {
     const canCreateOrEditExercise = await autz.can(req.user, "create-or-edit:exercise");
     if (!canCreateOrEditExercise) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
 
-    const isEditMode = !!req.params.code;
+    const isEditMode = !!req.params.id;
 
     const gradeAvailableOptions = [
         { text: "Primar", value: "P" },
         { text: "Clasa a V-a", value: "5" },
-        { text: "Clasa a VI-a", value: "6" }
+        { text: "Clasa a VI-a", value: "6" },
+        { text: "Clasa a VII-a", value: "7" },
+        { text: "Clasa a VIII-a", value: "8" }
     ];
 
     const branchAvailableOptions = [
@@ -73,19 +75,34 @@ exports.createOrEditExerciseGet = async (req, res) => {
         { text: "Numere Reale", value: "numere-reale" }
     ];
 
+    const subchapterAvailableOptions = [
+        { text: "Rapoarte și proporții", value: "rapoarte-si-proportii" }
+        // { text: "Numere Raționale", value: "numere-rationale" },
+        // { text: "Numere Reale", value: "numere-reale" }
+    ];
+
+    const lessonAvailableOptions = [
+        { text: "Metoda reducerii numărului de variabile", value: "metoda-reducerii-numarului-de-variabile" }
+        // { text: "Numere Raționale", value: "numere-rationale" },
+        // { text: "Numere Reale", value: "numere-reale" }
+    ];
+
     const data = {
         isEditMode,
         gradeAvailableOptions,
         branchAvailableOptions,
         contestTypeAvailableOptions,
         sourceTypeAvailableOptions,
-        chapterAvailableOptions
+        chapterAvailableOptions,
+        subchapterAvailableOptions,
+        lessonAvailableOptions
     };
 
     if (isEditMode) {
-        const exercise = await exerciseService.getByCode(req.params.code);
+        const exercise = await exerciseService.getOneById(req.params.id);
 
         exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
+        exercise.question.answer.textPreview = markdownService.render(exercise.question.answer.text);
         exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
 
         if (exercise.question.hints) {
@@ -107,7 +124,7 @@ exports.createOrEditExerciseGet = async (req, res) => {
     res.render("exercise/exercise-create-or-edit", data);
 };
 
-exports.createOrEditExercisePost = async (req, res) => {
+exports.createOrEditPost = async (req, res) => {
     try {
         const canCreateOrEditExercise = await autz.can(req.user, "create-or-edit:exercise");
         if (!canCreateOrEditExercise) {
@@ -115,7 +132,7 @@ exports.createOrEditExercisePost = async (req, res) => {
         }
 
         const {
-            code,
+            id,
             grade,
             branch,
             contestType,
@@ -123,17 +140,19 @@ exports.createOrEditExercisePost = async (req, res) => {
             sourceType,
             sourceName,
             chapter,
+            subchapter,
+            lesson,
             author,
             tags,
             obs,
             statement,
+            answer,
             solution
         } = req.body;
-        const isEditMode = !!code;
+        const isEditMode = !!id;
 
         const exercise = {
-            code,
-            question: { statement: { text: statement }, solution: { text: solution } },
+            question: { statement: { text: statement }, solution: { text: solution }, answer: { text: answer } },
             grade,
             branch,
             contestType,
@@ -141,6 +160,8 @@ exports.createOrEditExercisePost = async (req, res) => {
             sourceType,
             sourceName,
             chapter,
+            subchapter,
+            lesson,
             author,
             tags,
             obs
@@ -204,24 +225,26 @@ exports.createOrEditExercisePost = async (req, res) => {
         }
 
         if (isEditMode) {
-            exerciseService.updateOneByCode(exercise);
+            exercise._id = id;
+            exerciseService.updateOne(exercise);
         } else {
             exercise.code = await idGeneratorMongoService.getNextId("exercises");
-            exerciseService.insertOne(exercise);
+            const result = await exerciseService.insertOne(exercise);
+            exercise._id = result.insertedId;
         }
 
         //res.send(exercise);
-        res.redirect(`/exercitii/edit/${exercise.code}`);
+        res.redirect(`/exercitii/edit/${exercise._id}`);
     } catch (err) {
         return res.status(500).json(err.message);
     }
 };
 
-exports.getExercises = async (req, res) => {
+exports.getAll = async (req, res) => {
     const exercises = await exerciseService.getAll();
 
     exercises.forEach(exercise => {
-        let statement = `**[E.${exercise.code}.](/exercitii/${exercise.code})** ${exercise.question.statement.text}`;
+        let statement = `**[E.${exercise.code}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
 
         if (exercise.question.answerOptions) {
             exercise.question.answerOptions.forEach(answerOption => {
@@ -251,14 +274,34 @@ exports.getExercises = async (req, res) => {
     res.render("exercise/exercise-list", data);
 };
 
-exports.getExerciseByCode = async (req, res) => {
-    const exercise = await exerciseService.getByCode(req.params.code);
+exports.getOneById = async (req, res) => {
+    const exercise = await exerciseService.getOneById(req.params.id);
 
     if (exercise && exercise.question) {
-        if (exercise.question.statement)
-            exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
+        if (exercise.question.statement) {
+            let statement = `**E.${exercise.code}.** ${exercise.question.statement.text}`;
+
+            if (exercise.question.answerOptions) {
+                exercise.question.answerOptions.forEach(answerOption => {
+                    statement = statement + "\n" + "* " + answerOption.text;
+                });
+            }
+
+            exercise.question.statement.textPreview = markdownService.render(statement);
+            //exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
+        }
+
+        if (exercise.question.answer)
+            exercise.question.answer.textPreview = markdownService.render(exercise.question.answer.text);
+
         if (exercise.question.solution)
             exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
+
+        if (exercise.question.hints) {
+            exercise.question.hints.forEach((hint, idx) => {
+                hint.textPreview = markdownService.render(`**Indicația ${idx + 1}:** ${hint.text}`);
+            });
+        }
     }
 
     const data = {
@@ -267,19 +310,4 @@ exports.getExerciseByCode = async (req, res) => {
     };
     //res.send(data);
     res.render("exercise/exercise", data);
-};
-
-exports.updateStatement = async (req, res) => {
-    const exerciseId = req.params.id;
-    const exerciseStatement = req.body.exerciseStatement;
-
-    const exercise = await exerciseService.getById(exerciseId);
-
-    exercise.question.statement.text = exerciseStatement;
-
-    exerciseService.updateOne(exercise); // don't have to await
-
-    // update preview field also
-    exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
-    res.status(200).json(exercise); // or res.status(204).send();  for No Content
 };

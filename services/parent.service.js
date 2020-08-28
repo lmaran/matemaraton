@@ -16,7 +16,7 @@ exports.getAll = async () => {
         .toArray();
 };
 
-exports.insertOne = async parent => {
+exports.insertOne = async item => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).insertOne(parent);
+    return db.collection(collection).insertOne(item);
 };

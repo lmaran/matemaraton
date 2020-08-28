@@ -8,11 +8,69 @@
 </nav>
 
 
-<h1>Exercițiul {{exercise.code}}</h1>
+{{!-- <h1>Exercițiul {{exercise.code}}</h1> --}}
 
 
-<div id="question-txt" rows="15" cols="150">{{{exercise.question.statement.textPreview}}}</div>
+<div style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
+    {{{exercise.question.statement.textPreview}}}
+</div>
+<div class="font-italic small text-right text-muted">{{exercise.contestName}}</div>
+<div class="font-italic small text-right text-muted">{{exercise.sourceName}}</div>
+
+
+{{#if exercise.question.answer}}
+<div>
+    <button id="toggle-answer-btn" type="button" class="btn btn-link p-0">Răspuns</button>
+</div>
+<div id="answer-div" class="d-none">
+    {{{exercise.question.answer.textPreview}}}
+</div>
+{{/if}}
+
+
+{{#if exercise.question.hints}}
+<div>
+    <button id="toggle-hints-btn" type="button" class="btn btn-link p-0">Indicații
+    </button>
+    <span class="align-middle text-muted">({{exercise.question.hints.length}})</span>
+    {{!-- <span class="align-middle text-muted ml-2 mr-2">|</span>
+    <button id2="toggle-hints-btn" type="button" class="btn btn-link p-0">Vezi următoarea indicație
+    </button> --}}
+</div>
+<div id="hints-div" class="d-none mb-4" data-total-hints="{{exercise.question.hints.length}}"
+    style="border: 1px solid #007bff; padding: 6px 12px; background-color: #f5faff; min-height:58px">
+    {{#each exercise.question.hints}}
+    <div {{#if (ne @index 0)}} class="d-none" {{/if}} data-hint-nr="{{inc @index}}">{{{textPreview}}}</div>
+    {{/each}}
+    {{#if (gt exercise.question.hints.length 1)}}
+    <button id="view-next-hint-btn" type="button" class="btn btn-link p-0">Vezi următoarea indicație</button>
+    {{/if}}
+</div>
+{{/if}}
+
+
+{{#if exercise.question.solution}}
+<div>
+    <button id="toggle-solution-btn" type="button" class="btn btn-link p-0">Rezolvare completă</button>
+</div>
+<div id="solution-div" class="d-none"
+    style="border: 1px solid #008000; padding: 6px 12px; background-color: #f5fff5; min-height:58px">
+    {{{exercise.question.solution.textPreview}}}
+</div>
+
+
+
+{{/if}}
+
+
+
+
 
 {{#if canCreateOrEditExercise}}
-<a href="/exercitii/edit/{{exercise.code}}">Edit</a>
+<hr>
+<a href="/exercitii/edit/{{exercise._id}}">Edit</a>
 {{/if}}
+
+{{#section 'script'}}
+<script type="module" src="/js/exercise/exercise.main.js"></script>
+{{/section}}

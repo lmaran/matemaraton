@@ -8,11 +8,11 @@ exports.deleteLesson = async (req, res) => {
     if (!canDeleteLesson) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
-    lessonService.deleteOne(req.body._id);
+    lessonService.deleteOneById(req.body._id);
     res.redirect("/lectii");
 };
 
-exports.createOrEditLessonGet = async (req, res) => {
+exports.createOrEditGet = async (req, res) => {
     const canCreateOrEditLesson = await autz.can(req.user, "create-or-edit:lesson");
     if (!canCreateOrEditLesson) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
@@ -53,7 +53,7 @@ exports.createOrEditLessonGet = async (req, res) => {
     };
 
     if (isEditMode) {
-        const lesson = await lessonService.getById(req.params.id);
+        const lesson = await lessonService.getOneById(req.params.id);
 
         if (lesson.content) {
             lesson.content.textPreview = markdownService.render(lesson.content.text);
@@ -65,15 +65,15 @@ exports.createOrEditLessonGet = async (req, res) => {
     res.render("lesson/lesson-create-or-edit", data);
 };
 
-exports.createOrEditLessonPost = async (req, res) => {
+exports.createOrEditPost = async (req, res) => {
     try {
         const canCreateOrEditLesson = await autz.can(req.user, "create-or-edit:lesson");
         if (!canCreateOrEditLesson) {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
 
-        const { _id, grade, scope, branch, chapter, title, content } = req.body;
-        const isEditMode = !!_id;
+        const { id, grade, scope, branch, chapter, title, content } = req.body;
+        const isEditMode = !!id;
 
         const lesson = {
             grade,
@@ -85,7 +85,7 @@ exports.createOrEditLessonPost = async (req, res) => {
         };
 
         if (isEditMode) {
-            lesson._id = _id;
+            lesson._id = id;
             lessonService.updateOne(lesson);
         } else {
             //exercise.code = await idGeneratorMongoService.getNextId("exercises");
@@ -100,7 +100,7 @@ exports.createOrEditLessonPost = async (req, res) => {
     }
 };
 
-exports.getLessons = async (req, res) => {
+exports.getAll = async (req, res) => {
     const lessons = await lessonService.getAll();
 
     const data = {
@@ -111,18 +111,18 @@ exports.getLessons = async (req, res) => {
     res.render("lesson/lesson-list", data);
 };
 
-exports.getLesson = async (req, res) => {
-    const lessonId = req.params.lessonId;
+exports.getOneById = async (req, res) => {
+    const id = req.params.id;
     const courseId = req.params.courseId;
 
     let lesson, course;
     if (courseId) {
         [lesson, course] = await Promise.all([
-            await lessonService.getById(lessonId),
-            await courseService.getById(courseId)
+            await lessonService.getOneById(id),
+            await courseService.getOneById(courseId)
         ]);
     } else {
-        lesson = await lessonService.getById(lessonId);
+        lesson = await lessonService.getOneById(id);
     }
 
     const data = {

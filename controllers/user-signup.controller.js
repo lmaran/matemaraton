@@ -28,6 +28,7 @@ exports.postInviteToSignup = async (req, res) => {
             existingUser.invitationInfo = invitationInfo;
             existingUser.status = "invited";
             existingUser.signupCode = uniqueId;
+            existingUser.modifiedOn = new Date();
 
             await userService.updateOne(existingUser);
         } else {
@@ -35,8 +36,10 @@ exports.postInviteToSignup = async (req, res) => {
                 invitationInfo,
                 status: "invited",
                 signupCode: uniqueId,
-                email
+                createdOn: new Date()
             };
+            if (email) newUser.email = email.toLowerCase(); // ensures that the email is saved in lowerCase
+
             await userService.insertOne(newUser);
         }
 

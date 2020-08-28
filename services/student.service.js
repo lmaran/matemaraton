@@ -16,16 +16,6 @@ exports.getAll = async () => {
         .toArray();
 };
 
-exports.getStudentsByIds = async ids => {
-    const idsAsObjectID = ids.map(x => new ObjectID(x));
-    const db = await mongoHelper.getDb();
-    return db
-        .collection(collection)
-        .find({ _id: { $in: idsAsObjectID } })
-        .sort({ lastName: 1 })
-        .toArray();
-};
-
 exports.getAllFromSiiir = async () => {
     const db = await mongoHelper.getDb();
     return db
@@ -46,12 +36,12 @@ exports.getAllFromSiiir = async () => {
         .toArray();
 };
 
-exports.insertMany = async students => {
+exports.insertMany = async items => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).insertMany(students);
+    return db.collection(collection).insertMany(items);
 };
 
-exports.insertOne = async student => {
+exports.insertOne = async item => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).insertOne(student);
+    return db.collection(collection).insertOne(item);
 };

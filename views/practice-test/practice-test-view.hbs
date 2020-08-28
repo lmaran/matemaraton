@@ -1,0 +1,39 @@
+<style>
+</style>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        {{#if course}}
+        <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{course._id}}/">{{course.code}}</a></li>
+        {{else}}
+        <li class="breadcrumb-item"><a href="/teste/">Teste</a></li>
+        {{/if}}
+        <li class="breadcrumb-item active" aria-current="page">{{practiceTest.name}}</li>
+    </ol>
+</nav>
+
+<h1><span class="font-weight-light text-secondary h4">{{practiceTest.name}}</span>
+</h1>
+{{!-- <h2 class="mb-5">{{class.name}}</h2> --}}
+
+
+{{!-- <h3 class="mt-5" {{#if noCourse}} class="text-muted" {{/if}}>{{course.dateAsString}}</h3> --}}
+
+
+
+{{!-- <div class="h4 font-weight-light">{{course.description}}</div> --}}
+
+
+Clasa: {{practiceTest.grade}} </br>
+
+{{#each practiceTest.exercises}}
+{{!-- <div>{{question.statement.text}}</div> --}}
+<div style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
+    {{{question.statement.textPreview}}}</div> <br>
+{{/each}}
+
+{{#if canCreateOrEditPracticeTest}}
+<a href="/teste/edit/{{practiceTest._id}}">Edit</a>
+{{/if}}

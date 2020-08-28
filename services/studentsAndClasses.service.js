@@ -1,11 +1,11 @@
 const mongoHelper = require("../helpers/mongo.helper");
 
-const studentsAndClassesCollection = "studentsAndClasses";
+const collection = "studentsAndClasses";
 
 exports.getAll = async () => {
     const db = await mongoHelper.getDb();
     return db
-        .collection(studentsAndClassesCollection)
+        .collection(collection)
         .find()
         .toArray();
 };
@@ -13,7 +13,7 @@ exports.getAll = async () => {
 exports.getStudentsMapByClassId = async classId => {
     const db = await mongoHelper.getDb();
     return db
-        .collection(studentsAndClassesCollection)
+        .collection(collection)
         .find({ classId })
         .toArray();
 
@@ -24,25 +24,25 @@ exports.getStudentsMapByClassId = async classId => {
 
 exports.getClassMapByStudentId = async (classId, studentId) => {
     const db = await mongoHelper.getDb();
-    return db.collection(studentsAndClassesCollection).findOne({ classId, studentId });
+    return db.collection(collection).findOne({ classId, studentId });
 };
 
 exports.getClassesByStudentId = async studentId => {
     const db = await mongoHelper.getDb();
     return db
-        .collection(studentsAndClassesCollection)
+        .collection(collection)
         .find({ studentId })
         .toArray();
 };
 
 exports.insertManyStudentsAndClasses = async studentsAndClasses => {
     const db = await mongoHelper.getDb();
-    return db.collection(studentsAndClassesCollection).insertMany(studentsAndClasses);
+    return db.collection(collection).insertMany(studentsAndClasses);
 };
 
 exports.bulkWrite = async mongoOps => {
     const db = await mongoHelper.getDb();
-    return db.collection(studentsAndClassesCollection).bulkWrite(mongoOps, { ordered: false });
+    return db.collection(collection).bulkWrite(mongoOps, { ordered: false });
 };
 
 // exports.getStudentsPerClass = async classId => {

@@ -10,7 +10,7 @@
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item"><a href="/lectii">Lecții</a></li>
         <li class="breadcrumb-item active" aria-current="page">
-            {{#if isEditMode}} Edit: {{lesson.title}}{{else}}Adaugă{{/if}}
+            {{#if isEditMode}}{{lesson.title}}{{else}}Adaugă{{/if}}
         </li>
     </ol>
 </nav>
@@ -114,7 +114,7 @@
         </div> --}}
     </div>
 
-    <input type="hidden" name="_id" value="{{lesson._id}}" />
+    <input type="hidden" name="id" value="{{lesson._id}}" />
 
     <div class="form-group">
         <div class="col-md-7s offset-md-3s">

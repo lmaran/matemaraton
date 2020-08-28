@@ -16,7 +16,7 @@ exports.getParentsPerClass = async (req, res) => {
     const classId = req.params.classId;
 
     const [cls, studentsMapByClass] = await Promise.all([
-        await classService.getClassById(classId),
+        await classService.getOneById(classId),
         await studentsAndClassesService.getStudentsMapByClassId(classId)
     ]);
 
@@ -56,11 +56,11 @@ exports.getParent = async (req, res) => {
     // const parent = parentAndTheirStudents.find(x => x._id.toString() === parentId);
     // const students = parentAndTheirStudents.filter(x => x.parentIds && x.parentIds.length > 0);
 
-    const parent = await personService.getPersonById(parentId);
-    // const students = await personService.getPersonsByIds(parent.studentIds);
+    const parent = await personService.getOneById(parentId);
+    // const students = await personService.getAllByIds(parent.studentIds);
 
     const [students, parentUser] = await Promise.all([
-        await await personService.getPersonsByIds(parent.studentIds),
+        await await personService.getAllByIds(parent.studentIds),
         await userService.getOneByEmail(parent.email)
     ]);
 

@@ -19,5 +19,9 @@ exports.can = async (user, rp) => {
         return up.includes("*:*") || up.includes(rp);
     } else if (rp === "delete:lesson") {
         return up.includes("*:*") || up.includes(rp);
+    } else if (rp === "create-or-edit:practice-test") {
+        return up.includes("*:*") || up.includes(rp);
+    } else if (rp === "delete:practice-test") {
+        return up.includes("*:*") || up.includes(rp);
     }
 };
