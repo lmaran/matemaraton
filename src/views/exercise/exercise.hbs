@@ -3,7 +3,7 @@
         {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item"><a href="/exercitii">Exerciții</a></li>
-        <li class="breadcrumb-item active" aria-current="page">E{{exercise.code}}</li>
+        <li class="breadcrumb-item active" aria-current="page">E.{{exercise.code}}</li>
     </ol>
 </nav>
 
@@ -57,17 +57,16 @@
     style="border: 1px solid #008000; padding: 6px 12px; background-color: #f5fff5; min-height:58px">
     {{{exercise.question.solution.textPreview}}}
 </div>
-
-
-
 {{/if}}
 
 
 
-
-
-{{#if canCreateOrEditExercise}}
 <hr>
+<div>
+    <a href="/exercitii/{{exercise._id}}/print">Varianta tipăribilă</a>
+    <i class="fas fa-print text-muted" aria-hidden="true"></i>
+</div>
+{{#if canCreateOrEditExercise}}
 <a href="/exercitii/edit/{{exercise._id}}">Edit</a>
 {{/if}}
 

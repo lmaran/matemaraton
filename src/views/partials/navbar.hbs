@@ -7,6 +7,7 @@
 {{!-- no sections (head/script) in partials as handlebars doesn't support more that 2 similar sections on the same page
 if 2 similar sections are used, the last one will override the first one --}}
 
+{{#unless hideNavbar}}
 <nav class="navbar navbar-expand-lg navbar-light mb-4">
     <div class="container">
         <a class="navbar-brand p-0" href="/">
@@ -166,3 +167,4 @@ if 2 similar sections are used, the last one will override the first one --}}
         </div>
     </div>
 </nav>
+{{/unless}}

@@ -66,6 +66,7 @@ router.post("/exercitii/edit/:id", isAuthenticated, exerciseController.createOrE
 router.get("/exercitii/adauga", isAuthenticated, exerciseController.createOrEditGet);
 router.post("/exercitii/adauga", isAuthenticated, exerciseController.createOrEditPost);
 router.get("/exercitii/:id", exerciseController.getOneById);
+router.get("/exercitii/:id/print", exerciseController.getOneForPrintById);
 router.post("/exercitii/sterge", isAuthenticated, exerciseController.deleteOneById);
 
 // markdown

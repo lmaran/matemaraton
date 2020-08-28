@@ -288,7 +288,6 @@ exports.getOneById = async (req, res) => {
             }
 
             exercise.question.statement.textPreview = markdownService.render(statement);
-            //exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
         }
 
         if (exercise.question.answer)
@@ -310,4 +309,30 @@ exports.getOneById = async (req, res) => {
     };
     //res.send(data);
     res.render("exercise/exercise", data);
+};
+
+exports.getOneForPrintById = async (req, res) => {
+    const exercise = await exerciseService.getOneById(req.params.id);
+
+    if (exercise && exercise.question) {
+        if (exercise.question.statement) {
+            let statement = `**E.${exercise.code}.** ${exercise.question.statement.text}`;
+
+            if (exercise.question.answerOptions) {
+                exercise.question.answerOptions.forEach(answerOption => {
+                    statement = statement + "\n" + "* " + answerOption.text;
+                });
+            }
+
+            exercise.question.statement.textPreview = markdownService.render(statement);
+        }
+    }
+
+    const data = {
+        exercise,
+        //layout: false,
+        ctx: { hideNavbar: true }
+    };
+    //res.send(data);
+    res.render("exercise/exercise-print", data);
 };
