@@ -23,7 +23,9 @@ exports.createOrEditGet = async (req, res) => {
     const gradeAvailableOptions = [
         { text: "Primar", value: "P" },
         { text: "Clasa a V-a", value: "5" },
-        { text: "Clasa a VI-a", value: "6" }
+        { text: "Clasa a VI-a", value: "6" },
+        { text: "Clasa a VII-a", value: "7" },
+        { text: "Clasa a VIII-a", value: "8" }
     ];
 
     const branchAvailableOptions = [
@@ -73,19 +75,34 @@ exports.createOrEditGet = async (req, res) => {
         { text: "Numere Reale", value: "numere-reale" }
     ];
 
+    const subchapterAvailableOptions = [
+        { text: "Rapoarte și proporții", value: "rapoarte-si-proportii" }
+        // { text: "Numere Raționale", value: "numere-rationale" },
+        // { text: "Numere Reale", value: "numere-reale" }
+    ];
+
+    const lessonAvailableOptions = [
+        { text: "Metoda reducerii numărului de variabile", value: "metoda-reducerii-numarului-de-variabile" }
+        // { text: "Numere Raționale", value: "numere-rationale" },
+        // { text: "Numere Reale", value: "numere-reale" }
+    ];
+
     const data = {
         isEditMode,
         gradeAvailableOptions,
         branchAvailableOptions,
         contestTypeAvailableOptions,
         sourceTypeAvailableOptions,
-        chapterAvailableOptions
+        chapterAvailableOptions,
+        subchapterAvailableOptions,
+        lessonAvailableOptions
     };
 
     if (isEditMode) {
         const exercise = await exerciseService.getOneById(req.params.id);
 
         exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
+        exercise.question.answer.textPreview = markdownService.render(exercise.question.answer.text);
         exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
 
         if (exercise.question.hints) {
@@ -123,16 +140,19 @@ exports.createOrEditPost = async (req, res) => {
             sourceType,
             sourceName,
             chapter,
+            subchapter,
+            lesson,
             author,
             tags,
             obs,
             statement,
+            answer,
             solution
         } = req.body;
         const isEditMode = !!id;
 
         const exercise = {
-            question: { statement: { text: statement }, solution: { text: solution } },
+            question: { statement: { text: statement }, solution: { text: solution }, answer: { text: answer } },
             grade,
             branch,
             contestType,
@@ -140,6 +160,8 @@ exports.createOrEditPost = async (req, res) => {
             sourceType,
             sourceName,
             chapter,
+            subchapter,
+            lesson,
             author,
             tags,
             obs
@@ -256,10 +278,30 @@ exports.getOneById = async (req, res) => {
     const exercise = await exerciseService.getOneById(req.params.id);
 
     if (exercise && exercise.question) {
-        if (exercise.question.statement)
-            exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
+        if (exercise.question.statement) {
+            let statement = `**E.${exercise.code}.** ${exercise.question.statement.text}`;
+
+            if (exercise.question.answerOptions) {
+                exercise.question.answerOptions.forEach(answerOption => {
+                    statement = statement + "\n" + "* " + answerOption.text;
+                });
+            }
+
+            exercise.question.statement.textPreview = markdownService.render(statement);
+            //exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
+        }
+
+        if (exercise.question.answer)
+            exercise.question.answer.textPreview = markdownService.render(exercise.question.answer.text);
+
         if (exercise.question.solution)
             exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
+
+        if (exercise.question.hints) {
+            exercise.question.hints.forEach((hint, idx) => {
+                hint.textPreview = markdownService.render(`**Indicația ${idx + 1}:** ${hint.text}`);
+            });
+        }
     }
 
     const data = {

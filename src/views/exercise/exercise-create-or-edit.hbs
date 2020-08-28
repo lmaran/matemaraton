@@ -1,21 +1,3 @@
-<style>
-    .hide-statement-editor {
-        display: none;
-    }
-
-    .hide-solution-editor {
-        display: none;
-    }
-
-    .hide-hint-editor {
-        display: none;
-    }
-
-    .hide-answer-option-editor {
-        display: none;
-    }
-</style>
-
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
@@ -39,7 +21,7 @@
 
         <textarea id="statement-editor-txt" rows="8" name="statement"
             style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
-            class="form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}hide-statement-editor{{/if}}">{{{exercise.question.statement.text}}}</textarea>
+            class="form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.question.statement.text}}}</textarea>
         <div class="invalid-feedback">{{errors.statement.msg}}</div>
 
 
@@ -60,7 +42,7 @@
             <label class="col-form-label font-weight-bold"> Opțiunea {{inc @index}}: </label>
 
             <textarea rows="2" name="answerOptions" style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
-                class="answer-option-editor-txt form-control {{#if errors.solution}}is-invalid {{/if}} {{#if @root.isEditMode}}hide-answer-option-editor{{/if}}"
+                class="answer-option-editor-txt form-control {{#if errors.solution}}is-invalid {{/if}} {{#if @root.isEditMode}}d-none{{/if}}"
                 value="{{data.solution.val}}">{{{text}}}</textarea>
 
 
@@ -93,9 +75,28 @@
         </div>
     </div>
 
+    {{!-- answer --}}
+    <div class="form-group">
+        <label for="answer-editor-txt" class="font-weight-bold"> Răspuns: </label>
+
+        <textarea id="answer-editor-txt" rows="2" name="answer"
+            style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
+            class="form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.question.answer.text}}}</textarea>
+        <div class="invalid-feedback">{{errors.answer.msg}}</div>
+
+
+        <div id="answer-preview-div"
+            style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
+            {{{exercise.question.answer.textPreview}}}
+        </div>
+
+        <button id="toggle-answer-editor-btn" type="button"
+            class="btn btn-link p-0 mt-n1 float-right">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</button>
+    </div>
+
     {{!-- solution --}}
     <div class="form-group">
-        <label for="solution-editor-txt" class="font-weight-bold"> Soluție: </label>
+        <label for="solution-editor-txt" class="font-weight-bold"> Rezolvare: </label>
 
         <textarea id="solution-editor-txt" rows="8" name="solution"
             style="border-radius:0; border-bottom-width:0; border-color:#008000"
@@ -120,7 +121,7 @@
             <label class="col-form-label font-weight-bold"> Indicația {{inc @index}}: </label>
 
             <textarea rows="2" name="hints" style="border-radius:0; border-bottom-width:0; border-color:#007bff"
-                class="hint-editor-txt form-control {{#if errors.solution}}is-invalid {{/if}} {{#if @root.isEditMode}}hide-hint-editor{{/if}}"
+                class="hint-editor-txt form-control {{#if errors.solution}}is-invalid {{/if}} {{#if @root.isEditMode}}d-none{{/if}}"
                 value="{{data.solution.val}}">{{{text}}}</textarea>
 
 
@@ -188,7 +189,7 @@
     <div class="form-row">
         <div class="form-group col-md-6">
             <label for="contestTypeSelect" class="font-weight-bold">Tipul concursului
-                <span class="text-muted">(la care a fost dat accest ex.)</span>:</label>
+                <span class="text-muted font-weight-normal">(la care a fost dat accest ex.)</span>:</label>
             <select name="contestType" class="form-control" id="contestTypeSelect">
                 {{#select exercise.contestType}}
                 <option value=""></option>
@@ -209,7 +210,7 @@
     <div class="form-row">
         <div class="form-group col-md-6">
             <label for="sourceTypeSelect" class="font-weight-bold">Tipul sursei
-                <span class="text-muted">(de unde a fost copiat ex.)</span>:</label>
+                <span class="text-muted font-weight-normal">(de unde a fost copiat ex.)</span>:</label>
             <select name="sourceType" class="form-control" id="sourceTypeSelect">
                 {{#select exercise.sourceType}}
                 <option value=""></option>
@@ -246,6 +247,35 @@
             <input type="text" name="author" class="form-control" id="authorInput" placeholder=""
                 value="{{exercise.author}}">
         </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="subchapterSelect" class="font-weight-bold">Subcapitol
+                <span class="text-muted font-weight-normal">(unitate de învățare)</span>:</label>
+            <select name="subchapter" class="form-control" id="subchapterSelect">
+                {{#select exercise.subchapter}}
+                <option value=""></option>
+                {{#each subchapterAvailableOptions}}
+                <option value="{{value}}">{{text}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+
+        <div class="form-group col-md-6">
+            <label for="lessonSelect" class="font-weight-bold">Lecție:
+                {{!-- <span class="text-muted font-weight-normal">(unitate de învățare)</span>:--}}</label>
+            <select name="lesson" class="form-control" id="lessonSelect">
+                {{#select exercise.lesson}}
+                <option value=""></option>
+                {{#each lessonAvailableOptions}}
+                <option value="{{value}}">{{text}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+
     </div>
 
     <div class="form-row">
@@ -287,5 +317,5 @@
 </form>
 
 {{#section 'script'}}
-<script type="module" src="/js/exercise/exercise.main.js"></script>
+<script type="module" src="/js/exercise/exercise-create-or-edit.main.js"></script>
 {{/section}}
