@@ -1,3 +1,55 @@
+<style>
+    #drop-area {
+        border: 2px dashed #ccc;
+        background: #f8f8f8;
+        width: 100%;
+        font-family: sans-serif;
+        _margin: 100px auto;
+        padding: 15px;
+    }
+
+    #drop-area.highlight {
+        border-color: purple;
+    }
+
+    p {
+        margin-top: 0;
+    }
+
+    ._my-form {
+        margin-bottom: 10px;
+    }
+
+    #gallery {
+        _margin-top: 10px;
+    }
+
+    #gallery img {
+        width: 150px;
+        margin-bottom: 10px;
+        margin-right: 10px;
+        vertical-align: middle;
+    }
+
+    .button {
+        display: inline-block;
+        padding: 2px 10px;
+        background: #e7f3ff;
+        cursor: pointer;
+        border-radius: 3px;
+        border: 1px solid #ccc;
+        color: #1876f2;
+    }
+
+    .button:hover {
+        background: #e4ebf1;
+    }
+
+    #fileElem {
+        display: none;
+    }
+</style>
+
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
@@ -20,7 +72,7 @@
 
 {{#if exercise.question.answer}}
 <div>
-    <button id="toggle-answer-btn" type="button" class="btn btn-link p-0">Răspuns</button>
+    <button id="toggle-answer-btn" type="button" class="btn btn-link p-0">Rezultat final</button>
 </div>
 <div id="answer-div" class="d-none">
     {{{exercise.question.answer.textPreview}}}
@@ -43,7 +95,7 @@
     <div {{#if (ne @index 0)}} class="d-none" {{/if}} data-hint-nr="{{inc @index}}">{{{textPreview}}}</div>
     {{/each}}
     {{#if (gt exercise.question.hints.length 1)}}
-    <button id="view-next-hint-btn" type="button" class="btn btn-link p-0">Vezi următoarea indicație</button>
+    <button id="show-next-hint-btn" type="button" class="btn btn-link p-0">Vezi următoarea indicație</button>
     {{/if}}
 </div>
 {{/if}}
@@ -61,15 +113,275 @@
 
 
 
-<hr>
+
 <div>
     <a href="/exercitii/{{exercise._id}}/print">Varianta tipăribilă</a>
     <i class="fas fa-print text-muted" aria-hidden="true"></i>
 </div>
+
 {{#if canCreateOrEditExercise}}
 <a href="/exercitii/edit/{{exercise._id}}">Edit</a>
 {{/if}}
 
+{{!-- <hr> --}}
+
+
+<div class="mt-4">Rezolvarea ta:</div>
+<div id="drop-area">
+    <form class="my-form">
+        <input type="file" id="fileSelectInput" multiple accept="image/*" class="d-none">
+        <label class="button" for="fileSelectInput">
+            <i class="fas fa-paperclip"></i>
+            Adaugă poza
+        </label>
+        <span class="text-muted font-weight-light">sau trage poza aici</span>
+        <progress id="progress-bar" class="d-none" max=100 value=0></progress>
+
+        <div id="gallery"></div>
+
+        <div class="form-group mt-2">
+            {{!-- <label for="answer-editor-txt" class="mt-2 mb-0 text-muted font-weight-light"> Comentariu (opțional):
+            </label> --}}
+
+            <textarea id="answer-editor-txt" rows="2" name="answer" placeholder="Comentariu (opțional)..."
+                style="border-radius:0; border-color:#ccc"
+                class="form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}"></textarea>
+            <div class="invalid-feedback">{{errors.answer.msg}}</div>
+
+
+        </div>
+
+        <div class="form-group mb-0">
+            <button type="button" id="fileSelectBtn" class="btn btn-primary btn-sm mt-3w">
+                <i class="fas fa-paper-plane"></i>
+                Trimite rezolvarea
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+
+
+
+
+
 {{#section 'script'}}
 <script type="module" src="/js/exercise/exercise.main.js"></script>
+{{/section}}
+
+{{#section 'script-after'}}
+<script>
+
+    function handleFiles1() {
+        const files = this.files; /* now you can work with the file list */
+        handleFiles(files);
+    }
+
+    const fileSelectInput = document.getElementById("fileSelectInput");
+    //const fileSelectBtn = document.getElementById("fileSelectBtn");
+
+    //fileSelectBtn.addEventListener("click", function (e) {
+    //    if (fileSelectInput) {
+    //        fileSelectInput.click();
+    //    }
+    //    e.preventDefault(); // prevent navigation to "#"
+    //}, false);
+
+    fileSelectInput.addEventListener("change", handleFiles1, false);
+
+    let dropArea = document.getElementById('drop-area');
+
+    //dropArea.addEventListener('dragenter', handlerFunction, false)
+    //dropArea.addEventListener('dragleave', handlerFunction, false)
+    //dropArea.addEventListener('dragover', handlerFunction, false)
+    //dropArea.addEventListener('drop', handlerFunction, false)
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+        dropArea.classList.add('highlight');
+    }
+
+    function unhighlight(e) {
+        dropArea.classList.remove('highlight');
+    }
+
+    dropArea.addEventListener('drop', handleDrop, false)
+
+    function handleDrop(e) {
+        let dt = e.dataTransfer;
+        let files = dt.files;
+
+        handleFiles(files);
+    }
+
+    //files is not an array, but a FileList. So, we’ll need to convert it to an array.
+    function handleFiles(files) {
+        files = [...files];
+        initializeProgress(files.length); // <- Add this line
+
+        // files.forEach(uploadFile);
+        uploadFiles(files);
+
+
+        files.forEach(previewFile);
+    }
+
+
+    function uploadFile_WithFetch(file) {
+        let url = 'YOUR URL HERE';
+        let formData = new FormData();
+
+        formData.append('file', file);
+
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        })
+            .then(progressDone)
+            .catch(() => { /* Error. Inform the user */ })
+    }
+
+    function uploadFile(file, i) { // <- Add `i` parameter
+        var url = '/uploadfile';
+        var xhr = new XMLHttpRequest();
+        var formData = new FormData();
+
+        //xhr.responseType = 'json';
+
+        xhr.open('POST', url, true);
+
+        // Add following event listener
+        xhr.upload.addEventListener("progress", function (e) {
+            updateProgress(i, (e.loaded * 100.0 / e.total) || 100);
+        })
+
+        xhr.addEventListener('readystatechange', function (e) {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                // Done. Inform the user
+                console.log("done:");
+                console.log(e);
+            }
+            else if (xhr.readyState == 4 && xhr.status != 200) {
+                // Error. Inform the user
+            }
+        })
+
+        // log response
+        xhr.onload = () => {
+            console.log("done onload:");
+            console.log(xhr.responseText);
+        };
+
+        formData.append('file', file);
+        xhr.send(formData);
+    }
+
+    function uploadFiles(files) { // <- Add `i` parameter
+        var url = '/uploadfile';
+        var xhr = new XMLHttpRequest();
+        var formData = new FormData();
+
+        //xhr.responseType = 'json';
+
+        xhr.open('POST', url, true);
+
+        // Add following event listener
+        xhr.upload.addEventListener("progress", function (e) {
+            //updateProgress(i, (e.loaded * 100.0 / e.total) || 100);
+            updateProgress2((e.loaded * 100.0 / e.total) || 100);
+        })
+
+        xhr.addEventListener('readystatechange', function (e) {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                // Done. Inform the user
+                console.log("done:");
+                console.log(e);
+            }
+            else if (xhr.readyState == 4 && xhr.status != 200) {
+                // Error. Inform the user
+            }
+        })
+
+        // log response
+        xhr.onload = () => {
+            console.log("done onload:");
+            console.log(xhr.responseText);
+        };
+
+        files.forEach(file => {
+            formData.append('file', file);
+        });
+
+        xhr.send(formData);
+    }
+
+
+    function previewFile(file) {
+        let reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = function () {
+            let img = document.createElement('img');
+            img.src = reader.result;
+            document.getElementById('gallery').appendChild(img);
+        }
+    }
+
+    //let filesDone = 0;
+    //let filesToDo = 0;
+    let uploadProgress = [];
+
+    let progressBar = document.getElementById('progress-bar');
+
+    //function initializeProgress(numfiles) {
+    //    progressBar.value = 0;
+    //    filesDone = 0;
+    //    filesToDo = numfiles;
+    //}
+
+    //function progressDone() {
+    //    filesDone++;
+    //    progressBar.value = filesDone / filesToDo * 100;
+    //}
+
+    function initializeProgress(numFiles) {
+        progressBar.value = 0;
+        uploadProgress = [];
+
+        for (let i = numFiles; i > 0; i--) {
+            uploadProgress.push(0);
+        }
+    }
+
+    function updateProgress(fileNumber, percent) {
+        uploadProgress[fileNumber] = percent;
+        let total = uploadProgress.reduce((tot, curr) => tot + curr, 0) / uploadProgress.length;
+        progressBar.value = total;
+    }
+
+    function updateProgress2(percent) {
+        //uploadProgress[fileNumber] = percent;
+        //let total = uploadProgress.reduce((tot, curr) => tot + curr, 0) / uploadProgress.length;
+        progressBar.value = percent;
+    }
+
+
+
+</script>
 {{/section}}

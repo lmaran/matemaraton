@@ -10,7 +10,7 @@ export const eventHandlers = {
         div.classList.toggle("d-none");
 
         const divIsHide = div.classList.contains("d-none");
-        event.target.textContent = divIsHide ? "Răspuns" : "Ascunde răspunsul";
+        event.target.textContent = divIsHide ? "Rezultat final" : "Ascunde rezultatul";
     },
     toggleHints: async event => {
         const div = document.getElementById("hints-div");
@@ -35,7 +35,7 @@ export const eventHandlers = {
         const hintNr = nextDiv.dataset.hintNr;
 
         if (hintNr === totalHints) {
-            document.getElementById("view-next-hint-btn").classList.add("d-none");
+            document.getElementById("show-next-hint-btn").classList.add("d-none");
         }
     }
 };

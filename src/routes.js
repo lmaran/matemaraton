@@ -24,6 +24,7 @@ const homeworkController = require("./controllers/homework.controller");
 const lessonController = require("./controllers/lesson.controller");
 const practiceTestController = require("./controllers/practice-test.controller");
 const markdownController = require("./controllers/markdown.controller");
+const fileController = require("./controllers/file.controller");
 
 // home
 router.get("/", homeController.getHomePage);
@@ -133,5 +134,7 @@ router.get("/reset-password/confirm/:resetPasswordCode", userResetPasswordContro
 router.get("/reset-password/confirm-success", userResetPasswordController.getResetPasswordConfirmSuccess);
 
 router.get("/editia-[1|2|3]", editionController.getEdition);
+
+router.post("/uploadfile", fileController.upload);
 
 module.exports = router;

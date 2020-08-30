@@ -11,7 +11,7 @@ const toggleHintsBtn = document.getElementById("toggle-hints-btn");
 if (toggleHintsBtn) toggleHintsBtn.addEventListener("click", eventHandlers.toggleHints);
 
 const toggleSolutionBtn = document.getElementById("toggle-solution-btn");
-if (toggleSolutionBtn) toggleHintsBtn.addEventListener("click", eventHandlers.toggleSolution);
+if (toggleSolutionBtn) toggleSolutionBtn.addEventListener("click", eventHandlers.toggleSolution);
 
-const toggleNextHintBtn = document.getElementById("toggle-next-hint-btn");
-if (toggleNextHintBtn) toggleHintsBtn.addEventListener("click", eventHandlers.showNextHint);
+const showNextHintBtn = document.getElementById("show-next-hint-btn");
+if (showNextHintBtn) showNextHintBtn.addEventListener("click", eventHandlers.showNextHint);
