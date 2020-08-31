@@ -259,6 +259,8 @@
 
         initializeProgress(files.length); // <- Add this line
 
+        console.log("client side files:");
+        console.log(files);
 
 
         // files.forEach(uploadFile);
@@ -304,7 +306,7 @@
                 console.log("done:");
                 console.log(e);
 
-                previewFileNew(file);
+                //previewFileNew(file);
             }
             else if (xhr.readyState == 4 && xhr.status != 200) {
                 // Error. Inform the user
@@ -312,10 +314,10 @@
         })
 
         // log response
-        xhr.onload = () => {
-            console.log("done onload:");
-            console.log(xhr.responseText);
-        };
+        //xhr.onload = () => {
+        //    console.log("done onload:");
+        //    console.log(xhr.responseText);
+        //};
 
         formData.append('file', file);
         xhr.send(formData);
@@ -326,7 +328,7 @@
         var xhr = new XMLHttpRequest();
         var formData = new FormData();
 
-        //xhr.responseType = 'json';
+        xhr.responseType = 'json';
 
         xhr.open('POST', url, true);
 
@@ -339,10 +341,21 @@
         xhr.addEventListener('readystatechange', function (e) {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 // Done. Inform the user
-                //console.log("done:");
+                console.log("readystatechange done!");
                 //console.log(e);
 
-                previewFileNew("aaa");
+                //previewFileNew("aaa");
+
+                console.log("server side files:");
+
+                console.log(xhr.response);
+
+                // preview files:
+                xhr.response.forEach(file => {
+                    let img = document.createElement('img');
+                    img.src = file.url;
+                    document.getElementById('gallery').appendChild(img);
+                });
             }
             else if (xhr.readyState == 4 && xhr.status != 200) {
                 // Error. Inform the user
@@ -350,10 +363,19 @@
         })
 
         // log response
-        xhr.onload = () => {
-            console.log("done onload:");
-            console.log(xhr.responseText);
-        };
+        //xhr.onload = () => {
+        //    console.log("done onload:");
+        //    console.log("server side files:");
+
+        //    console.log(xhr.response);
+
+        // preview files:
+        //    xhr.response.forEach(file => {
+        //        let img = document.createElement('img');
+        //        img.src = file.url;
+        //        document.getElementById('gallery').appendChild(img);
+        //    });
+        //};
 
         files.forEach(file => {
             formData.append('file', file);
@@ -398,6 +420,7 @@
     //}
 
     function initializeProgress(numFiles) {
+        console.log("initializeProgress...");
         progressBar.classList.remove("d-none");
         progressBar.value = 0;
         uploadProgress = [];
@@ -408,12 +431,14 @@
     }
 
     function updateProgress(fileNumber, percent) {
+        console.log("updateProgress...");
         uploadProgress[fileNumber] = percent;
         let total = uploadProgress.reduce((tot, curr) => tot + curr, 0) / uploadProgress.length;
         progressBar.value = total;
     }
 
     function updateProgress2(percent) {
+        //console.log("updateProgress2...");
         //uploadProgress[fileNumber] = percent;
         //let total = uploadProgress.reduce((tot, curr) => tot + curr, 0) / uploadProgress.length;
         progressBar.value = percent;
