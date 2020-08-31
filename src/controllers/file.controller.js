@@ -25,7 +25,7 @@ exports.upload = async (req, res) => {
     let files = 0,
         finished = false;
 
-    // I abort upload if file is over 10MB limit
+    // I abort upload if file is over 10 MB limit
     const busboy = new Busboy({ headers: req.headers, limits: { fileSize: fileSizeLimit } });
     busboy.on("file", async function(fieldname, uploadFileStream, fileName, encoding, mimeType) {
         result.push(fileName);
@@ -70,7 +70,7 @@ exports.upload = async (req, res) => {
 
             // ========================== csv
             //file.pipe(csv()) // csv-parser
-            let rowIdx = 0;
+            //let rowIdx = 0;
             //file.pipe(csv2.parse({ headers: true, ignoreEmpty: true })) //fast-csv; Any rows consisting of nothing but empty strings and/or commas will be skipped
 
             // const mongoStream = fastCsv.parseStream(uploadFileStream, { headers: true, ignoreEmpty: true });

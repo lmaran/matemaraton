@@ -129,13 +129,24 @@
 <div class="mt-4">Rezolvarea ta:</div>
 <div id="drop-area">
     <form class="my-form">
-        <input type="file" id="fileSelectInput" multiple accept="image/*" class="d-none">
-        <label class="button" for="fileSelectInput">
-            <i class="fas fa-paperclip"></i>
-            Adaugă poza
-        </label>
-        <span class="text-muted font-weight-light">sau trage poza aici</span>
-        <progress id="progress-bar" class="d-none" max=100 value=0></progress>
+
+        <div class="form-group">
+            <input type="file" id="fileSelectInput" multiple accept="image/*" class="d-none form-control">
+            <label class="button" for="fileSelectInput">
+                <i class="fas fa-paperclip"></i>
+                Adaugă poza
+            </label>
+
+            <span class="text-muted font-weight-light">sau trage poza aici</span>
+
+            <div id="fileSelectInputErr" class="invalid-feedback">Mesaj de eroare</div>
+
+
+        </div>
+
+
+
+        <progress id="progress-bar" class="d-none  w-100" max=100 value=0></progress>
 
         <div id="gallery"></div>
 
@@ -234,28 +245,42 @@
     //files is not an array, but a FileList. So, we’ll need to convert it to an array.
     function handleFiles(files) {
         files = [...files];
+
+        const validationFilesMessage = getValidationFilesMessage(files);
+        const fileSelectInput = document.getElementById("fileSelectInput");
+        if (validationFilesMessage) {
+            fileSelectInput.classList.add("is-invalid");
+            document.getElementById("fileSelectInputErr").innerHTML = validationFilesMessage;
+            return false;
+        } else {
+            fileSelectInput.classList.remove("is-invalid");
+        }
+
         initializeProgress(files.length); // <- Add this line
+
+
 
         // files.forEach(uploadFile);
         uploadFiles(files);
 
-
-        files.forEach(previewFile);
+        //files.forEach(previewFile);
     }
 
+    function getValidationFilesMessage(files) {
+        if (files.length > 3) return "Poți adăuga maxim 3 poze!";
 
-    function uploadFile_WithFetch(file) {
-        let url = 'YOUR URL HERE';
-        let formData = new FormData();
+        let isFileSizeValid = true;
+        let isFileTypeValid = true;
+        files.forEach(file => {
+            if (file.size > 7 * 1024 * 1024) isFileSizeValid = false;
+            if (!file.type.startsWith('image/')) isFileTypeValid = false;
+        });
 
-        formData.append('file', file);
+        if (!isFileSizeValid) return "O poză poate avea maxim 5 MB!";
+        if (!isFileTypeValid) return "Poți adăuga doar poze ('.jpeg / .png')!";
 
-        fetch(url, {
-            method: 'POST',
-            body: formData
-        })
-            .then(progressDone)
-            .catch(() => { /* Error. Inform the user */ })
+        return undefined;
+
     }
 
     function uploadFile(file, i) { // <- Add `i` parameter
@@ -277,6 +302,8 @@
                 // Done. Inform the user
                 console.log("done:");
                 console.log(e);
+
+                previewFileNew(file);
             }
             else if (xhr.readyState == 4 && xhr.status != 200) {
                 // Error. Inform the user
@@ -311,8 +338,10 @@
         xhr.addEventListener('readystatechange', function (e) {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 // Done. Inform the user
-                console.log("done:");
-                console.log(e);
+                //console.log("done:");
+                //console.log(e);
+
+                previewFileNew("aaa");
             }
             else if (xhr.readyState == 4 && xhr.status != 200) {
                 // Error. Inform the user
@@ -343,6 +372,13 @@
         }
     }
 
+    function previewFileNew(file) {
+        //alert(123);
+        let img = document.createElement('img');
+        img.src = "https://matemaratondev.blob.core.windows.net/homework-submissions/11-marcel-37KB.jpg";
+        document.getElementById('gallery').appendChild(img);
+    }
+
     //let filesDone = 0;
     //let filesToDo = 0;
     let uploadProgress = [];
@@ -361,6 +397,7 @@
     //}
 
     function initializeProgress(numFiles) {
+        progressBar.classList.remove("d-none");
         progressBar.value = 0;
         uploadProgress = [];
 
@@ -379,6 +416,7 @@
         //uploadProgress[fileNumber] = percent;
         //let total = uploadProgress.reduce((tot, curr) => tot + curr, 0) / uploadProgress.length;
         progressBar.value = percent;
+        if (percent == 100) progressBar.classList.add("d-none");
     }
 
 
