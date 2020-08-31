@@ -15,6 +15,7 @@ const uploadOptions = { bufferSize: 4 * ONE_MEGABYTE, maxBuffers: 20 };
 // const containerClient = blobServiceClient.getContainerClient("counters");
 
 exports.upload = async (req, res) => {
+    // https://stackoverflow.com/a/59295385
     // res.send("bbb");
 
     const startTime = Date.now();
