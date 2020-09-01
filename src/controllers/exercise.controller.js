@@ -336,3 +336,26 @@ exports.getOneForPrintById = async (req, res) => {
     //res.send(data);
     res.render("exercise/exercise-print", data);
 };
+
+exports.addMySolution = async (req, res) => {
+    // TODO
+    // 1. check if authenticcated
+    // 2. check if student or teacher
+    // 3. check if submission belongs to a homework
+    // 4. validate input
+
+    const mySolution = req.body;
+
+    mySolution.submittedById = req.user._id.toString();
+    mySolution.submittedOn = new Date();
+
+    //onsole.log(mySolution);
+
+    await exerciseService.insertSolution(mySolution);
+
+    const data = {
+        mySolution
+    };
+    res.json(data);
+    //res.render("exercise/exercise-print", data);
+};

@@ -1,17 +1,13 @@
 export const uploadFilesHelper = {
     uploadFiles: options => {
-        const {
-            fileSelectInput,
-            dropArea,
-            progressBar,
-            fileSelectErrorDiv,
-            gallery,
-            url,
-            maxFiles,
-            maxFileSizeInMB
-        } = options;
+        const { uploadFileSelectInput, url, maxFiles, maxFileSizeInMB } = options;
 
-        fileSelectInput.addEventListener("change", handleFiles, false);
+        const dropArea = uploadFileSelectInput.closest(".drop-area"); // find the closest ancestor which matches the selectors
+        const progressBar = dropArea.querySelector(".progress-bar");
+        const uploadFileErrorDiv = dropArea.querySelector(".upload-file-error-div");
+        const gallery = dropArea.querySelector(".gallery");
+
+        uploadFileSelectInput.addEventListener("change", handleInputFiles, false);
 
         ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
             dropArea.addEventListener(eventName, preventDefaults, false);
@@ -29,6 +25,11 @@ export const uploadFilesHelper = {
         ["dragleave", "drop"].forEach(eventName => {
             dropArea.addEventListener(eventName, unHighlight, false);
         });
+
+        function handleInputFiles() {
+            const files = this.files;
+            handleFiles(files);
+        }
 
         function highlight() {
             dropArea.classList.add("highlight");
@@ -51,13 +52,12 @@ export const uploadFilesHelper = {
             files = [...files]; // files is not an array, but a FileList. So, we’ll need to convert it to an array.
 
             const validationFilesMessage = getValidationFilesMessage(files, maxFiles, maxFileSizeInMB);
-            const fileSelectInput = document.getElementById("fileSelectInput");
             if (validationFilesMessage) {
-                fileSelectInput.classList.add("is-invalid");
-                fileSelectErrorDiv.innerHTML = validationFilesMessage;
+                uploadFileSelectInput.classList.add("is-invalid");
+                uploadFileErrorDiv.innerHTML = validationFilesMessage;
                 return false;
             } else {
-                fileSelectInput.classList.remove("is-invalid");
+                uploadFileSelectInput.classList.remove("is-invalid");
             }
 
             initializeProgress(files.length);
@@ -129,22 +129,37 @@ export const uploadFilesHelper = {
 
         function previewFiles(files) {
             files.forEach(file => {
+                // we use a file container to add data-attributes on it
+                const fileContainerSpan = document.createElement("span");
+                fileContainerSpan.classList.add("file-container-span");
+                fileContainerSpan.setAttribute("data-url", file.url);
+
                 const fileParts = file.url.split(".");
                 if (fileParts.length > 0) {
                     const fileExtension = fileParts[fileParts.length - 1];
                     if (["jpg", "jpeg", "png"].includes(fileExtension.toLowerCase())) {
                         const img = document.createElement("img");
                         img.src = file.url;
-                        gallery.appendChild(img);
+                        fileContainerSpan.appendChild(img);
                     } else if (fileExtension.toLowerCase() === "pdf") {
+                        // maybe add a ppf thumbnail/icon
                         const a = document.createElement("a");
                         const linkText = document.createTextNode(file.url);
                         a.appendChild(linkText);
                         a.title = "my title text";
                         a.href = file.url;
-                        gallery.appendChild(a);
+                        fileContainerSpan.appendChild(a);
+                    } else {
+                        const a = document.createElement("a");
+                        const linkText = document.createTextNode(file.url);
+                        a.appendChild(linkText);
+                        a.title = "my title text";
+                        a.href = file.url;
+                        fileContainerSpan.appendChild(a);
                     }
                 }
+
+                gallery.appendChild(fileContainerSpan);
             });
         }
     }

@@ -22,21 +22,16 @@ if (showNextHintBtn) showNextHintBtn.addEventListener("click", eventHandlers.sho
  * smashingmagazine.com/2018/01/drag-drop-file-uploader-vanilla-js/
  * https://developer.mozilla.org/en-US/docs/Web/API/File/Using_files_from_web_applications
  */
-const fileSelectInput = document.getElementById("fileSelectInput");
-const dropArea = document.getElementById("drop-area");
-const progressBar = document.getElementById("progress-bar");
-const fileSelectErrorDiv = document.getElementById("fileSelectErrorDiv");
-const gallery = document.getElementById("gallery");
+const uploadFileSelectInput = document.getElementById("upload-file-select-input");
 
 const options = {
-    fileSelectInput,
-    dropArea,
-    progressBar,
-    fileSelectErrorDiv,
-    gallery,
+    uploadFileSelectInput,
     url: "/uploadfile",
     maxFiles: 3,
     maxFileSizeInMB: 5
 };
 
 uploadFilesHelper.uploadFiles(options);
+
+const mySolutionSubmitBtn = document.getElementById("my-solution-submit-btn");
+if (mySolutionSubmitBtn) mySolutionSubmitBtn.addEventListener("click", eventHandlers.submitMySolution);

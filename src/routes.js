@@ -66,9 +66,10 @@ router.get("/exercitii/edit/:id", isAuthenticated, exerciseController.createOrEd
 router.post("/exercitii/edit/:id", isAuthenticated, exerciseController.createOrEditPost);
 router.get("/exercitii/adauga", isAuthenticated, exerciseController.createOrEditGet);
 router.post("/exercitii/adauga", isAuthenticated, exerciseController.createOrEditPost);
+router.post("/exercitii/sterge", isAuthenticated, exerciseController.deleteOneById);
 router.get("/exercitii/:id", exerciseController.getOneById);
 router.get("/exercitii/:id/print", exerciseController.getOneForPrintById);
-router.post("/exercitii/sterge", isAuthenticated, exerciseController.deleteOneById);
+router.post("/exercitii/:id/rezolvari", isAuthenticated, exerciseController.addMySolution);
 
 // markdown
 router.post("/markdown/get-rendered-markdown", isAuthenticated, markdownController.getGetRenderedMarkdown);
