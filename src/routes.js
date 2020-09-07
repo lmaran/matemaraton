@@ -25,11 +25,20 @@ const lessonController = require("./controllers/lesson.controller");
 const practiceTestController = require("./controllers/practice-test.controller");
 const markdownController = require("./controllers/markdown.controller");
 const fileController = require("./controllers/file.controller");
+const enrollmentController = require("./controllers/enrollment.controller");
 
 // home
 router.get("/", homeController.getHomePage);
 
 router.get("/upgrade-operation", isAuthenticated, upgradeOperationController.upgradeOperation);
+
+// enrollments
+router.get("/clase/:classId/inscrieri", enrollmentController.getAllPerClass);
+router.get("/clase/:classId/inscrieri/adauga", enrollmentController.enrollInClassGet);
+router.post("/clase/:classId/inscrieri/adauga", isAuthenticated, enrollmentController.enrollInClassPost);
+
+// router.get("/inscriere", enrollmentController.enrollInClassGet);
+// router.post("/inscriere", enrollmentController.enrollInClassPost);
 
 // my page
 router.get("/pagina-mea", meController.getMyPage);

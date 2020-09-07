@@ -24,11 +24,14 @@
     </ol>
 </nav>
 
-<h1>{{class.name}} <small class="text-muted font-weight-light">(nivel {{class.level}})</small></h1>
-{{#if courseSummary}}
+<h1>{{class.name}}</h1>
+<h3 class="text-muted2 font-weight-light">Nivel {{class.level}}</h3>
+
+<div class="text-muted font-weight-light mt-4 mb-4">{{class.description}}</div>
+
+{{#if @root.user.isAdmin}}
 <h5>Curs: <a href="/cursuri/{{courseSummary._id}}">{{courseSummary.code}}</a> - {{courseSummary.name}}</h5>
 {{/if}}
-<div class="text-muted font-weight-light mb-4">{{class.description}}</div>
 
 {{#if (or class.startDate class.numberOfSessions)}}
 <h5>Durata cursului:</h5>
@@ -82,45 +85,46 @@
 <h5>Pret: <small>Gratuit</small></h5>
 
 
-{{#if class.enrolmentInfo}}
+{{#if class.enrollmentInfo}}
 <h5>Inscriere:</h5>
 <ul>
-    <li><strong>Locuri disponibile: </strong>{{class.enrolmentInfo.availablePlaces}}</li>
-    <li><strong>Condiții de participare: </strong>{{class.enrolmentInfo.conditionsOfParticipation}}</li>
+    <li><strong>Locuri disponibile: </strong>{{class.enrollmentInfo.availablePlaces}}</li>
+    <li><strong>Condiții de participare: </strong>{{class.enrollmentInfo.conditionsOfParticipation}}</li>
 
-    {{#if class.enrolmentInfo.tieBreakingConditions}}
+    {{#if class.enrollmentInfo.tieBreakingConditions}}
     <li><strong>Condiții de departajare: </strong> În cazul în care numărul de elevi înscriși depășește numărul de
         locuri disponibile, se va proceda la o selecție bazată, în ordine, pe următoarele criterii:</li>
 
     <ul>
-        {{#each class.enrolmentInfo.tieBreakingConditions}}
+        {{#each class.enrollmentInfo.tieBreakingConditions}}
         <li>{{this}}</li>
         {{/each}}
     </ul>
     {{/if}}
 
-    <li><strong>Perioada de înscriere: </strong>{{class.enrolmentInfo.enrolmentPeriod}}</li>
-
-    {{#if (eq class.enrolmentInfo.status  "completed")}}
-    <li>Perioada de înscrieri s-a încheiat.</li>
-    {{else}}
-    <li>Adresa pentru înscriere:
-        {{#if (eq class.enrolmentInfo.status "draft")}}
-        Va urma!
-        {{else}}
-        {{class.enrolmentInfo.enrolmentUrl}}
-        {{/if}}
-
-
-    </li>
-
-    {{/if}}
+    <li><strong>Perioada de înscriere: </strong>{{class.enrollmentInfo.enrollmentPeriod}}</li>
 
 </ul>
+
+<div class="mb-5">
+    {{#if (eq class.enrollmentInfo.status  "notStarted")}}
+    Adresa pentru înscriere: va urma!
+    {{else if (eq class.enrollmentInfo.status  "open")}}
+    <a class="btn btn-primary btn-sm" href="/clase/{{class._id}}/inscrieri/adauga" role="button">Cerere de
+        înscriere</a>
+
+    <a class="btn btn-secondary btn-sm" href="/clase/{{class._id}}/inscrieri" role="button">Situația cererilor
+        depuse</a>
+
+    {{else}} {{!-- status="completed" --}}
+    Perioada de înscrieri s-a încheiat. Vom redeschide procesul de înscriere în momentul în care apar locuri libere.
+    Urmăriți pagina de Facebook MateMaraton pentru astfel de notificări.
+    {{/if}}
+</div>
 {{/if}}
 
 
-{{#unless (eq class.enrolmentInfo.status "draft")}}
+{{#unless (eq class.enrollmentInfo.status "open")}}
 <h5>Rapoarte:</h5>
 <ul>
     <li><a href="/clase/{{class._id}}/elevi">Elevi</a></li>
