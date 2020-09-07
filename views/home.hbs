@@ -7,12 +7,13 @@
 
 <div class="alert alert-info" role="alert">
     <i class="fa fa-info-circle mr-2 fa-lg"></i>
-    Am afișat <a href="/clase">clasele</a> disponibile pt. <strong>Ediția 4</strong> (an școlar 2020 - 2021).
-    {{!-- Inscrierile pentru grupele din <span class="font-weight-bold">ediția 4</span> se vor face astfel:
-    <ul>
-        <li>14 - 18 Sep. 2020: pt. grupele 1, 2 și 4 </li>
-        <li>12 - 16 Oct. 2020: pt. grupa 3 </li>
-    </ul> --}}
+    {{!-- Am afișat <a href="/clase">clasele</a> disponibile și opțiunea de <a class="btn btn-primary btn-sm" href="#"
+        onclick="alert('Butonul de înscriere se află pe pagina aferentă fiecărei clase.'); return false;">Inscriere</a>
+    pt. <strong>Ediția 4</strong> (an școlar 2020 - 2021). --}}
+
+    Am afișat <a href="/clase">clasele</a> disponibile (cu opțiunea de înscriere) pt. <strong>Ediția 4</strong> (an
+    școlar 2020 - 2021).
+
 </div>
 
 {{!-- <div class="alert alert-info" role="alert">
@@ -59,6 +60,7 @@
         </div>
     </div>
 
+    {{#if @root.user.isAdmin}}
     <div class="card">
         <div class="text-center pt-3 text-muted">
             <i class="far fa-newspaper fa-2x"></i>
@@ -76,6 +78,8 @@
             <a href="/cursuri">Află mai multe</a>
         </div>
     </div>
+    {{/if}}
+
     <div class="card">
         {{!-- <img src="..." class="card-img-top" alt="..."> --}}
         <div class="text-center pt-3 text-muted">

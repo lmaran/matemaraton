@@ -1,4 +1,4 @@
-// import { exerciseService } from "./exercise.service.js";
+import { exerciseService } from "./exercise.service.js";
 // import { domHelper } from "../helpers/dom.helper.js";
 
 /**
@@ -10,7 +10,7 @@ export const eventHandlers = {
         div.classList.toggle("d-none");
 
         const divIsHide = div.classList.contains("d-none");
-        event.target.textContent = divIsHide ? "Răspuns" : "Ascunde răspunsul";
+        event.target.textContent = divIsHide ? "Rezultat final" : "Ascunde rezultatul";
     },
     toggleHints: async event => {
         const div = document.getElementById("hints-div");
@@ -35,7 +35,28 @@ export const eventHandlers = {
         const hintNr = nextDiv.dataset.hintNr;
 
         if (hintNr === totalHints) {
-            document.getElementById("view-next-hint-btn").classList.add("d-none");
+            document.getElementById("show-next-hint-btn").classList.add("d-none");
         }
+    },
+
+    submitMySolution: async event => {
+        const exerciseIdContainer = document.getElementById("exercise-id-container");
+        const exerciseId = exerciseIdContainer.dataset.exerciseId;
+
+        const dropArea = event.target.closest(".drop-area"); // find the closest ancestor which matches the selectors
+        const comment = dropArea.querySelector(".comment-textarea").value;
+
+        const fileContainers = dropArea.querySelectorAll(".file-container-span");
+        const files = [];
+        for (const fileContainer of fileContainers) {
+            files.push({ url: fileContainer.dataset.url });
+        }
+
+        const data = { exerciseId, submittedSolution: { comment, files } };
+
+        await exerciseService.submitMySolution(data);
+        //const response = await exerciseService.submitMySolution(data);
+
+        //console.log(response);
     }
 };

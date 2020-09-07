@@ -1,0 +1,52 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/clase">Clase</a></li>
+        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">{{class.name}}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Inscrieri</li>
+
+    </ol>
+</nav>
+
+
+<h1>Inscrieri</h1>
+<h2 class="mb-3">{{class.name}}</h2>
+
+{{!-- <a href="/clase/{{class._id}}/inscrieri/adauga" class="btn btn-primary btn-sm2 mb-3">
+    <i class="fa fa-plus"></i> Cerere de înscriere
+</a> --}}
+
+{{#if (eq enrollments.length 0)}}
+Până în accest moment nu există solicitări pentru înscriere la acestă clasă.
+{{else}}
+<div class="table-responsive">
+    <table class="table table-bordered table-sm">
+        <thead>
+            <tr>
+                <th>
+                    Data înregistrării
+                </th>
+                <th>
+                    Elev
+                </th>
+                <th>
+                    Școala
+                </th>
+                <th>
+                    Stare
+                </th>
+            </tr>
+        </thead>
+        <tody>
+            {{#each enrollments}}
+            <tr>
+                <td>{{createdOn}}</td>
+                <td>{{studentShortName}}</td>
+                <td>{{schoolName}}</td>
+                <td>{{status}}</td>
+            </tr>
+            {{/each}}
+            </tbody>
+    </table>
+</div>
+{{/if}}

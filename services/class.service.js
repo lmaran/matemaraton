@@ -12,7 +12,15 @@ exports.getAll = async () => {
     const db = await mongoHelper.getDb();
     return db
         .collection(collection)
-        .find()
+        .find({ isPublished: true })
+        .toArray();
+};
+
+exports.getOpenEnrollments = async () => {
+    const db = await mongoHelper.getDb();
+    return db
+        .collection(collection)
+        .find({ "enrollmentInfo.status": "open" })
         .toArray();
 };
 

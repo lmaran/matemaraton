@@ -47,3 +47,8 @@ exports.getAllByIds = async ids => {
         .find({ _id: { $in: ids.map(x => new ObjectID(x)) } })
         .toArray();
 };
+
+exports.insertSolution = async item => {
+    const db = await mongoHelper.getDb();
+    return db.collection("submissions").insertOne(item);
+};

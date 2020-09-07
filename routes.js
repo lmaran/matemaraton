@@ -24,11 +24,21 @@ const homeworkController = require("./controllers/homework.controller");
 const lessonController = require("./controllers/lesson.controller");
 const practiceTestController = require("./controllers/practice-test.controller");
 const markdownController = require("./controllers/markdown.controller");
+const fileController = require("./controllers/file.controller");
+const enrollmentController = require("./controllers/enrollment.controller");
 
 // home
 router.get("/", homeController.getHomePage);
 
 router.get("/upgrade-operation", isAuthenticated, upgradeOperationController.upgradeOperation);
+
+// enrollments
+router.get("/clase/:classId/inscrieri", enrollmentController.getAllPerClass);
+router.get("/clase/:classId/inscrieri/adauga", enrollmentController.enrollInClassGet);
+router.post("/clase/:classId/inscrieri/adauga", isAuthenticated, enrollmentController.enrollInClassPost);
+
+// router.get("/inscriere", enrollmentController.enrollInClassGet);
+// router.post("/inscriere", enrollmentController.enrollInClassPost);
 
 // my page
 router.get("/pagina-mea", meController.getMyPage);
@@ -65,8 +75,10 @@ router.get("/exercitii/edit/:id", isAuthenticated, exerciseController.createOrEd
 router.post("/exercitii/edit/:id", isAuthenticated, exerciseController.createOrEditPost);
 router.get("/exercitii/adauga", isAuthenticated, exerciseController.createOrEditGet);
 router.post("/exercitii/adauga", isAuthenticated, exerciseController.createOrEditPost);
-router.get("/exercitii/:id", exerciseController.getOneById);
 router.post("/exercitii/sterge", isAuthenticated, exerciseController.deleteOneById);
+router.get("/exercitii/:id", exerciseController.getOneById);
+router.get("/exercitii/:id/print", exerciseController.getOneForPrintById);
+router.post("/exercitii/:id/rezolvari", isAuthenticated, exerciseController.addMySolution);
 
 // markdown
 router.post("/markdown/get-rendered-markdown", isAuthenticated, markdownController.getGetRenderedMarkdown);
@@ -132,5 +144,7 @@ router.get("/reset-password/confirm/:resetPasswordCode", userResetPasswordContro
 router.get("/reset-password/confirm-success", userResetPasswordController.getResetPasswordConfirmSuccess);
 
 router.get("/editia-[1|2|3]", editionController.getEdition);
+
+router.post("/uploadfile", fileController.upload);
 
 module.exports = router;

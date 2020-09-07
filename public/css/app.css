@@ -35,3 +35,38 @@ https://github.com/twbs/bootstrap/issues/20643#issuecomment-325579156 */
         text-align: right;
     }
 }
+
+/* upload files - start*/
+.drop-area {
+    border: 2px dashed #ccc;
+    background: #f8f8f8;
+    width: 100%;
+    padding: 15px;
+}
+
+.drop-area.highlight {
+    border-color: #007bff;
+}
+
+.gallery img {
+    width: 300px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.upload-file-select-label {
+    display: inline-block;
+    margin-bottom: 0;
+    padding: 1px 10px 3px 10px;
+    background: #e7f3ff;
+    cursor: pointer;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    color: #1876f2;
+}
+
+.upload-file-select-label:hover {
+    background: #e4ebf1;
+}
+/* upload files - end*/
