@@ -83,7 +83,13 @@ exports.getAllPerClass = async (req, res) => {
     // const enrollments = await enrollService.getAllByClassId(classId);
 
     enrollments.forEach(x => {
-        const f = dateTimeHelper.getFriendlyDate(x.createdOn);
+        const createdOnAsUtc = convertDateToUTC(x.createdOn);
+
+        const offset = -3 * 60; // Romania, EEST // TODO; deal with Time Offset (EST/EEST) as here: https://www.timeanddate.com/time/zone/romania/bucharest
+
+        const createdOnAsLocal = new Date(createdOnAsUtc.getTime() - offset * 60000); // https://docs.mongodb.com/manual/tutorial/model-time-data/#example
+
+        const f = dateTimeHelper.getFriendlyDate(createdOnAsLocal);
         x.createdOn = f.dmy + " " + f.time;
         x.studentShortName = `${x.studentFirstName} ${x.studentLastName.charAt(0)}.`;
     });
@@ -93,3 +99,29 @@ exports.getAllPerClass = async (req, res) => {
     //res.send(data);
     res.render("enroll/enrollments-per-class", data);
 };
+
+// function createDateAsUTC(date) {
+//     return new Date(
+//         Date.UTC(
+//             date.getFullYear(),
+//             date.getMonth(),
+//             date.getDate(),
+//             date.getHours(),
+//             date.getMinutes(),
+//             date.getSeconds()
+//         )
+//     );
+// }
+
+function convertDateToUTC(date) {
+    // TODO: move this part in date-time helper
+    // https://stackoverflow.com/a/14006555
+    return new Date(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        date.getUTCHours(),
+        date.getUTCMinutes(),
+        date.getUTCSeconds()
+    );
+}
