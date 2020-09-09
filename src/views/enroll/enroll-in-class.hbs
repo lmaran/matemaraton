@@ -2,8 +2,8 @@
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item"><a href="/Clase/">Clase</a></li>
-        <li class="breadcrumb-item"><a href="/Clase/{{data.class._id}}">{{data.class.name}}</a></li>
-        <li class="breadcrumb-item"><a href="/Clase/{{data.class._id}}/inscrieri">Inscrieri</a></li>
+        <li class="breadcrumb-item"><a href="/Clase/{{data.classId}}">{{data.className}}</a></li>
+        <li class="breadcrumb-item"><a href="/Clase/{{data.classId}}/inscrieri">Inscrieri</a></li>
         {{!-- <li class="breadcrumb-item active" aria-current="page">Adaugă</li> --}}
     </ol>
 </nav>
@@ -24,13 +24,13 @@
 {{!-- <div class="alert alert-info" role="alert">
     <i class="fa fa-info-circle mr-2 fa-lg"></i>
     Se presupune că ați citit descrierea, <strong>condițiile de participare</strong> și celelalte detalii aferente
-    acestei clase. Dacă nu ați facut-o, o puteți face <a href="/Clase/{{data.class._id}}">aici</a>.
+    acestei clase. Dacă nu ați facut-o, o puteți face <a href="/Clase/{{data.classId}}">aici</a>.
 </div> --}}
 
 <div class="mb-5">Prin completarea formularului de mai jos, părintele iși manifestă intenția de a-și înscrie copilul la
     una din clasele MateMaraton. Este posibil ca nu toate cererile să poată fi soluționate favorabil.</div>
 
-<form method="post" id="enrollForm" action="/clase/{{data.class._id}}/inscrieri/adauga" novalidate
+<form method="post" id="enrollForm" action="/clase/{{data.classId}}/inscrieri/adauga" novalidate
     onsubmit="saveBtn.disabled = true; return true;">
 
     <div class="form-group row">
@@ -45,7 +45,7 @@
                 {{/select}}
             </select> --}}
             <input type="text" name="parentName" id="parentName" disabled class="form-control"
-                value="{{data.class.name}} (nivel {{data.class.level}})" />
+                value="{{data.className}} (nivel {{data.classLevel}})" />
             <p class="text-muted mb-0">Clasa la care se dorește înscrierea</p>
             <div class="invalid-feedback">{{errors.classId.msg}}</div>
         </div>
@@ -55,7 +55,7 @@
         <label for="parentName" class="col-md-3 col-form-label">Părinte</label>
         <div class="col-md-7">
             <input type="text" name="parentName" id="parentName" disabled class="form-control"
-                value="{{data.user.lastName}} {{data.user.firstName}}" />
+                value="{{@root.user.lastName}} {{@root.user.firstName}}" />
         </div>
     </div>
 
@@ -63,26 +63,26 @@
         <label for="parentEmail" class="col-md-3 col-form-label">Email (părinte)</label>
         <div class="col-md-7">
             <input type="email" name="parentEmail" id="parentEmail" disabled class="form-control"
-                value="{{data.user.email}}" />
+                value="{{@root.user.email}}" />
         </div>
     </div>
 
     <div class="form-group row">
-        <label for="studentLastName" class="col-md-3 col-form-label">Nume elev</label>
+        <label for="studentLastName" class="col-md-3 col-form-label required">Nume elev</label>
         <div class="col-md-7">
             <input type="text" name="studentLastName" id="studentLastName"
-                class="form-control {{#if errors.studentLastName}}is-invalid {{/if}}"
-                value="{{data.studentLastName.val}}" {{#if uiData.studentLastName.hasAutofocus}}autofocus {{/if}} />
+                class="form-control {{#if errors.studentLastName}}is-invalid {{/if}}" value="{{data.studentLastName}}"
+                {{#if uiData.studentLastName.hasAutofocus}}autofocus {{/if}} />
             <div class="invalid-feedback">{{errors.studentLastName.msg}}</div>
         </div>
     </div>
 
     <div class="form-group row">
-        <label for="studentFirstName" class="col-md-3 col-form-label">Prenume elev</label>
+        <label for="studentFirstName" class="col-md-3 col-form-label required">Prenume elev</label>
         <div class="col-md-7">
             <input type="text" name="studentFirstName" id="studentFirstName"
-                class="form-control {{#if errors.studentFirstName}}is-invalid {{/if}}"
-                value="{{data.studentFirstName.val}}" {{#if uiData.studentFirstName.hasAutofocus}}autofocus {{/if}} />
+                class="form-control {{#if errors.studentFirstName}}is-invalid {{/if}}" value="{{data.studentFirstName}}"
+                {{#if uiData.studentFirstName.hasAutofocus}}autofocus {{/if}} />
             <p class="text-muted mb-0">Puteți completa doar prenumele favorit</p>
             <div class="invalid-feedback">{{errors.studentFirstName.msg}}</div>
         </div>
@@ -93,7 +93,7 @@
         <label for="mathAvgGrade1" class="col-md-3 col-form-label">Media la matematică, sem.1</label>
         <div class="col-md-7">
             <input type="text" name="mathAvgGrade1" id="mathAvgGrade1"
-                class="form-control {{#if errors.mathAvgGrade1}}is-invalid {{/if}}" value="{{data.mathAvgGrade1.val}}"
+                class="form-control {{#if errors.mathAvgGrade1}}is-invalid {{/if}}" value="{{data.mathAvgGrade1}}"
                 {{#if uiData.mathAvgGrade1.hasAutofocus}}autofocus {{/if}} />
             <p class="text-muted mb-0">Media (calificativul) din
                 anul precedent, sem.1</p>
@@ -105,21 +105,21 @@
         <label for="mathAvgGrade2" class="col-md-3 col-form-label">Media la matematică, sem.2</label>
         <div class="col-md-7">
             <input type="text" name="mathAvgGrade2" id="mathAvgGrade2"
-                class="form-control {{#if errors.mathAvgGrade2}}is-invalid {{/if}}" value="{{data.mathAvgGrade2.val}}"
+                class="form-control {{#if errors.mathAvgGrade2}}is-invalid {{/if}}" value="{{data.mathAvgGrade2}}"
                 {{#if uiData.mathAvgGrade2.hasAutofocus}}autofocus {{/if}} />
             <p class="text-muted mb-0">Media (calificativul) din
                 anul precedent, sem.2</p <div class="invalid-feedback">
-            {{errors.mathAvgGrade2.msg}}
+            <div class="invalid-feedback">{{errors.mathAvgGrade2.msg}}</div>
         </div>
     </div>
 
     <div class="form-group row">
-        <label for="schoolName" class="col-md-3 col-form-label">Numele școlii</label>
+        <label for="schoolName" class="col-md-3 col-form-label">Numele și localitatea școlii</label>
         <div class="col-md-7">
             <input type="text" name="schoolName" id="schoolName"
-                class="form-control {{#if errors.schoolName}}is-invalid {{/if}}" value="{{data.schoolName.val}}"
+                class="form-control {{#if errors.schoolName}}is-invalid {{/if}}" value="{{data.schoolName}}"
                 {{#if uiData.schoolName.hasAutofocus}}autofocus {{/if}} />
-            <p class="text-muted mb-0">Școala (și localitatea) unde învață copilul</p>
+            <p class="text-muted mb-0">Școala și localitatea unde învață copilul</p>
             <div class="invalid-feedback">{{errors.schoolName.msg}}</div>
         </div>
     </div>
@@ -128,17 +128,17 @@
         <label for="observations" class="col-md-3 col-form-label">Observații</label>
         <div class="col-md-7">
             <textarea rows="3" type="text" name="observations" id="observations"
-                class="form-control {{#if errors.observations}}is-invalid {{/if}}" value="{{data.observations.val}}"
-                {{#if uiData.observations.hasAutofocus}}autofocus {{/if}}></textarea>
+                class="form-control {{#if errors.observations}}is-invalid {{/if}}"
+                {{#if uiData.observations.hasAutofocus}}autofocus {{/if}}>{{data.observations}}</textarea>
             <p class="text-muted mb-0">Puteți adăuga aici orice informații pe care instructorul considerați că e bine să
                 le cunoască despre copilul dvs.</p>
             <div class="invalid-feedback">{{errors.observations.msg}}</div>
         </div>
     </div>
 
-    <input type="hidden" name="parentId" value="{{data.user._id}}" />
-    <input type="hidden" name="classId" value="{{data.class._id}}" />
-
+    <input type="hidden" name="classId" value="{{data.classId}}" />
+    <input type="hidden" name="className" value="{{data.className}}" />
+    <input type="hidden" name="classLevel" value="{{data.classLevel}}" />
 
     <div class="form-group row">
         <div class="col-md-7 offset-md-3">
@@ -154,7 +154,7 @@
 <div class="alert alert-info" role="alert">
     <i class="fa fa-info-circle mr-2 fa-lg"></i>
     Pentru a trimite o cerere de înscriere trebuie sa fii autentificat ca <strong>părinte</strong>. Te poți autentifica
-    <a href="login?redirect_uri=clase/{{data.class._id}}/inscrieri/adauga">aici</a>
+    <a href="login?redirect_uri=clase/{{data.classId}}/inscrieri/adauga">aici</a>
     sau, dacă nu ai cont, îti poti face unul gratuit <a href="/signup">aici</a>.
 </div>
 {{/if}}
