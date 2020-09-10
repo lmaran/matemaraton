@@ -47,11 +47,23 @@ exports.enrollInClassGet = async (req, res) => {
 
 exports.enrollInClassPost = async (req, res) => {
     try {
-        // handle static validation errors
+        // static validations
         const validationErrors = getStaticValidationErrors(req);
-
         if (Object.keys(validationErrors).length > 0) {
-            //if not empty object
+            return flashAndReloadPage(req, res, validationErrors);
+        }
+
+        // dynamic validations
+        const enrollRequestsByParent = await enrollService.getAllByClassIdAndParentId(req.body.classId, req.user._id);
+        if (enrollRequestsByParent.length > 0) {
+            const validationErrors = [
+                {
+                    page: {
+                        msg:
+                            "Puteți înscrie maxim un elev (propriul copil). In cazul în care aveți doi copii pe care doriți să-i înscrieți la aceeași clasă (ex: gemeni), vom trata acest caz ca pe o excepție. In acest sens, vă rugăm să trimiteți datele celui de-al 2-lea copil pe email, la adresa lucian.maran@gmail.com."
+                    }
+                }
+            ];
             return flashAndReloadPage(req, res, validationErrors);
         }
 

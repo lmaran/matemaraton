@@ -16,3 +16,11 @@ exports.getAllByClassId = async classId => {
         .find({ classId })
         .toArray();
 };
+
+exports.getAllByClassIdAndParentId = async (classId, parentId) => {
+    const db = await mongoHelper.getDb();
+    return db
+        .collection(collection)
+        .find({ classId, parentId })
+        .toArray();
+};
