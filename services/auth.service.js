@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const config = require("../config");
 const userService = require("../services/user.service");
-const uuid = require("uuid/v4");
+const { v4: uuidv4 } = require("uuid");
 
 exports.login = async (email, password) => {
     const existingUser = await userService.getOneByEmail(email);
@@ -59,7 +59,7 @@ exports.signupByUserRegistration = async (firstName, lastName, email, psw) => {
 
     const password = await bcrypt.hash(psw, 10);
 
-    const uniqueId = existingUser && existingUser.signupCode ? existingUser.signupCode : uuid(); // keep the original code if exists
+    const uniqueId = existingUser && existingUser.signupCode ? existingUser.signupCode : uuidv4(); // keep the original code if exists
 
     if (existingUser) {
         existingUser.firstName = firstName;
@@ -77,7 +77,7 @@ exports.signupByUserRegistration = async (firstName, lastName, email, psw) => {
             password,
             status: "registered",
             signupCode: uniqueId,
-            createdOn: new Date()
+            createdOn: new Date(),
         };
         if (email) {
             newUser.email = email.toLowerCase(); // ensures that the email is saved in lowerCase
@@ -93,12 +93,12 @@ exports.saveResetPasswordRequest = async (email, password) => {
     const existingUser = await userService.getOneByEmail(email);
     if (!existingUser || (existingUser && existingUser.status !== "active")) throw new Error("AccountNotExists");
 
-    const resetPasswordCode = uuid();
+    const resetPasswordCode = uuidv4();
 
     existingUser.resetPasswordCode = resetPasswordCode;
     existingUser.resetPasswordInfo = {
         newPassword: await bcrypt.hash(password, 10),
-        requestDate: new Date()
+        requestDate: new Date(),
     };
     existingUser.modifiedOn = new Date();
 
@@ -107,7 +107,7 @@ exports.saveResetPasswordRequest = async (email, password) => {
     return resetPasswordCode;
 };
 
-exports.signupByActivationCode = async activationCode => {
+exports.signupByActivationCode = async (activationCode) => {
     const existingUser = await userService.getOneBySignupCode(activationCode);
     if (existingUser) {
         if (existingUser.status === "registered") {
@@ -126,7 +126,7 @@ exports.signupByActivationCode = async activationCode => {
     } else throw new Error("InvalidActivationCode");
 };
 
-exports.resetPasswordByCode = async resetPasswordCode => {
+exports.resetPasswordByCode = async (resetPasswordCode) => {
     const existingUser = await userService.getOneByResetPasswordCode(resetPasswordCode);
 
     if (!existingUser) throw new Error("InvalidResetPasswordCode");
@@ -139,23 +139,23 @@ exports.resetPasswordByCode = async resetPasswordCode => {
     const modifiedFields = {
         password: existingUser.resetPasswordInfo.newPassword,
         lastResetPasswordOn: currentDate,
-        modifiedOn: currentDate
+        modifiedOn: currentDate,
     };
 
     const removedFields = {
         resetPasswordCode: "",
-        resetPasswordInfo: ""
+        resetPasswordInfo: "",
     };
 
     return await userService.resetPassword(existingUser._id, modifiedFields, removedFields);
 };
 
-exports.getJwtPayload = async token => {
+exports.getJwtPayload = async (token) => {
     const payload = await jwt.verify(token, config.session_secret);
     return payload;
 };
 
-exports.getTokensFromRefreshToken = async refreshToken => {
+exports.getTokensFromRefreshToken = async (refreshToken) => {
     const payload = await jwt.verify(refreshToken, config.session_secret);
     const userId = payload.data._id;
 
@@ -166,13 +166,13 @@ exports.getTokensFromRefreshToken = async refreshToken => {
     else return getAccessAndRefreshTokens(existingUser);
 };
 
-const generateJWT = user => {
+const generateJWT = (user) => {
     return jwt.sign(
         {
             data: {
                 _id: user._id,
-                email: user.email
-            }
+                email: user.email,
+            },
         },
         config.session_secret,
         // { expiresIn: 60 * 60 * 24 * 365 } // in seconds
@@ -181,13 +181,13 @@ const generateJWT = user => {
     );
 };
 
-const generateJWTRefreshToken = user => {
+const generateJWTRefreshToken = (user) => {
     return jwt.sign(
         {
             data: {
-                _id: user._id
+                _id: user._id,
                 // email: user.email
-            }
+            },
         },
         // TODO: use a different key
         config.session_secret
@@ -197,7 +197,7 @@ const generateJWTRefreshToken = user => {
     );
 };
 
-const getAccessAndRefreshTokens = existingUser => {
+const getAccessAndRefreshTokens = (existingUser) => {
     const token = generateJWT(existingUser);
     const refreshToken = generateJWTRefreshToken(existingUser);
     return { token, refreshToken };

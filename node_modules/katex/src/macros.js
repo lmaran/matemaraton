@@ -5,6 +5,7 @@
  */
 
 import fontMetricsData from "../submodules/katex-fonts/fontMetricsData";
+import functions from "./functions";
 import symbols from "./symbols";
 import utils from "./utils";
 import {Token} from "./Token";
@@ -35,6 +36,16 @@ export interface MacroContextInterface {
      * Remove and return the next unexpanded token.
      */
     popToken(): Token;
+
+    /**
+     * Consume all following space tokens, without expansion.
+     */
+    consumeSpaces(): void;
+
+    /**
+     * Expand the next token only once if possible.
+     */
+    expandOnce(expandableOnly?: boolean): Token | Token[];
 
     /**
      * Expand the next token only once (if possible), and return the resulting
@@ -73,10 +84,19 @@ export interface MacroContextInterface {
      * `implicitCommands`.
      */
     isDefined(name: string): boolean;
+
+    /**
+     * Determine whether a command is expandable.
+     */
+    isExpandable(name: string): boolean;
 }
 
 /** Macro tokens (in reverse order). */
-export type MacroExpansion = {tokens: Token[], numArgs: number};
+export type MacroExpansion = {
+    tokens: Token[],
+    numArgs: number,
+    unexpandable?: boolean, // used in \let
+};
 
 export type MacroDefinition = string | MacroExpansion |
     (MacroContextInterface => (string | MacroExpansion));
@@ -93,6 +113,29 @@ export function defineMacro(name: string, body: MacroDefinition) {
 //////////////////////////////////////////////////////////////////////
 // macro tools
 
+defineMacro("\\noexpand", function(context) {
+    // The expansion is the token itself; but that token is interpreted
+    // as if its meaning were ‘\relax’ if it is a control sequence that
+    // would ordinarily be expanded by TeX’s expansion rules.
+    const t = context.popToken();
+    if (context.isExpandable(t.text)) {
+        t.noexpand = true;
+        t.treatAsRelax = true;
+    }
+    return {tokens: [t], numArgs: 0};
+});
+
+defineMacro("\\expandafter", function(context) {
+    // TeX first reads the token that comes immediately after \expandafter,
+    // without expanding it; let’s call this token t. Then TeX reads the
+    // token that comes after t (and possibly more tokens, if that token
+    // has an argument), replacing it by its expansion. Finally TeX puts
+    // t back in front of that expansion.
+    const t = context.popToken();
+    context.expandOnce(true); // expand only an expandable token
+    return {tokens: [t], numArgs: 0};
+});
+
 // LaTeX's \@firstoftwo{#1}{#2} expands to #1, skipping #2
 // TeX source: \long\def\@firstoftwo#1#2{#1}
 defineMacro("\\@firstoftwo", function(context) {
@@ -108,10 +151,12 @@ defineMacro("\\@secondoftwo", function(context) {
 });
 
 // LaTeX's \@ifnextchar{#1}{#2}{#3} looks ahead to the next (unexpanded)
-// symbol.  If it matches #1, then the macro expands to #2; otherwise, #3.
-// Note, however, that it does not consume the next symbol in either case.
+// symbol that isn't a space, consuming any spaces but not consuming the
+// first nonspace character.  If that nonspace character matches #1, then
+// the macro expands to #2; otherwise, it expands to #3.
 defineMacro("\\@ifnextchar", function(context) {
     const args = context.consumeArgs(3);  // symbol, if, else
+    context.consumeSpaces();
     const nextToken = context.future();
     if (args[0].length === 1 && args[0][0].text === nextToken.text) {
         return {tokens: args[1], numArgs: 0};
@@ -191,59 +236,6 @@ defineMacro("\\char", function(context) {
     return `\\@char{${number}}`;
 });
 
-// Basic support for macro definitions:
-//     \def\macro{expansion}
-//     \def\macro#1{expansion}
-//     \def\macro#1#2{expansion}
-//     \def\macro#1#2#3#4#5#6#7#8#9{expansion}
-// Also the \gdef and \global\def equivalents
-const def = (context, global: boolean) => {
-    let arg = context.consumeArgs(1)[0];
-    if (arg.length !== 1) {
-        throw new ParseError("\\gdef's first argument must be a macro name");
-    }
-    const name = arg[0].text;
-    // Count argument specifiers, and check they are in the order #1 #2 ...
-    let numArgs = 0;
-    arg = context.consumeArgs(1)[0];
-    while (arg.length === 1 && arg[0].text === "#") {
-        arg = context.consumeArgs(1)[0];
-        if (arg.length !== 1) {
-            throw new ParseError(`Invalid argument number length "${arg.length}"`);
-        }
-        if (!(/^[1-9]$/.test(arg[0].text))) {
-            throw new ParseError(`Invalid argument number "${arg[0].text}"`);
-        }
-        numArgs++;
-        if (parseInt(arg[0].text) !== numArgs) {
-            throw new ParseError(`Argument number "${arg[0].text}" out of order`);
-        }
-        arg = context.consumeArgs(1)[0];
-    }
-    // Final arg is the expansion of the macro
-    context.macros.set(name, {
-        tokens: arg,
-        numArgs,
-    }, global);
-    return '';
-};
-defineMacro("\\gdef", (context) => def(context, true));
-defineMacro("\\def", (context) => def(context, false));
-defineMacro("\\global", (context) => {
-    const next = context.consumeArgs(1)[0];
-    if (next.length !== 1) {
-        throw new ParseError("Invalid command after \\global");
-    }
-    const command = next[0].text;
-    // TODO: Should expand command
-    if (command === "\\def") {
-        // \global\def is equivalent to \gdef
-        return def(context, true);
-    } else {
-        throw new ParseError(`Invalid command '${command}' after \\global`);
-    }
-});
-
 // \newcommand{\macro}[args]{definition}
 // \renewcommand{\macro}[args]{definition}
 // TODO: Optional arguments: \newcommand{\macro}[args][default]{definition}
@@ -292,6 +284,28 @@ const newcommand = (context, existsOK: boolean, nonexistsOK: boolean) => {
 defineMacro("\\newcommand", (context) => newcommand(context, false, true));
 defineMacro("\\renewcommand", (context) => newcommand(context, true, false));
 defineMacro("\\providecommand", (context) => newcommand(context, true, true));
+
+// terminal (console) tools
+defineMacro("\\message", (context) => {
+    const arg = context.consumeArgs(1)[0];
+    // eslint-disable-next-line no-console
+    console.log(arg.reverse().map(token => token.text).join(""));
+    return '';
+});
+defineMacro("\\errmessage", (context) => {
+    const arg = context.consumeArgs(1)[0];
+    // eslint-disable-next-line no-console
+    console.error(arg.reverse().map(token => token.text).join(""));
+    return '';
+});
+defineMacro("\\show", (context) => {
+    const tok = context.popToken();
+    const name = tok.text;
+    // eslint-disable-next-line no-console
+    console.log(tok, context.macros.get(name), functions[name],
+        symbols.math[name], symbols.text[name]);
+    return '';
+});
 
 //////////////////////////////////////////////////////////////////////
 // Grouping
@@ -397,6 +411,13 @@ defineMacro("\u231F", "\\lrcorner");
 defineMacro("\u00A9", "\\copyright");
 defineMacro("\u00AE", "\\textregistered");
 defineMacro("\uFE0F", "\\textregistered");
+
+// The KaTeX fonts have corners at codepoints that don't match Unicode.
+// For MathML purposes, use the Unicode code point.
+defineMacro("\\ulcorner", "\\html@mathml{\\@ulcorner}{\\mathop{\\char\"231c}}");
+defineMacro("\\urcorner", "\\html@mathml{\\@urcorner}{\\mathop{\\char\"231d}}");
+defineMacro("\\llcorner", "\\html@mathml{\\@llcorner}{\\mathop{\\char\"231e}}");
+defineMacro("\\lrcorner", "\\html@mathml{\\@lrcorner}{\\mathop{\\char\"231f}}");
 
 //////////////////////////////////////////////////////////////////////
 // LaTeX_2ε
@@ -834,6 +855,8 @@ defineMacro("\\varsubsetneq", "\\html@mathml{\\@varsubsetneq}{⊊}");
 defineMacro("\\varsubsetneqq", "\\html@mathml{\\@varsubsetneqq}{⫋}");
 defineMacro("\\varsupsetneq", "\\html@mathml{\\@varsupsetneq}{⊋}");
 defineMacro("\\varsupsetneqq", "\\html@mathml{\\@varsupsetneqq}{⫌}");
+defineMacro("\\imath", "\\html@mathml{\\@imath}{\u0131}");
+defineMacro("\\jmath", "\\html@mathml{\\@jmath}{\u0237}");
 
 //////////////////////////////////////////////////////////////////////
 // stmaryrd and semantic
@@ -863,6 +886,14 @@ defineMacro("\u2984", "\\rBrace"); // blackboard bold }
 
 // TODO: Create variable sized versions of the last two items. I believe that
 // will require new font glyphs.
+
+// The stmaryrd function `\minuso` provides a "Plimsoll" symbol that
+// superimposes the characters \circ and \mathminus. Used in chemistry.
+defineMacro("\\minuso", "\\mathbin{\\html@mathml{" +
+    "{\\mathrlap{\\mathchoice{\\kern{0.145em}}{\\kern{0.145em}}" +
+    "{\\kern{0.1015em}}{\\kern{0.0725em}}\\circ}{-}}}" +
+    "{\\char`⦵}}");
+defineMacro("⦵", "\\minuso");
 
 //////////////////////////////////////////////////////////////////////
 // texvc.sty
@@ -945,6 +976,16 @@ defineMacro("\\Zeta", "\\mathrm{Z}");
 defineMacro("\\argmin", "\\DOTSB\\operatorname*{arg\\,min}");
 defineMacro("\\argmax", "\\DOTSB\\operatorname*{arg\\,max}");
 defineMacro("\\plim", "\\DOTSB\\mathop{\\operatorname{plim}}\\limits");
+
+//////////////////////////////////////////////////////////////////////
+// braket.sty
+// http://ctan.math.washington.edu/tex-archive/macros/latex/contrib/braket/braket.pdf
+
+defineMacro("\\bra", "\\mathinner{\\langle{#1}|}");
+defineMacro("\\ket", "\\mathinner{|{#1}\\rangle}");
+defineMacro("\\braket", "\\mathinner{\\langle{#1}\\rangle}");
+defineMacro("\\Bra", "\\left\\langle#1\\right|");
+defineMacro("\\Ket", "\\left|#1\\right\\rangle");
 
 // Custom Khan Academy colors, should be moved to an optional package
 defineMacro("\\blue", "\\textcolor{##6495ed}{#1}");

@@ -1,4 +1,3 @@
-const bodyParser = require("body-parser");
 const express = require("express");
 const path = require("path");
 const exphbs = require("express-handlebars");
@@ -34,8 +33,10 @@ app.engine(
     })
 );
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+// bodyParser was added back to Express in release 4.16.0
+// https://stackoverflow.com/a/43626891/2726725
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 const mongoClientAsPromise = mongoHelper.getClientAsPromise();
 
