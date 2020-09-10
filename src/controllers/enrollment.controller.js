@@ -1,4 +1,5 @@
 const validator = require("validator");
+const emailService = require("../services/email.service");
 const classService = require("../services/class.service");
 const enrollService = require("../services/enroll.service");
 const dateTimeHelper = require("../helpers/date-time.helper");
@@ -54,17 +55,22 @@ exports.enrollInClassPost = async (req, res) => {
         }
 
         // dynamic validations
-        const enrollRequestsByParent = await enrollService.getAllByClassIdAndParentId(req.body.classId, req.user._id);
-        if (enrollRequestsByParent.length > 0) {
-            const validationErrors = [
-                {
-                    page: {
-                        msg:
-                            "Puteți înscrie maxim un elev (propriul copil). In cazul în care aveți doi copii pe care doriți să-i înscrieți la aceeași clasă (ex: gemeni), vom trata acest caz ca pe o excepție. In acest sens, vă rugăm să trimiteți datele celui de-al 2-lea copil pe email, la adresa lucian.maran@gmail.com."
+        if (!req.user.isAdmin) {
+            const enrollRequestsByParent = await enrollService.getAllByClassIdAndParentId(
+                req.body.classId,
+                req.user._id
+            );
+            if (enrollRequestsByParent.length > 0) {
+                const validationErrors = [
+                    {
+                        page: {
+                            msg:
+                                "Puteți înscrie maxim un elev (propriul copil). In cazul în care aveți doi copii pe care doriți să-i înscrieți la aceeași clasă (ex: gemeni), vom trata acest caz ca pe o excepție. In acest sens, vă rugăm să trimiteți datele celui de-al 2-lea copil pe email, la adresa lucian.maran@gmail.com."
+                        }
                     }
-                }
-            ];
-            return flashAndReloadPage(req, res, validationErrors);
+                ];
+                return flashAndReloadPage(req, res, validationErrors);
+            }
         }
 
         const enroll = {
@@ -81,6 +87,19 @@ exports.enrollInClassPost = async (req, res) => {
         };
 
         await enrollService.insertOne(enroll);
+
+        const emailObj = {
+            to: "lucian.maran@gmail.com",
+            subject: `Inscriere nouă: ${req.body.studentFirstName} ${req.body.studentLastName} (${req.body.className})`,
+            html: `<html>
+            Note: ${req.body.mathAvgGrade1}, ${req.body.mathAvgGrade2} </br>
+            Școala: ${req.body.schoolName} </br>
+            Lista tuturor elevilor înscriși la această clasă este  
+            <a href="https://matemaraton.ro/clase/${req.body.classId}/inscrieri">aici</a>.
+            </html>`
+        };
+
+        await emailService.sendEmail(emailObj);
 
         // res.redirect("/enroll/confirm-success");
         res.redirect(`/clase/${req.body.classId}/inscrieri`);
