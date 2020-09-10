@@ -5,7 +5,7 @@ const emailService = require("../services/email.service");
 const config = require("../config");
 const arrayHelper = require("../helpers/array.helper");
 const cookieHelper = require("../helpers/cookie.helper");
-const uuid = require("uuid/v4");
+const { v4: uuidv4 } = require("uuid");
 const recaptchaService = require("../services/recaptcha.service");
 
 exports.postInviteToSignup = async (req, res) => {
@@ -17,11 +17,11 @@ exports.postInviteToSignup = async (req, res) => {
             return res.send("Există deja un utilizator activ cu acest email");
         }
 
-        const uniqueId = existingUser && existingUser.signupCode ? existingUser.signupCode : uuid(); // keep the original code if exists
+        const uniqueId = existingUser && existingUser.signupCode ? existingUser.signupCode : uuidv4(); // keep the original code if exists
 
         const invitationInfo = {
             firstName,
-            lastName
+            lastName,
         };
 
         if (existingUser) {
@@ -36,7 +36,7 @@ exports.postInviteToSignup = async (req, res) => {
                 invitationInfo,
                 status: "invited",
                 signupCode: uniqueId,
-                createdOn: new Date()
+                createdOn: new Date(),
             };
             if (email) newUser.email = email.toLowerCase(); // ensures that the email is saved in lowerCase
 
@@ -52,7 +52,7 @@ exports.postInviteToSignup = async (req, res) => {
             subject: "Invitație activare cont",
             html: `<html>Pentru activarea contului te rugăm să accesezi 
                 <a href="${link}">link-ul de activare</a>!
-                </html>`
+                </html>`,
         };
 
         await emailService.sendEmail(emailData);
@@ -80,7 +80,7 @@ exports.getSignup = async (req, res) => {
         if (existingUser.status === "active") {
             const data = {
                 message: "Contul aferent accestei invitații a fost deja <strong>activat</strong>!",
-                userIsNotAuthenticated: !req.user
+                userIsNotAuthenticated: !req.user,
             };
             return res.render("user/signup-confirm-info", data);
         }
@@ -91,15 +91,15 @@ exports.getSignup = async (req, res) => {
         if (initialValues.length === 0 && existingUser.invitationInfo) {
             data.firstName = {
                 field: "firstName",
-                val: existingUser.invitationInfo.firstName
+                val: existingUser.invitationInfo.firstName,
             };
             data.lastName = {
                 field: "lastName",
-                val: existingUser.invitationInfo.lastName
+                val: existingUser.invitationInfo.lastName,
             };
             data.email = {
                 field: "email",
-                val: existingUser.email
+                val: existingUser.email,
             };
         }
     }
@@ -174,7 +174,7 @@ exports.postSignup = async (req, res) => {
                 subject: "Activare cont",
                 html: `<html>Pentru activarea contului te rugăm să accesezi 
                 <a href="${link}">link-ul de activare</a>!
-                </html>`
+                </html>`,
             };
 
             await emailService.sendEmail(data);
@@ -223,14 +223,14 @@ exports.displaySignupAskToConfirm = async (req, res) => {
 
 exports.displaySignupInvitationSent = async (req, res) => {
     const data = {
-        userIsNotAuthenticated: !req.user
+        userIsNotAuthenticated: !req.user,
     };
     res.render("user/signup-invitation-ask-to-confirm", data);
 };
 
 exports.getSignupConfirmSuccess = async (req, res) => {
     const data = {
-        userIsNotAuthenticated: !req.user
+        userIsNotAuthenticated: !req.user,
     };
     res.render("user/signup-confirm-success", data);
 };
@@ -282,7 +282,7 @@ const flashAndReloadSignupPage = (req, res, validationErrors) => {
         { field: "firstName", val: firstName },
         { field: "email", val: email },
         { field: "password", val: password },
-        { field: "confirmPassword", val: confirmPassword }
+        { field: "confirmPassword", val: confirmPassword },
     ];
     // keep old values at page reload by setting a flash message (a key, followed by a value)
     req.flash("validationErrors", validationErrors);
