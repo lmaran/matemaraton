@@ -2,7 +2,6 @@ const validator = require("validator");
 const classService = require("../services/class.service");
 const enrollService = require("../services/enroll.service");
 const dateTimeHelper = require("../helpers/date-time.helper");
-//const arrayHelper = require("../helpers/array.helper");
 
 exports.enrollInClassGet = async (req, res) => {
     const classId = req.params.classId;
@@ -11,8 +10,8 @@ exports.enrollInClassGet = async (req, res) => {
     const validationErrors = req.flash("validationErrors");
     const initialValues = req.flash("initialValues");
 
-    // const errors = arrayHelper.arrayToObject(validationErrors, "field");
     let errors = {};
+    const uiData = {};
     if (validationErrors.length > 0) {
         errors = validationErrors[0];
     }
@@ -31,8 +30,19 @@ exports.enrollInClassGet = async (req, res) => {
         data = initialValues[0];
     }
 
+    // set autofocus properties
+    if (validationErrors.length > 0) {
+        if (Object.keys(errors).length > 0) {
+            const firstFieldWithError = Object.keys(errors)[0];
+            uiData[firstFieldWithError] = { hasAutofocus: true };
+        }
+    } else {
+        // no errors (e.g. first page request) => focus on first field
+        uiData.studentLastName = { hasAutofocus: true };
+    }
+
     //res.send(data);
-    res.render("enroll/enroll-in-class", { data, errors });
+    res.render("enroll/enroll-in-class", { data, uiData, errors });
 };
 
 exports.enrollInClassPost = async (req, res) => {
