@@ -1,5 +1,5 @@
 export const uploadFilesHelper = {
-    uploadFiles: options => {
+    uploadFiles: (options) => {
         const { uploadFileSelectInput, url, maxFiles, maxFileSizeInMB } = options;
 
         const dropArea = uploadFileSelectInput.closest(".drop-area"); // find the closest ancestor which matches the selectors
@@ -9,7 +9,7 @@ export const uploadFilesHelper = {
 
         uploadFileSelectInput.addEventListener("change", handleInputFiles, false);
 
-        ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+        ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
             dropArea.addEventListener(eventName, preventDefaults, false);
         });
 
@@ -18,11 +18,11 @@ export const uploadFilesHelper = {
             e.stopPropagation();
         }
 
-        ["dragenter", "dragover"].forEach(eventName => {
+        ["dragenter", "dragover"].forEach((eventName) => {
             dropArea.addEventListener(eventName, highlight, false);
         });
 
-        ["dragleave", "drop"].forEach(eventName => {
+        ["dragleave", "drop"].forEach((eventName) => {
             dropArea.addEventListener(eventName, unHighlight, false);
         });
 
@@ -73,7 +73,7 @@ export const uploadFilesHelper = {
 
             let isFileSizeValid = true;
             //let isFileTypeValid = true; // useful for drag & drop
-            files.forEach(file => {
+            files.forEach((file) => {
                 if (file.size > maxFileSizeInMB * 1024 * 1024) isFileSizeValid = false;
                 //if (!file.type.startsWith("image/")) isFileTypeValid = false;
             });
@@ -90,11 +90,11 @@ export const uploadFilesHelper = {
 
             xhr.open("POST", url, true);
 
-            xhr.upload.addEventListener("progress", function(e) {
+            xhr.upload.addEventListener("progress", function (e) {
                 updateProgress((e.loaded * 100.0) / e.total || 100);
             });
 
-            xhr.addEventListener("readystatechange", function(e) {
+            xhr.addEventListener("readystatechange", function (e) {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     previewFiles(xhr.response);
                 } else if (xhr.readyState == 4 && xhr.status != 200) {
@@ -107,7 +107,7 @@ export const uploadFilesHelper = {
             };
 
             const formData = new FormData();
-            files.forEach(file => {
+            files.forEach((file) => {
                 formData.append("file", file);
             });
 
@@ -128,7 +128,7 @@ export const uploadFilesHelper = {
         }
 
         function previewFiles(files) {
-            files.forEach(file => {
+            files.forEach((file) => {
                 // we use a file container to add data-attributes on it
                 const fileContainerSpan = document.createElement("span");
                 fileContainerSpan.classList.add("file-container-span");
@@ -162,5 +162,5 @@ export const uploadFilesHelper = {
                 gallery.appendChild(fileContainerSpan);
             });
         }
-    }
+    },
 };
