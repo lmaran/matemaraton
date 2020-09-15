@@ -22,7 +22,7 @@ exports.upload_Old = async (req, res) => {
     // res.send("bbb");
 
     const startTime = Date.now();
-    let batchItems = [];
+    const batchItems = [];
     const batchSize = 1000; // this is also default batchSize in Mongodb la BulkWrite (internally used by InsertMany)
 
     //const inputFileNames = [];
@@ -33,7 +33,7 @@ exports.upload_Old = async (req, res) => {
 
     // I abort upload if file is over 10 MB limit
     const busboy = new Busboy({ headers: req.headers, limits: { fileSize: fileSizeLimit } });
-    busboy.on("file", async function(fieldname, uploadFileStream, fileName, encoding, mimeType) {
+    busboy.on("file", async function (fieldname, uploadFileStream, fileName, encoding, mimeType) {
         result.push({ fileName });
         ++files;
         //validate against empty file name
@@ -56,7 +56,7 @@ exports.upload_Old = async (req, res) => {
             // });
 
             // const filePath = path.join(__dirname, "uploads/" + filename);
-            uploadFileStream.on("limit", function() {
+            uploadFileStream.on("limit", function () {
                 console.log(`file size over ${fileSizeLimit / (1024 * 1024)} MB.`);
 
                 // //delete the file that is large in size
@@ -137,7 +137,7 @@ exports.upload_Old = async (req, res) => {
                 );
                 //res.render("success", { message: "File uploaded to Azure Blob storage." });
                 //console.log(fileName + ": done!");
-                const fileInResult = result.find(x => x.fileName === fileName);
+                const fileInResult = result.find((x) => x.fileName === fileName);
 
                 fileInResult.url =
                     "https://" +
@@ -160,7 +160,7 @@ exports.upload_Old = async (req, res) => {
         }
     });
 
-    busboy.on("finish", function() {
+    busboy.on("finish", function () {
         console.log("Upload completed!");
         console.log(result2);
         res.writeHead(200, { Connection: "close" });
@@ -183,7 +183,7 @@ exports.upload = async (req, res) => {
 
     // I abort upload if file is over 10 MB limit
     const busboy = new Busboy({ headers: req.headers, limits: { fileSize: fileSizeLimit } });
-    busboy.on("file", async function(fieldname, uploadFileStream, fileName, encoding, mimeType) {
+    busboy.on("file", async function (fieldname, uploadFileStream, fileName, encoding, mimeType) {
         result.push({ fileName });
         ++files;
         //validate against empty file name
@@ -206,7 +206,7 @@ exports.upload = async (req, res) => {
             // });
 
             // const filePath = path.join(__dirname, "uploads/" + filename);
-            uploadFileStream.on("limit", function() {
+            uploadFileStream.on("limit", function () {
                 console.log(`file size over ${fileSizeLimit / (1024 * 1024)} MB.`);
             });
 
@@ -227,7 +227,7 @@ exports.upload = async (req, res) => {
                 );
                 //res.render("success", { message: "File uploaded to Azure Blob storage." });
                 //console.log(fileName + ": done!");
-                const fileInResult = result.find(x => x.fileName === fileName);
+                const fileInResult = result.find((x) => x.fileName === fileName);
 
                 fileInResult.url =
                     "https://" + blobServiceClient.accountName + ".blob.core.windows.net/files/" + blobName;
@@ -252,7 +252,7 @@ exports.upload = async (req, res) => {
         }
     });
 
-    busboy.on("finish", function() {
+    busboy.on("finish", function () {
         console.log("Upload completed!");
         finished = true;
     });

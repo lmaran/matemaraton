@@ -16,8 +16,8 @@ exports.getClass = async (req, res) => {
         courseSummary,
         ctx: req.ctx,
         can: {
-            viewParentsLink: await autz.can(req.user, "read:parents", { classId })
-        }
+            viewParentsLink: await autz.can(req.user, "read:parents", { classId }),
+        },
     };
 
     //res.send(data);
@@ -32,7 +32,7 @@ exports.getClasses = async (req, res) => {
 
     const activeClasses = [];
     const archivedClasses = [];
-    classes.forEach(cls => {
+    classes.forEach((cls) => {
         if (cls.isActive) {
             activeClasses.push(cls);
         } else {
@@ -45,11 +45,11 @@ exports.getClasses = async (req, res) => {
     const academicYears1 = Object.keys(unorderedActiveClasses);
     academicYears1
         .sort((a, b) => b - a) // sort by academicYear, desc
-        .forEach(function(academicYear) {
+        .forEach(function (academicYear) {
             orderedActiveClasses.push({
                 editionNumber: editionsObj[academicYears1] && editionsObj[academicYears1].number,
                 editionInterval: stringHelper.getIntervalFromAcademicYear(academicYear),
-                values: unorderedActiveClasses[academicYear]
+                values: unorderedActiveClasses[academicYear],
             });
         });
 
@@ -58,18 +58,18 @@ exports.getClasses = async (req, res) => {
     const academicYears = Object.keys(unorderedArchivedClasses);
     academicYears
         .sort((a, b) => b - a) // sort by academicYear, desc
-        .forEach(function(academicYear, idx) {
+        .forEach(function (academicYear, idx) {
             orderedArchivedClasses.push({
                 editionNumber: academicYears.length - idx,
                 editionInterval: stringHelper.getIntervalFromAcademicYear(academicYear),
-                values: unorderedArchivedClasses[academicYear]
+                values: unorderedArchivedClasses[academicYear],
             });
         });
 
     const data = {
         //activeClasses,
         orderedActiveClasses,
-        orderedArchivedClasses
+        orderedArchivedClasses,
 
         // ctx: req.ctx,
         // can: {

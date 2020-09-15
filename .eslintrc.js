@@ -5,14 +5,12 @@ module.exports = {
         browser: true,
         jest: true
     },
-    extends: ["eslint:recommended"],
+    extends: ["eslint:recommended", "prettier"],
     parserOptions: {
-        ecmaVersion: 2018,
+        ecmaVersion: 2020,
         sourceType: "module"
     },
     rules: {
-        quotes: ["error", "double"],
-
         "no-var": "error",
         "prefer-const": ["error", { ignoreReadBeforeAssign: false }]
     },

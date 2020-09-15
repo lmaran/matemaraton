@@ -3,16 +3,9 @@
     "eslint.alwaysShowStatus": true,
     "workbench.tree.indent": 15,
     "editor.minimap.enabled": false,
-    "markdown-pdf.displayHeaderFooter": false,
     "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": false
+        "source.fixAll.eslint": true
     },
-    "cSpell.words": [
-        "autz",
-        "grecaptcha",
-        "katex",
-        "matemaraton",
-        "recaptcha",
-        "signup"
-    ]
+    "cSpell.words": ["autz", "grecaptcha", "katex", "matemaraton", "recaptcha", "signup"],
+    "cSpell.diagnosticLevel": "Hint"
 }
