@@ -19,13 +19,20 @@
 
 <h1>Cerere de înscriere</h1>
 
+{{#if data.classIsActive}}
+
+{{#if (eq data.classEnrollStatus "completed")}}
+<span class="badge badge-warning">Perioada pentru înscrieri s-a încheiat.</span>
+<p>Pentru informații privind eventuale locuri libere, puteți trimite un email la adresa lucian.maran@gmail.com.</p>
+{{else}}
+
 {{#if @root.user}}
 
 {{!-- <div class="alert alert-info" role="alert">
-    <i class="fa fa-info-circle mr-2 fa-lg"></i>
-    Se presupune că ați citit descrierea, <strong>condițiile de participare</strong> și celelalte detalii aferente
-    acestei clase. Dacă nu ați facut-o, o puteți face <a href="/Clase/{{data.classId}}">aici</a>.
-</div> --}}
+        <i class="fa fa-info-circle mr-2 fa-lg"></i>
+        Se presupune că ați citit descrierea, <strong>condițiile de participare</strong> și celelalte detalii aferente
+        acestei clase. Dacă nu ați facut-o, o puteți face <a href="/Clase/{{data.classId}}">aici</a>.
+    </div> --}}
 
 <div class="mb-5">Prin completarea formularului de mai jos, părintele iși manifestă intenția de a-și înscrie copilul la
     una din clasele MateMaraton. Este posibil ca nu toate cererile să poată fi soluționate favorabil.</div>
@@ -37,13 +44,13 @@
         <label for="classId" class="col-md-3 col-form-label">Clasa MateMaraton</label>
         <div class="col-md-7">
             {{!-- <select name="classId" class="form-control" id="classIdSelect" disabled2 readonly2="readonly">
-                {{#select data.selectedClassId}}
-                <option value=""></option>
-                {{#each data.classes}}
-                <option value="{{_id}}">{{name}} (nivel {{level}})</option>
-                {{/each}}
-                {{/select}}
-            </select> --}}
+                    {{#select data.selectedClassId}}
+                    <option value=""></option>
+                    {{#each data.classes}}
+                    <option value="{{_id}}">{{name}} (nivel {{level}})</option>
+                    {{/each}}
+                    {{/select}}
+                </select> --}}
             <input type="text" name="parentName" id="parentName" disabled class="form-control"
                 value="{{data.className}} (nivel {{data.classLevel}})" />
             <p class="text-muted mb-0">Clasa la care se dorește înscrierea</p>
@@ -157,4 +164,10 @@
     <a href="login?redirect_uri=clase/{{data.classId}}/inscrieri/adauga">aici</a>
     sau, dacă nu ai cont, îti poti face unul gratuit <a href="/signup">aici</a>.
 </div>
+{{/if}}
+
+{{/if}}
+
+{{else }} {{!-- classIsActive = false --}}
+<span class="badge badge-warning">Acest curs s-a încheiat.</span>
 {{/if}}
