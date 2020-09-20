@@ -13,10 +13,10 @@ exports.getStudentsPerClass = async (req, res) => {
 
     const [cls, studentsMapByClassId] = await Promise.all([
         await classService.getOneById(classId),
-        await studentsAndClassesService.getStudentsMapByClassId(classId)
+        await studentsAndClassesService.getStudentsMapByClassId(classId),
     ]);
 
-    const studentsIds = studentsMapByClassId.map(x => x.studentId);
+    const studentsIds = studentsMapByClassId.map((x) => x.studentId);
 
     let students = await personService.getAllByIds(studentsIds);
 
@@ -25,7 +25,7 @@ exports.getStudentsPerClass = async (req, res) => {
     const studentsMapByClassIdObj = arrayHelper.arrayToObject(studentsMapByClassId, "studentId");
 
     students = students
-        .map(student => {
+        .map((student) => {
             // add "displayName" (e.g.  "Vali M.")
             student.displayName = canReadStudentFullName
                 ? studentHelper.getFullNameForStudent(student)
@@ -34,8 +34,10 @@ exports.getStudentsPerClass = async (req, res) => {
             const studentInfoInClass = studentsMapByClassIdObj[student._id];
 
             student.droppedOut = studentInfoInClass && studentInfoInClass.droppedOut;
-            student.gradeAndLetter =
-                studentInfoInClass && `${studentInfoInClass.grade}${studentInfoInClass.classLetter}`; // e.g.  "8A"
+
+            if (studentInfoInClass && studentInfoInClass.classLetter) {
+                student.gradeAndLetter = `${studentInfoInClass.grade}${studentInfoInClass.classLetter}`; // e.g.  "8A"
+            }
 
             return student;
         })
@@ -43,8 +45,8 @@ exports.getStudentsPerClass = async (req, res) => {
 
     const data = {
         class: cls,
-        activeStudents: students.filter(x => !x.droppedOut),
-        inactiveStudents: students.filter(x => x.droppedOut)
+        activeStudents: students.filter((x) => !x.droppedOut),
+        inactiveStudents: students.filter((x) => x.droppedOut),
     };
     //res.send(data);
     res.render("student/students-per-class", data);
@@ -55,13 +57,13 @@ exports.getStudent = async (req, res) => {
 
     const [clsMapLines, studentAndTheirParents] = await Promise.all([
         await studentsAndClassesService.getClassesByStudentId(studentId),
-        await personService.getStudentAndTheirParentsById(studentId)
+        await personService.getStudentAndTheirParentsById(studentId),
     ]);
 
-    const student = studentAndTheirParents.find(x => x._id.toString() === studentId);
-    const parents = studentAndTheirParents.filter(x => x.studentIds && x.studentIds.length > 0);
+    const student = studentAndTheirParents.find((x) => x._id.toString() === studentId);
+    const parents = studentAndTheirParents.filter((x) => x.studentIds && x.studentIds.length > 0);
 
-    const classes = await classService.getAllByIds(clsMapLines.map(x => x.classId));
+    const classes = await classService.getAllByIds(clsMapLines.map((x) => x.classId));
 
     // add "shortName" (e.g.  "Vali M.")
     student.shortName = studentHelper.getShortNameForStudent(student);
@@ -70,7 +72,7 @@ exports.getStudent = async (req, res) => {
     // add "gradeAndLetter" (e.g.  "8A")
 
     const sortedClasses = classes.sort((a, b) => (a.academicYear < b.academicYear ? 1 : -1)); // sort descendent by academicYear
-    sortedClasses.forEach(x => (x.editionInterval = stringHelper.getIntervalFromAcademicYear(x.academicYear)));
+    sortedClasses.forEach((x) => (x.editionInterval = stringHelper.getIntervalFromAcademicYear(x.academicYear)));
 
     const data = {
         student,
@@ -78,8 +80,8 @@ exports.getStudent = async (req, res) => {
         parents,
         studentAndTheirParents,
         can: {
-            viewParentsLink: await autz.can(req.user, "read:parents")
-        }
+            viewParentsLink: await autz.can(req.user, "read:parents"),
+        },
     };
 
     if (sortedClasses.length > 0) {

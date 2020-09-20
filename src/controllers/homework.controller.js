@@ -18,12 +18,12 @@ exports.getHomeworkSubmissionsPerStudent = async (req, res) => {
     [student, homeworkRequests, cls] = await Promise.all([
         await personService.getOneById(studentId),
         await homeworkService.getAllByClassId(classId),
-        await classService.getOneById(classId)
+        await classService.getOneById(classId),
     ]);
 
     if (homeworkRequests) {
-        homeworkRequests.forEach(homeworkRequest => {
-            const submission = homeworkRequest.submissions.find(x => x.studentId === studentId);
+        homeworkRequests.forEach((homeworkRequest) => {
+            const submission = homeworkRequest.submissions.find((x) => x.studentId === studentId);
             homeworkRequest.totalSubmittedQuestions = (submission && submission.totalSubmittedQuestions) || 0;
         });
     }
@@ -34,8 +34,8 @@ exports.getHomeworkSubmissionsPerStudent = async (req, res) => {
     let totalQuestions = 0;
     let totalUserSubmittedQuestions = 0;
     if (homeworkRequests) {
-        homeworkRequests.forEach(x => {
-            const userSubmission = x.submissions.find(x => x.studentId === studentId);
+        homeworkRequests.forEach((x) => {
+            const userSubmission = x.submissions.find((x) => x.studentId === studentId);
             x.userSubmittedQuestions = (userSubmission && userSubmission.totalSubmittedQuestions) || 0;
             totalUserSubmittedQuestions += x.userSubmittedQuestions;
             totalQuestions += x.totalRequestedQuestions;
@@ -81,13 +81,13 @@ exports.getHomeworkSubmissionsPerStudent = async (req, res) => {
         totalQuestions,
         totalUserSubmittedQuestions,
         totalUserSubmittedQuestionsAsPercent,
-        class: cls
+        class: cls,
         //closedRequests: homeworkRequests.filter(x => x.dueDate < today).sort((a, b) => (a.dueDate < b.dueDate ? 1 : -1))
     };
 
     if (homeworkRequests) {
         data.closedRequests = homeworkRequests
-            .filter(x => x.dueDate < today)
+            .filter((x) => x.dueDate < today)
             .sort((a, b) => (a.dueDate < b.dueDate ? 1 : -1));
     }
 
@@ -102,18 +102,18 @@ exports.getHomeworkRequest = async (req, res) => {
     homeworkRequest.submissions = homeworkRequest.submissions || [];
     homeworkRequest.relatedCourses = homeworkRequest.relatedCourses || [];
 
-    const studentsIds = homeworkRequest.submissions.map(x => x.studentId);
+    const studentsIds = homeworkRequest.submissions.map((x) => x.studentId);
     const classId = homeworkRequest.classId;
     const coursesIds = homeworkRequest.relatedCourses;
 
     const [cls, students, courses] = await Promise.all([
         await classService.getOneById(classId),
         await personService.getAllByIds(studentsIds),
-        await courseSessionService.getAllByIds(coursesIds)
+        await courseSessionService.getAllByIds(coursesIds),
     ]);
 
-    homeworkRequest.submissions.forEach(submission => {
-        submission.student = students.find(x => x._id == submission.studentId) || {};
+    homeworkRequest.submissions.forEach((submission) => {
+        submission.student = students.find((x) => x._id == submission.studentId) || {};
         submission.student.displayName = studentHelper.getShortNameForStudent(submission.student);
     });
     homeworkRequest.submissions = homeworkRequest.submissions.sort((a, b) =>
@@ -131,7 +131,7 @@ exports.getHomeworkRequest = async (req, res) => {
     const data = {
         isNotCurrentHomework: !isCurrentHomework,
         class: cls,
-        homeworkRequest
+        homeworkRequest,
     };
     //res.send(data);
     res.render("homework/homework-request", data);
@@ -143,28 +143,28 @@ exports.getHomeworkRequests = async (req, res) => {
     const [cls, homeworkRequests] = await Promise.all([
         await classService.getOneById(classId),
         // await studentsAndClassesService.getStudentsMapByClassId(classId),
-        await homeworkService.getAllByClassId(classId)
+        await homeworkService.getAllByClassId(classId),
     ]);
 
     // const studentsIds = studentsMapByClassId.map(x => x.studentId);
 
     // const students = await personService.getAllByIds(studentsIds);
 
-    homeworkRequests.forEach(x => {
+    homeworkRequests.forEach((x) => {
         x.dueDateAsString = dateTimeHelper.getStringFromStringNoDay(x.dueDate);
     });
 
     const today = dateTimeHelper.getFriendlyDate(new Date()).ymd; // 2020-02-17
 
-    const currentRequest = homeworkRequests.find(x => x.dueDate >= today);
+    const currentRequest = homeworkRequests.find((x) => x.dueDate >= today);
     const currentRequestId = currentRequest && currentRequest._id;
 
     const data = {
         currentRequest,
         class: cls,
         homeworkRequests: homeworkRequests
-            .filter(x => x._id !== currentRequestId)
-            .sort((a, b) => (a.dueDate < b.dueDate ? 1 : -1))
+            .filter((x) => x._id !== currentRequestId)
+            .sort((a, b) => (a.dueDate < b.dueDate ? 1 : -1)),
     };
     //res.send(data);
     res.render("homework/homework-requests", data);
@@ -176,21 +176,21 @@ exports.getTotalHomeworkSubmissions = async (req, res) => {
     const [cls, studentsMapByClassId, homeworkRequests] = await Promise.all([
         await classService.getOneById(classId),
         await studentsAndClassesService.getStudentsMapByClassId(classId),
-        await homeworkService.getAllByClassId(classId)
+        await homeworkService.getAllByClassId(classId),
     ]);
 
-    const studentsIds = studentsMapByClassId.map(x => x.studentId);
+    const studentsIds = studentsMapByClassId.map((x) => x.studentId);
 
     const students = await personService.getAllByIds(studentsIds);
 
     const today = dateTimeHelper.getFriendlyDate(new Date()).ymd; // 2020-02-17
-    const closedRequests = homeworkRequests.filter(x => x.dueDate < today) || [];
+    const closedRequests = homeworkRequests.filter((x) => x.dueDate < today) || [];
 
     let totalQuestions = 0;
-    closedRequests.forEach(x => {
+    closedRequests.forEach((x) => {
         totalQuestions += x.totalRequestedQuestions;
-        (x.submissions || []).forEach(submission => {
-            const studentCrt = students.find(x => x._id.toString() === submission.studentId);
+        (x.submissions || []).forEach((submission) => {
+            const studentCrt = students.find((x) => x._id.toString() === submission.studentId);
             studentCrt.totalSubmittedQuestions =
                 (studentCrt.totalSubmittedQuestions || 0) + submission.totalSubmittedQuestions;
         });
@@ -198,7 +198,7 @@ exports.getTotalHomeworkSubmissions = async (req, res) => {
 
     const studentsMapByClassIdObj = arrayHelper.arrayToObject(studentsMapByClassId, "studentId");
 
-    students.forEach(student => {
+    students.forEach((student) => {
         // add aggregated values
 
         student.totalSubmittedQuestions = student.totalSubmittedQuestions || 0;
@@ -209,7 +209,9 @@ exports.getTotalHomeworkSubmissions = async (req, res) => {
         const studentInfoInClass = studentsMapByClassIdObj[student._id];
 
         student.droppedOut = studentInfoInClass && studentInfoInClass.droppedOut;
-        student.gradeAndLetter = studentInfoInClass && `${studentInfoInClass.grade}${studentInfoInClass.classLetter}`; // e.g.  "8A"
+        if (studentInfoInClass && studentInfoInClass.classLetter) {
+            student.gradeAndLetter = `${studentInfoInClass.grade}${studentInfoInClass.classLetter}`; // e.g.  "8A"
+        }
 
         student.shortName = studentHelper.getShortNameForStudent(student);
 
@@ -220,11 +222,11 @@ exports.getTotalHomeworkSubmissions = async (req, res) => {
         class: cls,
         totalQuestions,
         homeworkInfoForActiveStudents: students
-            .filter(x => !x.droppedOut)
+            .filter((x) => !x.droppedOut)
             .sort((a, b) => (a.totalSubmittedQuestions < b.totalSubmittedQuestions ? 1 : -1)),
         homeworkInfoForInactiveStudents: students
-            .filter(x => x.droppedOut)
-            .sort((a, b) => (a.totalSubmittedQuestions < b.totalSubmittedQuestions ? 1 : -1))
+            .filter((x) => x.droppedOut)
+            .sort((a, b) => (a.totalSubmittedQuestions < b.totalSubmittedQuestions ? 1 : -1)),
     };
     //res.send(data);
     res.render("homework/total-homework-submissions", data);
