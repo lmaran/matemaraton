@@ -109,16 +109,12 @@
 <div class="mb-5">
     {{#if (eq class.enrollmentInfo.status  "notStarted")}}
     Adresa pentru înscriere: va urma!
-    {{else if (eq class.enrollmentInfo.status  "open")}}
+    {{else }} {{!-- status="open / completed" --}}
     <a class="btn btn-primary btn-sm" href="/clase/{{class._id}}/inscrieri/adauga" role="button">Cerere de
         înscriere</a>
 
     <a class="btn btn-secondary btn-sm" href="/clase/{{class._id}}/inscrieri" role="button">
         Lista cererilor depuse</a>
-
-    {{else}} {{!-- status="completed" --}}
-    Perioada de înscrieri s-a încheiat. Vom redeschide procesul de înscriere în momentul în care apar locuri libere.
-    Urmăriți pagina de Facebook MateMaraton pentru astfel de notificări.
     {{/if}}
 </div>
 {{/if}}

@@ -26,6 +26,8 @@ exports.enrollInClassGet = async (req, res) => {
         data.classId = cls._id;
         data.className = cls.name;
         data.classLevel = cls.level;
+        data.classEnrollStatus = cls.enrollmentInfo && cls.enrollmentInfo.status;
+        data.classIsActive = cls.isActive;
     } else {
         //redirect after validation
         data = initialValues[0];
@@ -65,9 +67,9 @@ exports.enrollInClassPost = async (req, res) => {
                     {
                         page: {
                             msg:
-                                "Puteți înscrie maxim un elev (propriul copil). In cazul în care aveți doi copii pe care doriți să-i înscrieți la aceeași clasă (ex: gemeni), vom trata acest caz ca pe o excepție. In acest sens, vă rugăm să trimiteți datele celui de-al 2-lea copil pe email, la adresa lucian.maran@gmail.com."
-                        }
-                    }
+                                "Puteți înscrie maxim un elev (propriul copil). In cazul în care aveți doi copii pe care doriți să-i înscrieți la aceeași clasă (ex: gemeni), vom trata acest caz ca pe o excepție. In acest sens, vă rugăm să trimiteți datele celui de-al 2-lea copil pe email, la adresa lucian.maran@gmail.com.",
+                        },
+                    },
                 ];
                 return flashAndReloadPage(req, res, validationErrors);
             }
@@ -83,7 +85,7 @@ exports.enrollInClassPost = async (req, res) => {
             schoolName: req.body.schoolName,
             observations: req.body.observations,
             createdOn: new Date(),
-            createdBy: req.user._id
+            createdBy: req.user._id,
         };
 
         await enrollService.insertOne(enroll);
@@ -96,7 +98,7 @@ exports.enrollInClassPost = async (req, res) => {
             Școala: ${req.body.schoolName} </br>
             Lista tuturor elevilor înscriși la această clasă este  
             <a href="https://matemaraton.ro/clase/${req.body.classId}/inscrieri">aici</a>.
-            </html>`
+            </html>`,
         };
 
         await emailService.sendEmail(emailObj);
@@ -122,11 +124,11 @@ exports.getAllPerClass = async (req, res) => {
 
     const [cls, enrollments] = await Promise.all([
         await classService.getOneById(classId),
-        await enrollService.getAllByClassId(classId)
+        await enrollService.getAllByClassId(classId),
     ]);
     // const enrollments = await enrollService.getAllByClassId(classId);
 
-    enrollments.forEach(x => {
+    enrollments.forEach((x) => {
         const createdOnAsUtc = convertDateToUTC(x.createdOn);
 
         const offset = -3 * 60; // Romania, EEST // TODO; deal with Time Offset (EST/EEST) as here: https://www.timeanddate.com/time/zone/romania/bucharest
@@ -170,7 +172,7 @@ function convertDateToUTC(date) {
     );
 }
 
-const getStaticValidationErrors = req => {
+const getStaticValidationErrors = (req) => {
     const { studentLastName, studentFirstName, mathAvgGrade1, mathAvgGrade2, schoolName, observations } = req.body;
     try {
         const validationErrors = {};
