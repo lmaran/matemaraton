@@ -25,13 +25,14 @@
     <ol class="breadcrumb">
         {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/clase">Clase</a></li>
         <li class="breadcrumb-item"><a href="/clase/{{class._id}}">{{class.name}}</a></li>
-        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}/sesiuni-curs">Cursuri</a></li>
-        <li class="breadcrumb-item active" aria-current="page">curs {{course.course}}</li>
+        <li class="breadcrumb-item"><a href="/clase/{{class._id}}/sesiuni-curs">Sesiuni</a></li>
+        <li class="breadcrumb-item active">Sesiunea {{course.course}}</li>
     </ol>
 </nav>
 
-<h1>Curs {{course.course}} <span class="font-weight-light text-secondary h4"> - {{course.dateAsString}}</span>
+<h1>Sesiunea {{course.course}} <span class="font-weight-light text-secondary h4"> - {{course.dateAsString}}</span>
 </h1>
 <h2 class="mb-5">{{class.name}}</h2>
 

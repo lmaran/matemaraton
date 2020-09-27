@@ -2,10 +2,11 @@
     <ol class="breadcrumb">
         {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/clase">Clase</a></li>
         {{#if lastClass}}
         <li class="breadcrumb-item"><a href="/clase/{{lastClass._id}}">{{lastClass.name}}</a></li>
         {{/if}}
-        <li class="breadcrumb-item active" aria-current="page">{{student.shortName}}</li>
+        <li class="breadcrumb-item active">{{student.shortName}}</li>
     </ol>
 </nav>
 
