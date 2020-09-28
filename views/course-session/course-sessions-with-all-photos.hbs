@@ -2,21 +2,21 @@
     <ol class="breadcrumb">
         {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
-
-        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}">{{class.name}}</a></li>
-        <li class="breadcrumb-item" aria-current="page"><a href="/clase/{{class._id}}/sesiuni-curs">Cursuri</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Toate pozele</li>
+        <li class="breadcrumb-item"><a href="/clase">Clase</a></li>
+        <li class="breadcrumb-item"><a href="/clase/{{class._id}}">{{class.name}}</a></li>
+        <li class="breadcrumb-item"><a href="/clase/{{class._id}}/sesiuni-curs">Sesiuni</a></li>
+        <li class="breadcrumb-item active">Toate sesiunile</li>
 
     </ol>
 </nav>
 
-<h1>Cursuri <span class="h3 font-weight-light text-muted">(toate pozele)</span></h1>
+<h1>Sesiuni de curs <span class="h3 font-weight-light text-muted">(toate pozele)</span></h1>
 <h2 class="mb-5">{{class.name}}</h2>
 
 
 {{#each courses}}
 <div class="h4 mt-5">
-    <a href="/sesiuni-curs/{{_id}}">Curs{{course}}</a>
+    <a href="/sesiuni-curs/{{_id}}">Sesiunea {{course}}</a>
     <span class="h5 font-weight-light text-muted"> - {{dateAsString}}
         {{#if videos}}
         <a href="/sesiuni-curs/{{_id}}"><i class="fab fa-youtube" style="color:red"></i></a>

@@ -20,48 +20,71 @@
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item"><a href="/Clase/">Clase</a></li>
-        <li class="breadcrumb-item active" aria-current="page">{{class.name}}</li>
+        <li class="breadcrumb-item active">{{class.name}}</li>
     </ol>
 </nav>
 
 <h1>{{class.name}}</h1>
 <h3 class="text-muted2 font-weight-light">Nivel {{class.level}}</h3>
 
-<div class="text-muted font-weight-light mt-4 mb-4">{{class.description}}</div>
+{{#unless (eq class.enrollmentInfo.status "open")}}
+<h5 class="mt-4">Rapoarte:</h5>
+<ul>
+    <li><a href="/clase/{{class._id}}/elevi">Elevi</a></li>
+    <li class="mb-3"><a href="/clase/{{class._id}}/sesiuni-curs">Sesiuni de curs
+            <span class="text-muted">(poze de pe tablă
+                {{#if (or (eq2 class._id "5d92db9ba0da913a67b9a711") (eq2 class._id "5d92dc63a0da913a67b9a713"))}}
+                <span class="font-weight-bold">și video</span>
+                {{/if}})
+            </span></a></li>
+
+    <li><a href="/clase/{{class._id}}/prezenta">Prezența <span class="text-muted">(pe zile)</span></a></li>
+    <li class="mb-3"><a href="/clase/{{class._id}}/total-prezente">Total prezențe <span class="text-muted">(pe
+                elevi)</span></a></li>
+
+    <li><a href="/clase/{{class._id}}/teme-propuse">Teme propuse <span class="text-muted">(pentru acasă)</span></a>
+    </li>
+    <li><a href="/clase/{{class._id}}/total-teme-predate">Total teme predate <span class="text-muted">(făcute
+                acasă)</span></a> </li>
+    {{#if can.viewParentsLink}}
+    <li><a href="/clase/{{class._id}}/parinti">Parinți</a></li>
+    {{/if}}
+
+</ul>
+{{/unless}}
+
+{{#if class.description}}
+<h5>Descriere:</h5>
+<div class="text-muted font-weight-light mb-3">{{class.description}}</div>
+{{/if}}
 
 {{#if @root.user.isAdmin}}
 <h5>Curs: <a href="/cursuri/{{courseSummary._id}}">{{courseSummary.code}}</a> - {{courseSummary.name}}</h5>
 {{/if}}
 
-{{#if (or class.startDate class.numberOfSessions)}}
+{{!-- {{#if (or class.startDate class.numberOfSessions)}}
 <h5>Durata cursului:</h5>
 <ul>
     {{#if class.startDate}}<li>{{class.startDate}} - {{class.endDate}}</li> {{/if}}
     {{#if class.numberOfSessions}}<li>{{class.numberOfSessions}} sesiuni de curs</li> {{/if}}
 </ul>
+{{/if}} --}}
+
+{{#if class.startDate}}
+<h5>Perioada: <small>{{class.startDate}} - {{class.endDate}}</small></h5>
 {{/if}}
 
-
-
-
-{{!-- <h5>Structura cursului:</h5>
-<ul>
-    <li>AAA</li>
-    <li>Locație: {{class.scheduleInfo.place}} (în fiecare {{class.scheduleInfo.day}})</li>
-</ul> --}}
-
+{{#if class.numberOfSessions}}
+<h5>Durata: <small>{{class.numberOfSessions}} sesiuni de curs</small></h5>
+{{/if}}
 
 {{#if class.scheduleInfo}}
-<h5>Orar:</h5>
-<ul>
-    <li>{{class.scheduleInfo.timeSlot}} (în fiecare {{class.scheduleInfo.day}})</li>
-    <li><strong>Locație: </strong>{{class.scheduleInfo.place}}</li>
-</ul>
+<h5>Orar: <small>{{class.scheduleInfo.timeSlot}} (în fiecare {{class.scheduleInfo.day}})</small></h5>
+<h5>Locație: <small>{{class.scheduleInfo.place}}</small></h5>
 {{/if}}
 
 
-
-<h5>Comunicare:</h5>
+{{!-- <h5>Comunicare:</h5>
 <ul>
     <li><a href="https://matemaraton.ro">matemaraton.ro</a> - materiale de lucru, rapoarte, statistici
     <li><a href="https://www.whatsapp.com" target="_blank">whatsapp</a> - grup de lucru cu elevii
@@ -73,16 +96,13 @@
     <li><a href="https://www.facebook.com/groups/417125302327211" target="_blank">facebook</a> "<span
             class="font-weight-bold">MateMaraton: ajutor la teme</span>" - trimite o
         poză și precizează clasa. Atât! </li>
-</ul>
-
-<h5>Mentor:</h5>
-<ul>
-    <li>ing. Lucian Măran</li>
-    <li>lucian.maran@gmail.com</li>
-</ul>
+</ul> --}}
 
 
+<h5>Mentor: <small>ing. Lucian Măran</small></h5>
 <h5>Pret: <small>Gratuit</small></h5>
+
+<hr class="mt-4 mb-4">
 
 
 {{#if class.enrollmentInfo}}
@@ -118,40 +138,3 @@
     {{/if}}
 </div>
 {{/if}}
-
-
-{{#unless (eq class.enrollmentInfo.status "open")}}
-<h5>Rapoarte:</h5>
-<ul>
-    <li><a href="/clase/{{class._id}}/elevi">Elevi</a></li>
-    <li class="mb-3"><a href="/clase/{{class._id}}/sesiuni-curs">Sesiuni de curs
-            <span class="text-muted">(poze de pe tablă
-                {{#if (or (eq2 class._id "5d92db9ba0da913a67b9a711") (eq2 class._id "5d92dc63a0da913a67b9a713"))}}
-                <span class="font-weight-bold">și video</span>
-                {{/if}})
-            </span></a></li>
-
-    <li><a href="/clase/{{class._id}}/prezenta">Prezența <span class="text-muted">(pe zile)</span></a></li>
-    <li class="mb-3"><a href="/clase/{{class._id}}/total-prezente">Total prezențe <span class="text-muted">(pe
-                elevi)</span></a></li>
-
-    <li><a href="/clase/{{class._id}}/teme-propuse">Teme propuse <span class="text-muted">(pentru acasă)</span></a>
-    </li>
-    <li><a href="/clase/{{class._id}}/total-teme-predate">Total teme predate <span class="text-muted">(făcute
-                acasă)</span></a> </li>
-    {{#if can.viewParentsLink}}
-    <li><a href="/clase/{{class._id}}/parinti">Parinți</a></li>
-    {{/if}}
-    {{!-- <li>Cursuri <span class="text-muted">(poze de pe tabla, in curand)</span></li> --}}
-    {{!-- <li>Teme <span class="text-muted">(în curând)</span> </li> --}}
-
-</ul>
-{{/unless}}
-
-{{!-- <hr />
-<h5>Rapoarte</h5>
-
-<ul>
-    <li><a href="/clase/{{class._id}}/total-prezente">Total prezențe</a> </li>
-    <li><a href="/clase/{{class._id}}/total-teme-predate">Total teme predate</a> </li>
-</ul> --}}

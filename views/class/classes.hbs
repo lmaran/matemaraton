@@ -8,7 +8,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Clase</li>
+        <li class="breadcrumb-item active">Clase</li>
     </ol>
 </nav>
 
@@ -27,9 +27,9 @@
     {{#each values}}
     <li><a href="/clase/{{_id}}">{{name}} </a>
         <span class="text-muted font-weight-light"> (nivel {{level}})</span>
-        {{#if scheduleInfo}}
+        {{!-- {{#if scheduleInfo}}
         <div class="ml-4">{{scheduleInfo.timeSlot}}, {{scheduleInfo.day}}, {{scheduleInfo.place}}</div>
-        {{/if}}
+        {{/if}} --}}
     </li>
     {{/each}}
 </ul>
@@ -40,9 +40,9 @@
 
 
 {{#if orderedArchivedClasses}}
-<hr class="mt-4">
+<hr class="mt-5">
 
-<h3 class="mt-4">Arhivă:</h3>
+<h3 class="mt-5">Arhivă:</h3>
 
 {{#each orderedArchivedClasses}}
 <h5>Editia {{editionNumber}} <span class="text-muted font-weight-light"> ({{editionInterval}})</span>:</h5>
