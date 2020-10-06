@@ -17,19 +17,19 @@ const solutionPreviewDiv = document.getElementById("solution-preview-div");
  * event handlers (alias 'controller')
  */
 export const eventHandlers = {
-    getStatementPreview: async event => {
+    getStatementPreview: async (event) => {
         const data = { markdown: event.target.value };
         statementPreviewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
     },
-    getAnswerPreview: async event => {
+    getAnswerPreview: async (event) => {
         const data = { markdown: event.target.value };
         answerPreviewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
     },
-    getSolutionPreview: async event => {
+    getSolutionPreview: async (event) => {
         const data = { markdown: event.target.value };
         solutionPreviewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
     },
-    handleKeyupForAllHints: async event => {
+    handleKeyupForAllHints: async (event) => {
         if (event.target && event.target.classList.contains("hint-editor-txt")) {
             const data = { markdown: event.target.value };
             const parentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
@@ -37,7 +37,7 @@ export const eventHandlers = {
             previewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
         }
     },
-    handleKeyupForAllAnswerOptions: async event => {
+    handleKeyupForAllAnswerOptions: async (event) => {
         if (event.target && event.target.classList.contains("answer-option-editor-txt")) {
             const data = { markdown: event.target.value };
             const parentDiv = event.target.closest(".answer-option-parent-div"); // find the closest ancestor which matches the selectors
@@ -66,14 +66,14 @@ export const eventHandlers = {
     //     // show and fadeOut status icon
     //     domHelper.showAndFadeOut(saveStatementStatusIcon, 500);
     // },
-    setDefaultContestName: async event => {
+    setDefaultContestName: async (event) => {
         const selectedContestType = event.target.value;
         const selectedContestName = event.target.options[event.target.selectedIndex].text;
         const contestNameInput = document.getElementById("contestNameInput");
 
         switch (selectedContestType) {
             case "olimpiada-locala":
-                contestNameInput.value = `${selectedContestName}, <judet>, <anul>`;
+                contestNameInput.value = `${selectedContestName}, <judet>, <anul> (nr_pb)`;
                 break;
             case "olimpiada-judeteana":
             case "olimpiada-nationala":
@@ -88,7 +88,7 @@ export const eventHandlers = {
                 contestNameInput.value = "";
         }
     },
-    setDefaultSourceName: async event => {
+    setDefaultSourceName: async (event) => {
         const selectedSourceType = event.target.value;
         const selectedSourceName = event.target.options[event.target.selectedIndex].text;
         const sourceNameInput = document.getElementById("sourceNameInput");
@@ -114,7 +114,7 @@ export const eventHandlers = {
                 sourceNameInput.value = "";
         }
     },
-    toggleStatementEditor: async event => {
+    toggleStatementEditor: async (event) => {
         const editorTxt = document.getElementById("statement-editor-txt");
         editorTxt.classList.toggle("d-none");
 
@@ -124,7 +124,7 @@ export const eventHandlers = {
         const previewDiv = document.getElementById("statement-preview-div");
         previewDiv.style.borderTopStyle = editorIsHide ? "solid" : "dashed";
     },
-    toggleAnswerEditor: async event => {
+    toggleAnswerEditor: async (event) => {
         const editorTxt = document.getElementById("answer-editor-txt");
         editorTxt.classList.toggle("d-none");
 
@@ -134,7 +134,7 @@ export const eventHandlers = {
         const previewDiv = document.getElementById("answer-preview-div");
         previewDiv.style.borderTopStyle = editorIsHide ? "solid" : "dashed";
     },
-    toggleSolutionEditor: async event => {
+    toggleSolutionEditor: async (event) => {
         const editorTxt = document.getElementById("solution-editor-txt");
         editorTxt.classList.toggle("d-none");
 
@@ -144,7 +144,7 @@ export const eventHandlers = {
         const previewDiv = document.getElementById("solution-preview-div");
         previewDiv.style.borderTopStyle = editorIsHide ? "solid" : "dashed";
     },
-    handleClickForAllHints: async event => {
+    handleClickForAllHints: async (event) => {
         // handle 'toggle edit' and 'delete' events
         const target = event.target; // shortcut
         if (target) {
@@ -164,7 +164,7 @@ export const eventHandlers = {
             }
         }
     },
-    handleClickForAllAnswerOptions: async event => {
+    handleClickForAllAnswerOptions: async (event) => {
         // handle 'toggle edit' and 'delete' events
         const target = event.target; // shortcut
         if (target) {
@@ -185,7 +185,7 @@ export const eventHandlers = {
         }
     },
 
-    addHintHtmlNode: async event => {
+    addHintHtmlNode: async (event) => {
         event.preventDefault();
         const mainDiv = document.getElementById("hint-main-div");
         const nrOfElements = mainDiv.childElementCount;
@@ -216,7 +216,7 @@ export const eventHandlers = {
         mainDiv.insertAdjacentHTML("beforeend", markup); // much faster that innerHTML
     },
 
-    addAnswerOptionHtmlNode: async event => {
+    addAnswerOptionHtmlNode: async (event) => {
         event.preventDefault();
         const mainDiv = document.getElementById("answer-option-main-div");
         const nrOfElements = mainDiv.childElementCount;
@@ -239,8 +239,9 @@ export const eventHandlers = {
                 ></div>
 
                 <div class="float-right form-check-inline mr-0">
-                    <input class="form-check-input" type="checkbox" name="isCorrectAnswerChecks" value=${nrOfElements +
-                        1} id="defaultCheck${nrOfElements + 1}">
+                    <input class="form-check-input" type="checkbox" name="isCorrectAnswerChecks" value=${
+                        nrOfElements + 1
+                    } id="defaultCheck${nrOfElements + 1}">
                     <label class="form-check-label text-muted" for="defaultCheck${nrOfElements + 1}">
                         Răspuns corect
                     </label>
@@ -254,11 +255,11 @@ export const eventHandlers = {
 
         mainDiv.insertAdjacentHTML("beforeend", markup); // much faster that innerHTML
     },
-    autoExpandAllTextareas: async event => {
+    autoExpandAllTextareas: async (event) => {
         if (event.target.tagName.toLowerCase() === "textarea") {
             domHelper.autoExpand(event.target);
         }
-    }
+    },
 };
 
 const updateHintLabels = () => {
