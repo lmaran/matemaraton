@@ -96,19 +96,19 @@ export const eventHandlers = {
         switch (selectedSourceType) {
             case "gazeta-matematica":
             case "revista-matematică-tm":
-                sourceNameInput.value = `${selectedSourceName}, nr.<>/<anul>`;
+                sourceNameInput.value = `${selectedSourceName}, <nr>/<anul>`;
                 break;
             case "teme-supliment-gazeta-matematica":
             case "mate2000-excelenta":
             case "mate-olimpiade-ngrigore":
             case "cercuri-mate-pnachila":
-                sourceNameInput.value = `${selectedSourceName}, cls.<>, ex.<>/<pag>`;
+                sourceNameInput.value = `${selectedSourceName}, cls.<>, <ex>/<pag>`;
                 break;
             case "evaluare-nationala-p45":
                 sourceNameInput.value = `${selectedSourceName}, ex.<>/<pag>`;
                 break;
             case "mate2000-consolidare":
-                sourceNameInput.value = `${selectedSourceName}, cls.<>, partea <>, ex.<>/<pag>`;
+                sourceNameInput.value = `${selectedSourceName}, cls.<>, partea <>, <ex>/<pag>`;
                 break;
             default:
                 sourceNameInput.value = "";
