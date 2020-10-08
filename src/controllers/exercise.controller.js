@@ -52,8 +52,8 @@ exports.createOrEditGet = async (req, res) => {
     ];
 
     const sourceTypeAvailableOptions = [
-        { text: "Gazeta Matematică (GM)", value: "gazeta-matematica" },
-        { text: "Revista de Matematică din Timișoara (RMT)", value: "revista-matematică-tm" },
+        { text: "Gazeta Matematică", value: "gazeta-matematica" },
+        { text: "Revista de Matematică din Timișoara", value: "revista-matematică-tm" },
         { text: "Culegere 'Teme supliment Gazeta Matematică'", value: "teme-supliment-gazeta-matematica" },
         { text: "Culegere 'Mate2000 excelență'", value: "mate2000-excelenta" },
         {
