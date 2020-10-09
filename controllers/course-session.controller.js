@@ -7,12 +7,12 @@ exports.getCourseSessionsPerClass = async (req, res) => {
 
     const [cls, courses] = await Promise.all([
         await classService.getOneById(classId),
-        await courseSessionService.getCourseSessionsByClassId(classId)
+        await courseSessionService.getCourseSessionsByClassId(classId),
     ]);
 
     const newCourses = courses
-        .filter(x => !x.noCourse)
-        .map(x => {
+        .filter((x) => !x.noCourse)
+        .map((x) => {
             x.dateAsString = dateTimeHelper.getStringFromStringNoDay(x.date);
             return x;
         });
@@ -20,7 +20,7 @@ exports.getCourseSessionsPerClass = async (req, res) => {
     const data = {
         class: cls,
         courses: newCourses,
-        totalCourses: newCourses.length
+        totalCourses: newCourses.length,
     };
     //res.send(data);
     res.render("course-session/course-sessions-per-class", data);
@@ -31,21 +31,21 @@ exports.getCourseSessionsPerClassWithPhotos = async (req, res) => {
 
     const [cls, courses] = await Promise.all([
         await classService.getOneById(classId),
-        await courseSessionService.getCourseSessionsByClassId(classId)
+        await courseSessionService.getCourseSessionsByClassId(classId),
     ]);
 
     const newCourses = courses
-        .filter(x => !x.noCourse)
-        .map(x => {
+        .filter((x) => !x.noCourse)
+        .map((x) => {
             x.dateAsString = dateTimeHelper.getStringFromStringNoDay(x.date);
-            x.images.forEach(image => (image.highQualityUrl = image.url.replace("courses-lg", "courses")));
+            x.images.forEach((image) => (image.highQualityUrl = image.url.replace("courses-lg", "courses")));
             return x;
         });
 
     const data = {
         class: cls,
         courses: newCourses,
-        totalCourses: newCourses.length
+        totalCourses: newCourses.length,
     };
     //res.send(data);
     res.render("course-session/course-sessions-with-all-photos", data);
@@ -59,11 +59,13 @@ exports.getCourseSession = async (req, res) => {
 
     course.dateAsString = dateTimeHelper.getStringFromStringNoDay(course.date);
 
-    course.images.forEach(image => (image.highQualityUrl = image.url.replace("courses-lg", "courses")));
+    if (course.images) {
+        course.images.forEach((image) => (image.highQualityUrl = image.url.replace("courses-lg", "courses")));
+    }
 
     const data = {
         class: cls,
-        course
+        course,
     };
     //res.send(data);
     res.render("course-session/course-session", data);

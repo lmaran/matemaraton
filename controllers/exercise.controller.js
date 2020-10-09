@@ -25,7 +25,7 @@ exports.createOrEditGet = async (req, res) => {
         { text: "Clasa a V-a", value: "5" },
         { text: "Clasa a VI-a", value: "6" },
         { text: "Clasa a VII-a", value: "7" },
-        { text: "Clasa a VIII-a", value: "8" }
+        { text: "Clasa a VIII-a", value: "8" },
     ];
 
     const branchAvailableOptions = [
@@ -39,7 +39,7 @@ exports.createOrEditGet = async (req, res) => {
         // { text: "Aritmetică (primar)", value: "aritmetica" },
         { text: "Algebră", value: "algebra" },
         { text: "Geometrie", value: "geometrie" },
-        { text: "Analiză matematică", value: "analiza" }
+        { text: "Analiză matematică", value: "analiza" },
     ];
 
     const contestTypeAvailableOptions = [
@@ -48,7 +48,7 @@ exports.createOrEditGet = async (req, res) => {
         { text: "Olimpiadă, etapa națională", value: "olimpiada-nationala" },
         { text: "Evaluare Națională", value: "evaluare-nationala" },
         { text: "Simulare Evaluare Națională", value: "simulare-evaluare-nationala" },
-        { text: "Alte concursuri", value: "alte-concursuri" }
+        { text: "Alte concursuri", value: "alte-concursuri" },
     ];
 
     const sourceTypeAvailableOptions = [
@@ -58,33 +58,37 @@ exports.createOrEditGet = async (req, res) => {
         { text: "Culegere 'Mate2000 excelență'", value: "mate2000-excelenta" },
         {
             text: "Culegere 'Matematică pt. olimpiade și concursuri', N. Grigore",
-            value: "mate-olimpiade-ngrigore"
+            value: "mate-olimpiade-ngrigore",
         },
         {
             text: "Culegere 'Exerciții pt. cercurile de matematică', P. Năchilă",
-            value: "cercuri-mate-pnachila"
+            value: "cercuri-mate-pnachila",
         },
         { text: "Culegere 'Mate2000 consolidare'", value: "mate2000-consolidare" },
         { text: "Culegere 'Evaluarea Națională', Ed. Paralela 45", value: "evaluare-nationala-p45" },
-        { text: "Alte surse", value: "alte-surse" }
+        { text: "Alte surse", value: "alte-surse" },
     ];
 
     const chapterAvailableOptions = [
         { text: "Numere Naturale", value: "numere-naturale" },
         { text: "Numere Raționale", value: "numere-rationale" },
-        { text: "Numere Reale", value: "numere-reale" }
+        { text: "Numere Reale", value: "numere-reale" },
+        { text: "Triunghiuri", value: "triunghiuri" },
+        { text: "Patrulatere", value: "patrulatere" },
     ];
 
     const subchapterAvailableOptions = [
-        { text: "Rapoarte și proporții", value: "rapoarte-si-proportii" }
+        { text: "Rapoarte și proporții", value: "rapoarte-si-proportii" },
         // { text: "Numere Raționale", value: "numere-rationale" },
         // { text: "Numere Reale", value: "numere-reale" }
+        { text: "Calculul măsurilor unor unghiuri", value: "calculul-masurilor-unor-unghiuri" },
     ];
 
     const lessonAvailableOptions = [
-        { text: "Metoda reducerii numărului de variabile", value: "metoda-reducerii-numarului-de-variabile" }
+        { text: "Metoda reducerii numărului de variabile", value: "metoda-reducerii-numarului-de-variabile" },
         // { text: "Numere Raționale", value: "numere-rationale" },
         // { text: "Numere Reale", value: "numere-reale" }
+        { text: "Calculul măsurilor unor unghiuri", value: "calculul-masurilor-unor-unghiuri" },
     ];
 
     const data = {
@@ -95,24 +99,29 @@ exports.createOrEditGet = async (req, res) => {
         sourceTypeAvailableOptions,
         chapterAvailableOptions,
         subchapterAvailableOptions,
-        lessonAvailableOptions
+        lessonAvailableOptions,
     };
 
     if (isEditMode) {
         const exercise = await exerciseService.getOneById(req.params.id);
 
         exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
-        exercise.question.answer.textPreview = markdownService.render(exercise.question.answer.text);
-        exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
+        if (exercise.question.answer && exercise.question.answer.text) {
+            exercise.question.answer.textPreview = markdownService.render(exercise.question.answer.text);
+        }
+
+        if (exercise.question.solution && exercise.question.solution.text) {
+            exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
+        }
 
         if (exercise.question.hints) {
-            exercise.question.hints.forEach(hint => {
+            exercise.question.hints.forEach((hint) => {
                 hint.textPreview = markdownService.render(hint.text);
             });
         }
 
         if (exercise.question.answerOptions) {
-            exercise.question.answerOptions.forEach(answerOption => {
+            exercise.question.answerOptions.forEach((answerOption) => {
                 answerOption.textPreview = markdownService.render(answerOption.text);
             });
         }
@@ -147,7 +156,7 @@ exports.createOrEditPost = async (req, res) => {
             obs,
             statement,
             answer,
-            solution
+            solution,
         } = req.body;
         const isEditMode = !!id;
 
@@ -164,14 +173,14 @@ exports.createOrEditPost = async (req, res) => {
             lesson,
             author,
             tags,
-            obs
+            obs,
         };
 
         const hints = req.body.hints;
         if (hints) {
             exercise.question.hints = [];
             if (Array.isArray(hints)) {
-                hints.forEach(hint => {
+                hints.forEach((hint) => {
                     if (hint.trim()) {
                         exercise.question.hints.push({ text: hint.trim() });
                     }
@@ -243,11 +252,11 @@ exports.createOrEditPost = async (req, res) => {
 exports.getAll = async (req, res) => {
     const exercises = await exerciseService.getAll();
 
-    exercises.forEach(exercise => {
+    exercises.forEach((exercise) => {
         let statement = `**[E.${exercise.code}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
 
         if (exercise.question.answerOptions) {
-            exercise.question.answerOptions.forEach(answerOption => {
+            exercise.question.answerOptions.forEach((answerOption) => {
                 statement = statement + "\n" + "* " + answerOption.text;
             });
         }
@@ -268,7 +277,7 @@ exports.getAll = async (req, res) => {
 
     const data = {
         exercises,
-        canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise")
+        canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise"),
     };
     // res.send(data);
     res.render("exercise/exercise-list", data);
@@ -282,7 +291,7 @@ exports.getOneById = async (req, res) => {
             let statement = `**E.${exercise.code}.** ${exercise.question.statement.text}`;
 
             if (exercise.question.answerOptions) {
-                exercise.question.answerOptions.forEach(answerOption => {
+                exercise.question.answerOptions.forEach((answerOption) => {
                     statement = statement + "\n" + "* " + answerOption.text;
                 });
             }
@@ -305,7 +314,7 @@ exports.getOneById = async (req, res) => {
 
     const data = {
         exercise,
-        canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise")
+        canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise"),
     };
     //res.send(data);
     res.render("exercise/exercise", data);
@@ -319,7 +328,7 @@ exports.getOneForPrintById = async (req, res) => {
             let statement = `**E.${exercise.code}.** ${exercise.question.statement.text}`;
 
             if (exercise.question.answerOptions) {
-                exercise.question.answerOptions.forEach(answerOption => {
+                exercise.question.answerOptions.forEach((answerOption) => {
                     statement = statement + "\n" + "* " + answerOption.text;
                 });
             }
@@ -331,7 +340,7 @@ exports.getOneForPrintById = async (req, res) => {
     const data = {
         exercise,
         //layout: false,
-        ctx: { hideNavbar: true }
+        ctx: { hideNavbar: true },
     };
     //res.send(data);
     res.render("exercise/exercise-print", data);
@@ -354,7 +363,7 @@ exports.addMySolution = async (req, res) => {
     await exerciseService.insertSolution(mySolution);
 
     const data = {
-        mySolution
+        mySolution,
     };
     res.json(data);
     //res.render("exercise/exercise-print", data);

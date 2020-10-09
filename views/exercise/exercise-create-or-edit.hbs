@@ -94,25 +94,6 @@
             class="btn btn-link p-0 mt-n1 float-right">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</button>
     </div>
 
-    {{!-- solution --}}
-    <div class="form-group">
-        <label for="solution-editor-txt" class="font-weight-bold"> Rezolvare completă: </label>
-
-        <textarea id="solution-editor-txt" rows="8" name="solution"
-            style="border-radius:0; border-bottom-width:0; border-color:#008000"
-            class="form-control {{#if errors.solution}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.question.solution.text}}}</textarea>
-        <div class="invalid-feedback">{{errors.solution.msg}}</div>
-
-        <div id="solution-preview-div"
-            style="border: 1px solid #008000; padding: 6px 12px; background-color: #f5fff5; min-height:58px">
-            {{{exercise.question.solution.textPreview}}}
-        </div>
-
-        <button id="toggle-solution-editor-btn" type="button"
-            class="btn btn-link p-0 mt-n1 float-right">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</button>
-    </div>
-
-
     {{!-- hints --}}
     <div id="hint-main-div" class="form-group">
         {{#each exercise.question.hints}}
@@ -148,6 +129,24 @@
         </div>
     </div>
 
+    {{!-- solution --}}
+    <div class="form-group">
+        <label for="solution-editor-txt" class="font-weight-bold"> Rezolvare completă: </label>
+
+        <textarea id="solution-editor-txt" rows="8" name="solution"
+            style="border-radius:0; border-bottom-width:0; border-color:#008000"
+            class="form-control {{#if errors.solution}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.question.solution.text}}}</textarea>
+        <div class="invalid-feedback">{{errors.solution.msg}}</div>
+
+        <div id="solution-preview-div"
+            style="border: 1px solid #008000; padding: 6px 12px; background-color: #f5fff5; min-height:58px">
+            {{{exercise.question.solution.textPreview}}}
+        </div>
+
+        <button id="toggle-solution-editor-btn" type="button"
+            class="btn btn-link p-0 mt-n1 float-right">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</button>
+    </div>
+
 
     {{!-- {{#if isEditMode}}
     <div class="form-group row2">
@@ -157,6 +156,7 @@
         </div>
     </div>
     {{/if}} --}}
+    <br>
 
     <div class="form-row">
         <div class="form-group col-md-6">
@@ -296,7 +296,7 @@
         <div class="col-md-7s offset-md-3s">
             <button type="submit" name="saveBtn" class="btn btn-primary"><i class="fas fa-save"></i>
                 Salveaza</button>
-            <a href="/exercitii" class="btn btn-light"><i class="fa fa-times"></i> Renunță</a>
+            <a href="/exercitii/{{exercise._id}}" class="btn btn-light"><i class="far fa-eye"></i> Vizualizează</a>
             {{#if isEditMode}}
             <button type="submit" formaction="/exercitii/sterge" name="deleteBtn" class="btn btn-link"
                 onclick="return confirm('Ești sigur că vrei să ștergi acest exercițiu?');"><i
