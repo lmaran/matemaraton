@@ -296,8 +296,9 @@
         <div class="col-md-7s offset-md-3s">
             <button type="submit" name="saveBtn" class="btn btn-primary"><i class="fas fa-save"></i>
                 Salveaza</button>
-            <a href="/exercitii/{{exercise._id}}" class="btn btn-light"><i class="far fa-eye"></i> Vizualizează</a>
+            
             {{#if isEditMode}}
+            <a href="/exercitii/{{exercise._id}}" class="btn btn-light"><i class="far fa-eye"></i> Vizualizează</a>
             <button type="submit" formaction="/exercitii/sterge" name="deleteBtn" class="btn btn-link"
                 onclick="return confirm('Ești sigur că vrei să ștergi acest exercițiu?');"><i
                     class="fas fa-trash-alt"></i>

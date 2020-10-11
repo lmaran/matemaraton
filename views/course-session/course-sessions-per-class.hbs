@@ -17,6 +17,10 @@
         href="/clase/{{class._id}}/sesiuni-curs/poze">aici</a>.</div>
 <hr />
 
+{{#if canCreateOrEditCourseSession}}
+<a href="/clase/{{class._id}}/sesiuni-curs/adauga" class="btn btn-primary mt-2 mb-4"><i class="fa fa-plus"></i> Adaugă sesiune de curs</a>
+{{/if}}
+
 {{#each courses}}
 <div class="h4">
     <a href="/sesiuni-curs/{{_id}}">Sesiunea {{course}}</a>
