@@ -23,27 +23,30 @@
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item"><a href="/clase">Clase</a></li>
         <li class="breadcrumb-item"><a href="/clase/{{class._id}}">{{class.name}}</a></li>
         <li class="breadcrumb-item"><a href="/clase/{{class._id}}/sesiuni-curs">Sesiuni</a></li>
-        <li class="breadcrumb-item active">Sesiunea {{course.course}}</li>
+        <li class="breadcrumb-item active">Sesiunea {{courseSession.course}}</li>
     </ol>
 </nav>
 
-<h1>Sesiunea {{course.course}} <span class="font-weight-light text-secondary h4"> - {{course.dateAsString}}</span>
+<h1>Sesiunea {{courseSession.course}} <span class="font-weight-light text-secondary h4"> -
+        {{courseSession.dateAsString}}</span>
 </h1>
 <h2 class="mb-5">{{class.name}}</h2>
 
 
-{{!-- <h3 class="mt-5" {{#if noCourse}} class="text-muted" {{/if}}>{{course.dateAsString}}</h3> --}}
+{{!-- <h3 class="mt-5" {{#if noCourse}} class="text-muted" {{/if}}>{{courseSession.dateAsString}}</h3> --}}
 
+{{#if canCreateOrEditCourseSession}}
+<a href="/sesiuni-curs/edit/{{courseSession._id}}" class="btn btn-primary mt-2 mb-4"><i class="fa fa-edit"></i>
+    Modifică</a>
+{{/if}}
 
+<div class="h4 font-weight-light">{{courseSession.description}}</div>
 
-<div class="h4 font-weight-light">{{course.description}}</div>
-
-{{#each course.videos}}
+{{#each courseSession.videos}}
 <div class="mt-2">Partea {{inc @index}}:</div>
 <div class="responsive">
     <iframe width="560" height2="315" src="{{url}}" frameborder="0"
@@ -52,12 +55,12 @@
 </div>
 {{/each}}
 
-{{#if course.videos}}
+{{#if courseSession.videos}}
 <p class="h4 mt-5 mb-1">Varianta scrisă:</p>
 {{/if}}
 
-{{#each course.images}}
-<p>{{course.description}}</p>
+{{#each courseSession.images}}
+<p>{{courseSession.description}}</p>
 <img src={{url}} class="img-fluid" alt="">
 <a style="display: block;" href={{highQualityUrl}}>Vezi poza la calitate maximă</a>
 {{/each}}

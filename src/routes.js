@@ -101,8 +101,13 @@ router.get("/parinti/:parentId", parentController.getParent);
 
 // courseSessions
 router.get("/clase/:classId/sesiuni-curs", courseSessionController.getCourseSessionsPerClass);
+router.get("/sesiuni-curs/edit/:id", isAuthenticated, courseSessionController.createOrEditGet);
+router.post("/sesiuni-curs/edit/:id", isAuthenticated, courseSessionController.createOrEditPost);
 router.get("/clase/:classId/sesiuni-curs/poze", courseSessionController.getCourseSessionsPerClassWithPhotos);
 router.get("/sesiuni-curs/:courseSessionId", courseSessionController.getCourseSession);
+router.get("/clase/:classId/sesiuni-curs/adauga", isAuthenticated, courseSessionController.createOrEditGet);
+router.post("/clase/:classId/sesiuni-curs/adauga", isAuthenticated, courseSessionController.createOrEditPost);
+router.post("/sesiuni-curs/sterge", isAuthenticated, courseSessionController.deleteOneById);
 
 // students
 router.get("/clase/:classId/elevi", studentController.getStudentsPerClass);

@@ -7,5 +7,9 @@
         "source.fixAll.eslint": true
     },
     "cSpell.words": ["autz", "grecaptcha", "katex", "matemaraton", "recaptcha", "signup"],
-    "cSpell.diagnosticLevel": "Hint"
+    "cSpell.diagnosticLevel": "Hint",
+
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }
