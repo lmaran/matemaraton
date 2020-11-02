@@ -39,11 +39,13 @@
 
     <label class="font-weight-bold">Prezența:</label>
     {{#each students}}
+    {{#if (or isNotDroppedOut isPresent)}}
     <div class="form-check">
         <input type="checkbox" class="form-check-input" id="studentsId{{inc @index}}" name="studentsIds" value={{_id}}
             {{#if isPresent}}checked{{/if}}>
         <label class="form-check-label" for="studentsId{{inc @index}}">{{firstName}} {{lastName}}</label>
     </div>
+    {{/if}}
     {{/each}}
 
 

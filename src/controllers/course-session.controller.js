@@ -65,6 +65,14 @@ exports.createOrEditGet = async (req, res) => {
 
     const allStudentsPerClass = await personService.getAllByIds(allStudentsIdsPerClass);
 
+    // add abandon info
+    allStudentsPerClass.forEach((student) => {
+        student.isNotDroppedOut = studentsMapByClassId.find(
+            (x) => x.studentId == student._id.toString() && !x.droppedOut
+        );
+    });
+
+    // add presence info
     if (data.courseSession.studentsIds) {
         allStudentsPerClass.forEach((student) => {
             student.isPresent = data.courseSession.studentsIds.includes(student._id.toString());

@@ -51,7 +51,6 @@ exports.getCourseSessionsByClassIds = async (classIds) => {
 };
 
 exports.getNumberOfSessionForClass = async (classId) => {
-    console.log(classId);
     const db = await mongoHelper.getDb();
     return db.collection(collection).countDocuments({ classId });
 };
