@@ -33,8 +33,9 @@
 </div>
 {{/each}}
 
-<hr class="mt-5" />
 
+{{#if presencesInfoForInactiveStudents.length}}
+<hr class="mt-5" />
 
 {{#each presencesInfoForInactiveStudents}}
 <div {{#if student.droppedOut}} class="toggle-presence hidePresence" {{/if}}>
@@ -50,15 +51,16 @@
 {{/each}}
 
 
-{{#if presencesInfoForInactiveStudents.length}}
 <div class="mt-4 mb-5">
-    <a class="toggle-presence" href="/" style="font-size:1.2rem;">Vezi și elevii care
-        au abandonat <i class="fas fa-angle-double-right"></i></a>
-    <a class="mt-5 toggle-presence hidePresence" href="/" style="font-size:1.2rem;"><i
-            class="fas fa-angle-double-left"></i>
-        Vezi doar elevii activi</a>
-    {{/if}}
+    <a class="toggle-presence" href="/">Vezi și elevii care au abandonat
+        <small><i class="fas fa-angle-double-right text-muted" aria-hidden="true"></i></small>
+    </a>
+    <a class="mt-5 toggle-presence hidePresence" href="/">
+        <small><i class="fas fa-angle-double-left text-muted" aria-hidden="true"></i></small>
+        Vezi doar elevii activi
+    </a>
 </div>
+{{/if}}
 
 {{#section 'script-after'}}
 <script>
