@@ -32,10 +32,11 @@
 Nivel: {{course.level}} </br>
 Durata: {{course.duration}} </br>
 </br></br> --}}
-In curând!
 
 {{#if course.agenda}}
-<h4 class="mb-4">Structura cursului: <span class="font-weight-light">({{course.totalHours}} sesiuni)</span></h4>
+<h4 class="mb-4">Structura cursului:
+    {{!-- <span class="font-weight-light">({{course.totalHours}} sesiuni)</span> --}}
+</h4>
 
 {{!-- <hr> --}}
 
@@ -47,10 +48,12 @@ In curând!
 </ul> --}}
 
 {{#each course.agenda}}
-{{#if lessonName}}
-<a href="/cursuri/{{@root.course._id}}/lectii/{{lessonId}}">{{lessonName}}</a>
+{{#if lessonTitle}}
+<a href="/cursuri/{{@root.course._id}}/lectii/{{lessonId}}">{{lessonTitle}}</a>
 {{else}}
-<h5>{{folderName}}<span class="font-weight-light text-lowercase"> ({{totalHours}} sesiuni)</span></h5>
+<h5>{{folderName}}
+    {{!-- <span class="font-weight-light text-lowercase"> ({{totalHours}} sesiuni)</span> --}}
+</h5>
 <ol id="agenda" class="pl-0">
     {{#each folderItems}}
     {{> lesson.partial}}

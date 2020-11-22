@@ -100,8 +100,16 @@ exports.createOrEditPost = async (req, res) => {
             classId,
             date,
             description,
-            studentsIds,
         };
+
+        if (studentsIds) {
+            // for single value, the studentsIds is transmitted as string (instead of array)
+            if (typeof studentsIds === "string") {
+                courseSession.studentsIds = [studentsIds]; // convert string to array
+            } else {
+                courseSession.studentsIds = studentsIds;
+            }
+        }
 
         if (images) {
             const imagesUrls = images.split("\n").filter((x) => x.trim() != "");
