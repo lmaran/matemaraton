@@ -12,18 +12,18 @@
     {{/if}}
 </li> --}}
 
-{{#if lessonName}}
+{{#if lessonTitle}}
 <li>
     {{#if lessonId}}
-    <a class="pl-1" href="/cursuri/{{@root.course._id}}/lectii/{{lessonId}}">{{lessonName}}</a>
+    <a class="pl-1" href="/cursuri/{{@root.course._id}}/lectii/{{lessonId}}">{{lessonTitle}}</a>
     {{else}}
-    {{lessonName}}
+    {{lessonTitle}}
     {{/if}}
 </li>
 {{else}}
 <li>
     <span class="pl-1  text-muted2 font-weight-light text-uppercase">{{folderName}}
-        <span class="text-lowercase">({{totalHours}} s.)</span>
+        {{!-- <span class="text-lowercase">({{totalHours}} s.)</span> --}}
     </span>
     <ol>
         {{#each folderItems}}

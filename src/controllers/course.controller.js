@@ -10,7 +10,7 @@ exports.getCourses = async (req, res) => {
     const highLevelCourses = [];
     courses
         .sort((a, b) => (a.code > b.code ? 1 : -1))
-        .forEach(course => {
+        .forEach((course) => {
             if (course.level === "Evaluare Națională") {
                 generalCourses.push(course);
             } else if (course.level === "Olimpiadă") {
@@ -20,7 +20,7 @@ exports.getCourses = async (req, res) => {
 
     const data = {
         generalCourses,
-        highLevelCourses
+        highLevelCourses,
     };
     //res.send(data);
     res.render("course/courses", data);
@@ -29,27 +29,30 @@ exports.getCourses = async (req, res) => {
 exports.getCourse = async (req, res) => {
     const courseId = req.params.id;
     const course = await courseService.getOneById(courseId);
+    let uniqueLessonsIdsTmp;
 
     // 1. create a list of all unique lessonIds used in this course
     if (course.agenda) {
         const lessonsIds = [];
-        course.agenda.forEach(item => {
+        course.agenda.forEach((item) => {
             this.addLessonsIdsRecursively(item, lessonsIds);
         });
         const uniqueLessonsIds = [...new Set(lessonsIds)]; // remove duplicates (if exists)
-
+        //uniqueLessonsIdsTmp = uniqueLessonsIds;
         // 2. get details (_id + name) for each lesson
-        const lessons = await lessonService.getLessonNamesByIds(uniqueLessonsIds);
+        const lessons = await lessonService.getLessonTitlesByIds(uniqueLessonsIds);
         const lessonsObj = arrayHelper.arrayToObject(lessons, "_id");
+        uniqueLessonsIdsTmp = lessons;
 
         // 3. add lessonName for each lesson
-        course.agenda.forEach(item => {
-            this.addLessonNameRecursively(item, lessonsObj);
+        course.agenda.forEach((item) => {
+            this.addLessonTitleRecursively(item, lessonsObj);
         });
     }
 
     const data = {
-        course
+        course,
+        uniqueLessonsIdsTmp,
     };
     //res.send(data);
     res.render("course/course", data);
@@ -60,23 +63,23 @@ exports.addLessonsIdsRecursively = (item, result) => {
         result.push(item.lessonId);
     } else {
         if (item.folderItems) {
-            item.folderItems.forEach(item => {
+            item.folderItems.forEach((item) => {
                 this.addLessonsIdsRecursively(item, result);
             });
         }
     }
 };
 
-exports.addLessonNameRecursively = (item, lessonsObj) => {
+exports.addLessonTitleRecursively = (item, lessonsObj) => {
     if (item.lessonId) {
         const lesson = lessonsObj[item.lessonId];
         if (lesson) {
-            item.lessonName = lesson.name;
+            item.lessonTitle = lesson.title;
         }
     } else {
         if (item.folderItems) {
-            item.folderItems.forEach(item => {
-                this.addLessonNameRecursively(item, lessonsObj);
+            item.folderItems.forEach((item) => {
+                this.addLessonTitleRecursively(item, lessonsObj);
             });
         }
     }

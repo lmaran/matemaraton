@@ -23,25 +23,25 @@ exports.createOrEditGet = async (req, res) => {
     const gradeAvailableOptions = [
         { text: "Primar", value: "P" },
         { text: "Clasa a V-a", value: "5" },
-        { text: "Clasa a VI-a", value: "6" }
+        { text: "Clasa a VI-a", value: "6" },
     ];
 
     const branchAvailableOptions = [
         { text: "Algebră", value: "algebra" },
         { text: "Geometrie", value: "geometrie" },
-        { text: "Analiză matematică", value: "analiza" }
+        { text: "Analiză matematică", value: "analiza" },
     ];
 
     const chapterAvailableOptions = [
         { text: "Numere Naturale", value: "numere-rationale" },
         { text: "Numere Întregi", value: "numere-intregi" },
         { text: "Numere Raționale", value: "numere-rationale" },
-        { text: "Numere Reale", value: "numere-reale" }
+        { text: "Numere Reale", value: "numere-reale" },
     ];
 
     const scopeAvailableOptions = [
         { text: "Evaluări la clasă și Examene Naționale", value: "clasa" },
-        { text: "Olimpiade și Concursuri", value: "olimpiada" }
+        { text: "Olimpiade și Concursuri", value: "olimpiada" },
     ];
 
     const data = {
@@ -49,7 +49,7 @@ exports.createOrEditGet = async (req, res) => {
         gradeAvailableOptions,
         branchAvailableOptions,
         chapterAvailableOptions,
-        scopeAvailableOptions
+        scopeAvailableOptions,
     };
 
     if (isEditMode) {
@@ -81,7 +81,7 @@ exports.createOrEditPost = async (req, res) => {
             branch,
             chapter,
             title,
-            content: { text: content }
+            content: { text: content },
         };
 
         if (isEditMode) {
@@ -105,7 +105,7 @@ exports.getAll = async (req, res) => {
 
     const data = {
         lessons,
-        canCreateOrEditLesson: await autz.can(req.user, "create-or-edit:lesson")
+        canCreateOrEditLesson: await autz.can(req.user, "create-or-edit:lesson"),
     };
     //res.send(data);
     res.render("lesson/lesson-list", data);
@@ -119,16 +119,20 @@ exports.getOneById = async (req, res) => {
     if (courseId) {
         [lesson, course] = await Promise.all([
             await lessonService.getOneById(id),
-            await courseService.getOneById(courseId)
+            await courseService.getOneById(courseId),
         ]);
     } else {
         lesson = await lessonService.getOneById(id);
     }
 
+    if (lesson.content) {
+        lesson.content.textPreview = markdownService.render(lesson.content.text);
+    }
+
     const data = {
         lesson,
         course,
-        canCreateOrEditLesson: await autz.can(req.user, "create-or-edit:lesson")
+        canCreateOrEditLesson: await autz.can(req.user, "create-or-edit:lesson"),
     };
     // res.send(data);
     res.render("lesson/lesson", data);
