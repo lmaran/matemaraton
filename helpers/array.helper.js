@@ -11,7 +11,7 @@ exports.arrayToObject = (array, keyField) =>
 // object must have a key-value format
 // input: {"1": {age:23}, "2": {age:31}}
 // output: [{age:23},{age:31}]
-exports.objectToArray = object => Object.keys(object).map(key => object[key]);
+exports.objectToArray = (object) => Object.keys(object).map((key) => object[key]);
 // or:
 // object => Object.keys(object).reduce((acc, key) => {
 //     acc.push(object[key]);
@@ -33,4 +33,13 @@ exports.groupBySubKey = (array, key, subKey) => {
         (acc[crt[key][subKey]] = acc[crt[key][subKey]] || []).push(crt);
         return acc;
     }, {});
+};
+
+/**
+ * Move one element in an array from one index to another
+ * https://dev.to/jalal246/moving-element-in-an-array-from-index-to-another-464b
+ */
+exports.move = (array, fromIdx, toIdx) => {
+    const elm = array.splice(fromIdx, 1)[0];
+    array.splice(toIdx, 0, elm);
 };

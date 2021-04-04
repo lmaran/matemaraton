@@ -67,9 +67,7 @@ exports.createOrEditGet = async (req, res) => {
 
     // add abandon info
     allStudentsPerClass.forEach((student) => {
-        student.isNotDroppedOut = studentsMapByClassId.find(
-            (x) => x.studentId == student._id.toString() && !x.droppedOut
-        );
+        student.isNotDroppedOut = studentsMapByClassId.find((x) => x.studentId == student._id.toString() && !x.droppedOut);
     });
 
     // add presence info
@@ -178,7 +176,9 @@ exports.getCourseSessionsPerClassWithPhotos = async (req, res) => {
         .filter((x) => !x.noCourse)
         .map((x) => {
             x.dateAsString = dateTimeHelper.getStringFromStringNoDay(x.date);
-            x.images.forEach((image) => (image.highQualityUrl = image.url.replace("courses-lg", "courses")));
+            if (x.images) {
+                x.images.forEach((image) => (image.highQualityUrl = image.url.replace("courses-lg", "courses")));
+            }
             return x;
         });
 

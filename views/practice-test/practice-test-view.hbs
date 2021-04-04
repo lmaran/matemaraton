@@ -10,30 +10,62 @@
         {{else}}
         <li class="breadcrumb-item"><a href="/teste/">Teste</a></li>
         {{/if}}
-        <li class="breadcrumb-item active">{{practiceTest.name}}</li>
+        {{!-- <li class="breadcrumb-item active">{{practiceTest.name}}</li> --}}
     </ol>
 </nav>
 
-<h1><span class="font-weight-light text-secondary h4">{{practiceTest.name}}</span>
-</h1>
-{{!-- <h2 class="mb-5">{{class.name}}</h2> --}}
+<h3 class="mb-4"><span class="font-weight-light text-secondary2">{{practiceTest.name}}</span>
+    </h1>
+    {{!-- <h2 class="mb-5">{{class.name}}</h2> --}}
 
 
-{{!-- <h3 class="mt-5" {{#if noCourse}} class="text-muted" {{/if}}>{{course.dateAsString}}</h3> --}}
+    {{!-- <h3 class="mt-5" {{#if noCourse}} class="text-muted" {{/if}}>{{course.dateAsString}}</h3> --}}
 
 
 
-{{!-- <div class="h4 font-weight-light">{{course.description}}</div> --}}
+    {{!-- <div class="h4 font-weight-light">{{course.description}}</div> --}}
 
 
-Clasa: {{practiceTest.grade}} </br>
+    {{!-- Clasa: {{practiceTest.grade}} </br> --}}
 
-{{#each practiceTest.exercises}}
-{{!-- <div>{{question.statement.text}}</div> --}}
-<div style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
-    {{{question.statement.textPreview}}}</div> <br>
-{{/each}}
+    {{#each practiceTest.exercises}}
+    <div class="mb-4">
+        <div style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
+            {{{question.statement.textPreview}}}
+            {{#if question.answerOptions}}
+            <div class="row">
+                {{#each question.answerOptions}}
+                <div class="col text-nowrap">{{{textPreview}}}</div>
+                {{/each}}
+            </div>
+            {{/if}}
+        </div>
+        {{!-- <div class="font-italic small text-right text-muted">{{contestName}}</div>
+        <div class="font-italic small text-right text-muted">{{sourceName}}</div> --}}
 
-{{#if canCreateOrEditPracticeTest}}
-<a href="/teste/edit/{{practiceTest._id}}">Edit</a>
-{{/if}}
+        {{#if question.solution}}
+        <div class="font-weight-bold mt-2">Soluție:</div>
+        <div style2="border: 1px solid lightgray; padding: 6px 12px; background-color: min-height:58px">
+            {{{question.solution.textPreview}}}</div>
+        {{/if}}
+
+        <hr class="mb-1">
+
+        <div class="row">
+            <div class="col text-nowrap">
+                {{#if question.answerOptions}}
+                {{{question.correctAnswerPreview}}}
+                {{else}}
+                {{{question.answer.textPreview}}}
+                {{/if}}
+            </div>
+            <div class="col text-nowrap font-italic font-weight-light small text-right text-muted">Rezolvare: L. Măran
+            </div>
+        </div>
+
+    </div>
+    {{/each}}
+
+    {{#if canCreateOrEditPracticeTest}}
+    <a href="/teste/edit/{{practiceTest._id}}">Edit</a>
+    {{/if}}
