@@ -2,7 +2,12 @@
     <ol id="exercise-id-container" class="breadcrumb" data-exercise-id="{{exercise._id}}">
         {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        {{#if canCreateOrEditExercise}}
         <li class="breadcrumb-item"><a href="/exercitii">Exerciții</a></li>
+        {{else}}
+        <li class="breadcrumb-item"><a href="/teste">Teste</a></li>
+        {{/if}}
+
         <li class="breadcrumb-item active">E.{{exercise.code}}</li>
     </ol>
 </nav>
@@ -10,22 +15,35 @@
 
 {{!-- <h1>Exercițiul {{exercise.code}}</h1> --}}
 
+<h3 class="mb-4"><span class="font-weight-light text-secondary2">{{exercise.contestName}}</span>
+</h3>
 
-<div style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
+<div style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px" class="mt-2">
     {{{exercise.question.statement.textPreview}}}
+    {{#if exercise.question.answerOptions}}
+    <div class="row">
+        {{#each exercise.question.answerOptions}}
+        <div class="col text-nowrap">{{{textPreview}}}</div>
+        {{/each}}
+    </div>
+    {{/if}}
 </div>
-<div class="font-italic small text-right text-muted">{{exercise.contestName}}</div>
-<div class="font-italic small text-right text-muted">{{exercise.sourceName}}</div>
+{{!-- <div class="font-italic small text-right text-muted">{{exercise.contestName}}</div>
+<div class="font-italic small text-right text-muted">{{exercise.sourceName}}</div> --}}
 
 
-{{#if exercise.question.answer}}
+{{!-- {{#if exercise.question.answer}}
 <div>
     <button id="toggle-answer-btn" type="button" class="btn btn-link p-0">Rezultat final</button>
 </div>
-<div id="answer-div" class="d-none">
+<div id="answer-div" class="d-none2">
+    {{#if exercise.question.answerOptions}}
+    {{{exercise.question.correctAnswerPreview}}}
+    {{else}}
     {{{exercise.question.answer.textPreview}}}
+    {{/if}}
 </div>
-{{/if}}
+{{/if}} --}}
 
 
 {{#if exercise.question.hints}}
@@ -50,14 +68,34 @@
 
 
 {{#if exercise.question.solution}}
-<div>
+{{!-- <div>
     <button id="toggle-solution-btn" type="button" class="btn btn-link p-0">Rezolvare completă</button>
+</div> --}}
+<div id="solution-div" class="d-none2">
+    <div class="font-weight-bold mt-2">Soluție:</div>
+    <div style2"border: 1px solid lightgray; padding: 6px 12px; background-color: min-height:58px">
+        {{{exercise.question.solution.textPreview}}}
+    </div>
+
+    {{!-- <div class="text-nowrap font-italic font-weight-light small text-right text-muted">Rezolvare: L. Măran
+    </div> --}}
 </div>
-<div id="solution-div" class="d-none"
-    style="border: 1px solid #008000; padding: 6px 12px; background-color: #f5fff5; min-height:58px">
-    {{{exercise.question.solution.textPreview}}}
-</div>
+
 {{/if}}
+
+<hr class="mb-1">
+
+<div class="row">
+    <div class="col text-nowrap">
+        {{#if exercise.question.answerOptions}}
+        {{{exercise.question.correctAnswerPreview}}}
+        {{else}}
+        {{{exercise.question.answer.textPreview}}}
+        {{/if}}
+    </div>
+    <div class="col text-nowrap font-italic font-weight-light small text-right text-muted">Rezolvare: L. Măran
+    </div>
+</div>
 
 <div>
     <a href="/exercitii/{{exercise._id}}/print">Varianta tipăribilă</a>
@@ -68,8 +106,10 @@
 <a href="/exercitii/edit/{{exercise._id}}">Edit</a>
 {{/if}}
 
-{{!-- <hr> --}}
+{{!--
+<hr> --}}
 
+{{#if canCreateOrEditExercise}}
 <div class="mt-4">Rezolvarea mea:</div>
 <div class="drop-area">
     <form class="my-form">
@@ -103,6 +143,7 @@
 
     </form>
 </div>
+{{/if}}
 
 <br>
 

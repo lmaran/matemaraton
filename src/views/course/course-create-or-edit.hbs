@@ -1,0 +1,157 @@
+<style>
+    OL {
+        counter-reset: item;
+    }
+
+    LI {
+        display: block;
+    }
+
+    #table-of-contents LI:before {
+        /* only <li>s in table-of-content section */
+        content: counters(item, ".") ". ";
+        counter-increment: item
+    }
+</style>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
+        {{#if isEditMode}}
+        <li class="breadcrumb-item active">{{course.code}}</li>
+        {{/if}}
+    </ol>
+</nav>
+
+
+<h1>{{#if isEditMode}}Curs {{course.code}}{{else}}Curs nou{{/if}}</h1>
+
+<form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
+
+    <div class="form-row">
+        <div class="form-group col-md-3">
+            <label for="codeInput" class="font-weight-bold">Cod:</label>
+            <input type="text" name="code" class="form-control" id="codeInput" placeholder="" value="{{course.code}}">
+            <small>
+                <p class="text-muted mb-0">Ex: M105</p>
+            </small>
+        </div>
+
+        <div class="form-group col-md-9">
+            <label for="nameInput" class="font-weight-bold">Nume:</label>
+            <input type="text" name="name" class="form-control" id="nameInput" placeholder="" value="{{course.name}}">
+            <small>
+                <p class="text-muted mb-0">Ex: Matematică, clasa a V-a</p>
+            </small>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label for="descriptionInput" class="font-weight-bold">Descriere:</label>
+            <textarea type="text" name="description" class="form-control" id="descriptionInput"
+                placeholder="">{{course.description}}</textarea>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="gradeSelect" class="font-weight-bold">Clasa:</label>
+            <select name="grade" class="form-control" id="gradeSelect">
+                {{#select course.grade}}
+                <option value=""></option>
+                {{#each gradeAvailableOptions}}
+                <option value="{{value}}">{{text}}</option>
+                {{/each}}
+
+                {{/select}}
+            </select>
+        </div>
+
+        <div class="form-group col-md-6">
+            <label for="branchSelect" class="font-weight-bold">Categoria:</label>
+            <select name="level" class="form-control" id="branchSelect">
+                {{#select course.level}}
+                <option value=""></option>
+                {{#each categoryAvailableOptions}}
+                <option value="{{value}}">{{text}}</option>
+                {{/each}}
+
+                {{/select}}
+            </select>
+        </div>
+    </div>
+
+
+    <label for="gradeSelect" class="font-weight-bold">Cuprins:</label>
+
+    {{#if course.tableOfContents}}
+
+
+    {{!-- <h4 class="mb-4">Structura cursului:</h4> --}}
+    <ol id="table-of-contents" class="pl-0">
+        {{#each course.tableOfContents.chapters}}
+        <li id="chapter-{{@index}}">
+            <span class="pl-1  text-muted2 font-weight-light text-uppercase">{{name}}
+                {{!-- <span class="text-lowercase">({{totalHours}} s.)</span> --}}
+            </span>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-link dropdown-toggle" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                    Acțiuni
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item chapter-rename" href="#">Redenumește</a>
+                    <a class="dropdown-item" href="#">Mută</a>
+                    <a class="dropdown-item" href="#">Ascunde</a>
+                    <a class="dropdown-item" href="#">Șterge</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#"><i class="fa fa-plus"></i> Adaugă lecție nouă</a>
+                </div>
+            </div>
+
+
+
+            <ol>
+                {{#each lessons}}
+                <li>
+                    {{#if id}}
+                    <a class="pl-1" href="/cursuri/{{@root.course._id}}/lectii/{{id}}">{{name}}</a>
+                    {{else}}
+                    {{name}}
+                    {{/if}}
+
+
+                </li>
+                {{/each}}
+            </ol>
+        </li>
+        {{/each}}
+    </ol>
+
+
+    {{/if}}
+
+    <input type="hidden" name="id" value="{{course._id}}" />
+
+    <div class="form-group mt-4">
+        <div class="col-md-7s offset-md-3s">
+            <button type="submit" name="saveBtn" class="btn btn-primary"><i class="fas fa-save"></i>
+                Salveaza</button>
+
+            {{#if isEditMode}}
+            <a href="/cursuri/{{course._id}}" class="btn btn-light"><i class="far fa-eye"></i>
+                Vizualizează</a>
+            <button type="submit" formaction="/cursuri/{{course._id}}/sterge" name="deleteBtn" class="btn btn-link"
+                onclick="return confirm('Ești sigur că vrei să ștergi acest curs?');"><i class="fas fa-trash-alt"></i>
+                Șterge</button>
+            {{/if}}
+        </div>
+    </div>
+
+</form>
+
+{{#section 'script'}}
+<script type="module" src="/js/course/course-create-or-edit.main.js"></script>
+{{/section}}

@@ -4,18 +4,57 @@
         #printPageButton,
         #goBackButton {
             display: none;
+
+        }
+
+        body {
+            font-size: large;
         }
     }
 </style>
 
-<div style="border: 1px solid gray; padding: 6px 12px 0 12px" class="mt-2">
+<h3 class="mt-2 mb-4"><span class="font-weight-light text-secondary2">{{exercise.contestName}}</span>
+</h3>
+<div style="border: 1px solid #bb815d; padding: 6px 12px 0 12px; background-color: #fff9f8; " class="mt-2 mb-4">
     {{{exercise.question.statement.textPreview}}}
+    {{#if exercise.question.answerOptions}}
+    <div class="row">
+        {{#each exercise.question.answerOptions}}
+        <div class="col text-nowrap">{{{textPreview}}}</div>
+        {{/each}}
+    </div>
+    {{/if}}
 </div>
-<div class="font-italic small text-right text-muted">{{exercise.contestName}}</div>
-<div class="font-italic small text-right text-muted mb-2">{{exercise.sourceName}}</div>
+{{!-- <div class="font-italic small text-right text-muted">{{exercise.contestName}}</div>
+<div class="font-italic small text-right text-muted mb-2">{{exercise.sourceName}}</div> --}}
 
-<button id="printPageButton" type="button" class="btn btn-primary" onclick="window.print()">
-    <i class="fas fa-print"></i> Tipărește
-</button>
 
-<a id="goBackButton" href="/exercitii/{{exercise._id}}" class>Înapoi la exercițiu</a>
+{{#if exercise.question.solution}}
+<div class="font-weight-bold">Soluție:</div>
+<div style="border: 1px solid lightgray; padding: 6px 12px 0 12px" class="mt-2">
+    {{{exercise.question.solution.textPreview}}}
+</div>
+{{/if}}
+
+<div class="row">
+    <div class="col text-nowrap">
+        {{#if exercise.question.answerOptions}}
+        {{{exercise.question.correctAnswerPreview}}}
+        {{else}}
+        {{{exercise.question.answer.textPreview}}}
+        {{/if}}
+    </div>
+    <div class="col text-nowrap font-italic font-weight-light small2 text-right text-muted">Rezolvare: L. Măran
+    </div>
+</div>
+
+
+
+
+
+<div class="mt-4 mb-4">
+    <button id="printPageButton" type="button" class="btn btn-primary" onclick="window.print()">
+        <i class="fas fa-print"></i> Tipărește
+    </button>
+    <a id="goBackButton" href="/exercitii/{{exercise._id}}" class>Înapoi la exercițiu</a>
+</div>

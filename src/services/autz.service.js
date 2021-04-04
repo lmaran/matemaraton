@@ -27,5 +27,9 @@ exports.can = async (user, rp) => {
         return up.includes("*:*") || up.includes(rp);
     } else if (rp === "delete:course-session") {
         return up.includes("*:*") || up.includes(rp);
+    } else if (rp === "create-or-edit:course") {
+        return up.includes("*:*") || up.includes(rp);
+    } else if (rp === "delete:course") {
+        return up.includes("*:*") || up.includes(rp);
     }
 };

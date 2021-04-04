@@ -18,12 +18,14 @@
 {{/if}}
 
 {{!-- <h3< class="mt-4">>Ediția curentă:</h3> --}}
-{{#if practiceTests}}
-<ul>
-    {{#each practiceTests}}
-    <li><a href="/teste/{{_id}}">{{name}} </a><span class="text-muted font-weight-light"> (grade {{grade}})</span></li>
-    {{/each}}
-</ul>
-{{else}}
-<div class="mt-4">Nu există teste!</div>
-{{/if}}
+    {{#if practiceTests}}
+    <ul>
+        {{#each practiceTests}}
+        <li><a href="/teste/{{_id}}">{{name}} </a>
+            <span class="text-muted font-weight-light"></span>
+        </li>
+        {{/each}}
+    </ul>
+    {{else}}
+    <div class="mt-4">Nu există teste!</div>
+    {{/if}}

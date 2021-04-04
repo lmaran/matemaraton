@@ -12,6 +12,12 @@
         content: counters(item, ".") ". ";
         counter-increment: item
     }
+
+    #table-of-contents LI:before {
+        /* only <li>s in agenda section */
+        content: counters(item, ".") ". ";
+        counter-increment: item
+    }
 </style>
 
 <nav aria-label="breadcrumb">
@@ -22,44 +28,42 @@
     </ol>
 </nav>
 
-<h1>Curs {{course.code}}</h1>
+<h1>Curs {{course.code}}
+    {{#if canCreateOrEditCourse}}
+    <a href="/cursuri/{{course._id}}/modifica">
+        <i class="fas fa-pencil-alt" style="font-size: 50%"></i>
+    </a>
+    {{/if}}
+</h1>
 
-<h3 class="font-weight-light">{{course.name}}</h3>
+<h3 class=" font-weight-light">{{course.name}}</h3>
 
 <div class="h4 font-weight-light">{{course.description}}</div>
 
-{{!-- Clasa: {{course.grade}} </br>
-Nivel: {{course.level}} </br>
-Durata: {{course.duration}} </br>
-</br></br> --}}
+<ol id="table-of-contents" class="pl-0">
+    {{#each course.chapters}}
+    <li>
+        <a href="/cursuri/{{@root.course._id}}/capitole/{{id}}" class2="text-uppercase">{{name}}</a>
 
-{{#if course.agenda}}
-<h4 class="mb-4">Structura cursului:
-    {{!-- <span class="font-weight-light">({{course.totalHours}} sesiuni)</span> --}}
-</h4>
+        {{#if isHidden}}
+        <a href="/cursuri/{{@root.course._id}}/capitole/{{id}}/modifica">
+            <i class="fas fa-eye-slash text-danger"></i></a>
+        {{/if}}
 
-{{!-- <hr> --}}
+        <ol>
+            {{#each lessons}}
+            <li>
+                <a class="pl-1" href="/cursuri/{{@root.course._id}}/capitole/{{../id}}/lectii/{{id}}">{{name}}</a>
+            </li>
+            {{/each}}
+            {{!-- <a href="/cursuri/{{@root.course._id}}/capitole/{{id}}/lectii/adauga"><i class="fa fa-plus"></i>
+                Adaugă
+                lecție</a> --}}
+        </ol>
 
-{{!-- -- OK(ver.1)
-<ul style="padding-left: 0; list-style-type:none">
-    {{#each course.agenda}}
-    {{> lesson.partial}}
-    {{/each}}
-</ul> --}}
-
-{{#each course.agenda}}
-{{#if lessonTitle}}
-<a href="/cursuri/{{@root.course._id}}/lectii/{{lessonId}}">{{lessonTitle}}</a>
-{{else}}
-<h5>{{folderName}}
-    {{!-- <span class="font-weight-light text-lowercase"> ({{totalHours}} sesiuni)</span> --}}
-</h5>
-<ol id="agenda" class="pl-0">
-    {{#each folderItems}}
-    {{> lesson.partial}}
+    </li>
     {{/each}}
 </ol>
-{{/if}}
 
-{{/each}}
-{{/if}} {{!--course.agenda --}}
+<a href="/cursuri/{{course._id}}/capitole/adauga" class="btn btn-primary btn-sm">
+    <i class="fa fa-plus"></i> Adaugă capitol</a>
