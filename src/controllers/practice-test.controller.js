@@ -67,36 +67,25 @@ exports.getOneById = async (req, res) => {
         practiceTest,
         // course,
         canCreateOrEditPracticeTest: await autz.can(req.user, "create-or-edit:practice-test"),
+        canDeletePracticeTest: await autz.can(req.user, "delete:practice-test"),
     };
     //res.send(data);
     res.render("practice-test/practice-test-view", data);
 };
 
 exports.createOrEditGet = async (req, res) => {
+    const practiceTestId = req.params.practiceTestId;
     const canCreateOrEditPracticeTest = await autz.can(req.user, "create-or-edit:practice-test");
     if (!canCreateOrEditPracticeTest) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
 
-    const isEditMode = !!req.params.id;
+    const isEditMode = !!practiceTestId;
 
     const gradeAvailableOptions = [
         { text: "Primar", value: "P" },
         { text: "Clasa a V-a", value: "5" },
         { text: "Clasa a VI-a", value: "6" },
-    ];
-
-    const branchAvailableOptions = [
-        { text: "Algebră", value: "algebra" },
-        { text: "Geometrie", value: "geometrie" },
-        { text: "Analiză matematică", value: "analiza" },
-    ];
-
-    const chapterAvailableOptions = [
-        { text: "Numere Naturale", value: "numere-rationale" },
-        { text: "Numere Întregi", value: "numere-intregi" },
-        { text: "Numere Raționale", value: "numere-rationale" },
-        { text: "Numere Reale", value: "numere-reale" },
     ];
 
     const scopeAvailableOptions = [
@@ -107,17 +96,11 @@ exports.createOrEditGet = async (req, res) => {
     const data = {
         isEditMode,
         gradeAvailableOptions,
-        branchAvailableOptions,
-        chapterAvailableOptions,
         scopeAvailableOptions,
     };
 
     if (isEditMode) {
-        const practiceTest = await practiceTestService.getOneById(req.params.id);
-
-        // if (practiceTest.content) {
-        //     practiceTest.content.textPreview = markdownService.render(practiceTest.content.text);
-        // }
+        const practiceTest = await practiceTestService.getOneById(practiceTestId);
         data.practiceTest = practiceTest;
     }
 
@@ -125,11 +108,47 @@ exports.createOrEditGet = async (req, res) => {
     res.render("practice-test/practice-test-create-or-edit", data);
 };
 
+exports.createOrEditPost = async (req, res) => {
+    const practiceTestId = req.params.practiceTestId;
+    try {
+        const canCreateOrEditPracticeTest = await autz.can(req.user, "create-or-edit:practice-test");
+        if (!canCreateOrEditPracticeTest) {
+            return res.status(403).send("Lipsă permisiuni!"); // forbidden
+        }
+        const { grade, scope, name } = req.body;
+        const isEditMode = !!practiceTestId;
+
+        const practiceTest = {
+            grade,
+            scope,
+            name,
+        };
+
+        if (isEditMode) {
+            practiceTest._id = practiceTestId;
+            practiceTestService.updateOne(practiceTest);
+        } else {
+            const result = await practiceTestService.insertOne(practiceTest);
+            practiceTest._id = result.insertedId;
+        }
+
+        res.redirect(`/teste`);
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
+};
+
 exports.deleteOneById = async (req, res) => {
-    const canDeletePracticeTest = await autz.can(req.user, "delete:test");
+    const practiceTestId = req.body._id;
+    const canDeletePracticeTest = await autz.can(req.user, "delete:practice-test");
     if (!canDeletePracticeTest) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
+
+    const practiceTest = await practiceTestService.getOneById(practiceTestId);
+    if (practiceTest.exercises && practiceTest.exercises.length > 0) {
+        return res.status(403).send("Șterge întâi exercițiile!");
+    }
     practiceTestService.deleteOneById(req.body._id);
-    res.redirect("/teme");
+    res.redirect("/teste");
 };
