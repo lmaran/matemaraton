@@ -5,18 +5,27 @@ const collection = "practiceTests";
 
 exports.getAll = async () => {
     const db = await mongoHelper.getDb();
-    return db
-        .collection(collection)
-        .find()
-        .toArray();
+    return db.collection(collection).find().toArray();
 };
 
-exports.getOneById = async id => {
+exports.getOneById = async (id) => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).findOne({ _id: new ObjectID(id) });
 };
 
-exports.deleteOneById = async id => {
+exports.deleteOneById = async (id) => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).deleteOne({ _id: new ObjectID(id) });
+};
+
+exports.insertOne = async (item) => {
+    const db = await mongoHelper.getDb();
+    item.createdOn = new Date();
+    return db.collection(collection).insertOne(item);
+};
+
+exports.updateOne = async (item) => {
+    const db = await mongoHelper.getDb();
+    item._id = new ObjectID(item._id);
+    return db.collection(collection).updateOne({ _id: item._id }, { $set: item });
 };

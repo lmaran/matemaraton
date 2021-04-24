@@ -91,10 +91,10 @@ router.post(
 
 // lessons
 router.get("/teste", practiceTestController.getAll);
-router.get("/teste/edit/:id", isAuthenticated, practiceTestController.createOrEditGet);
-//router.post("/teste/edit/:id", isAuthenticated, practiceTestController.createOrEditPost);
+router.get("/teste/:practiceTestId/modifica", isAuthenticated, practiceTestController.createOrEditGet);
+router.post("/teste/:practiceTestId/modifica", isAuthenticated, practiceTestController.createOrEditPost);
 router.get("/teste/adauga", isAuthenticated, practiceTestController.createOrEditGet);
-//router.post("/lectii/adauga", isAuthenticated, practiceTestController.createOrEditPost);
+router.post("/teste/adauga", isAuthenticated, practiceTestController.createOrEditPost);
 router.get("/teste/:practiceTestId", practiceTestController.getOneById);
 router.post("/teste/sterge", isAuthenticated, practiceTestController.deleteOneById);
 
