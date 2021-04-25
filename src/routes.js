@@ -25,7 +25,7 @@ const courseLessonController = require("./controllers/course-lesson.controller")
 const courseArticleController = require("./controllers/course-article.controller");
 const homeworkController = require("./controllers/homework.controller");
 const lessonController = require("./controllers/lesson.controller");
-const practiceTestController = require("./controllers/practice-test.controller");
+const contestController = require("./controllers/contest.controller");
 const markdownController = require("./controllers/markdown.controller");
 const fileController = require("./controllers/file.controller");
 const enrollmentController = require("./controllers/enrollment.controller");
@@ -89,14 +89,14 @@ router.post(
     courseArticleController.createOrEditPost
 );
 
-// lessons
-router.get("/teste", practiceTestController.getAll);
-router.get("/teste/:practiceTestId/modifica", isAuthenticated, practiceTestController.createOrEditGet);
-router.post("/teste/:practiceTestId/modifica", isAuthenticated, practiceTestController.createOrEditPost);
-router.get("/teste/adauga", isAuthenticated, practiceTestController.createOrEditGet);
-router.post("/teste/adauga", isAuthenticated, practiceTestController.createOrEditPost);
-router.get("/teste/:practiceTestId", practiceTestController.getOneById);
-router.post("/teste/sterge", isAuthenticated, practiceTestController.deleteOneById);
+// contests
+router.get("/concursuri", contestController.getAll);
+router.get("/concursuri/:contestId/modifica", isAuthenticated, contestController.createOrEditGet);
+router.post("/concursuri/:contestId/modifica", isAuthenticated, contestController.createOrEditPost);
+router.get("/concursuri/adauga", isAuthenticated, contestController.createOrEditGet);
+router.post("/concursuri/adauga", isAuthenticated, contestController.createOrEditPost);
+router.get("/concursuri/:contestId", contestController.getOneById);
+router.post("/concursuri/sterge", isAuthenticated, contestController.deleteOneById);
 
 // lessons
 router.get("/lectii", lessonController.getAll);

@@ -6,15 +6,15 @@
     <ol class="breadcrumb">
         {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
-        <li class="breadcrumb-item"><a href="/teste">Teste</a></li>
+        <li class="breadcrumb-item"><a href="/concursuri">Concursuri</a></li>
         <li class="breadcrumb-item active">
-            {{#if isEditMode}}{{practiceTest.name}}{{else}}Adaugă{{/if}}
+            {{#if isEditMode}}{{contest.newCode}}{{else}}Adaugă{{/if}}
         </li>
     </ol>
 </nav>
 
-<h1 id="practice-test-id-container" data-practice-test-id="{{practiceTest._id}}">
-    {{#if isEditMode}} Edit: {{practiceTest.name}}{{else}} Test nou:{{/if}}
+<h1 id="contest-id-container" data-contest-id="{{contest._id}}">
+    {{#if isEditMode}} Edit: {{contest.name}}{{else}} Concurs nou:{{/if}}
 </h1>
 
 <form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
@@ -23,7 +23,7 @@
         <div class="form-group col-md-6">
             <label for="gradeSelect" class="font-weight-bold">Clasa:</label>
             <select name="grade" class="form-control" id="gradeSelect">
-                {{#select practiceTest.grade}}
+                {{#select contest.grade}}
                 <option value=""></option>
                 {{#each gradeAvailableOptions}}
                 <option value="{{value}}">{{text}}</option>
@@ -34,10 +34,9 @@
         </div>
 
         <div class="form-group col-md-6">
-            <label for="contestTypeSelect" class="font-weight-bold">Tipul concursului
-                <span class="text-muted font-weight-normal">(la care a fost dat accest ex.)</span>:</label>
+            <label for="contestTypeSelect" class="font-weight-bold">Tipul concursului:</label>
             <select name="contestType" class="form-control" id="contestTypeSelect">
-                {{#select practiceTest.contestType}}
+                {{#select contest.contestType}}
                 <option value=""></option>
                 {{#each contestTypeAvailableOptions}}
                 <option value="{{value}}">{{text}}</option>
@@ -50,19 +49,19 @@
 
     <div class="form-row">
         <div class="form-group col-md-12">
-            <label for="titleInput" class="required font-weight-bold">Titlu:</label>
-            <input type="text" name="name" class="form-control" id="titleInput" placeholder=""
-                value="{{practiceTest.name}}">
+            <label for="contestNameInput" class="required font-weight-bold">Numele concursului:</label>
+            <input type="text" name="name" class="form-control" id="contestNameInput" placeholder=""
+                value="{{contest.name}}">
         </div>
     </div>
 
-    <input type="hidden" name="_id" value="{{practiceTest._id}}" />
+    <input type="hidden" name="_id" value="{{contest._id}}" />
 
     <div class="form-group">
         <div class="col-md-7s offset-md-3s">
             <button type="submit" name="saveBtn" class="btn btn-primary"><i class="fas fa-save"></i>
                 Salveaza</button>
-            <a href="/teste" class="btn btn-light"><i class="fa fa-times"></i> Renunță</a>
+            <a href="/concursuri" class="btn btn-light"><i class="fa fa-times"></i> Renunță</a>
 
         </div>
 
@@ -73,4 +72,5 @@
 {{#section 'script'}}
 {{!--
 <script type="module" src="/js/lesson/lesson.main.js"></script> --}}
+<script type="module" src="/js/contest/contest-create-or-edit.main.js"></script>
 {{/section}}
