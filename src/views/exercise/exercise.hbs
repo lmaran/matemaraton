@@ -2,10 +2,18 @@
     <ol id="exercise-id-container" class="breadcrumb" data-exercise-id="{{exercise._id}}">
         {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        {{#if contest}}
+        <li class="breadcrumb-item"><a href="/concursuri">Concursuri</a></li>
+        <li class="breadcrumb-item"><a href="/concursuri/{{contest._id}}">{{contest.newCode}}</a></li>
+        <li class="breadcrumb-item"><a href="/concursuri/{{contest._id}}/exercitii">Exerciții</a></li>
+        {{else}}
+
         {{#if canCreateOrEditExercise}}
         <li class="breadcrumb-item"><a href="/exercitii">Exerciții</a></li>
         {{else}}
         <li class="breadcrumb-item"><a href="/teste">Teste</a></li>
+        {{/if}}
+
         {{/if}}
 
         <li class="breadcrumb-item active">E.{{exercise.code}}</li>
@@ -67,34 +75,32 @@
 {{/if}}
 
 
-{{#if exercise.question.solution}}
-{{!-- <div>
-    <button id="toggle-solution-btn" type="button" class="btn btn-link p-0">Rezolvare completă</button>
-</div> --}}
+{{#if exercise.question.solution.textPreview}}
 <div id="solution-div" class="d-none2">
     <div class="font-weight-bold mt-2">Soluție:</div>
     <div style2"border: 1px solid lightgray; padding: 6px 12px; background-color: min-height:58px">
         {{{exercise.question.solution.textPreview}}}
     </div>
-
-    {{!-- <div class="text-nowrap font-italic font-weight-light small text-right text-muted">Rezolvare: L. Măran
-    </div> --}}
 </div>
 
+<hr class="mb-1">
 {{/if}}
 
-<hr class="mb-1">
+
 
 <div class="row">
     <div class="col text-nowrap">
         {{#if exercise.question.answerOptions}}
         {{{exercise.question.correctAnswerPreview}}}
-        {{else}}
+        {{/if}}
+
+        {{#if exercise.question.answer.textPreview}}
         {{{exercise.question.answer.textPreview}}}
         {{/if}}
     </div>
-    <div class="col text-nowrap font-italic font-weight-light small text-right text-muted">Rezolvare: L. Măran
-    </div>
+    {{#if question.solution.textPreview}}
+    <div class="col text-nowrap font-italic font-weight-light small text-right text-muted">Rezolvare: L. Măran</div>
+    {{/if}}
 </div>
 
 <div>
@@ -103,13 +109,22 @@
 </div>
 
 {{#if canCreateOrEditExercise}}
-<a href="/exercitii/edit/{{exercise._id}}">Edit</a>
+
+{{#if contest}}
+<a href="/concursuri/{{contest._id}}/exercitii/{{exercise._id}}/modifica">Edit</a>
+{{!-- <li class="breadcrumb-item"><a href="/concursuri">Concursuri</a></li>
+<li class="breadcrumb-item"><a href="/concursuri/{{contest._id}}">{{contest.newCode}}</a></li>
+<li class="breadcrumb-item"><a href="/concursuri/{{contest._id}}/exercitii">Exerciții</a></li> --}}
+{{else}}
+<a href="/exercitii/{{exercise._id}}/modifica">Edit</a>
+{{/if}}
 {{/if}}
 
 {{!--
 <hr> --}}
 
 {{#if canCreateOrEditExercise}}
+{{#unless contest}}
 <div class="mt-4">Rezolvarea mea:</div>
 <div class="drop-area">
     <form class="my-form">
@@ -143,6 +158,7 @@
 
     </form>
 </div>
+{{/unless}}
 {{/if}}
 
 <br>

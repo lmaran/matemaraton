@@ -3,6 +3,7 @@ const idGeneratorMongoService = require("../services/id-generator-mongo.service"
 const exerciseService = require("../services/exercise.service");
 const autz = require("../services/autz.service");
 const markdownService = require("../services/markdown.service");
+const contestHelper = require("../helpers/contest.helper");
 
 exports.getAll = async (req, res) => {
     const contests = await contestService.getAll();
@@ -12,7 +13,7 @@ exports.getAll = async (req, res) => {
         canCreateOrEditContest: await autz.can(req.user, "create-or-edit:contest"),
     };
     contests.forEach((contest) => {
-        contest.newCode = getNewCode(contest); // 37 -> 5.OL.37
+        contest.newCode = contestHelper.getNewCode(contest); // 37 -> 5.OL.37
     });
     //res.send(data);
     res.render("contest/contest-list", data);
@@ -21,7 +22,7 @@ exports.getAll = async (req, res) => {
 exports.getOneById = async (req, res) => {
     const contestId = req.params.contestId;
     const contest = await contestService.getOneById(contestId);
-    contest.newCode = getNewCode(contest); // 37 -> 5.OL.37
+    contest.newCode = contestHelper.getNewCode(contest); // 37 -> 5.OL.37
 
     if (contest.exercises) {
         const ids = contest.exercises.map((x) => x.id);
@@ -29,7 +30,7 @@ exports.getOneById = async (req, res) => {
 
         contest.exercises.forEach((exercise, i) => {
             // const statement = `**[E.${exercise.code}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
-            const statement = `**[Problema ${++i}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
+            const statement = `**[Problema ${++i}.](/concursuri/${contestId}/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
             const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
 
             if (exercise.question.answerOptions) {
@@ -40,6 +41,9 @@ exports.getOneById = async (req, res) => {
                         exercise.question.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
                     }
                 });
+            }
+            if (exercise.question.answer.text) {
+                exercise.question.answer.textPreview = markdownService.render(`**Răspuns:** ${exercise.question.answer.text}`);
             }
 
             exercise.question.statement.textPreview = markdownService.render(statement);
@@ -97,7 +101,7 @@ exports.createOrEditGet = async (req, res) => {
 
     if (isEditMode) {
         const contest = await contestService.getOneById(contestId);
-        contest.newCode = getNewCode(contest); // 37 -> 5.OL.37
+        contest.newCode = contestHelper.getNewCode(contest); // 37 -> 5.OL.37
         data.contest = contest;
     }
 
@@ -149,30 +153,4 @@ exports.deleteOneById = async (req, res) => {
     }
     contestService.deleteOneById(req.body._id);
     res.redirect("/concursuri");
-};
-
-/**
- * 37 --> 5.OL.37
- */
-const getNewCode = (contest) => {
-    const shortContestType = getShortContestType(contest.contestType);
-    return `${contest.grade}.${shortContestType}.${contest.code}`;
-};
-
-/**
- * olimpiada-locala --> OL
- */
-const getShortContestType = (contestType) => {
-    switch (contestType) {
-        case "olimpiada-locala":
-            return "OL";
-        case "olimpiada-judeteana":
-            return "OJ";
-        case "olimpiada-nationala":
-            return "ON";
-        case "alte-concursuri":
-            return "C";
-        default:
-            return "X";
-    }
 };

@@ -14,14 +14,15 @@
     </ol>
 </nav>
 
-<h3 class="mb-4"><span class="font-weight-light text-secondary2">{{contest.name}}</span>
-</h3>
+{{!-- <h3 class="mb-4"><span class="font-weight-light text-secondary2">{{contest.name}}</span>
+</h3> --}}
+<h1>{{contest.name}}</h1>
 
-<div class="form-group mt-4">
+<div class="form-group mt-3">
     <div class="col-md-7s offset-md-3s">
 
         {{#if canCreateOrEditContest}}
-        <a href="/concursuri/{{contest._id}}/adauga" class="btn btn-primary"><i class="fa fa-plus"></i>
+        <a href="/concursuri/{{contest._id}}/exercitii/adauga" class="btn btn-primary"><i class="fa fa-plus"></i>
             Adaugă exercițiu</a>
 
         <a href="/concursuri/{{contest._id}}/modifica" class="btn btn-light"><i class="fa fa-edit"></i>
@@ -55,25 +56,29 @@
     {{!-- <div class="font-italic small text-right text-muted">{{contestName}}</div>
     <div class="font-italic small text-right text-muted">{{sourceName}}</div> --}}
 
-    {{#if question.solution}}
+    {{#if question.solution.textPreview}}
     <div class="font-weight-bold mt-2">Soluție:</div>
     <div style2="border: 1px solid lightgray; padding: 6px 12px; background-color: min-height:58px">
         {{{question.solution.textPreview}}}</div>
-    {{/if}}
 
     <hr class="mb-1">
+    {{/if}}
 
     <div class="row">
         <div class="col text-nowrap">
             {{#if question.answerOptions}}
             {{{question.correctAnswerPreview}}}
-            {{else}}
+            {{/if}}
+
+            {{#if question.answer.textPreview}}
             {{{question.answer.textPreview}}}
             {{/if}}
         </div>
-        <div class="col text-nowrap font-italic font-weight-light small text-right text-muted">Rezolvare: L. Măran
-        </div>
+        {{#if question.solution.textPreview}}
+        <div class="col text-nowrap font-italic font-weight-light small text-right text-muted">Rezolvare: L. Măran</div>
+        {{/if}}
     </div>
+
 
 </div>
 {{/each}}
