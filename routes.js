@@ -96,7 +96,11 @@ router.post("/concursuri/:contestId/modifica", isAuthenticated, contestControlle
 router.get("/concursuri/adauga", isAuthenticated, contestController.createOrEditGet);
 router.post("/concursuri/adauga", isAuthenticated, contestController.createOrEditPost);
 router.get("/concursuri/:contestId", contestController.getOneById);
+router.get("/concursuri/:contestId/exercitii", (req, res) => res.redirect(`/concursuri/${req.params.contestId}`));
 router.post("/concursuri/sterge", isAuthenticated, contestController.deleteOneById);
+router.get("/concursuri/:contestId/exercitii/adauga", isAuthenticated, exerciseController.createOrEditGet);
+router.get("/concursuri/:contestId/exercitii/:id", exerciseController.getOneById);
+router.get("/concursuri/:contestId/exercitii/:id/modifica", isAuthenticated, exerciseController.createOrEditGet);
 
 // lessons
 router.get("/lectii", lessonController.getAll);
@@ -110,8 +114,8 @@ router.post("/lectii/sterge", isAuthenticated, lessonController.deleteLesson);
 
 // exercises
 router.get("/exercitii", isAuthenticated, exerciseController.getAll);
-router.get("/exercitii/edit/:id", isAuthenticated, exerciseController.createOrEditGet);
-router.post("/exercitii/edit/:id", isAuthenticated, exerciseController.createOrEditPost);
+router.get("/exercitii/:id/modifica", isAuthenticated, exerciseController.createOrEditGet);
+router.post("/exercitii/:id/modifica", isAuthenticated, exerciseController.createOrEditPost);
 router.get("/exercitii/adauga", isAuthenticated, exerciseController.createOrEditGet);
 router.post("/exercitii/adauga", isAuthenticated, exerciseController.createOrEditPost);
 router.post("/exercitii/sterge", isAuthenticated, exerciseController.deleteOneById);

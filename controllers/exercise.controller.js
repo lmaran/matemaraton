@@ -1,7 +1,9 @@
 const exerciseService = require("../services/exercise.service");
+const contestService = require("../services/contest.service");
 const idGeneratorMongoService = require("../services/id-generator-mongo.service");
 const autz = require("../services/autz.service");
 const markdownService = require("../services/markdown.service");
+const contestHelper = require("../helpers/contest.helper");
 
 exports.deleteOneById = async (req, res) => {
     const canDeleteExercise = await autz.can(req.user, "delete:exercise");
@@ -101,6 +103,15 @@ exports.createOrEditGet = async (req, res) => {
         subchapterAvailableOptions,
         lessonAvailableOptions,
     };
+
+    // check if the request comes from contests
+    const contestId = req.params.contestId;
+    if (contestId) {
+        const contest = await contestService.getOneById(contestId);
+        contest.newCode = contestHelper.getNewCode(contest); // 37 -> 5.OL.37
+        data.contest = contest;
+        data.exercise = { grade: contest.grade, contestType: contest.contestType, contestName: contest.name };
+    }
 
     if (isEditMode) {
         const exercise = await exerciseService.getOneById(req.params.id);
@@ -242,8 +253,18 @@ exports.createOrEditPost = async (req, res) => {
             exercise._id = result.insertedId;
         }
 
+        const contestId = req.body.contestId;
+        if (contestId) {
+            const contest = await contestService.getOneById(contestId);
+            if (contest) {
+                contest.exercises.push(exercise._id);
+                await contestService.updateOne(contest);
+                return res.redirect(`/concursuri/${contestId}/exercitii/${exercise._id}/modifica`);
+            }
+        }
+
         //res.send(exercise);
-        res.redirect(`/exercitii/edit/${exercise._id}`);
+        res.redirect(`/exercitii/${exercise._id}/modifica`);
     } catch (err) {
         return res.status(500).json(err.message);
     }
@@ -299,10 +320,11 @@ exports.getOneById = async (req, res) => {
                     }
                 });
             }
+
             exercise.question.statement.textPreview = markdownService.render(statement);
         }
 
-        if (exercise.question.answer) exercise.question.answer.textPreview = markdownService.render(exercise.question.answer.text);
+        if (exercise.question.answer) exercise.question.answer.textPreview = markdownService.render(`**Răspuns:** ${exercise.question.answer.text}`);
 
         if (exercise.question.solution) exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
 
@@ -317,6 +339,15 @@ exports.getOneById = async (req, res) => {
         exercise,
         canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise"),
     };
+
+    // check if the request comes from contests
+    const contestId = req.params.contestId;
+    if (contestId) {
+        const contest = await contestService.getOneById(contestId);
+        contest.newCode = contestHelper.getNewCode(contest); // 37 -> 5.OL.37
+        data.contest = contest;
+    }
+
     //res.send(data);
     res.render("exercise/exercise", data);
 };
