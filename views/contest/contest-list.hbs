@@ -1,0 +1,34 @@
+{{!-- <style>
+    .source {
+        _font-style: italic;
+        _font-size: 8px;
+    }
+</style> --}}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item active">Concursuri</li>
+    </ol>
+</nav>
+
+<h1>Olimpiade și concursuri
+    <span class="font-weight-light text-secondary h4"> (subiecte rezolvate)</span>
+</h1>
+
+{{#if canCreateOrEditContest}}
+<a href="/concursuri/adauga" class="btn btn-primary mt-2 mb-4"><i class="fa fa-plus"></i> Adaugă concurs</a>
+{{/if}}
+
+{{!-- <h3< class="mt-4">>Ediția curentă:</h3> --}}
+    {{#if contests}}
+    <ul>
+        {{#each contests}}
+        <li>
+            <a href="/concursuri/{{_id}}">{{name}}</a>
+            <span class="text-muted font-weight-light">({{newCode}})</span>
+        </li>
+        {{/each}}
+    </ul>
+    {{else}}
+    <div class="mt-4">Nu există concursuri!</div>
+    {{/if}}
