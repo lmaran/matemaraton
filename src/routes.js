@@ -101,6 +101,7 @@ router.post("/concursuri/sterge", isAuthenticated, contestController.deleteOneBy
 router.get("/concursuri/:contestId/exercitii/adauga", isAuthenticated, exerciseController.createOrEditGet);
 router.get("/concursuri/:contestId/exercitii/:id", exerciseController.getOneById);
 router.get("/concursuri/:contestId/exercitii/:id/modifica", isAuthenticated, exerciseController.createOrEditGet);
+router.post("/concursuri/exercitii/sterge", isAuthenticated, exerciseController.deleteOneById);
 
 // lessons
 router.get("/lectii", lessonController.getAll);
@@ -120,7 +121,6 @@ router.get("/exercitii/adauga", isAuthenticated, exerciseController.createOrEdit
 router.post("/exercitii/adauga", isAuthenticated, exerciseController.createOrEditPost);
 router.post("/exercitii/sterge", isAuthenticated, exerciseController.deleteOneById);
 router.get("/exercitii/:id", exerciseController.getOneById);
-router.get("/exercitii/:id/print", exerciseController.getOneForPrintById);
 router.post("/exercitii/:id/rezolvari", isAuthenticated, exerciseController.addMySolution);
 
 // markdown

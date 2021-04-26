@@ -6,11 +6,28 @@ const markdownService = require("../services/markdown.service");
 const contestHelper = require("../helpers/contest.helper");
 
 exports.deleteOneById = async (req, res) => {
+    const exerciseId = req.body.exerciseId;
+    const contestId = req.body.contestId;
     const canDeleteExercise = await autz.can(req.user, "delete:exercise");
     if (!canDeleteExercise) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
-    exerciseService.deleteOneById(req.body.id);
+
+    exerciseService.deleteOneById(exerciseId);
+
+    if (contestId) {
+        // remove from contest
+        const contest = await contestService.getOneById(contestId);
+        if (contest && contest.exercises) {
+            const exerciseIndex = contest.exercises.findIndex((x) => x === exerciseId);
+            if (exerciseIndex > -1) {
+                contest.exercises.splice(exerciseIndex, 1); // remove from array
+                await contestService.updateOne(contest);
+            }
+        }
+        return res.redirect(`/concursuri/${contestId}`);
+    }
+
     res.redirect("/exercitii");
 };
 
@@ -338,6 +355,7 @@ exports.getOneById = async (req, res) => {
     const data = {
         exercise,
         canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise"),
+        canDeleteExercise: await autz.can(req.user, "delete:exercise"),
     };
 
     // check if the request comes from contests
@@ -350,38 +368,6 @@ exports.getOneById = async (req, res) => {
 
     //res.send(data);
     res.render("exercise/exercise", data);
-};
-
-exports.getOneForPrintById = async (req, res) => {
-    const exercise = await exerciseService.getOneById(req.params.id);
-
-    if (exercise && exercise.question) {
-        if (exercise.question.statement) {
-            const statement = `**E.${exercise.code}.** ${exercise.question.statement.text}`;
-            const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
-
-            if (exercise.question.answerOptions) {
-                exercise.question.answerOptions.forEach((answerOption, idx) => {
-                    // insert a label (letter) in front of each option: "a" for the 1st option, "b" for the 2nd a.s.o.
-                    answerOption.textPreview = markdownService.render(`${alphabet[idx]}) ${answerOption.text}`);
-                    if (answerOption.isCorrect) {
-                        exercise.question.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
-                    }
-                });
-            }
-
-            exercise.question.statement.textPreview = markdownService.render(statement);
-            exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
-        }
-    }
-
-    const data = {
-        exercise,
-        //layout: false,
-        ctx: { hideNavbar: true },
-    };
-    //res.send(data);
-    res.render("exercise/exercise-print", data);
 };
 
 exports.addMySolution = async (req, res) => {
