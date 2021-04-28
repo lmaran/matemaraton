@@ -19,7 +19,7 @@
 </nav>
 
 <h1 id="exercise-id-container" data-exercise-id="{{exercise._id}}">
-    {{#if isEditMode}} Edit: Exercițiul {{exercise.code}}{{else}} Exercițiu nou:{{/if}}
+    {{#if isEditMode}}Exercițiul {{exercise.code}}{{else}} Exercițiu nou:{{/if}}
 </h1>
 
 
@@ -314,10 +314,6 @@
             {{#if isEditMode}}
             <a href="{{#if contest}}/concursuri/{{contest._id}}{{/if}}/exercitii/{{exercise._id}}"
                 class="btn btn-light"><i class="far fa-eye"></i> Vizualizează</a>
-            <button type="submit" formaction="/exercitii/sterge" name="deleteBtn" class="btn btn-link"
-                onclick="return confirm('Ești sigur că vrei să ștergi acest exercițiu?');"><i
-                    class="fas fa-trash-alt"></i>
-                Șterge</button>
             {{/if}}
 
             <label class="col-md-3s col-form-label float-right"> Help:

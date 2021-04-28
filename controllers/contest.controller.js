@@ -67,7 +67,7 @@ exports.getOneById = async (req, res) => {
         canDeleteContest: await autz.can(req.user, "delete:contest"),
     };
     //res.send(data);
-    res.render("contest/contest-view", data);
+    res.render("contest/contest", data);
 };
 
 exports.createOrEditGet = async (req, res) => {
@@ -141,7 +141,7 @@ exports.createOrEditPost = async (req, res) => {
 };
 
 exports.deleteOneById = async (req, res) => {
-    const contestId = req.body._id;
+    const contestId = req.body.contestId;
     const canDeleteContest = await autz.can(req.user, "delete:contest");
     if (!canDeleteContest) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
@@ -151,6 +151,6 @@ exports.deleteOneById = async (req, res) => {
     if (contest.exercises && contest.exercises.length > 0) {
         return res.status(403).send("Șterge întâi exercițiile!");
     }
-    contestService.deleteOneById(req.body._id);
+    contestService.deleteOneById(contestId);
     res.redirect("/concursuri");
 };

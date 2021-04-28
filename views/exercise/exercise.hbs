@@ -23,8 +23,46 @@
 
 {{!-- <h1>Exercițiul {{exercise.code}}</h1> --}}
 
-<h3 class="mb-4"><span class="font-weight-light text-secondary2">{{exercise.contestName}}</span>
-</h3>
+{{!-- <h3 class="mb-4"><span class="font-weight-light text-secondary2">{{exercise.contestName}}</span>
+</h3> --}}
+
+<h1>Exercițiul {{exercise.code}}</h1>
+<h4>{{exercise.contestName}}</h4>
+
+<div class="form-group mt-3 hide-on-print">
+    <div class="col-md-7s offset-md-3s">
+
+        {{#if canCreateOrEditExercise}}
+        <a href="{{#if contest}}/concursuri/{{contest._id}}{{/if}}/exercitii/{{exercise._id}}/modifica"
+            class="btn btn-primary"><i class="fa fa-edit"></i> Modifică</a>
+        {{/if}}
+
+        {{#if canDeleteExercise}}
+        <form method="post" onsubmit="deleteBtn.disabled = true; return true;" style="display:inline">
+            <input type="hidden" name="exerciseId" value="{{exercise._id}}" />
+            <input type="hidden" name="contestId" value="{{contest._id}}" />
+
+            <button type="submit" formaction="{{#if contest}}/concursuri{{/if}}/exercitii/sterge" title="Șterge"
+                name="deleteBtn" class="btn btn-light btn-outline-primary"
+                onclick="return confirm('Ești sigur că vrei să ștergi acest exercițiu?');"><i
+                    class="fas fa-trash-alt"></i></button>
+        </form>
+        {{/if}}
+
+
+
+        {{!-- <button type="submit" formaction="/exercitii/sterge" name="deleteBtn" class="btn btn-link"
+            onclick="return confirm('Ești sigur că vrei să ștergi acest exercițiu?');"><i class="fas fa-trash-alt"></i>
+            Șterge</button> --}}
+
+
+
+
+        <button type="button" class="btn btn-light btn-outline-primary" title="Tipărește" onclick="window.print()">
+            <i class="fas fa-print"></i>
+        </button>
+    </div>
+</div>
 
 <div style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px" class="mt-2">
     {{{exercise.question.statement.textPreview}}}
@@ -102,23 +140,6 @@
     <div class="col text-nowrap font-italic font-weight-light small text-right text-muted">Rezolvare: L. Măran</div>
     {{/if}}
 </div>
-
-<div>
-    <a href="/exercitii/{{exercise._id}}/print">Varianta tipăribilă</a>
-    <i class="fas fa-print text-muted" aria-hidden="true"></i>
-</div>
-
-{{#if canCreateOrEditExercise}}
-
-{{#if contest}}
-<a href="/concursuri/{{contest._id}}/exercitii/{{exercise._id}}/modifica">Edit</a>
-{{!-- <li class="breadcrumb-item"><a href="/concursuri">Concursuri</a></li>
-<li class="breadcrumb-item"><a href="/concursuri/{{contest._id}}">{{contest.newCode}}</a></li>
-<li class="breadcrumb-item"><a href="/concursuri/{{contest._id}}/exercitii">Exerciții</a></li> --}}
-{{else}}
-<a href="/exercitii/{{exercise._id}}/modifica">Edit</a>
-{{/if}}
-{{/if}}
 
 {{!--
 <hr> --}}
