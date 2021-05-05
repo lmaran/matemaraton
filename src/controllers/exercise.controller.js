@@ -288,7 +288,28 @@ exports.createOrEditPost = async (req, res) => {
 };
 
 exports.getAll = async (req, res) => {
-    const exercises = await exerciseService.getAll();
+    // const exercises = await exerciseService.getAll();
+
+    const pageSizes = [
+        { text: "10 pe pagină", value: "10" },
+        { text: "30 pe pagină", value: "30" },
+        { text: "50 pe pagină", value: "50" },
+    ];
+
+    const currentPage = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10;
+    if (limit > 100) limit = 50;
+    const startIndex = (currentPage - 1) * limit;
+    let endIndex = currentPage * limit;
+
+    const query = {
+        skip: startIndex,
+        limit,
+    };
+
+    const [exercises, totalExercises] = await Promise.all([await exerciseService.getAll(query), await exerciseService.count()]);
+
+    if (endIndex > totalExercises) endIndex = totalExercises; // fix endIndex for the last page
 
     exercises.forEach((exercise) => {
         let statement = `**[E.${exercise.code}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
@@ -311,9 +332,28 @@ exports.getAll = async (req, res) => {
         }
     });
 
+    const totalPages = Math.ceil(totalExercises / limit);
+
+    const pageResults = {
+        totalExercises,
+        pageSizes,
+        pageSize: limit,
+        startIndex: startIndex + 1,
+        endIndex,
+        previousPageBtn: {
+            page: currentPage - 1,
+            isDisabled: currentPage === 1,
+        },
+        nextPageBtn: {
+            page: currentPage + 1,
+            isDisabled: currentPage === totalPages,
+        },
+    };
+
     const data = {
         exercises,
         canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise"),
+        pageResults,
     };
     // res.send(data);
     res.render("exercise/exercise-list", data);
