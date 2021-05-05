@@ -6,6 +6,53 @@
 </nav>
 
 <h1>Exerciții</h1>
+
+
+
+
+<div class="row float-md-right">
+    <div class="col-auto">
+        <select name="page-size" class="form-control" id="pageSizeSelect">
+            {{#select pageResults.pageSize}}
+            <option value=""></option>
+            {{#each pageResults.pageSizes}}
+            <option value="{{value}}">{{text}}</option>
+            {{/each}}
+            {{/select}}
+        </select>
+    </div>
+    <div class="col-auto">
+        <span class="font-weight-bold">{{pageResults.startIndex}} - {{pageResults.endIndex}}</span> din
+        <span class="font-weight-bold">{{pageResults.totalExercises}}</span>
+
+        {{!-- <span id="pagination-buttons"> --}}
+            <button id="previousPageBtn" type="button" class="btn btn-light btn-sm ml-2  mr-1" title="Pagina precedentă"
+                {{#if pageResults.previousPageBtn.isDisabled}}disabled{{/if}}
+                data-page={{pageResults.previousPageBtn.page}}><i class="fas fa-angle-left"
+                    style="font-size: 150%"></i></button>
+            <button id="nextPageBtn" type="button" class="btn btn-light btn-sm" title="Pagina următoare" {{#if
+                pageResults.nextPageBtn.isDisabled}}disabled{{/if}} data-page={{pageResults.nextPageBtn.page}}><i
+                    class="fas fa-angle-right" style="font-size: 150%"></i></button>
+            {{!-- </span> --}}
+    </div>
+    {{!-- <div class="col-md-6 text-center2">
+        <span class="float-md-right">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-end">
+                    {{#each pageNavButtons}}
+                    <li class="page-item {{#if isDisabled}}disabled{{/if}} {{#if isActive}}active{{/if}}">
+                        <a class="page-link" href="#" tabindex="-1" data-page={{page}}>{{label}}</a>
+                    </li>
+                    {{/each}}
+                </ul>
+            </nav>
+        </span>
+    </div> --}}
+</div>
+
+
+
+
 {{!-- <h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2> --}}
 
 {{!-- <ul>
@@ -19,6 +66,51 @@
 </ul> --}}
 
 {{!-- <button class=btn btn-primary></button> --}}
+
+{{!-- <form method="post" action="/exercitii/filtreaza" novalidate onsubmit="saveBtn.disabled = true; return true;">
+</form> --}}
+
+
+
+{{!-- <form> --}}
+
+    {{!-- <form class="form-inline">
+        <label class="sr-only2" for="inlineFormInputName2">
+            <span class="font-weight-bold">{{startIndex}} - {{endIndex}}</span><span>aa din </span><span
+                class="font-weight-bold">{{totalExercises}}</span> exerciții
+        </label>
+        <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="Jane Doe">
+
+        <label class="sr-only" for="inlineFormInputGroupUsername2">Username</label>
+        <div class="input-group mb-2 mr-sm-2">
+            <div class="input-group-prepend">
+                <div class="input-group-text">@</div>
+            </div>
+            <input type="text" class="form-control" id="inlineFormInputGroupUsername2" placeholder="Username">
+        </div>
+
+        <div class="form-check mb-2 mr-sm-2">
+            <input class="form-check-input" type="checkbox" id="inlineFormCheck">
+            <label class="form-check-label" for="inlineFormCheck">
+                Remember me
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary mb-2">Submit</button>
+    </form> --}}
+
+
+
+
+
+    {{!-- <div class="form-group row2">
+        <div class="col-md-7s offset-md-3s">
+            <button type="submit" name="saveBtn" class="btn btn-primary"><i class="fas fa-save"></i>
+                Aplică</button>
+        </div>
+
+    </div> --}}
+</form>
 
 {{#if canCreateOrEditExercise}}
 <a href="/exercitii/adauga" class="btn btn-primary mt-2 mb-4"><i class="fa fa-plus"></i> Adaugă exercițiu</a>
@@ -47,3 +139,12 @@
 </br>
 </br>
 {{/each}}
+
+{{!--
+<hr> --}}
+
+
+
+{{#section 'script'}}
+<script type="module" src="/js/exercise/exercise-list.main.js"></script>
+{{/section}}
