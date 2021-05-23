@@ -2,17 +2,17 @@
 
     {{#if errors.page}}
     <div class="alert alert-danger">
-        <i class="fa fa-exclamation-circle fa-lg mr-2"></i> {{errors.page.msg}}
+        <i class="bi bi-exclamation-circle me-2"></i> {{errors.page.msg}}
     </div>
     {{/if}}
 
     <h1>Login</h1>
 
     {{!-- <p>{{toJSON data}}</p> --}}
-    {{!-- <p>{{toJSON errors}}</p> --}}
+    {{!-- <p>{{toJSON errors}}</p> --}}  
 
     <form method="post" id="loginForm" action="/login" novalidate onsubmit="saveBtn.disabled = true; return true;">
-        <div class="form-group row">
+        <div class="row mb-3">
             <label for="email" class="col-md-3 col-form-label required">Email</label>
             <div class="col-md-7">
                 <input type="email" name="email" id="email" class="form-control {{#if errors.email}}is-invalid {{/if}}"
@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <div class="form-group row">
+        <div class="row mb-3">
             <label for="password" class="col-md-3 col-form-label required">Parola</label>
             <div class="col-md-7">
                 <input type="password" name="password" id="password"
@@ -34,18 +34,18 @@
         <input type="hidden" name="redirectUri" value="{{data.redirectUri}}" />
         <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response" />
 
-        <div class="form-group row">
+        <div class="row mb-3">
             <div class="col-md-7 offset-md-3">
-                <button type="submit" name="saveBtn" class="btn btn-primary"><i class="fas fa-save"></i>
+                <button type="submit" name="saveBtn" class="btn btn-primary"><i class="bi bi-save"></i>
                     Autentifică</button>
-                <button type="button" class="btn btn-light" onclick='window.history.back();'> <i
-                        class="fas fa-times"></i>
+                <button type="button" class="btn btn-light" onclick='window.history.back();'> 
+                    <i class="bi bi-x"></i>
                     Renuntă</button>
             </div>
         </div>
     </form>
 
-    <div class="form-group row">
+    <div class="row">
         <div class="col-md-7 offset-md-3">
             Ți-ai uitat parola? <a href="/reset-password">Resetează parola.</a>
         </div>

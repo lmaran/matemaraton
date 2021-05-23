@@ -23,11 +23,11 @@
     <div class="col-md-7s offset-md-3s">
 
         {{#if canCreateOrEditContest}}
-        <a href="/concursuri/{{contest._id}}/exercitii/adauga" class="btn btn-primary"><i class="fa fa-plus"></i>
+        <a href="/concursuri/{{contest._id}}/exercitii/adauga" class="btn btn-primary"><i class="bi bi-plus-lg"></i>
             Adaugă exercițiu</a>
 
         <a href="/concursuri/{{contest._id}}/modifica" class="btn btn-light btn-outline-primary"><i
-                class="fa fa-edit"></i> Modifică</a>
+                class="bi bi-pencil-fill"></i> Modifică</a>
         {{/if}}
 
         {{#if canDeleteContest}}
@@ -36,12 +36,12 @@
             <button type="submit" formaction="/concursuri/sterge" title="Șterge" name="deleteBtn"
                 class="btn btn-light btn-outline-primary"
                 onclick="return confirm('Ești sigur că vrei să ștergi acest concurs?');"><i
-                    class="fas fa-trash-alt"></i></button>
+                    class="bi bi-trash-fill"></i></button>
         </form>
         {{/if}}
 
         <button type="button" class="btn btn-light btn-outline-primary" title="Tipărește" onclick="window.print()">
-            <i class="fas fa-print"></i>
+            <i class="bi bi-printer-fill"></i>
         </button>
     </div>
 </div>

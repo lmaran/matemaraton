@@ -1,6 +1,5 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item"><a href="/clase">Clase</a></li>
         <li class="breadcrumb-item"><a href="/clase/{{class._id}}">{{class.name}}</a></li>
@@ -19,7 +18,7 @@
     <a href="/sesiuni-curs/{{_id}}">Sesiunea {{course}}</a>
     <span class="h5 font-weight-light text-muted"> - {{dateAsString}}
         {{#if videos}}
-        <a href="/sesiuni-curs/{{_id}}"><i class="fab fa-youtube" style="color:red"></i></a>
+        <a href="/sesiuni-curs/{{_id}}"><i class="bi bi-youtube" style="color:red"></i></a>
         {{/if}}
     </span>
 </div>
@@ -30,7 +29,9 @@
 {{#each images}}
 <p>{{description}}</p>
 <img src={{url}} class="img-fluid border" alt="">
-<a class="mb-4" style="display: block;" href={{highQualityUrl}}>Vezi poza la calitate maximă</a>
+<div>
+    <a class="mb-4" href={{highQualityUrl}}>Vezi poza la calitate maximă</a> <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>
+</div>
 {{/each}}
 
 

@@ -11,7 +11,6 @@ const exerciseController = require("./controllers/exercise.controller");
 const classController = require("./controllers/class.controller");
 const studentController = require("./controllers/student.controller");
 const parentController = require("./controllers/parent.controller");
-const contactController = require("./controllers/contact.controller");
 const userResetPasswordController = require("./controllers/user-reset-password.controller");
 const userChangePasswordController = require("./controllers/user-change-password.controller");
 const userSignupController = require("./controllers/user-signup.controller");
@@ -162,9 +161,6 @@ router.get("/program-teza-s1-editia-3", matemaratonController.getTrainingProgram
 router.get("/materiale-teza-s1", matemaratonController.getDocumentsForSemestrialPaper);
 router.get("/program-simulare-en-editia-3", matemaratonController.getProgramSimulareEnEditia3);
 router.get("/materiale-simulare-en-editia-3", matemaratonController.getMaterialeSimulareEnEditia3);
-
-// contact
-router.get("/contact", contactController.getContact);
 
 // user-login/logout
 router.get("/login", userLoginController.getLogin);

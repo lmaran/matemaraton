@@ -31,7 +31,7 @@
 <h1>Cap.{{inc course.selectedChapter.index}}: {{course.selectedChapter.name}}
     {{#if canCreateOrEditCourse}}
     <a href="/cursuri/{{course._id}}/capitole/{{course.selectedChapter.id}}/modifica">
-        <i class="fas fa-pencil-alt" style="font-size: 50%"></i>
+        <i class="bi bi-pencil-fill" style="font-size: 50%"></i>
     </a>
     {{/if}}
 </h1>
@@ -47,11 +47,11 @@
         <a href="/cursuri/{{@root.course._id}}/capitole/{{@root.course.selectedChapter.id}}/lectii/{{id}}">{{name}}</a>
         {{#if isHidden}}
         <a href="/cursuri/{{@root.course._id}}/capitole/{{@root.course.selectedChapter.id}}/lectii/{{id}}/modifica">
-            <i class="fas fa-eye-slash text-danger"></i></a>
+            <i class="bi bi-eye-slash text-danger"></i></a>
         {{/if}}
     </li>
     {{/each}}
 </ol>
 
 <a href="/cursuri/{{course._id}}/capitole/{{course.selectedChapter.id}}/lectii/adauga" class="btn btn-primary btn-sm">
-    <i class="fa fa-plus"></i> Adaugă lecție</a>
+    <i class="bi bi-plus-lg"></i> Adaugă lecție</a>
