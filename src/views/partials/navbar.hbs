@@ -8,149 +8,33 @@
 if 2 similar sections are used, the last one will override the first one --}}
 
 {{#unless hideNavbar}}
-<nav class="navbar navbar-expand-lg navbar-light mb-4">
-    <div class="container">
-        <a class="navbar-brand p-0" href="/">
-            <img src='/matemaraton-logo-square.png' width="35" height2="30"> MateMaraton</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
-            aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/"><img src='/matemaraton-logo-square.png' width="35" height2="30">
+            MateMaraton</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav mr-auto">
-
-                {{!-- <li class="nav-item">
-                    <a class="nav-link {{#if (eq selectedTopMenu '/inscriere' )}} active {{/if}}"
-                        href="/inscriere">Istoric
-                    </a>
-                </li> --}}
-
-                {{!-- <li class="nav-item">
-                    <a class="nav-link {{#if (eq selectedTopMenu '/pagina-mea' )}} active {{/if}}"
-                        href="/pagina-mea">Pagina mea
-                    </a>
-                </li> --}}
-
-
-                {{!-- <li class="nav-item">
-                    <a class="nav-link {{#if (eq selectedTopMenu '/profesori' )}} active {{/if}}"
-                        href="/profesori">Profesori
-                    </a>
-                </li> --}}
-
-                {{!-- <li class="nav-item">
-                    <a class="nav-link {{#if (eq selectedTopMenu '/parinti' )}} active {{/if}}" href="/parinti">Parinti
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link {{#if (eq selectedTopMenu '/clase' )}} active {{/if}}" href="/clase">Clase</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link {{#if (eq selectedTopMenu '/matemaraton' )}} active {{/if}}"
-                        href="/matemaraton">MateMaraton</a>
-                </li> --}}
-
-                {{!-- <li class="nav-item dropdown {{#if (eq selectedTopMenu '/matemaraton' )}} active {{/if}}">
-                    <a class="nav-link dropdown-toggle" href="/" id="navbarDropdown" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Proiecte
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item {{#if (eq selectedTopMenu '/revista-scolii' )}} active {{/if}}"
-                            href="/revista-scolii">Revista scolii</a>
-                        <a class="dropdown-item {{#if (eq selectedTopMenu '/eco-scoala' )}} active {{/if}}"
-                            href="/eco-scoala">Eco
-                            Scoala</a>
-                        <a class="dropdown-item {{#if (eq selectedTopMenu '/biblioteca' )}} active {{/if}}"
-                            href="/biblioteca">Biblioteca</a>
-                        <a class="dropdown-item {{#if (eq selectedTopMenu '/matemaraton' )}} active {{/if}}"
-                            href="/matemaraton">MateMaraton</a>
-                    </div>
-                </li> --}}
-
-                {{!-- <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="/" id="navbarDropdown" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Transparenta
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-
-                        <a class="dropdown-item {{#if (eq selectedTopMenu '/hotarari-ca' )}} active {{/if}}"
-                            href="/hotarari-ca">Hotarari
-                            CA</a>
-                        <a class="dropdown-item {{#if (eq selectedTopMenu '/achizitii-publice' )}} active {{/if}}"
-                            href="/achizitii-publice">Achizitii
-                            publice</a>
-                        <a class="dropdown-item {{#if (eq selectedTopMenu '/cheltuieli-asociatie-parinti' )}} active {{/if}}"
-                            href="/cheltuieli-asociatie-parinti">Cheltuieli
-                            asociatie parinti</a>
-                        <a class="dropdown-item {{#if (eq selectedTopMenu '/rapoarte' )}} active {{/if}}"
-                            href="/rapoarte">Rapoarte</a>
-                        <a class="dropdown-item {{#if (eq selectedTopMenu '/anunturi' )}} active {{/if}}"
-                            href="/anunturi">Anunturi</a>
-                    </div>
-                </li> --}}
-
-                {{!-- <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="/" id="navbarDropdown" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Despre
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item {{#if (eq selectedTopMenu '/conducere' )}} active {{/if}}"
-                            href="/conducere">Echipa manageriala
-                        </a>
-                        <a class="dropdown-item" href="/personal-auxiliar">Personal auxiliar</a>
-                        <a class="dropdown-item {{#if (eq selectedTopMenu '/revista-scolii' )}} active {{/if}}"
-                            href="/revista-scolii">Revista scolii</a>
-                    </div>
-                </li> --}}
-
-                {{!-- <li class="nav-item">
-                    <a class="nav-link {{#if (eq selectedTopMenu '/contact' )}} active {{/if}}"
-                        href="/contact">Contact</a>
-                </li> --}}
-            </ul>
-
-            {{!-- <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link">Right Link 1</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="/" id="navbarDropdown" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Dropdown on Right</a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/">Action</a>
-                        <a class="dropdown-item" href="/">Another action with a lot of text inside of an item</a>
-                    </div>
-                </li>
-            </ul> --}}
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
             {{#unless user.activationToken}} {{!do not display this part during user activation}}
-            {{!-- {{toJSON @root.user}} --}}
-            <ul class='navbar-nav ml-auto'>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 {{#if @root.user}}
-                {{!-- {{#if @root.user.isAdmin}}
-                <li class="nav-item"><a class="nav-link" href='/admin'>Admin</a></li>
-                {{/if}} --}}
-                {{#if @root.user.isPartner}}
-                <li class="nav-item"><a class="nav-link" href='/admin'>Admin</a></li>
-                {{/if}}
                 <li class="nav-item dropdown">
-                    <a class='nav-link dropdown-toggle' href="/" id="navbarDropdown2" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="/" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
                         <!--<img src='//www.gravatar.com/avatar/6f137572059f8c0f23363e8678d7a795' width="20" height="20">-->
                         {{@root.user.firstName}} {{@root.user.lastName}}
                     </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/change-password">Schimbă parola</a>
-                        <a class="dropdown-item" href="/reset-password">Resetează parola</a>
-                        <a class="dropdown-item"
-                            href="/logout{{#if @root.isNotRootPath}}?redirect_uri={{@root.redirectUri}}{{/if}}">Log
-                            out</a>
-                    </div>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="/change-password">Schimbă parola</a></li>
+                        <li><a class="dropdown-item" href="/reset-password">Resetează parola</a></li>
+                        <li><a class="dropdown-item"
+                                href="/logout{{#if @root.isNotRootPath}}?redirect_uri={{@root.redirectUri}}{{/if}}">Log
+                                out</a></li>
+                    </ul>
                 </li>
                 {{else}}
                 <li class="nav-item">
@@ -161,11 +45,11 @@ if 2 similar sections are used, the last one will override the first one --}}
                         href="/login{{#if @root.isNotRootPath}}?redirect_uri={{@root.redirectUri}}{{/if}}">Login</a>
                 </li>
                 {{/if}}
-
             </ul>
             {{/unless}}
 
         </div>
     </div>
 </nav>
+
 {{/unless}}

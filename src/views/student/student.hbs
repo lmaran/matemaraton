@@ -1,6 +1,5 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item"><a href="/clase">Clase</a></li>
         {{#if lastClass}}
@@ -23,8 +22,8 @@
     </li>
 
     <li><a href="/clase/{{_id}}/elevi/{{@root.student._id}}/prezenta">Prezența</a></li>
-    <li><a href="/clase/{{_id}}/elevi/{{@root.student._id}}/teme-predate">Teme predate <span class="text-muted">(făcute
-                acasă)</span></a></li>
+    <li><a href="/clase/{{_id}}/elevi/{{@root.student._id}}/teme-predate">Teme predate</a> <span class="text-muted"> (făcute
+                acasă)</span></li>
 </ul>
 {{/each}}
 

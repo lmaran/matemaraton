@@ -1,6 +1,5 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
 
         {{#if contest}}
@@ -157,15 +156,6 @@
             isEditMode}}Editează{{else}}Ascunde{{/if}}</button>
     </div>
 
-
-    {{!-- {{#if isEditMode}}
-    <div class="form-group row2">
-        <div class="col-md-7s offset-md-3s">
-            <button class="btn btn-primary" id="save-btn">Salvează</button> <i id="save-statement-status-icon"
-                class="fa fa-check mr-2 fa-lg hide" style="color:green;"></i>
-        </div>
-    </div>
-    {{/if}} --}}
     <br>
 
     <div class="form-row">
@@ -306,22 +296,22 @@
     {{/if}}
 
 
-    <div class="form-group row2">
+    <div class="row mb-32">
         <div class="col-md-7s offset-md-3s">
-            <button type="submit" name="saveBtn" class="btn btn-primary"><i class="fas fa-save"></i>
+            <button type="submit" name="saveBtn" class="btn btn-primary"><i class="bi bi-save"></i>
                 Salveaza</button>
 
             {{#if isEditMode}}
             <a href="{{#if contest}}/concursuri/{{contest._id}}{{/if}}/exercitii/{{exercise._id}}"
-                class="btn btn-light"><i class="far fa-eye"></i> Vizualizează</a>
+                class="btn btn-light"><i class="bi bi-eye"></i> Vizualizează</a>
             {{/if}}
 
             <label class="col-md-3s col-form-label float-right"> Help:
                 <a href="https://markdown-it.github.io/" target="_blank">markdon</a>
-                <small><i class="fas fa-external-link-alt text-muted text-small" aria-hidden="true"></i></small>
+                <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>
                 +
                 <a href="https://katex.org/docs/supported.html" target="_blank">latex </a>
-                <small><i class="fas fa-external-link-alt text-muted text-small" aria-hidden="true"></i></small></label>
+                <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small></label>
         </div>
 
     </div>

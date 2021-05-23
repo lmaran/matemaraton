@@ -28,11 +28,11 @@
         {{!-- <span id="pagination-buttons"> --}}
             <button id="previousPageBtn" type="button" class="btn btn-light btn-sm ml-2  mr-1" title="Pagina precedentă"
                 {{#if pageResults.previousPageBtn.isDisabled}}disabled{{/if}}
-                data-page={{pageResults.previousPageBtn.page}}><i class="fas fa-angle-left"
+                data-page={{pageResults.previousPageBtn.page}}><i class="bi bi-chevron-left"
                     style="font-size: 150%"></i></button>
             <button id="nextPageBtn" type="button" class="btn btn-light btn-sm" title="Pagina următoare" {{#if
                 pageResults.nextPageBtn.isDisabled}}disabled{{/if}} data-page={{pageResults.nextPageBtn.page}}><i
-                    class="fas fa-angle-right" style="font-size: 150%"></i></button>
+                    class="bi bi-chevron-right" style="font-size: 150%"></i></button>
             {{!-- </span> --}}
     </div>
     {{!-- <div class="col-md-6 text-center2">
@@ -103,9 +103,9 @@
 
 
 
-    {{!-- <div class="form-group row2">
+    {{!-- <div class="row mb-32">
         <div class="col-md-7s offset-md-3s">
-            <button type="submit" name="saveBtn" class="btn btn-primary"><i class="fas fa-save"></i>
+            <button type="submit" name="saveBtn" class="btn btn-primary"><i class="bi bi-save"></i>
                 Aplică</button>
         </div>
 
@@ -113,7 +113,7 @@
 </form>
 
 {{#if canCreateOrEditExercise}}
-<a href="/exercitii/adauga" class="btn btn-primary mt-2 mb-4"><i class="fa fa-plus"></i> Adaugă exercițiu</a>
+<a href="/exercitii/adauga" class="btn btn-primary mt-2 mb-4"><i class="bi bi-plus-lg"></i> Adaugă exercițiu</a>
 {{/if}}
 
 

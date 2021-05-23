@@ -1,6 +1,5 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item"><a href="/clase">Clase</a></li>
         <li class="breadcrumb-item"><a href="/clase/{{class._id}}">{{class.name}}</a></li>
@@ -18,7 +17,7 @@
 <hr />
 
 {{#if canCreateOrEditCourseSession}}
-<a href="/clase/{{class._id}}/sesiuni-curs/adauga" class="btn btn-primary mt-2 mb-4"><i class="fa fa-plus"></i> Adaugă sesiune de curs</a>
+<a href="/clase/{{class._id}}/sesiuni-curs/adauga" class="btn btn-primary mt-2 mb-4"><i class="bi bi-plus-lg"></i> Adaugă sesiune de curs</a>
 {{/if}}
 
 {{#each courses}}
@@ -26,10 +25,10 @@
     <a href="/sesiuni-curs/{{_id}}">Sesiunea {{course}}</a>
     <span class="h5 font-weight-light text-muted"> - {{dateAsString}}
         {{#if videos}}
-        <a href="/sesiuni-curs/{{_id}}"><i class="fab fa-youtube" style="color:red"></i></a>
+        <a href="/sesiuni-curs/{{_id}}"><i class="bi bi-youtube" style="color:red"></i></a>
         {{/if}}
         {{#if images}}
-        <a href="/sesiuni-curs/{{_id}}"><i class="fas fa-camera" style="color:rgb(90, 143, 5)"></i></a>
+        <a href="/sesiuni-curs/{{_id}}"><i class="bi bi-camera-fill" style="color:rgb(90, 143, 5)"></i></a>
         {{/if}}
     </span>
 </div>

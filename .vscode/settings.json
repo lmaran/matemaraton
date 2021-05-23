@@ -9,7 +9,10 @@
     "cSpell.words": ["autz", "grecaptcha", "katex", "matemaraton", "recaptcha", "signup"],
     "cSpell.diagnosticLevel": "Hint",
 
-    "[javascript]": {
+     "[javascript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
+    },
+    // "[handlebars]": {
+    //     "editor.defaultFormatter": "esbenp.prettier-vscode",
+    // }
 }

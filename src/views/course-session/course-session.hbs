@@ -40,7 +40,7 @@
 {{!-- <h3 class="mt-5" {{#if noCourse}} class="text-muted" {{/if}}>{{courseSession.dateAsString}}</h3> --}}
 
 {{#if canCreateOrEditCourseSession}}
-<a href="/sesiuni-curs/edit/{{courseSession._id}}" class="btn btn-primary mt-2 mb-4"><i class="fa fa-edit"></i>
+<a href="/sesiuni-curs/edit/{{courseSession._id}}" class="btn btn-primary mt-2 mb-4"><i class="bi bi-pencil-fill"></i>
     Modifică</a>
 {{/if}}
 
@@ -62,7 +62,9 @@
 {{#each courseSession.images}}
 <p>{{courseSession.description}}</p>
 <img src={{url}} class="img-fluid" alt="">
-<a style="display: block;" href={{highQualityUrl}}>Vezi poza la calitate maximă</a>
+<div>
+    <a href={{highQualityUrl}}>Vezi poza la calitate maximă</a> <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>
+</div>
 {{/each}}
 <br>
 <br>

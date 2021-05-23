@@ -1,86 +1,65 @@
 <style>
-    .starter-template {
-        padding: 40px 15px;
-        text-align: center;
-    }
+    ._card-body { cursor: pointer; }
 
-    .card-body {
-        cursor: pointer;
-    }
 </style>
 
-{{!-- <div class="alert alert-info" role="alert">
-    <i class="fa fa-info-circle mr-2 fa-lg"></i>
-    Am afișat <a href="/clase">clasele</a> disponibile (cu opțiunea de înscriere) pt. <strong>Ediția 4</strong> (an
-    școlar 2020 - 2021).
-</div> --}}
-
-<div class="starter-template">
+<div class="text-center pt-5 pb-5">
     <h1>Cursuri de matematică pentru gimnaziu</h1>
-    <h5 class="font-weight-light"> Un proiect implementat de voluntari, în parteneriat cu Școala 21
-        "Vicențiu Babeș", Timișoara.</h5>
-    <h5 class="mt-4">Ediția 4 (2020-2021)</h5>
-
-
+    <p class="fs-5 fw-light">Un proiect implementat de voluntari, în parteneriat cu Școala 21 "Vicențiu Babeș", Timișoara.</p>
+    <p class="fs-5 fw-bold">Ediția 4 (2020-2021)</p>
 </div>
 
+<div class="row row-cols-1 row-cols-md-{{#if @root.user.isAdmin}}3{{else}}2{{/if}} g-4">
+    <div class="col">
+        <div class="card h-100">
+            {{! <img src="..." class="card-img-top" alt="..." /> }}
+            <i class="bi bi-people-fill text-center" style="font-size: 2.5rem; color: gray;"></i>
+            <h3 class="card-title text-center">Clase</h3>
 
-<div class="card-deck">
-    <div class="card">
+            <div class="card-body">
 
-        <div class="card-body" onclick="location.href = '/clase';">
-            <div class="text-center text-muted">
-                <i class="fas fa-chalkboard-teacher fa-2x"></i>
+                <p class="card-text">Grupe de 8-12 elevi care se pregătesc la matematică sub îndrumarea unui instructor. Activitățile se desfășoară în
+                    format online sau într-o sală de clasă. Totul gratuit.</p>
+                {{! <a href="/clase" class="btn btn-primary">Vezi toate clasele</a> }}
             </div>
-            <h3 class="text-center pt-2 pb-2">Clase</h3>
-            <p class="card-text">Grupe de 8-12 elevi care se pregătesc la matematică sub
-                îndrumarea unui
-                instructor.
-                Activitățile se desfășoară în format online sau într-o sală de clasă. Totul gratuit.
-            </p>
-        </div>
-        <div class="card-footer text-center2">
-            <a href="/clase">Vezi toate clasele</a>
+            <div class="card-footer bg-white border-top-0">
+                <a href="/clase" class="btn btn-primary w-100"><i class="bi bi-people-fill"></i> Vezi toate clasele</a>
+            </div>
         </div>
     </div>
 
     {{#if @root.user.isAdmin}}
-    <div class="card">
-        <div class="card-body">
-            <div class="text-center text-muted">
-                <i class="far fa-newspaper fa-2x"></i>
+        <div class="col">
+            <div class="card h-100">
+                <i class="bi bi-book text-center" style="font-size: 2.5rem; color: gray;"></i>
+                <h3 class="card-title text-center">Cursuri</h3>
+                <div class="card-body">
+                    <p class="card-text">Suporturi de curs (lecții, exerciții rezolvate și teme propuse pentru acasă), toate grupate pe ani de studiu,
+                        nivel de dificultate și unități de învățare.</p>
+                    <p class="card-text"><small class="text-muted font-weight-light2">Utile și celor care se pregătesc fără instructor.</small> </p>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                    {{! <small class="text-muted">Last updated 3 mins ago</small> }}
+                    <a href="/cursuri" class="btn btn-primary w-100"><i class="bi bi-book"></i> Vezi toate cursurile</a>
+                </div>
             </div>
-            <h3 class="text-center pt-2 pb-2">Cursuri</h3>
-            <p class="card-text pb-2">Suporturi de curs (lecții, exerciții rezolvate și teme propuse pentru acasă),
-                toate
-                grupate pe ani de studiu, nivel de
-                dificultate și unități de învățare. </p>
-            <p class="card-text"><small class="text-muted font-weight-light2">Utile și celor care se
-                    pregătesc fără
-                    instructor.</small></p>
         </div>
-        <div class="card-footer">
-            <a href="/cursuri">Află mai multe</a>
-        </div>
-    </div>
     {{/if}}
 
-    <div class="card">
-        <div class="card-body">
-            <div class="text-center text-muted">
-                <i class="far fa-comments fa-2x"></i>
+    <div class="col">
+        <div class="card h-100">
+            {{!-- <i class="bi bi-chat-dots text-center" style="font-size: 2.5rem; color: gray;"></i> --}}
+            <i class="bi bi-facebook text-center" style="font-size: 2.5rem; color: gray;"></i>
+            <h3 class="card-title text-center">Comunitate</h3>
+            <div class="card-body">
+                <p class="card-text">Dacă ai nevoie de ajutor, trimite o poză cu exercițiul pe care nu știi să-l faci și precizează clasa. Atât!.</p>
+                <p class="card-text"><small class="text-muted">Inclusiv pentru părinți.</small></p>
             </div>
-            <h3 class="text-center pt-2 pb-2">Comunitate</h3>
-            <p class="card-text">Dacă ai nevoie de ajutor, trimite o poză cu exercițiul pe care nu știi să-l faci și
-                precizează clasa. Atât!.
-
-            <p class="card-text"><small class="text-muted">Inclusiv pentru părinți.</small></p>
-        </div>
-        <div class="card-footer">
-            Grup fb: <a href="https://www.facebook.com/groups/417125302327211" target="_blank">MateMaraton: ajutor
-                la
-                teme</a>
-            <small><i class="fas fa-external-link-alt text-muted text-small" aria-hidden="true"></i></small>
+            <div class="card-footer bg-white border-top-0">
+                <a href="https://www.facebook.com/groups/417125302327211" target="_blank" class="btn btn-primary w-100"><i class="bi bi-facebook"></i>
+                    Grup Facebook
+                </a>
+            </div>
         </div>
     </div>
 </div>
@@ -92,7 +71,7 @@
     <li><a href="/editia-1">Ediția 1</a> (2017 - 2018)</li>
 </ul>
 
-{{!-- <h5>Exemple (ediția 3)</h5>
+{{! <h5>Exemple (ediția 3)</h5>
 <ul>
     <li><a href="/clase/5d92db9ba0da913a67b9a711">Cls 8 - Grupa 1</a>
         <span class="text-muted">(pregătire pt. EN, nivel mediu-avansat)</span>
@@ -100,9 +79,9 @@
     <li><a href="/clase/5d92dc63a0da913a67b9a713">Cls 6 - Grupa 3</a>
         <span class="text-muted">(pregătire pt. olimpiadă și concursuri școlare)</span>
     </li>
-</ul> --}}
+</ul> }}
 
-{{!--<h5>Orar:</h5>
+{{!<h5>Orar:</h5>
 <ul>
     <li>Cls 8 - Grupa 1: 09:00 - 10:45</li>
     <li>Cls 8 - Grupa 2: 10:45 - 12:00</li>
@@ -110,9 +89,9 @@
     <li>Cls 8 - Grupa 4: 13:30 - 14:30</li>
 </ul>
 <p style="padding-left:40px">Cursurile se țin în fiecare sâmbătă, la <a href="https://scoala21.ro"
-        target="_blank">Școala 21</a>, Tm.</p> --}}
+        target="_blank">Școala 21</a>, Tm.</p> }}
 
-{{!-- <h5>Comunicare:</h5>
+{{! <h5>Comunicare:</h5>
 <ul>
     <li><a href="https://matemaraton.ro">matemaraton.ro</a> - materiale de lucru, rapoarte, statistici
     <li><a href="https://www.whatsapp.com" target="_blank">whatsapp</a> - grupuri de lucru cu elevii (privat)</li>
@@ -123,32 +102,32 @@
             class="font-weight-bold">MateMaraton: ajutor la teme</span>" - trimite o
         poză și precizează clasa. Atât! </li>
 </ul>
---}}
+}}
 
 <h5>Contact:</h5>
 <ul>
     <li>ing. Lucian Măran</li>
     <li>lucian.maran@gmail.com</li>
     <li><a href="https://www.facebook.com/matemaraton" target="_blank">facebook/matemaraton</a>
-        <small><i class="fas fa-external-link-alt text-muted" aria-hidden="true"></i></small>
+        <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>
     </li>
 </ul>
 
-{{!--
-<hr> --}}
+{{!
+<hr> }}
 
 {{#if @root.user.isAdmin}}
-<h5 class="mt-5">Admin:</h5>
-<ul>
-    <li><a href='/exercitii'>Exerciții</a></li>
-    <li><a href='/lectii'>Lecții</a></li>
-    {{!-- <li><a href='/teste'>Teste</a></li> --}}
-</ul>
+    <h5 class="mt-5">Admin:</h5>
+    <ul>
+        <li><a href="/exercitii">Exerciții</a></li>
+        <li><a href="/lectii">Lecții</a></li>
+        {{! <li><a href='/teste'>Teste</a></li> }}
+    </ul>
 {{/if}}
 
 <h5>Diverse (în lucru):</h5>
 <ul>
-    <li><a href='/concursuri'>Olimpiade și concursuri</a>
+    <li><a href="/concursuri">Olimpiade și concursuri</a>
         <span> (subiecte rezolvate)</span>
     </li>
 </ul>

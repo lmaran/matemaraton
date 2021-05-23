@@ -14,18 +14,13 @@
 
 <h1>Clase</h1>
 
-{{!-- {{#if canCreateOrEditExercise}}
-<a href="/exercitii/adauga" class="btn btn-primary mt-2 mb-4"><i class="fa fa-plus"></i> Adaugă exercițiu</a>
-{{/if}} --}}
-
-{{!-- <h3< class="mt-4">>Ediția curentă:</h3> --}}
 {{#if orderedActiveClasses}}
 {{#each orderedActiveClasses}}
 <h5>Editia {{editionNumber}} <span class="text-muted font-weight-light"> ({{editionInterval}})</span>:</h5>
 
 <ul>
     {{#each values}}
-    <li><a href="/clase/{{_id}}">{{name}} </a>
+    <li><a href="/clase/{{_id}}">{{name}}</a>
         <span class="text-muted font-weight-light"> (nivel {{level}})</span>
         {{!-- {{#if scheduleInfo}}
         <div class="ml-4">{{scheduleInfo.timeSlot}}, {{scheduleInfo.day}}, {{scheduleInfo.place}}</div>
@@ -49,7 +44,7 @@
 
 <ul>
     {{#each values}}
-    <li><a href="/clase/{{_id}}">{{name}} </a><span class="text-muted font-weight-light"> (nivel
+    <li><a href="/clase/{{_id}}">{{name}}</a><span class="text-muted font-weight-light"> (nivel
             {{level}})</span></li>
     {{/each}}
 </ul>

@@ -1,6 +1,5 @@
 <nav aria-label="breadcrumb">
     <ol id="exercise-id-container" class="breadcrumb" data-exercise-id="{{exercise._id}}">
-        {{!-- <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li> --}}
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         {{#if contest}}
         <li class="breadcrumb-item"><a href="/concursuri">Concursuri</a></li>
@@ -34,7 +33,7 @@
 
         {{#if canCreateOrEditExercise}}
         <a href="{{#if contest}}/concursuri/{{contest._id}}{{/if}}/exercitii/{{exercise._id}}/modifica"
-            class="btn btn-primary"><i class="fa fa-edit"></i> Modifică</a>
+            class="btn btn-primary"><i class="bi bi-pencil-fill"></i> Modifică</a>
         {{/if}}
 
         {{#if canDeleteExercise}}
@@ -45,21 +44,21 @@
             <button type="submit" formaction="{{#if contest}}/concursuri{{/if}}/exercitii/sterge" title="Șterge"
                 name="deleteBtn" class="btn btn-light btn-outline-primary"
                 onclick="return confirm('Ești sigur că vrei să ștergi acest exercițiu?');"><i
-                    class="fas fa-trash-alt"></i></button>
+                    class="bi bi-trash-fill"></i></button>
         </form>
         {{/if}}
 
 
 
         {{!-- <button type="submit" formaction="/exercitii/sterge" name="deleteBtn" class="btn btn-link"
-            onclick="return confirm('Ești sigur că vrei să ștergi acest exercițiu?');"><i class="fas fa-trash-alt"></i>
+            onclick="return confirm('Ești sigur că vrei să ștergi acest exercițiu?');"><i class="bi bi-trash-fill"></i>
             Șterge</button> --}}
 
 
 
 
         <button type="button" class="btn btn-light btn-outline-primary" title="Tipărește" onclick="window.print()">
-            <i class="fas fa-print"></i>
+            <i class="bi bi-printer-fill"></i>
         </button>
     </div>
 </div>
@@ -153,7 +152,7 @@
         <div class="form-group">
             <input type="file" id="upload-file-select-input" multiple accept="image/*" class="d-none">
             <label class="upload-file-select-label" for="upload-file-select-input">
-                <i class="fas fa-paperclip"></i>
+                <i class="bi bi-paperclip"></i>
                 Adaugă poza
             </label>
 
@@ -172,7 +171,7 @@
 
         <div class="form-group mb-0">
             <button type="button" id="my-solution-submit-btn" class="btn btn-primary btn-sm">
-                <i class="fas fa-paper-plane"></i>
+                <i class="bi bi-cursor-fill"></i>
                 Trimite rezolvarea
             </button>
         </div>
