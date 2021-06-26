@@ -8,7 +8,7 @@ const setContext = require("./middlewares/set-context.middleware").setContext;
 
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
-const MongoStore = require("connect-mongo")(session);
+const MongoStore = require("connect-mongo");
 const flash = require("express-flash");
 const addUserIfExist = require("./middlewares/add-user-if-exist.middleware").addUserIfExist;
 
@@ -54,7 +54,7 @@ app.use(
         secret: "foo",
         resave: false,
         saveUninitialized: true,
-        store: new MongoStore({ clientPromise: mongoClientAsPromise })
+        store: MongoStore.create({ clientPromise: mongoClientAsPromise })
     })
 );
 app.use(flash());
