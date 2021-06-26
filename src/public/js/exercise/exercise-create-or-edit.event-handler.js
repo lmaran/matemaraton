@@ -192,7 +192,7 @@ export const eventHandlers = {
 
         const markup = `
             <div class="hint-parent-div mb-4">
-                <label class="col-form-label font-weight-bold"> Indicația ${nrOfElements + 1}: </label>
+                <label class="col-form-label fw-bold"> Indicația ${nrOfElements + 1}: </label>
 
                 <textarea
                     rows="2"
@@ -223,7 +223,7 @@ export const eventHandlers = {
 
         const markup = `
             <div class="answer-option-parent-div mb-4">
-                <label class="col-form-label font-weight-bold"> Răspunsul ${nrOfElements + 1}: </label>
+                <label class="col-form-label fw-bold"> Răspunsul ${nrOfElements + 1}: </label>
 
                 <textarea
                     rows="2"
@@ -239,9 +239,9 @@ export const eventHandlers = {
                 ></div>
 
                 <div class="float-right form-check-inline mr-0">
-                    <input class="form-check-input" type="checkbox" name="isCorrectAnswerChecks" value=${
-                        nrOfElements + 1
-                    } id="defaultCheck${nrOfElements + 1}">
+                    <input class="form-check-input" type="checkbox" name="isCorrectAnswerChecks" value=${nrOfElements + 1} id="defaultCheck${
+            nrOfElements + 1
+        }">
                     <label class="form-check-label text-muted" for="defaultCheck${nrOfElements + 1}">
                         Răspuns corect
                     </label>

@@ -13,9 +13,9 @@
 
 <form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
-    <div class="form-row">
-        <div class="form-group col-md-12">
-            <label for="nameInput" class="font-weight-bold">Nume:</label>
+    <div class="row">
+        <div class="col-md-12">
+            <label for="nameInput" class="fw-bold">Nume:</label>
             <input type="text" name="name" class="form-control" id="nameInput" placeholder=""
                 value="{{course.selectedLesson.name}}">
             <small>
@@ -24,17 +24,17 @@
         </div>
     </div>
 
-    <div class="form-row">
-        <div class="form-group col-md-12">
-            <label for="descriptionInput" class="font-weight-bold">Descriere:</label>
+    <div class="row">
+        <div class="col-md-12">
+            <label for="descriptionInput" class="fw-bold">Descriere:</label>
             <textarea type="text" name="description" class="form-control" id="descriptionInput"
                 placeholder="">{{course.selectedLesson.description}}</textarea>
         </div>
     </div>
 
-    <div class="form-row">
-        <div class="form-group col-md-6">
-            <label for="positionSelect" class="font-weight-bold">Poziția:</label>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="positionSelect" class="fw-bold">Poziția:</label>
             <select name="position" class="form-control" id="positionSelect">
                 {{#select selectedPosition}}
                 {{#each positionOptions}}
@@ -48,9 +48,9 @@
         </div>
     </div>
 
-    {{!-- <label class="font-weight-bold">Vizibilitate:</label> --}}
+    {{!-- <label class="fw-bold">Vizibilitate:</label> --}}
 
-    <div class="form-group form-check">
+    <div class="form-check">
         <input type="checkbox" class="form-check-input" id="isHiddenCheck" name="isHidden" {{#if
             course.selectedLesson.isHidden}}checked{{/if}}>
         <label class="form-check-label" for="isHiddenCheck">Ascunde</label>
@@ -61,7 +61,7 @@
 
     <input type="hidden" name="id" value="{{course._id}}" />
 
-    <div class="form-group mt-4">
+    <div class="mt-4">
         <div class="col-md-7s offset-md-3s">
             <button type="submit" name="saveBtn" class="btn btn-primary"><i class="bi bi-save"></i>
                 Salveaza</button>
