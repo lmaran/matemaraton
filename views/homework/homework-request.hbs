@@ -14,9 +14,9 @@
 {{!-- <h2 class="mb-5">Clasa a {{class.grade}}-a, {{class.name}}</h2> --}}
 
 
-<div> <span class="font-weight-bold">Data publicării</span>: {{homeworkRequest.publishedDateAsString}}</div>
-<div> <span class="font-weight-bold">Termen de predare</span>: {{homeworkRequest.dueDateAsString}}</div>
-<div> <span class="font-weight-bold">Exerciții propuse</span>:
+<div> <span class="fw-bold">Data publicării</span>: {{homeworkRequest.publishedDateAsString}}</div>
+<div> <span class="fw-bold">Termen de predare</span>: {{homeworkRequest.dueDateAsString}}</div>
+<div> <span class="fw-bold">Exerciții propuse</span>:
     {{#each homeworkRequest.documents}}
     <span>
         <a href="{{url}}">subiecte</a>
@@ -27,7 +27,7 @@
     ({{homeworkRequest.totalRequestedQuestions}} ex.)
 </div>
 {{#if homeworkRequest.relatedCourses.length}}
-<div> <span class="font-weight-bold">Cursuri relaționate</span>:
+<div> <span class="fw-bold">Cursuri relaționate</span>:
     {{#each homeworkRequest.relatedCourses}}
     <span>
         <a href="/sesiuni-curs/{{_id}}">curs {{course}}</a>,

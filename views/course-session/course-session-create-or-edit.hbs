@@ -14,30 +14,30 @@
 
 <form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
-    <div class="form-row">
-        <div class="form-group col-md-6">
-            <label for="courseInput" class="font-weight-bold">Numărul sesiunii:</label>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="courseInput" class="fw-bold">Numărul sesiunii:</label>
             <input type="text" name="course" class="form-control" id="courseInput" placeholder=""
                 value="{{courseSession.course}}">
         </div>
 
-        <div class="form-group col-md-6">
-            <label for="dateInput" class="font-weight-bold">Data sesiunii:</label>
+        <div class="col-md-6">
+            <label for="dateInput" class="fw-bold">Data sesiunii:</label>
             <input type="text" name="date" class="form-control" id="dateInput" placeholder=""
                 value="{{courseSession.date}}">
         </div>
     </div>
 
-    <div class="form-row">
-        <div class="form-group col-md-12">
-            <label for="descriptionInput" class="font-weight-bold">Descriere:</label>
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <label for="descriptionInput" class="fw-bold">Descriere:</label>
             <input type="text" name="description" class="form-control" id="descriptionInput" placeholder=""
                 value="{{courseSession.description}}">
         </div>
     </div>
 
 
-    <label class="font-weight-bold">Prezența:</label>
+    <label class="fw-bold">Prezența:</label>
     {{#each students}}
     {{#if (or isNotDroppedOut isPresent)}}
     <div class="form-check">
@@ -49,8 +49,8 @@
     {{/each}}
 
 
-    <div class="form-group mt-4">
-        <label class="font-weight-bold">Poze:</label>
+    <div class="mt-4">
+        <label class="fw-bold">Poze:</label>
         <textarea class="form-control" name="images" rows="5">{{courseSession.images}}</textarea>
         <small>
             <p class="text-muted mb-0">O lista de URL-uri, unul pe rând, fără virgulă.</p>
@@ -58,8 +58,8 @@
         </small>
     </div>
 
-    <div class="form-group mt-4">
-        <label class="font-weight-bold">Video:</label>
+    <div class="mt-4">
+        <label class="fw-bold">Video:</label>
         <textarea class="form-control" name="videos" rows="5">{{courseSession.videos}}</textarea>
         <small>
             <p class="text-muted mb-0">O lista de URL-uri, unul pe rând, fără virgulă.</p>
@@ -71,7 +71,7 @@
     <input type="hidden" name="id" value="{{courseSession._id}}" />
     <input type="hidden" name="classId" value="{{class._id}}" />
 
-    <div class="form-group mt-4">
+    <div class="mt-4">
         <div class="col-md-7s offset-md-3s">
             <button type="submit" name="saveBtn" class="btn btn-primary"><i class="bi bi-save"></i>
                 Salveaza</button>

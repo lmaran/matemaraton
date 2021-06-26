@@ -29,17 +29,17 @@
 
 <form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
-    <div class="form-row">
-        <div class="form-group col-md-3">
-            <label for="codeInput" class="font-weight-bold">Cod:</label>
+    <div class="row">
+        <div class="col-md-3">
+            <label for="codeInput" class="fw-bold">Cod:</label>
             <input type="text" name="code" class="form-control" id="codeInput" placeholder="" value="{{course.code}}">
             <small>
                 <p class="text-muted mb-0">Ex: M105</p>
             </small>
         </div>
 
-        <div class="form-group col-md-9">
-            <label for="nameInput" class="font-weight-bold">Nume:</label>
+        <div class="col-md-9">
+            <label for="nameInput" class="fw-bold">Nume:</label>
             <input type="text" name="name" class="form-control" id="nameInput" placeholder="" value="{{course.name}}">
             <small>
                 <p class="text-muted mb-0">Ex: Matematică, clasa a V-a</p>
@@ -47,17 +47,17 @@
         </div>
     </div>
 
-    <div class="form-row">
-        <div class="form-group col-md-12">
-            <label for="descriptionInput" class="font-weight-bold">Descriere:</label>
+    <div class="row">
+        <div class="col-md-12">
+            <label for="descriptionInput" class="fw-bold">Descriere:</label>
             <textarea type="text" name="description" class="form-control" id="descriptionInput"
                 placeholder="">{{course.description}}</textarea>
         </div>
     </div>
 
-    <div class="form-row">
-        <div class="form-group col-md-6">
-            <label for="gradeSelect" class="font-weight-bold">Clasa:</label>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="gradeSelect" class="fw-bold">Clasa:</label>
             <select name="grade" class="form-control" id="gradeSelect">
                 {{#select course.grade}}
                 <option value=""></option>
@@ -69,8 +69,8 @@
             </select>
         </div>
 
-        <div class="form-group col-md-6">
-            <label for="branchSelect" class="font-weight-bold">Categoria:</label>
+        <div class="col-md-6">
+            <label for="branchSelect" class="fw-bold">Categoria:</label>
             <select name="level" class="form-control" id="branchSelect">
                 {{#select course.level}}
                 <option value=""></option>
@@ -84,7 +84,7 @@
     </div>
 
 
-    <label for="gradeSelect" class="font-weight-bold">Cuprins:</label>
+    <label for="gradeSelect" class="fw-bold">Cuprins:</label>
 
     {{#if course.tableOfContents}}
 
@@ -135,7 +135,7 @@
 
     <input type="hidden" name="id" value="{{course._id}}" />
 
-    <div class="form-group mt-4">
+    <div class="mt-4">
         <div class="col-md-7s offset-md-3s">
             <button type="submit" name="saveBtn" class="btn btn-primary"><i class="bi bi-save"></i>
                 Salveaza</button>

@@ -17,7 +17,7 @@
         <a href="/clase/{{@root.class._id}}/teme/{{currentRequest._id}}">{{currentRequest.name}}:</a>
         <span class="text-muted">{{currentRequest.description}}</span>
         <div class="ml-4">
-            <span class2="font-weight-bold">exerciții propuse</span>:
+            <span class2="fw-bold">exerciții propuse</span>:
             {{#each currentRequest.documents}}
             <span>
                 <a href="{{url}}">subiecte</a>
@@ -26,7 +26,7 @@
             ({{currentRequest.totalRequestedQuestions}} ex.)
         </div>
         <div class="ml-4">
-            <span class2="font-weight-bold">termen de predare</span>: {{currentRequest.dueDateAsString}}
+            <span class2="fw-bold">termen de predare</span>: {{currentRequest.dueDateAsString}}
         </div>
 
     </li>
@@ -44,7 +44,7 @@ Nu există temă pentru perioada curentă!
         <a href="/clase/{{@root.class._id}}/teme/{{_id}}">{{name}}:</a>
         <span class="text-muted">{{description}}</span>
         <div class="ml-4">
-            <span class2="font-weight-bold">exerciții propuse</span>:
+            <span class2="fw-bold">exerciții propuse</span>:
             {{#each documents}}
             <span>
                 <a href="{{url}}">subiecte</a>
@@ -53,7 +53,7 @@ Nu există temă pentru perioada curentă!
             ({{totalRequestedQuestions}} ex.)
         </div>
         <div class="ml-4">
-            <span class2="font-weight-bold">termen de predare</span>: {{dueDateAsString}}
+            <span class2="fw-bold">termen de predare</span>: {{dueDateAsString}}
         </div>
 
     </li>
@@ -61,9 +61,9 @@ Nu există temă pentru perioada curentă!
 </ul>
 
 {{!-- <div class="mt-5 mb-1">
-    <span class="font-weight-bold">Obs1</span>: Temele se scriu pe coli albe (A4) și se predau in zilele de curs. Se
+    <span class="fw-bold">Obs1</span>: Temele se scriu pe coli albe (A4) și se predau in zilele de curs. Se
     pot trimite și pe WhatsApp (pt. cei care lipsesc).
 </div> --}}
-<div class="mb-5"><span class="font-weight-bold">Obs.1</span>: Pentru ajutor suplimentar există grupul <a
+<div class="mb-5"><span class="fw-bold">Obs.1</span>: Pentru ajutor suplimentar există grupul <a
         href="https://www.facebook.com/groups/417125302327211/">MateMaraton:
         ajutor la teme</a>.</div>

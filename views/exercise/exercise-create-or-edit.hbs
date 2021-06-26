@@ -26,7 +26,7 @@
 
     {{!-- statement --}}
     <div class="form-group">
-        <label for="statement-editor-txt" class="required font-weight-bold"> Enunț: </label>
+        <label for="statement-editor-txt" class="required fw-bold"> Enunț: </label>
 
         <textarea id="statement-editor-txt" rows="8" name="statement"
             style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
@@ -48,7 +48,7 @@
         {{#each exercise.question.answerOptions}}
         <div class="answer-option-parent-div mb-4">
 
-            <label class="col-form-label font-weight-bold"> Opțiunea {{inc @index}}: </label>
+            <label class="col-form-label fw-bold"> Opțiunea {{inc @index}}: </label>
 
             <textarea rows="2" name="answerOptions" style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
                 class="answer-option-editor-txt form-control {{#if errors.solution}}is-invalid {{/if}} {{#if @root.isEditMode}}d-none{{/if}}"
@@ -86,7 +86,7 @@
 
     {{!-- answer --}}
     <div class="form-group">
-        <label for="answer-editor-txt" class="font-weight-bold"> Rezultatul final: </label>
+        <label for="answer-editor-txt" class="fw-bold"> Rezultatul final: </label>
 
         <textarea id="answer-editor-txt" rows="2" name="answer"
             style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
@@ -108,7 +108,7 @@
         {{#each exercise.question.hints}}
         <div class="hint-parent-div mb-4">
 
-            <label class="col-form-label font-weight-bold"> Indicația {{inc @index}}: </label>
+            <label class="col-form-label fw-bold"> Indicația {{inc @index}}: </label>
 
             <textarea rows="2" name="hints" style="border-radius:0; border-bottom-width:0; border-color:#007bff"
                 class="hint-editor-txt form-control {{#if errors.solution}}is-invalid {{/if}} {{#if @root.isEditMode}}d-none{{/if}}"
@@ -140,7 +140,7 @@
 
     {{!-- solution --}}
     <div class="form-group">
-        <label for="solution-editor-txt" class="font-weight-bold"> Rezolvare completă: </label>
+        <label for="solution-editor-txt" class="fw-bold"> Rezolvare completă: </label>
 
         <textarea id="solution-editor-txt" rows="8" name="solution"
             style="border-radius:0; border-bottom-width:0; border-color:#008000"
@@ -158,9 +158,9 @@
 
     <br>
 
-    <div class="form-row">
-        <div class="form-group col-md-6">
-            <label for="gradeSelect" class="font-weight-bold">Clasa:</label>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="gradeSelect" class="fw-bold">Clasa:</label>
             <select name="grade" class="form-control" id="gradeSelect">
                 {{#select exercise.grade}}
                 <option value=""></option>
@@ -172,8 +172,8 @@
             </select>
         </div>
 
-        <div class="form-group col-md-6">
-            <label for="branchSelect" class="font-weight-bold">Ramura:</label>
+        <div class="col-md-6">
+            <label for="branchSelect" class="fw-bold">Ramura:</label>
             <select name="branch" class="form-control" id="branchSelect">
                 {{#select exercise.branch}}
                 <option value=""></option>
@@ -186,9 +186,9 @@
         </div>
     </div>
 
-    <div class="form-row">
-        <div class="form-group col-md-6">
-            <label for="contestTypeSelect" class="font-weight-bold">Tipul concursului
+    <div class="row">
+        <div class="col-md-6">
+            <label for="contestTypeSelect" class="fw-bold">Tipul concursului
                 <span class="text-muted font-weight-normal">(la care a fost dat accest ex.)</span>:</label>
             <select name="contestType" class="form-control" id="contestTypeSelect">
                 {{#select exercise.contestType}}
@@ -200,16 +200,16 @@
             </select>
         </div>
 
-        <div class="form-group col-md-6">
-            <label for="contestNameInput" class="font-weight-bold">Numele concursului:</label>
+        <div class="col-md-6">
+            <label for="contestNameInput" class="fw-bold">Numele concursului:</label>
             <input type="text" name="contestName" class="form-control" id="contestNameInput" placeholder=""
                 value="{{exercise.contestName}}">
         </div>
     </div>
 
-    <div class="form-row">
-        <div class="form-group col-md-6">
-            <label for="sourceTypeSelect" class="font-weight-bold">Tipul sursei
+    <div class="row">
+        <div class="col-md-6">
+            <label for="sourceTypeSelect" class="fw-bold">Tipul sursei
                 <span class="text-muted font-weight-normal">(de unde a fost copiat ex.)</span>:</label>
             <select name="sourceType" class="form-control" id="sourceTypeSelect">
                 {{#select exercise.sourceType}}
@@ -221,16 +221,16 @@
             </select>
         </div>
 
-        <div class="form-group col-md-6">
-            <label for="sourceNameInput" class="font-weight-bold">Numele sursei:</label>
+        <div class="col-md-6">
+            <label for="sourceNameInput" class="fw-bold">Numele sursei:</label>
             <input type="text" name="sourceName" class="form-control" id="sourceNameInput" placeholder=""
                 value="{{exercise.sourceName}}">
         </div>
     </div>
 
-    <div class="form-row">
-        <div class="form-group col-md-6">
-            <label for="chapterSelect" class="font-weight-bold">Capitol:
+    <div class="row">
+        <div class="col-md-6">
+            <label for="chapterSelect" class="fw-bold">Capitol:
                 {{!-- <span class="text-muted">(de unde a fost copiat ex.)</span>:--}}</label>
             <select name="chapter" class="form-control" id="chapterSelect">
                 {{#select exercise.chapter}}
@@ -242,16 +242,16 @@
             </select>
         </div>
 
-        <div class="form-group col-md-6">
-            <label for="authorInput" class="font-weight-bold">Autor:</label>
+        <div class="col-md-6">
+            <label for="authorInput" class="fw-bold">Autor:</label>
             <input type="text" name="author" class="form-control" id="authorInput" placeholder=""
                 value="{{exercise.author}}">
         </div>
     </div>
 
-    <div class="form-row">
-        <div class="form-group col-md-6">
-            <label for="subchapterSelect" class="font-weight-bold">Subcapitol
+    <div class="row">
+        <div class="col-md-6">
+            <label for="subchapterSelect" class="fw-bold">Subcapitol
                 <span class="text-muted font-weight-normal">(unitate de învățare)</span>:</label>
             <select name="subchapter" class="form-control" id="subchapterSelect">
                 {{#select exercise.subchapter}}
@@ -263,8 +263,8 @@
             </select>
         </div>
 
-        <div class="form-group col-md-6">
-            <label for="lessonSelect" class="font-weight-bold">Lecție:
+        <div class="col-md-6">
+            <label for="lessonSelect" class="fw-bold">Lecție:
                 {{!-- <span class="text-muted font-weight-normal">(unitate de învățare)</span>:--}}</label>
             <select name="lesson" class="form-control" id="lessonSelect">
                 {{#select exercise.lesson}}
@@ -278,14 +278,14 @@
 
     </div>
 
-    <div class="form-row">
-        <div class="form-group col-md-6">
-            <label for="tagsInput" class="font-weight-bold">Etichete:</label>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="tagsInput" class="fw-bold">Etichete:</label>
             <input type="text" name="tags" class="form-control" id="tagsInput" placeholder="" value="{{exercise.tags}}">
         </div>
 
-        <div class="form-group col-md-6">
-            <label for="obsInput" class="font-weight-bold">Observații:</label>
+        <div class="col-md-6">
+            <label for="obsInput" class="fw-bold">Observații:</label>
             <input type="text" name="obs" class="form-control" id="obsInput" placeholder="" value="{{exercise.obs}}">
         </div>
     </div>

@@ -21,9 +21,9 @@
 
 <form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
-    <div class="form-row">
-        <div class="form-group col-md-6">
-            <label for="gradeSelect" class="font-weight-bold">Clasa:</label>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="gradeSelect" class="fw-bold">Clasa:</label>
             <select name="grade" class="form-control" id="gradeSelect">
                 {{#select lesson.grade}}
                 <option value=""></option>
@@ -35,8 +35,8 @@
             </select>
         </div>
 
-        <div class="form-group col-md-6">
-            <label for="scopeSelect" class="font-weight-bold">Scop:
+        <div class="col-md-6">
+            <label for="scopeSelect" class="fw-bold">Scop:
                 {{!-- <span class="text-muted">(de unde a fost copiat ex.)</span>:--}}</label>
             <select name="scope" class="form-control" id="scopeSelect">
                 {{#select lesson.scope}}
@@ -50,10 +50,10 @@
 
     </div>
 
-    <div class="form-row">
+    <div class="row">
 
-        <div class="form-group col-md-6">
-            <label for="branchSelect" class="font-weight-bold">Ramura:</label>
+        <div class="col-md-6">
+            <label for="branchSelect" class="fw-bold">Ramura:</label>
             <select name="branch" class="form-control" id="branchSelect">
                 {{#select lesson.branch}}
                 <option value=""></option>
@@ -65,8 +65,8 @@
             </select>
         </div>
 
-        <div class="form-group col-md-6">
-            <label for="chapterSelect" class="font-weight-bold">Capitol:
+        <div class="col-md-6">
+            <label for="chapterSelect" class="fw-bold">Capitol:
                 {{!-- <span class="text-muted">(de unde a fost copiat ex.)</span>:--}}</label>
             <select name="chapter" class="form-control" id="chapterSelect">
                 {{#select lesson.chapter}}
@@ -80,9 +80,9 @@
 
     </div>
 
-    <div class="form-row">
-        <div class="form-group col-md-12">
-            <label for="titleInput" class="required font-weight-bold">Titlu:</label>
+    <div class="row">
+        <div class="col-md-12">
+            <label for="titleInput" class="required fw-bold">Titlu:</label>
             <input type="text" name="title" class="form-control" id="titleInput" placeholder=""
                 value="{{lesson.title}}">
         </div>
@@ -90,7 +90,7 @@
 
     {{!-- content --}}
     <div class="form-group">
-        <label for="content-editor-txt" class="required font-weight-bold"> Conținut: </label>
+        <label for="content-editor-txt" class="required fw-bold"> Conținut: </label>
 
         <textarea id="content-editor-txt" rows="8" name="content"
             style="border-radius:0; border-bottom-width:0; border-color:#bb815d"

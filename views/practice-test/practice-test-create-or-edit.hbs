@@ -18,9 +18,9 @@
 
 <form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
-    <div class="form-row">
-        <div class="form-group col-md-6">
-            <label for="gradeSelect" class="font-weight-bold">Clasa:</label>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="gradeSelect" class="fw-bold">Clasa:</label>
             <select name="grade" class="form-control" id="gradeSelect">
                 {{#select practiceTest.grade}}
                 <option value=""></option>
@@ -32,8 +32,8 @@
             </select>
         </div>
 
-        <div class="form-group col-md-6">
-            <label for="contestTypeSelect" class="font-weight-bold">Tipul concursului
+        <div class="col-md-6">
+            <label for="contestTypeSelect" class="fw-bold">Tipul concursului
                 <span class="text-muted font-weight-normal">(la care a fost dat accest ex.)</span>:</label>
             <select name="contestType" class="form-control" id="contestTypeSelect">
                 {{#select practiceTest.contestType}}
@@ -47,9 +47,9 @@
 
     </div>
 
-    <div class="form-row">
-        <div class="form-group col-md-12">
-            <label for="titleInput" class="required font-weight-bold">Titlu:</label>
+    <div class="row">
+        <div class="col-md-12">
+            <label for="titleInput" class="required fw-bold">Titlu:</label>
             <input type="text" name="name" class="form-control" id="titleInput" placeholder=""
                 value="{{practiceTest.name}}">
         </div>

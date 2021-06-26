@@ -22,8 +22,8 @@
         </select>
     </div>
     <div class="col-auto">
-        <span class="font-weight-bold">{{pageResults.startIndex}} - {{pageResults.endIndex}}</span> din
-        <span class="font-weight-bold">{{pageResults.totalExercises}}</span>
+        <span class="fw-bold">{{pageResults.startIndex}} - {{pageResults.endIndex}}</span> din
+        <span class="fw-bold">{{pageResults.totalExercises}}</span>
 
         {{!-- <span id="pagination-buttons"> --}}
             <button id="previousPageBtn" type="button" class="btn btn-light btn-sm ml-2  mr-1" title="Pagina precedentă"
@@ -76,8 +76,8 @@
 
     {{!-- <form class="form-inline">
         <label class="sr-only2" for="inlineFormInputName2">
-            <span class="font-weight-bold">{{startIndex}} - {{endIndex}}</span><span>aa din </span><span
-                class="font-weight-bold">{{totalExercises}}</span> exerciții
+            <span class="fw-bold">{{startIndex}} - {{endIndex}}</span><span>aa din </span><span
+                class="fw-bold">{{totalExercises}}</span> exerciții
         </label>
         <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="Jane Doe">
 
@@ -133,7 +133,7 @@
 {{/each}}
 {{/if}}
 
-<div class="font-weight-bold">Soluție:</div>
+<div class="fw-bold">Soluție:</div>
 <div>{{{question.solution.textPreview}}}</div>
 
 </br>

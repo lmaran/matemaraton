@@ -10,13 +10,13 @@
 
 {{!-- <h5 class="mt-4">Profil:</h5>
 <div class="ml-5">
-    <span class="font-weight-bold">Nume:</span> {{parent.firstName}} {{parent.lastName}} <button type="button" class="btn btn-link">modifica nume</button>
+    <span class="fw-bold">Nume:</span> {{parent.firstName}} {{parent.lastName}} <button type="button" class="btn btn-link">modifica nume</button>
 </div>
-<div class="ml-5"><span class="font-weight-bold">Email:</span> {{parent.email}} 
+<div class="ml-5"><span class="fw-bold">Email:</span> {{parent.email}} 
     <button type="button" class="btn btn-link">
         {{#if parent.email}}modifica email{{else}}adauga email{{/if}}
     </button></div>
-<div class="ml-5"><span class="font-weight-bold">Tel. (WhatsApp):</span> {{parent.phone}}
+<div class="ml-5"><span class="fw-bold">Tel. (WhatsApp):</span> {{parent.phone}}
     <button type="button" class="btn btn-link">
         {{#if parent.phone}}modifica telefon{{else}}adauga telefon{{/if}}
     </button></div>
@@ -51,7 +51,7 @@
   <li class="mt-1">
     <a href="/elevi/{{id}}">{{lastName}} {{firstName}}</a>
     {{#if kinship}}
-    (in calitate de <span class="font-weight-bold">{{kinship}}</span>)
+    (in calitate de <span class="fw-bold">{{kinship}}</span>)
     {{/if}}
   </li>
   {{/each}}
