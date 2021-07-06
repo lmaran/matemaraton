@@ -28,7 +28,7 @@ exports.getHomeworkSubmissionsPerStudent = async (req, res) => {
         });
     }
 
-    const today = dateTimeHelper.getFriendlyDate(new Date()).ymd; // 2020-02-17
+    const today = dateTimeHelper.getShortDate(new Date()); // 2020-02-17
     // const closedRequests = homeworkRequests.filter(x => x.dueDate < today) || [];
 
     let totalQuestions = 0;
@@ -124,7 +124,7 @@ exports.getHomeworkRequest = async (req, res) => {
     homeworkRequest.dueDateAsString = dateTimeHelper.getStringFromStringNoDay(homeworkRequest.dueDate);
     homeworkRequest.publishedDateAsString = dateTimeHelper.getStringFromStringNoDay(homeworkRequest.publishedDate);
 
-    const today = dateTimeHelper.getFriendlyDate(new Date()).ymd; // 2020-02-17
+    const today = dateTimeHelper.getShortDate(new Date()); // 2020-02-17
 
     const isCurrentHomework = homeworkRequest.dueDate >= today;
 
@@ -154,7 +154,7 @@ exports.getHomeworkRequests = async (req, res) => {
         x.dueDateAsString = dateTimeHelper.getStringFromStringNoDay(x.dueDate);
     });
 
-    const today = dateTimeHelper.getFriendlyDate(new Date()).ymd; // 2020-02-17
+    const today = dateTimeHelper.getShortDate(new Date()); // 2020-02-17
 
     const currentRequest = homeworkRequests.find((x) => x.dueDate >= today);
     const currentRequestId = currentRequest && currentRequest._id;
@@ -183,7 +183,7 @@ exports.getTotalHomeworkSubmissions = async (req, res) => {
 
     const students = await personService.getAllByIds(studentsIds);
 
-    const today = dateTimeHelper.getFriendlyDate(new Date()).ymd; // 2020-02-17
+    const today = dateTimeHelper.getShortDate(new Date()); // 2020-02-17
     const closedRequests = homeworkRequests.filter((x) => x.dueDate < today) || [];
 
     let totalQuestions = 0;

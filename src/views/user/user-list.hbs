@@ -1,0 +1,39 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item active">Utilizatori</li>
+    </ol>
+</nav>
+
+<h1>Utilizatori</h1>
+
+<table class="table thead-light table-bordered table-hover mt-5">
+    <thead>
+        <tr>
+            <th>Nume</th>
+            <th>Email</th>
+            <th>CreatLa</th>
+            <th>Stare</th>
+            <th>Admin</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each users}}
+        <tr>
+            <td>
+                <a href="/utilizatori/{{_id}}">{{firstName}} {{lastName}}
+            </td>
+            <td>
+                {{email}}
+            </td>
+            <td>{{createdOn}}</td>
+            <td>
+                {{status}}
+            </td>
+            <td>
+                {{isAdmin}}
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

@@ -11,6 +11,7 @@ const exerciseController = require("./controllers/exercise.controller");
 const classController = require("./controllers/class.controller");
 const studentController = require("./controllers/student.controller");
 const parentController = require("./controllers/parent.controller");
+const userController = require("./controllers/user.controller");
 const userResetPasswordController = require("./controllers/user-reset-password.controller");
 const userChangePasswordController = require("./controllers/user-change-password.controller");
 const userSignupController = require("./controllers/user-signup.controller");
@@ -154,6 +155,11 @@ router.post("/sesiuni-curs/sterge", isAuthenticated, courseSessionController.del
 // students
 router.get("/clase/:classId/elevi", studentController.getStudentsPerClass);
 router.get("/elevi/:studentId", studentController.getStudent);
+
+// utilizatori
+router.get("/utilizatori", isAuthenticated, userController.getAll);
+router.get("/utilizatori/:id", isAuthenticated, userController.getOneById);
+router.post("/utilizatori/:id/sterge", isAuthenticated, userController.deleteOneById);
 
 // individual pages
 router.get("/program-simulare-en-editia-2", matemaratonController.getTrainingProgramForENSimulationEdition2);

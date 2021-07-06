@@ -65,8 +65,7 @@ exports.getParent = async (req, res) => {
     ]);
 
     if (parentUser) {
-        const d = dateTimeHelper.getFriendlyDate(parentUser.modifiedOn || parentUser.createdOn);
-        parentUser.lastActionDate = `${d.dmy} ${d.time}`; // "23.04.2020 13:07"
+        parentUser.lastActionDate = dateTimeHelper.getShortDateAndTimeDate(parentUser.modifiedOn || parentUser.createdOn); // "23-04-2020 13:07"
     }
 
     const data = {
