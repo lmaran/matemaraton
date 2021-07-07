@@ -50,7 +50,7 @@ exports.createOrEditGet = async (req, res) => {
         const numberOfSessionForClass = await courseSessionService.getNumberOfSessionForClass(classId);
         data.courseSession = {
             course: numberOfSessionForClass + 1,
-            date: dateTimeHelper.getStringFromDate(new Date()),
+            date: dateTimeHelper.getShortDate(new Date()),
         };
     }
 

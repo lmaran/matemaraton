@@ -36,7 +36,7 @@ exports.addUserIfExist = async (req, res, next) => {
         const userId = jwtPayload.data._id; // jwtPayload = {data:{_id, email...}, iat, exp}
 
         const [user, roleAssignments] = await Promise.all([
-            await userService.getByIdWithoutPsw2(userId),
+            await userService.getOneByIdWithoutPsw(userId),
             await roleAssignmentsService.getRolesBySubjectId(userId.toString())
         ]);
 

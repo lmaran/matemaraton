@@ -135,8 +135,8 @@ exports.getAllPerClass = async (req, res) => {
 
         const createdOnAsLocal = new Date(createdOnAsUtc.getTime() - offset * 60000); // https://docs.mongodb.com/manual/tutorial/model-time-data/#example
 
-        const f = dateTimeHelper.getFriendlyDate(createdOnAsLocal);
-        x.createdOn = f.dmy + " " + f.time;
+        x.createdOn = dateTimeHelper.getShortDateAndTimeDate(createdOnAsLocal);
+        
         x.studentShortName = `${x.studentFirstName} ${x.studentLastName.charAt(0)}.`;
     });
 

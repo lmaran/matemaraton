@@ -48,22 +48,60 @@ exports.getRoShortMonth = monthOfYear => {
     else if (monthOfYear === 11) return "Dec";
 };
 
-exports.getFriendlyDate = date => {
+
+const getDateParts = (date) => {
     // javascript date object
     const d = date.getDate();
     const m = date.getMonth() + 1; // January is 0!
     const yyyy = date.getFullYear();
 
     let dd = d;
-    if (dd < 10) dd = "0" + d;
+    if (dd < 10) dd = `0${d}`;
 
     let mm = m;
-    if (mm < 10) mm = "0" + m;
+    if (mm < 10) mm = `0${m}`;
 
-    // format time: https://stackoverflow.com/a/25275808
-    const hours = date.getHours(); // hour returned in 24 hour format
+    return {yyyy, m, mm, d, dd}
+}
+
+const getTimeParts = (date) => {
+    let hours = date.getHours(); // hour returned in 24 hour format
+    if (hours < 10) hours = `0${hours}`;
+    
     let minutes = date.getMinutes();
-    minutes = minutes < 10 ? "0" + minutes : minutes;
+    if (minutes < 10) minutes = `0${minutes}`
+
+    return {hours, minutes}
+}
+
+exports.getShortDate = (date) => {
+    const dateParts = getDateParts(date)
+    return `${dateParts.yyyy}-${dateParts.mm}-${dateParts.dd}`
+}
+
+exports.getShortDateAndTimeDate = (date) => {
+    const dateParts = getDateParts(date)
+    const timeParts = getTimeParts(date)
+    return `${dateParts.yyyy}-${dateParts.mm}-${dateParts.dd} ${timeParts.hours}:${timeParts.minutes}`
+}
+
+exports.getFriendlyDateOld = date => {
+    // javascript date object
+    const d = date.getDate();
+    const m = date.getMonth() + 1; // January is 0!
+    const yyyy = date.getFullYear();
+
+    let dd = d;
+    if (dd < 10) dd = `0${d}`;
+
+    let mm = m;
+    if (mm < 10) mm = `0${m}`;
+
+    let hours = date.getHours(); // hour returned in 24 hour format
+    if (hours < 10) hours = `0${hours}`;
+    
+    let minutes = date.getMinutes();
+    if (minutes < 10) minutes = `0${minutes}`
 
     return {
         dayAsString: this.getRoDay(date.getDay()), // Joi
@@ -92,7 +130,7 @@ exports.getDateFromString = function(date) {
 exports.getStringFromString = function(dateStr) {
     // "yyyy-mm-dd"
     const date = this.getDateFromString(dateStr);
-    const f = this.getFriendlyDate(date);
+    const f = this.getFriendlyDateOld(date);
     const dateStrRo = f.dayAsString + ", " + f.dayOfMonth + " " + f.monthAsShortString + ". " + f.year;
     return dateStrRo; // "Joi, 07 Apr. 2015"
 };
@@ -100,7 +138,7 @@ exports.getStringFromString = function(dateStr) {
 exports.getStringFromStringNoDay = function(dateStr) {
     // "yyyy-mm-dd"
     const date = this.getDateFromString(dateStr);
-    const f = this.getFriendlyDate(date);
+    const f = this.getFriendlyDateOld(date);
     const dateStrRo = f.dayOfMonth + " " + f.monthAsShortString + ". " + f.year;
     return dateStrRo; // "07 Apr. 2015"
 };
@@ -108,14 +146,10 @@ exports.getStringFromStringNoDay = function(dateStr) {
 exports.getMonthAndDayFomString = function(dateStr) {
     // "yyyy-mm-dd" --> 07.Mar
     const date = this.getDateFromString(dateStr);
-    const f = this.getFriendlyDate(date);
+    const f = this.getFriendlyDateOld(date);
     return `${f.dayOfMonth}-${f.monthAsShortString}`;
 };
 
-exports.getStringFromDate = function(date) {
-    // javascript date object
-    return this.getFriendlyDate(date).ymd;
-};
 
 // exports.getRoToday = function() {
 //     // javascript date object (Ro time)
@@ -129,7 +163,7 @@ exports.getStringFromDate = function(date) {
 // exports.getRoTodayStr = function() {
 //     // "yyyy-mm-dd" (Ro time)
 //     const roDate = this.getRoToday();
-//     return this.getFriendlyDate(roDate).ymd;
+//     return this.getFriendlyDateOld(roDate).ymd;
 // };
 
 /**

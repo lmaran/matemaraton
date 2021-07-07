@@ -1,11 +1,13 @@
 <style>
-    ._card-body { cursor: pointer; }
-
+    ._card-body {
+        cursor: pointer;
+    }
 </style>
 
 <div class="text-center pt-5 pb-5">
     <h1>Cursuri de matematică pentru gimnaziu</h1>
-    <p class="fs-5 fw-light">Un proiect implementat de voluntari, în parteneriat cu Școala 21 "Vicențiu Babeș", Timișoara.</p>
+    <p class="fs-5 fw-light">Un proiect implementat de voluntari, în parteneriat cu Școala 21 "Vicențiu Babeș",
+        Timișoara.</p>
     <p class="fs-5 fw-bold">Ediția 4 (2020-2021)</p>
 </div>
 
@@ -18,11 +20,12 @@
 
             <div class="card-body">
 
-                <p class="card-text">Grupe de 8-12 elevi care se pregătesc la matematică sub îndrumarea unui instructor. Activitățile se desfășoară în
+                <p class="card-text">Grupe de 8-12 elevi care se pregătesc la matematică sub îndrumarea unui instructor.
+                    Activitățile se desfășoară în
                     format online sau într-o sală de clasă. Totul gratuit.</p>
                 {{! <a href="/clase" class="btn btn-primary">Vezi toate clasele</a> }}
             </div>
-            <div class="card-footer bg-white border-top-0">
+            <div class="card-footer bg-white border-top-0 mx-auto">
                 <a href="/clase" class="btn btn-primary _w-100">{{!<i class="bi bi-people-fill"></i>}}
                     Vezi toate clasele
                 </a>
@@ -31,22 +34,24 @@
     </div>
 
     {{#if @root.user.isAdmin}}
-        <div class="col">
-            <div class="card h-100">
-                <i class="bi bi-book text-center" style="font-size: 2.5rem; color: gray;"></i>
-                <h3 class="card-title text-center">Cursuri</h3>
-                <div class="card-body">
-                    <p class="card-text">Suporturi de curs (lecții, exerciții rezolvate și teme propuse pentru acasă), toate grupate pe ani de studiu,
-                        nivel de dificultate și unități de învățare.</p>
-                    <p class="card-text"><small class="text-muted font-weight-light2">Utile și celor care se pregătesc fără instructor.</small> </p>
-                </div>
-                <div class="card-footer bg-white border-top-0">
-                    <a href="/cursuri" class="btn btn-primary _w-100">{{!<i class="bi bi-book"></i>}} 
-                        Vezi toate cursurile
-                    </a>
-                </div>
+    <div class="col">
+        <div class="card h-100">
+            <i class="bi bi-book text-center" style="font-size: 2.5rem; color: gray;"></i>
+            <h3 class="card-title text-center">Cursuri</h3>
+            <div class="card-body">
+                <p class="card-text">Suporturi de curs (lecții, exerciții rezolvate și teme propuse pentru acasă), toate
+                    grupate pe ani de studiu,
+                    nivel de dificultate și unități de învățare.</p>
+                <p class="card-text"><small class="text-muted font-weight-light2">Utile și celor care se pregătesc fără
+                        instructor.</small> </p>
+            </div>
+            <div class="card-footer bg-white border-top-0 mx-auto">
+                <a href="/cursuri" class="btn btn-primary _w-100">{{!<i class="bi bi-book"></i>}}
+                    Vezi toate cursurile
+                </a>
             </div>
         </div>
+    </div>
     {{/if}}
 
     <div class="col">
@@ -55,12 +60,14 @@
             <i class="bi bi-facebook text-center" style="font-size: 2.5rem; color: gray;"></i>
             <h3 class="card-title text-center">Comunitate</h3>
             <div class="card-body">
-                <p class="card-text">Dacă ai nevoie de ajutor, trimite o poză cu exercițiul pe care nu știi să-l faci și precizează clasa. Atât!.</p>
+                <p class="card-text">Dacă ai nevoie de ajutor, trimite o poză cu exercițiul pe care nu știi să-l faci și
+                    precizează clasa. Atât!.</p>
                 <p class="card-text"><small class="text-muted">Inclusiv pentru părinți.</small></p>
             </div>
-            <div class="card-footer bg-white border-top-0">
-                <a href="https://www.facebook.com/groups/417125302327211" target="_blank" class="btn btn-primary _w-100">
-                {{!<i class="bi bi-facebook"></i>}}
+            <div class="card-footer bg-white border-top-0 mx-auto">
+                <a href="https://www.facebook.com/groups/417125302327211" target="_blank"
+                    class="btn btn-primary _w-100">
+                    {{!<i class="bi bi-facebook"></i>}}
                     Grup Facebook
                 </a>
             </div>
@@ -121,12 +128,13 @@
 <hr> }}
 
 {{#if @root.user.isAdmin}}
-    <h5 class="mt-5">Admin:</h5>
-    <ul>
-        <li><a href="/exercitii">Exerciții</a></li>
-        <li><a href="/lectii">Lecții</a></li>
-        {{! <li><a href='/teste'>Teste</a></li> }}
-    </ul>
+<h5 class="mt-5">Admin:</h5>
+<ul>
+    <li><a href="/exercitii">Exerciții</a></li>
+    <li><a href="/lectii">Lecții</a></li>
+    <li><a href="/utilizatori">Utilizatori</a></li>
+    {{! <li><a href='/teste'>Teste</a></li> }}
+</ul>
 {{/if}}
 
 <h5>Diverse (în lucru):</h5>

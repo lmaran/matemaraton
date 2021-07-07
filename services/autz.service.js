@@ -35,5 +35,11 @@ exports.can = async (user, rp) => {
         return up.includes("*:*") || up.includes(rp);
     } else if (rp === "delete:contest") {
         return up.includes("*:*") || up.includes(rp);
+    } else if (rp === "read:users") {
+        return up.includes("*:*") || up.includes(rp);
+    } else if (rp === "read:user") {
+        return up.includes("*:*") || up.includes(rp);
+    } else if (rp === "delete:user") {
+        return up.includes("*:*") || up.includes(rp);
     }
 };

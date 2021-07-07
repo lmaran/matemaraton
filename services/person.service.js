@@ -8,6 +8,11 @@ exports.getOneById = async id => {
     return db.collection(collection).findOne({ _id: new ObjectID(id) });
 };
 
+exports.getOneByEmail = async email => {
+    const db = await mongoHelper.getDb();
+    return db.collection(collection).findOne({ email});
+};
+
 // exports.getAll = async () => {
 //     const db = await mongoHelper.getDb();
 //     return db
