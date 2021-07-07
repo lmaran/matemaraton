@@ -7,18 +7,6 @@
 {{!-- no sections (head/script) in partials as handlebars doesn't support more that 2 similar sections on the same page
 if 2 similar sections are used, the last one will override the first one --}}
 
-{{#unless hideNavbar}}
-
-
-{{!-- <nav class="navbar navbar-light bg-light">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">
-      <img src="/docs/5.0/assets/brand/bootstrap-logo.svg" alt="" width="30" height="24" class="d-inline-block align-text-top">
-      Bootstrap
-    </a>
-  </div>
-</nav> --}}
-
 <nav class="navbar navbar-expand-lg navbar-light bg-white">
     <div class="container-fluid">
         <a class="navbar-brand pt-0 pb-0" href="/"><img src='/matemaraton-logo-square.png' width="37">
@@ -29,7 +17,6 @@ if 2 similar sections are used, the last one will override the first one --}}
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-            {{#unless user.activationToken}} {{!do not display this part during user activation}}
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 {{#if @root.user}}
                 <li class="nav-item dropdown">
@@ -56,10 +43,7 @@ if 2 similar sections are used, the last one will override the first one --}}
                 </li>
                 {{/if}}
             </ul>
-            {{/unless}}
 
         </div>
     </div>
 </nav>
-
-{{/unless}}
