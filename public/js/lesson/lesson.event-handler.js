@@ -1,4 +1,4 @@
-import { lessonService } from "./lesson.service.js";
+import { markdownService } from "../markdown/markdown.service.js";
 import { domHelper } from "../helpers/dom.helper.js";
 
 /**
@@ -12,7 +12,7 @@ const contentPreviewDiv = document.getElementById("content-preview-div");
 export const eventHandlers = {
     getContentPreview: async (event) => {
         const data = { markdown: event.target.value };
-        contentPreviewDiv.innerHTML = await lessonService.getRenderedMarkdown(data);
+        contentPreviewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
     },
 
     toggleContentEditor: async (event) => {
@@ -24,11 +24,5 @@ export const eventHandlers = {
 
         const previewDiv = document.getElementById("content-preview-div");
         previewDiv.style.borderTopStyle = editorIsHide ? "solid" : "dashed";
-    },
-
-    autoExpandAllTextareas: async (event) => {
-        if (event.target.tagName.toLowerCase() === "textarea") {
-            domHelper.autoExpand(event.target);
-        }
     },
 };

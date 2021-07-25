@@ -37,13 +37,11 @@
 
 </head>
 
-
 <body>
-    {{!-- {{> navbar ctx }} --}}
-
     <main role="main" class="container">
-        {{> navbar ctx }}
-        {{!toJSON ctx}}
+        {{> navbar}}
+        {{!-- {{> navbar ctx=@root}} --}}
+        {{!-- {{toJSON @root}} --}}
         {{{body}}}
     </main>
 </body>

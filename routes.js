@@ -46,8 +46,15 @@ router.post("/clase/:classId/inscrieri/adauga", isAuthenticated, enrollmentContr
 // my page
 router.get("/pagina-mea", meController.getMyPage);
 
-// class
-router.get("/clase/:classId", classController.getClass);
+// classes
+router.get("/clase", classController.getAll);
+router.get("/clase/:id/modifica", isAuthenticated, classController.createOrEditGet);
+router.post("/clase/:id/modifica", isAuthenticated, classController.createOrEditPost);
+router.put("/clase/:id/descriere", isAuthenticated, classController.saveDescription);
+router.get("/clase/adauga", isAuthenticated, classController.createOrEditGet);
+router.post("/clase/adauga", isAuthenticated, classController.createOrEditPost);
+router.get("/clase/:classId", classController.getOneById);
+router.post("/clase/:id/sterge", isAuthenticated, classController.deleteOneById);
 
 // courses
 router.get("/cursuri", courseController.getAll);
@@ -127,7 +134,6 @@ router.post("/exercitii/:id/rezolvari", isAuthenticated, exerciseController.addM
 router.post("/markdown/get-rendered-markdown", isAuthenticated, markdownController.getGetRenderedMarkdown);
 
 // presence
-router.get("/clase", classController.getClasses);
 router.get("/clase/:classId/prezenta", presenceController.getPresencePerClass);
 router.get("/clase/:classId/total-prezente", presenceController.getTotalPresences);
 router.get("/clase/:classId/elevi/:studentId/prezenta", presenceController.getPresencePerStudent);

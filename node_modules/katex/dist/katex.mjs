@@ -1319,7 +1319,7 @@ class SvgNode {
   }
 
   toMarkup() {
-    var markup = "<svg"; // Apply attributes
+    var markup = "<svg xmlns=\"http://www.w3.org/2000/svg\""; // Apply attributes
 
     for (var attr in this.attributes) {
       if (Object.prototype.hasOwnProperty.call(this.attributes, attr)) {
@@ -17642,7 +17642,7 @@ var katex = {
   /**
    * Current KaTeX version
    */
-  version: "0.13.11",
+  version: "0.13.13",
 
   /**
    * Renders the given LaTeX into an HTML+MathML combination, and adds

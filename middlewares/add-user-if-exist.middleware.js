@@ -60,18 +60,10 @@ exports.addUserIfExist = async (req, res, next) => {
         });
         user.permissions = [...new Set(permissions)]; // keep only unique values
 
-        //const { roles, permissions } = await autz.getRolesAndPermissionsByUser(user);
-        // console.log("roles:");
-        // console.log(roles);
-        // console.log("permissions:");
-        // console.log(permissions);
-
         req.user = user;
-        res.locals.user = user;
         next();
     } catch (err) {
         cookieHelper.clearCookies(res);
-        // return res.send(err.message);
         return next();
     }
 };

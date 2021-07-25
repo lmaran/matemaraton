@@ -48,7 +48,7 @@ exports.getOneById = async (req, res) => {
     }
 
     const data = {
-        user,
+        user2: user, // we have to rename it, otherwise this object will overwrite the global user object used by navbar
         canReadUser,
         canDeleteUser: await autz.can(req.user, "delete:user"),
     };
