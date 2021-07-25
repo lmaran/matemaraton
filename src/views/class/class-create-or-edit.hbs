@@ -1,0 +1,137 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/clase">Clase</a></li>
+        <li class="breadcrumb-item active">
+            {{#if isEditMode}}{{class.name}}{{else}}Adaugă{{/if}}
+        </li>
+    </ol>
+</nav>
+
+<h1 id="class-id-container" data-class-id="{{class._id}}">
+    {{#if isEditMode}}{{class.name}}{{else}}Clasă nouă:{{/if}}
+</h1>
+
+{{#if errors.page}}
+<div class="alert alert-danger">
+    <i class="bi bi-exclamation-circle me-2"></i> {{errors.page.msg}}
+</div>
+{{/if}}
+
+{{!-- {{toJSON errors}} --}}
+
+<form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="fw-bold required">Nume:</label>
+            <input type="text" name="name" class="form-control {{#if errors.name}}is-invalid {{/if}}"
+                value="{{class.name}}" {{#if uiData.name.hasAutofocus}}autofocus {{/if}} />
+            <div class="text-muted">Ex: Cls 7 - Grupa 1</div>
+            <div class="invalid-feedback mt-0">{{errors.name.msg}}</div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label class="fw-bold required">An școlar:</label>
+            <input type="text" name="academicYear" class="form-control {{#if errors.academicYear}}is-invalid {{/if}}"
+                value="{{class.academicYear}}" {{#if uiData.academicYear.hasAutofocus}}autofocus {{/if}}>
+            <div class="text-muted">Ex: 2021-2022</div>
+            <div class="invalid-feedback mt-0">{{errors.academicYear.msg}}</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="fw-bold">Nivel:</label>
+            <input type="text" name="level" class="form-control {{#if errors.level}}is-invalid {{/if}}"
+                value="{{class.level}}" {{#if uiData.level.hasAutofocus}}autofocus {{/if}}>
+            <div class="text-muted">Ex: începător, mediu, avansat, olimpiadă</div>
+            <div class="invalid-feedback mt-0">{{errors.level.msg}}</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 mb-3">
+            <label class="fw-bold">Descriere:</label>
+            <textarea id="description-editor-txt" rows="5" type="text" name="description"
+                style2="border-radius:0; border-bottom-width:0;"
+                class="form-control markdown-textarea markdown-textarea-amber{{#if errors.description}}is-invalid {{/if}}
+                {{#if isEditMode}}d-none{{/if}}" 
+                {{#if uiData.description.hasAutofocus}}autofocus {{/if}}>{{class.description}}</textarea>
+
+            <div id="description-preview-div" class="markdown-preview markdown-preview-amber"
+                {{{class.descriptionPreview}}}
+            </div>
+
+            <div class="float-end">
+        
+                <div id="save-description-div" class="d-inline d-none"> 
+                    <button id="save-description-btn" type="button"
+                        class="btn btn-link p-0 mt-n1">Salvează
+                    </button>
+                    <span class="ms-2 me-2 text-muted"> | </span>
+                </div>
+
+                <button id="toggle-description-editor-btn" type="button"
+                    class="btn btn-link p-0 mt-n1">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}
+                </button>
+            </div>
+
+
+                {{!-- <button type="button" class="toggle-answer-option-editor-btn btn btn-link p-0">Editează</button>
+                <span class="ms-2 me-2 text-muted"> | </span>
+                <button type="button" class="delete-answer-option-btn btn btn-link p-0">Șterge</button> --}}
+
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" name="isHidden" id="isHiddenCheck" {{#if
+                    class.isHidden}}checked{{/if}}>
+                <label class="form-check-label" for="isHiddenCheck">Ascunde</label>
+                <small>
+                    <div class="text-muted">Doar tu, proprietarul, poți vedea această clasă</div>
+                </small>
+            </div>
+        </div>
+
+        {{#if isEditMode}}
+        <div class="col-md-6 mb-3">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" name="isCompleted" id="isCompletedCheck" {{#if
+                    class.isCompleted}}checked{{/if}}>
+                <label class="form-check-label" for="isCompletedCheck">Activitatea la această clasă s-a încheiat</label>
+                <small>
+                    <div class="text-muted">O clasă care și-a încetat activitatea va apărea ca arhivată</div>
+                </small>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+
+    <input type="hidden" name="id" value="{{class._id}}" />
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <button type="submit" name="saveBtn" class="btn btn-primary"><i class="bi bi-save"></i>
+                Salveaza</button>
+            <a href="/clase{{#if isEditMode}}/{{class._id}}{{/if}}" class="btn btn-light"><i class="bi bi-x"></i>
+                Renunță</a>
+
+            <label class="col-form-label float-end"> Ajutor:
+                <a href="https://markdown-it.github.io/" target="_blank">markdon</a>
+                <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>
+                +
+                <a href="https://katex.org/docs/supported.html" target="_blank">latex</a>
+                <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small></label>
+        </div>
+    </div>
+
+</form>
+
+{{#section 'script'}}
+<script type="module" src="/js/class/class.main.js"></script>
+{{/section}}

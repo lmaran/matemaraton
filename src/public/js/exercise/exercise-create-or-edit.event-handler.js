@@ -1,4 +1,4 @@
-import { exerciseService } from "./exercise.service.js";
+import { markdownService } from "../markdown/markdown.service.js";
 import { domHelper } from "../helpers/dom.helper.js";
 
 /**
@@ -19,22 +19,22 @@ const solutionPreviewDiv = document.getElementById("solution-preview-div");
 export const eventHandlers = {
     getStatementPreview: async (event) => {
         const data = { markdown: event.target.value };
-        statementPreviewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
+        statementPreviewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
     },
     getAnswerPreview: async (event) => {
         const data = { markdown: event.target.value };
-        answerPreviewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
+        answerPreviewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
     },
     getSolutionPreview: async (event) => {
         const data = { markdown: event.target.value };
-        solutionPreviewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
+        solutionPreviewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
     },
     handleKeyupForAllHints: async (event) => {
         if (event.target && event.target.classList.contains("hint-editor-txt")) {
             const data = { markdown: event.target.value };
             const parentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
             const previewDiv = parentDiv.querySelector(".hint-preview-div");
-            previewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
+            previewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
         }
     },
     handleKeyupForAllAnswerOptions: async (event) => {
@@ -42,7 +42,7 @@ export const eventHandlers = {
             const data = { markdown: event.target.value };
             const parentDiv = event.target.closest(".answer-option-parent-div"); // find the closest ancestor which matches the selectors
             const previewDiv = parentDiv.querySelector(".answer-option-preview-div");
-            previewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
+            previewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
         }
     },
     // getHintPreview: async event => {
@@ -50,7 +50,7 @@ export const eventHandlers = {
 
     //     const hintParentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
     //     const hintPreviewDiv = hintParentDiv.querySelector(".hint-preview-div");
-    //     hintPreviewDiv.innerHTML = await exerciseService.getRenderedMarkdown(data);
+    //     hintPreviewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
     // },
 
     // saveExercise: async () => {
@@ -59,7 +59,7 @@ export const eventHandlers = {
     //         exerciseStatement: exerciseStatementTxt.value,
     //         exerciseSolution: exerciseSolutionTxt.value
     //     };
-    //     const newExercise = await exerciseService.saveExercise(data);
+    //     const newExercise = await markdownService.saveExercise(data);
     //     statementPreviewDiv.innerHTML = newExercise.question.statement.textPreview;
     //     solutionPreviewDiv.innerHTML = newExercise.question.solution.textPreview;
 
@@ -207,9 +207,9 @@ export const eventHandlers = {
                     style="border: 1px solid #007bff; padding: 6px 12px; background-color: #f5faff; min-height:58px"
                 ></div>
 
-                <button type="button" class="delete-hint-btn btn btn-link p-0 mt-n1 float-right">Șterge</button>
-                <span class="float-right mt-n1 ml-2 mr-2 text-muted"> | </span>
-                <button type="button" class="toggle-hint-editor-btn btn btn-link p-0 mt-n1 float-right">Ascunde</button>
+                <button type="button" class="delete-hint-btn btn btn-link p-0 mt-n1 float-end">Șterge</button>
+                <span class="float-end mt-n1 ms-2 me-2 text-muted"> | </span>
+                <button type="button" class="toggle-hint-editor-btn btn btn-link p-0 mt-n1 float-end">Ascunde</button>
             </div>
         `;
 
@@ -238,27 +238,22 @@ export const eventHandlers = {
                     style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px"
                 ></div>
 
-                <div class="float-right form-check-inline mr-0">
+                <div class="float-end form-check-inline me-0">
                     <input class="form-check-input" type="checkbox" name="isCorrectAnswerChecks" value=${nrOfElements + 1} id="defaultCheck${
             nrOfElements + 1
         }">
                     <label class="form-check-label text-muted" for="defaultCheck${nrOfElements + 1}">
                         Răspuns corect
                     </label>
-                    <span class="ml-2 mr-2 text-muted"> | </span>
+                    <span class="ms-2 me-2 text-muted"> | </span>
                     <button type="button" class="toggle-answer-option-editor-btn btn btn-link p-0">Editează</button>
-                    <span class="ml-2 mr-2 text-muted"> | </span>
+                    <span class="ms-2 me-2 text-muted"> | </span>
                     <button type="button" class="delete-answer-option-btn btn btn-link p-0">Șterge</button>
                 </div>
             </div>
         `;
 
         mainDiv.insertAdjacentHTML("beforeend", markup); // much faster that innerHTML
-    },
-    autoExpandAllTextareas: async (event) => {
-        if (event.target.tagName.toLowerCase() === "textarea") {
-            domHelper.autoExpand(event.target);
-        }
     },
 };
 

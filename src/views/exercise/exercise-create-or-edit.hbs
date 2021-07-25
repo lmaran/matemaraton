@@ -39,7 +39,7 @@
             {{{exercise.question.statement.textPreview}}}
         </div>
 
-        <button id="toggle-statement-editor-btn" type="button" class="btn btn-link p-0 mt-n1 float-right">{{#if
+        <button id="toggle-statement-editor-btn" type="button" class="btn btn-link p-0 mt-n1 float-end">{{#if
             isEditMode}}Editează{{else}}Ascunde{{/if}}</button>
     </div>
 
@@ -60,15 +60,15 @@
                 {{{textPreview}}}
             </div>
 
-            <div class="float-right form-check-inline mr-0">
+            <div class="float-end form-check-inline me-0">
                 <input class="form-check-input" type="checkbox" name="isCorrectAnswerChecks" value={{inc @index}}
                     id="isCorrectAnswerCheck{{inc @index}}" {{#if isCorrect}}checked{{/if}}>
                 <label class="form-check-label text-muted" for="isCorrectAnswerCheck{{inc @index}}">
                     Răspuns corect
                 </label>
-                <span class="ml-2 mr-2 text-muted"> | </span>
+                <span class="ms-2 me-2 text-muted"> | </span>
                 <button type="button" class="toggle-answer-option-editor-btn btn btn-link p-0">Editează</button>
-                <span class="ml-2 mr-2 text-muted"> | </span>
+                <span class="ms-2 me-2 text-muted"> | </span>
                 <button type="button" class="delete-answer-option-btn btn btn-link p-0">Șterge</button>
             </div>
 
@@ -99,7 +99,7 @@
             {{{exercise.question.answer.textPreview}}}
         </div>
 
-        <button id="toggle-answer-editor-btn" type="button" class="btn btn-link p-0 mt-n1 float-right">{{#if
+        <button id="toggle-answer-editor-btn" type="button" class="btn btn-link p-0 mt-n1 float-end">{{#if
             isEditMode}}Editează{{else}}Ascunde{{/if}}</button>
     </div>
 
@@ -121,9 +121,9 @@
             </div>
 
             {{!-- {{#if @root.isEditMode}} --}}
-            <button type="button" class="delete-hint-btn btn btn-link p-0 mt-n1 float-right">Șterge</button>
-            <span class="float-right mt-n1 ml-2 mr-2 text-muted"> | </span>
-            <button type="button" class="toggle-hint-editor-btn btn btn-link p-0 mt-n1 float-right">Editează</button>
+            <button type="button" class="delete-hint-btn btn btn-link p-0 mt-n1 float-end">Șterge</button>
+            <span class="float-end mt-n1s2 me-2 text-muted"> | </span>
+            <button type="button" class="toggle-hint-editor-btn btn btn-link p-0 mt-n1 float-end">Editează</button>
             {{!-- {{/if}} --}}
 
         </div>
@@ -152,7 +152,7 @@
             {{{exercise.question.solution.textPreview}}}
         </div>
 
-        <button id="toggle-solution-editor-btn" type="button" class="btn btn-link p-0 mt-n1 float-right">{{#if
+        <button id="toggle-solution-editor-btn" type="button" class="btn btn-link p-0 mt-n1 float-end">{{#if
             isEditMode}}Editează{{else}}Ascunde{{/if}}</button>
     </div>
 
@@ -306,7 +306,7 @@
                 class="btn btn-light"><i class="bi bi-eye"></i> Vizualizează</a>
             {{/if}}
 
-            <label class="col-md-3s col-form-label float-right"> Help:
+            <label class="col-md-3s col-form-label float-end"> Ajutor:
                 <a href="https://markdown-it.github.io/" target="_blank">markdon</a>
                 <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>
                 +

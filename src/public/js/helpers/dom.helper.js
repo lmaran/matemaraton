@@ -23,11 +23,32 @@ export const domHelper = {
         elem.classList.remove("show");
     },
 
+    applyColorGreenTransition: async (elem, milliseconds) => {
+        elem.classList.add("show-green");
+        elem.classList.remove("hide-green");
+
+        await dateTimeHelper.sleepAsync(milliseconds); // fade out after x milliseconds (instead of using setTimeout)
+
+        elem.classList.remove("show-green");
+        elem.classList.add("hide-green");
+    },
+
     /**
      * Automatically expand a textarea as the user types
      * https://gomakethings.com/automatically-expand-a-textarea-as-the-user-types-using-vanilla-javascript/
+     *
+     * Note: It works fine for small text, but annoying behavior for large text
+     *
+     * Usage:
+     * document.addEventListener("input", eventHandlers.autoExpandAllTextareas);
+     * document.addEventListener("click", eventHandlers.autoExpandAllTextareas);
+     *
+     * autoExpandAllTextareas: async (event) => {
+     *    if (event.target.tagName.toLowerCase() === "textarea") {
+     *       domHelper.autoExpand(event.target);
+     * }}
      */
-    autoExpand: field => {
+    autoExpand: (field) => {
         // Reset field height
         field.style.height = "inherit";
 
@@ -45,5 +66,5 @@ export const domHelper = {
         height = height - 12; // my correction (l.m.)
 
         field.style.height = height + "px";
-    }
+    },
 };

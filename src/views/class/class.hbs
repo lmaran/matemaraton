@@ -19,7 +19,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
-        <li class="breadcrumb-item"><a href="/Clase/">Clase</a></li>
+        <li class="breadcrumb-item"><a href="/clase/">Clase</a></li>
         <li class="breadcrumb-item active">{{class.name}}</li>
     </ol>
 </nav>
@@ -27,25 +27,58 @@
 <h1>{{class.name}}</h1>
 <h3 class="text-muted2 font-weight-light">Nivel {{class.level}}</h3>
 
+{{#if canCreateOrEditClass}}
+<a href="clase/{{class._id}}/modifica" class="btn btn-primary"><i class="bi bi-pencil-fill"></i> Modifică</a>
+{{/if}}
+
+{{#if canDeleteClass}}
+<form method="post" onsubmit="deleteBtn.disabled = true; return true;" style="display:inline">
+    <button type="submit" formaction="/clase/{{class._id}}/sterge" title="Șterge" name="deleteBtn"
+        class="btn btn-light btn-outline-primary"
+        onclick="return confirm('Ești sigur că vrei să ștergi această clasă?');"><i
+            class="bi bi-trash-fill"></i></button>
+</form>
+{{/if}}
+
+{{!-- {{#if canCreateOrEditExercise}}
+<a href="{{#if contest}}/concursuri/{{contest._id}}{{/if}}/exercitii/{{exercise._id}}/modifica"
+    class="btn btn-primary"><i class="bi bi-pencil-fill"></i> Modifică</a>
+{{/if}}
+
+{{#if canDeleteExercise}}
+<form method="post" onsubmit="deleteBtn.disabled = true; return true;" style="display:inline">
+    <input type="hidden" name="exerciseId" value="{{exercise._id}}" />
+    <input type="hidden" name="contestId" value="{{contest._id}}" />
+
+    <button type="submit" formaction="{{#if contest}}/concursuri{{/if}}/exercitii/sterge" title="Șterge"
+        name="deleteBtn" class="btn btn-light btn-outline-primary"
+        onclick="return confirm('Ești sigur că vrei să ștergi acest exercițiu?');"><i
+            class="bi bi-trash-fill"></i></button>
+</form>
+{{/if}} --}}
+
+
+
 {{#unless (eq class.enrollmentInfo.status "open")}}
 <h5 class="mt-4">Rapoarte:</h5>
 <ul>
     <li><a href="/clase/{{class._id}}/elevi">Elevi</a></li>
     <li class="mb-3"><a href="/clase/{{class._id}}/sesiuni-curs">Sesiuni de curs</a>
-            <span class="text-muted">(poze de pe tablă
-                {{#if (or (eq2 class._id "5d92db9ba0da913a67b9a711") (eq2 class._id "5d92dc63a0da913a67b9a713"))}}
-                <span class="fw-bold">și video</span>
-                {{/if}})
-            </span></li>
+        <span class="text-muted">(poze de pe tablă
+            {{#if (or (eq2 class._id "5d92db9ba0da913a67b9a711") (eq2 class._id "5d92dc63a0da913a67b9a713"))}}
+            <span class="fw-bold">și video</span>
+            {{/if}})
+        </span>
+    </li>
 
     <li><a href="/clase/{{class._id}}/prezenta">Prezența</a> <span class="text-muted">(pe zile)</span></li>
     <li class="mb-3"><a href="/clase/{{class._id}}/total-prezente">Total prezențe</a><span class="text-muted"> (pe
-                elevi)</span></li>
+            elevi)</span></li>
 
     <li><a href="/clase/{{class._id}}/teme-propuse">Teme propuse</a> <span class="text-muted"> (pentru acasă)</span>
     </li>
     <li><a href="/clase/{{class._id}}/total-teme-predate">Total teme predate</a> <span class="text-muted"> (făcute
-                acasă)</span> </li>
+            acasă)</span> </li>
     {{#if can.viewParentsLink}}
     <li><a href="/clase/{{class._id}}/parinti">Parinți</a></li>
     {{/if}}
@@ -55,11 +88,13 @@
 
 {{#if class.description}}
 <h5>Descriere:</h5>
-<div class="text-muted font-weight-light mb-3">{{class.description}}</div>
+<div class="text-muted font-weight-light mb-3">{{{class.description}}}</div>
 {{/if}}
 
 {{#if @root.user.isAdmin}}
+{{#if class.courseCode}}
 <h5>Curs: <a href="/cursuri/{{courseSummary._id}}">{{courseSummary.code}}</a> - {{courseSummary.name}}</h5>
+{{/if}}
 {{/if}}
 
 {{!-- {{#if (or class.startDate class.numberOfSessions)}}
@@ -127,7 +162,7 @@
 </ul>
 
 <div class="mb-5">
-    {{#if (eq class.enrollmentInfo.status  "notStarted")}}
+    {{#if (eq class.enrollmentInfo.status "notStarted")}}
     Adresa pentru înscriere: va urma!
     {{else }} {{!-- status="open / completed" --}}
     <a class="btn btn-primary btn-sm" href="/clase/{{class._id}}/inscrieri/adauga" role="button">Cerere de

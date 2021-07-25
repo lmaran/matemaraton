@@ -5,21 +5,21 @@ import { exerciseService } from "./exercise.service.js";
  * event handlers (alias 'controller')
  */
 export const eventHandlers = {
-    toggleAnswer: async event => {
+    toggleAnswer: async (event) => {
         const div = document.getElementById("answer-div");
         div.classList.toggle("d-none");
 
         const divIsHide = div.classList.contains("d-none");
         event.target.textContent = divIsHide ? "Rezultat final" : "Ascunde rezultatul";
     },
-    toggleHints: async event => {
+    toggleHints: async (event) => {
         const div = document.getElementById("hints-div");
         div.classList.toggle("d-none");
 
         const divIsHide = div.classList.contains("d-none");
         event.target.textContent = divIsHide ? "Indicații" : "Ascunde indicațiile";
     },
-    toggleSolution: async event => {
+    toggleSolution: async (event) => {
         const div = document.getElementById("solution-div");
         div.classList.toggle("d-none");
 
@@ -39,7 +39,7 @@ export const eventHandlers = {
         }
     },
 
-    submitMySolution: async event => {
+    submitMySolution: async (event) => {
         const exerciseIdContainer = document.getElementById("exercise-id-container");
         const exerciseId = exerciseIdContainer.dataset.exerciseId;
 
@@ -58,5 +58,5 @@ export const eventHandlers = {
         //const response = await exerciseService.submitMySolution(data);
 
         //console.log(response);
-    }
+    },
 };
