@@ -116,7 +116,7 @@ exports.createOrEditPost = async (req, res) => {
     }
 
     // Init
-    const classId = req.params.id;
+    let classId = req.params.id;
     const isEditMode = !!classId;
 
     const cls = {
@@ -126,31 +126,47 @@ exports.createOrEditPost = async (req, res) => {
         description: req.body.description,
     };
 
-    cls.isHidden = req.body.isHidden === "on" ? true : false;
-    cls.isCompleted = req.body.isCompleted === "on" ? true : false;
-
     // handle static validation errors
     const validationErrors = getStaticValidationErrors(cls);
     if (Object.keys(validationErrors).length > 0) {
         return flashAndReloadPage(req, res, validationErrors, cls);
     }
 
+    const modifiedFields = { name: cls.name, academicYear: cls.academicYear };
+
     if (isEditMode) {
-        cls._id = classId;
-        cls.modifiedOn = new Date();
-        cls.modifiedById = req.user._id.toString();
-        classService.updateOne(cls);
+        const removedFields = {};
+
+        modifiedFields.modifiedOn = new Date();
+        modifiedFields.modifiedById = req.user._id.toString();
+
+        if (cls.level) modifiedFields.level = cls.level;
+        else removedFields.level = "";
+
+        if (cls.description) modifiedFields.description = cls.description;
+        else removedFields.description = "";
+
+        if (req.body.isHidden === "on") modifiedFields.isHidden = true;
+        else removedFields.isHidden = "";
+
+        if (req.body.isCompleted === "on") modifiedFields.isCompleted = true;
+        else removedFields.isCompleted = "";
+
+        classService.updateOne(classId, modifiedFields, removedFields);
     } else {
-        cls.createdOn = new Date();
-        cls.createdById = req.user._id.toString();
+        modifiedFields.createdOn = new Date();
+        modifiedFields.createdById = req.user._id.toString();
 
-        //const cleanCls = objectHelper.removeFalsyProperties(cls);
+        if (cls.level) modifiedFields.level = cls.level;
+        if (cls.description) modifiedFields.description = cls.description;
+        if (req.body.isHidden === "on") modifiedFields.isHidden = true;
+        if (req.body.isCompleted === "on") modifiedFields.isCompleted = true;
 
-        const result = await classService.insertOne(cls);
-        cls._id = result.insertedId;
+        const result = await classService.insertOne(modifiedFields);
+        classId = result.insertedId;
     }
 
-    res.redirect(`/clase/${cls._id}`);
+    res.redirect(`/clase/${classId}`);
 };
 
 exports.getAll = async (req, res) => {
@@ -224,69 +240,77 @@ exports.saveDescription = async (req, res) => {
 
     // Init
     const classId = req.params.id;
-    //const isEditMode = !!classId;
 
     const cls = {
-        _id: classId,
         description: req.body.description.trim(),
     };
 
-    classService.updateOne(cls);
-
-    if (cls.description) {
-        cls.descriptionPreview = markdownService.render(cls.description);
+    // handle static validation errors
+    const validationErrors = {};
+    validateField("description", cls, validationErrors);
+    const descriptionError = validationErrors.description;
+    if (descriptionError) {
+        return res.status(400).json({ error: { message: descriptionError.msg } });
     }
 
-    //console.log(cls);
+    const modifiedFields = {},
+        removedFields = {};
 
-    // const canDeleteClass = await autz.can(req.user, "delete:class");
-    // if (!canDeleteClass) {
-    //     return res.status(403).send("Lipsă permisiuni!"); // forbidden
-    // }
+    if (cls.description) {
+        modifiedFields.description = cls.description;
+    } else {
+        removedFields.description = "";
+    }
 
-    // classService.deleteOneById(classId);
-    //res.redirect("/clase");
+    classService.updateOne(classId, modifiedFields, removedFields);
+
+    cls.descriptionPreview = cls.description ? markdownService.render(cls.description) : "";
+
     res.json(cls);
 };
 
 const getStaticValidationErrors = (cls) => {
     const validationErrors = {};
 
-    if (validator.isEmpty(cls.name)) validationErrors["name"] = { msg: "Câmp obligatoriu" };
-    else if (!validator.isLength(cls.name, { max: 50 })) validationErrors["name"] = { msg: "Maxim 50 caractere" };
+    validateField("name", cls, validationErrors);
+    validateField("academicYear", cls, validationErrors);
+    validateField("level", cls, validationErrors);
+    validateField("description", cls, validationErrors);
 
-    if (validator.isEmpty(cls.academicYear)) validationErrors["academicYear"] = { msg: "Câmp obligatoriu" };
-    else if (!validator.isLength(cls.academicYear, { min: 9, max: 9 })) validationErrors["academicYear"] = { msg: "Fix 9 caractere (YYYY-YYYY)" };
-
-    if (!validator.isLength(cls.level, { max: 50 })) validationErrors["level"] = { msg: "Maxim 50 caractere" };
-
-    if (!validator.isLength(cls.description, { max: 2000 })) validationErrors["description"] = { msg: "Maxim 2000 caractere" };
-
-    // // firstName
-    // if (validator.isEmpty(firstName)) validationErrors.push({ field: "firstName", msg: "Câmp obligatoriu" });
-    // else if (!validator.isLength(firstName, { max: 50 }))
-    //     validationErrors.push({ field: "firstName", msg: "Maxim 50 caractere" });
-
-    // if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu" });
-    // else if (!validator.isLength(email, { max: 50 }))
-    //     validationErrors.push({ field: "email", msg: "Maxim 50 caractere" });
-    // else if (!validator.isEmail(email)) validationErrors.push({ field: "email", msg: "Email invalid" });
-    // // else if (await userService.getOneByEmail(email))
-    // //     validationErrors.push({ field: "email", msg: "Exista deja un cont cu acest email" });
-
-    // // password
-    // if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu" });
-    // else if (!validator.isLength(password, { min: 6 }))
-    //     validationErrors.push({ field: "password", msg: "Minim 6 caractere" });
-    // else if (!validator.isLength(password, { max: 50 }))
-    //     validationErrors.push({ field: "password", msg: "Maxim 50 caractere" });
-
-    // // confirm password
-    // if (validator.isEmpty(confirmPassword))
-    //     validationErrors.push({ field: "confirmPassword", msg: "Câmp obligatoriu" });
-    // else if (confirmPassword !== password)
-    //     validationErrors.push({ field: "confirmPassword", msg: "Parolele nu coincid" });
     return validationErrors;
+};
+
+const validateField = (fieldName, data, validationErrors) => {
+    switch (fieldName) {
+        case "name":
+            if (validator.isEmpty(data[fieldName])) {
+                validationErrors[fieldName] = { msg: "Câmp obligatoriu" };
+            } else if (!validator.isLength(data[fieldName], { max: 50 })) {
+                validationErrors[fieldName] = { msg: "Maxim 50 caractere" };
+            }
+            break;
+        case "academicYear":
+            if (validator.isEmpty(data[fieldName])) {
+                validationErrors[fieldName] = { msg: "Câmp obligatoriu" };
+            } else if (!validator.isLength(data[fieldName], { min: 9, max: 9 })) {
+                validationErrors[fieldName] = { msg: "Fix 9 caractere (YYYY-YYYY)" };
+            }
+            break;
+        case "level":
+            if (data[fieldName]) {
+                if (!validator.isLength(data[fieldName], { max: 50 })) {
+                    validationErrors[fieldName] = { msg: "Maxim 50 caractere" };
+                }
+            }
+            break;
+        case "description":
+            if (data[fieldName]) {
+                if (!validator.isLength(data[fieldName], { max: 2 })) {
+                    validationErrors[fieldName] = { msg: `Maxim 2000 caractere (actual:${data[fieldName].length})` };
+                }
+            }
+            break;
+    }
 };
 
 const flashAndReloadPage = (req, res, validationErrors, cls) => {

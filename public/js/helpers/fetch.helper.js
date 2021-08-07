@@ -1,11 +1,11 @@
 // https://medium.com/yellowcode/download-api-files-with-react-fetch-393e4dae0d9e
 export const fetchHelpers = {
-    get: async url => {
+    get: async (url) => {
         const config = {
             method: "GET",
             headers: {
-                "Content-Type": "application/json"
-            }
+                "Content-Type": "application/json",
+            },
         };
         const response = await fetch(url, config);
         if (response.ok) {
@@ -18,9 +18,9 @@ export const fetchHelpers = {
         const config = {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
-            body: JSON.stringify(data) // data can be `string` or {object}!
+            body: JSON.stringify(data), // data can be `string` or {object}!
         };
         const response = await fetch(url, config);
         if (response.ok) {
@@ -34,23 +34,20 @@ export const fetchHelpers = {
         const config = {
             method: "PUT",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
-            body: JSON.stringify(data) // data can be `string` or {object}!
+            body: JSON.stringify(data), // data can be `string` or {object}!
         };
         const response = await fetch(url, config);
-        //console.log(response);
+        console.log(response);
         if (response.ok) {
             // console.log(response);
             if (response.status === 200) {
                 // be sure to return 200 if you want to return a result, otherwise return 204
                 // https://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
-                if (response.bodyUsed) {
-                    return response.json(); // it returns a Promise here, not a concrete object
-                } else {
-                    return response.json();
-                }
+                return response.json(); // it returns a Promise here, not a concrete object
             }
+
             // TODO treat also other response codes: https://stackoverflow.com/a/827045
             // "409 Conflict" for a PUT that is unsuccessful due to a 3rd-party modification, with a list of differences
             // between the attempted update and the current resource in the response body
@@ -60,13 +57,18 @@ export const fetchHelpers = {
             // 201 Created" for a successful PUT of a new resource, with the most specific URI for the new resource returned
             // in the Location header field and any other relevant URIs and metadata of the resource echoed in the response body.
             return null; // OK, but no content
+        } else {
+            if (response.status === 400) {
+                // bad request
+                return response.json(); // it returns a Promise here, not a concrete object
+            }
         }
         // if an errors, anything but 200 then reject with the actual response
         return Promise.reject(response);
     },
-    delete: async url => {
+    delete: async (url) => {
         const config = {
-            method: "DELETE"
+            method: "DELETE",
         };
         const response = await fetch(url, config);
         if (response.ok && response.status === 204) {
@@ -74,5 +76,5 @@ export const fetchHelpers = {
         }
         // if an errors, then reject with the actual response
         return Promise.reject(response);
-    }
+    },
 };

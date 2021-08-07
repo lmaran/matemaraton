@@ -41,8 +41,11 @@
 
 <ul>
     {{#each values}}
-    <li><a href="/clase/{{_id}}">{{name}}</a><span class="text-muted font-weight-light"> (nivel
-            {{level}})</span></li>
+    <li><a href="/clase/{{_id}}">{{name}}</a>
+        {{#if level}}
+        <span class="text-muted font-weight-light">(nivel {{level}})</span>
+        {{/if}}
+    </li>
     {{/each}}
 </ul>
 {{/each}}

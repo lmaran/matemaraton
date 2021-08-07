@@ -104,11 +104,16 @@ https://github.com/twbs/bootstrap/issues/20643#issuecomment-325579156 */
 
 .markdown-preview {
     border-width: 1px;
+    border-top-width: 0;
     border-style: solid;
-    border-bottom-left-radius: 4x;
-    border-bottom-right-radius: 4x;
     padding: 6px 12px;
     min-height: 58px;
+    border-radius: 0 0 4px 4px;
+}
+
+.markdown-preview-only {
+    border-top-width: 1px;
+    border-radius: 4px;
 }
 
 .markdown-preview-amber {
@@ -116,11 +121,20 @@ https://github.com/twbs/bootstrap/issues/20643#issuecomment-325579156 */
     background-color: #fff9f8;
 }
 
+.markdown-preview-gray {
+    border-color: #ced4da;
+    background-color: #f9f9f9;
+}
+
 .markdown-textarea {
-    border-radius: 0;
-    border-bottom-width: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-style: dashed;
 }
 
 .markdown-textarea-amber {
     border-color: #bb815d;
+}
+
+.markdown-textarea-gray {
 }
