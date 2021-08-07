@@ -34,6 +34,31 @@ export const domHelper = {
     },
 
     /**
+     * @param {String} HTML representing a single element
+     * @return {Element}
+     * https://stackoverflow.com/a/35385518
+     * ex: var div = htmlToElement('<div><span>nested</span> <span>stuff</span></div>');s
+     */
+    htmlToElement: (html) => {
+        const template = document.createElement("template");
+        html = html.trim(); // Never return a text node of whitespace as the result
+        template.innerHTML = html;
+        return template.content.firstChild;
+    },
+
+    /**
+     * @param {String} HTML representing any number of sibling elements
+     * @return {NodeList}
+     * https://stackoverflow.com/a/35385518
+     * ex: var rows = htmlToElements('<tr><td>foo</td></tr><tr><td>bar</td></tr>');
+     */
+    htmlToElements: (html) => {
+        const template = document.createElement("template");
+        template.innerHTML = html;
+        return template.content.childNodes;
+    },
+
+    /**
      * Automatically expand a textarea as the user types
      * https://gomakethings.com/automatically-expand-a-textarea-as-the-user-types-using-vanilla-javascript/
      *

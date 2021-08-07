@@ -54,29 +54,42 @@
         <div class="col-md-12 mb-3">
             <label class="fw-bold">Descriere:</label>
             <textarea id="description-editor-txt" rows="5" type="text" name="description"
-                style2="border-radius:0; border-bottom-width:0;"
-                class="form-control markdown-textarea markdown-textarea-amber{{#if errors.description}}is-invalid {{/if}}
+                class="form-control markdown-textarea markdown-textarea-gray {{#if errors.description}}is-invalid {{/if}}
                 {{#if isEditMode}}d-none{{/if}}" 
                 {{#if uiData.description.hasAutofocus}}autofocus {{/if}}>{{class.description}}</textarea>
 
-            <div id="description-preview-div" class="markdown-preview markdown-preview-amber"
+            <div id="description-preview-div" class="markdown-preview markdown-preview-gray {{#if isEditMode}}markdown-preview-only{{/if}}">
                 {{{class.descriptionPreview}}}
             </div>
 
-            <div class="float-end">
-        
-                <div id="save-description-div" class="d-inline d-none"> 
-                    <button id="save-description-btn" type="button"
-                        class="btn btn-link p-0 mt-n1">Salvează
-                    </button>
-                    <span class="ms-2 me-2 text-muted"> | </span>
+            <div class="d-flex">
+                <div class="text-muted">
+                    Suportă:
+                    <a href="https://markdown-it.github.io/" target="_blank" tabindex="-1">markdon</a>
+                    <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>
+                    +
+                    <a href="https://katex.org/docs/supported.html" target="_blank" tabindex="-1">latex</a>
+                    <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>
                 </div>
+                {{#if isEditMode}}
+                <div class="ms-auto">
+                    
+                    <div id="save-description-div" class="d-inline d-none"> 
+                        <button id="save-description-btn" type="button"
+                            class="btn btn-link p-0 mt-n1">Salvează
+                        </button>
+                        <span class="ms-2 me-2 text-muted"> | </span>
+                    </div>
 
-                <button id="toggle-description-editor-btn" type="button"
-                    class="btn btn-link p-0 mt-n1">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}
-                </button>
+                    <button id="toggle-description-editor-btn" type="button" tabindex="-1"
+                        class="btn btn-link p-0 mt-n1">Editează
+                    </button>
+                </div>
+                {{/if}}
+                
             </div>
 
+            <div class="invalid-feedback mt-0">{{errors.description.msg}}</div>
 
                 {{!-- <button type="button" class="toggle-answer-option-editor-btn btn btn-link p-0">Editează</button>
                 <span class="ms-2 me-2 text-muted"> | </span>
@@ -120,13 +133,6 @@
                 Salveaza</button>
             <a href="/clase{{#if isEditMode}}/{{class._id}}{{/if}}" class="btn btn-light"><i class="bi bi-x"></i>
                 Renunță</a>
-
-            <label class="col-form-label float-end"> Ajutor:
-                <a href="https://markdown-it.github.io/" target="_blank">markdon</a>
-                <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>
-                +
-                <a href="https://katex.org/docs/supported.html" target="_blank">latex</a>
-                <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small></label>
         </div>
     </div>
 
