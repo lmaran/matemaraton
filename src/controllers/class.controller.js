@@ -1,7 +1,6 @@
 const validator = require("validator");
 const classService = require("../services/class.service");
 const courseService = require("../services/course.service");
-const editionService = require("../services/edition.service");
 const autz = require("../services/autz.service");
 const arrayHelper = require("../helpers/array.helper");
 const stringHelper = require("../helpers/string.helper");
@@ -132,7 +131,7 @@ exports.createOrEditPost = async (req, res) => {
         return flashAndReloadPage(req, res, validationErrors, cls);
     }
 
-    const modifiedFields = { name: cls.name, academicYear: cls.academicYear };
+    const modifiedFields = { name: cls.name, academicYear: stringHelper.getAcademicYearFromInterval(cls.academicYear) };
 
     if (isEditMode) {
         const removedFields = {};
@@ -170,16 +169,15 @@ exports.createOrEditPost = async (req, res) => {
 };
 
 exports.getAll = async (req, res) => {
-    const [classes, editions] = await Promise.all([await classService.getAll(), await editionService.getAll()]);
-    const editionsObj = arrayHelper.arrayToObject(editions, "academicYear");
+    const classes = await classService.getAll();
 
     const activeClasses = [];
     const archivedClasses = [];
     classes.forEach((cls) => {
-        if (cls.isActive) {
-            activeClasses.push(cls);
-        } else {
+        if (cls.isCompleted) {
             archivedClasses.push(cls);
+        } else {
+            activeClasses.push(cls);
         }
     });
 
@@ -190,8 +188,7 @@ exports.getAll = async (req, res) => {
         .sort((a, b) => b - a) // sort by academicYear, desc
         .forEach(function (academicYear) {
             orderedActiveClasses.push({
-                editionNumber: editionsObj[academicYears1] && editionsObj[academicYears1].number,
-                editionInterval: stringHelper.getIntervalFromAcademicYear(academicYear),
+                editionInterval: stringHelper.getIntervalFromAcademicYear(academicYear, false),
                 values: unorderedActiveClasses[academicYear],
             });
         });
@@ -201,10 +198,9 @@ exports.getAll = async (req, res) => {
     const academicYears = Object.keys(unorderedArchivedClasses);
     academicYears
         .sort((a, b) => b - a) // sort by academicYear, desc
-        .forEach(function (academicYear, idx) {
+        .forEach(function (academicYear) {
             orderedArchivedClasses.push({
-                editionNumber: academicYears.length - idx,
-                editionInterval: stringHelper.getIntervalFromAcademicYear(academicYear),
+                editionInterval: stringHelper.getIntervalFromAcademicYear(academicYear, false),
                 values: unorderedArchivedClasses[academicYear],
             });
         });
@@ -305,7 +301,7 @@ const validateField = (fieldName, data, validationErrors) => {
             break;
         case "description":
             if (data[fieldName]) {
-                if (!validator.isLength(data[fieldName], { max: 2 })) {
+                if (!validator.isLength(data[fieldName], { max: 2000 })) {
                     validationErrors[fieldName] = { msg: `Maxim 2000 caractere (actual:${data[fieldName].length})` };
                 }
             }

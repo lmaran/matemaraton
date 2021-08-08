@@ -13,15 +13,13 @@
 
 {{#if orderedActiveClasses}}
 {{#each orderedActiveClasses}}
-<h5>Editia {{editionNumber}} <span class="text-muted font-weight-light"> ({{editionInterval}})</span>:</h5>
+<h5>An școlar {{editionInterval}}:</h5>
 
 <ul>
     {{#each values}}
     <li><a href="/clase/{{_id}}">{{name}}</a>
-        <span class="text-muted font-weight-light"> (nivel {{level}})</span>
-        {{!-- {{#if scheduleInfo}}
-        <div class="ml-4">{{scheduleInfo.timeSlot}}, {{scheduleInfo.day}}, {{scheduleInfo.place}}</div>
-        {{/if}} --}}
+        {{#if level}}<span class="text-muted font-weight-light"> (nivel {{level}})</span>{{/if}}
+        {{#if isHidden}}<i class="bi bi-eye-slash-fill text-danger"></i>{{/if}}
     </li>
     {{/each}}
 </ul>
@@ -37,14 +35,13 @@
 <h3 class="mt-5">Arhivă:</h3>
 
 {{#each orderedArchivedClasses}}
-<h5>Editia {{editionNumber}} <span class="text-muted font-weight-light"> ({{editionInterval}})</span>:</h5>
+<h5>{{editionInterval}}:</h5>
 
 <ul>
     {{#each values}}
     <li><a href="/clase/{{_id}}">{{name}}</a>
-        {{#if level}}
-        <span class="text-muted font-weight-light">(nivel {{level}})</span>
-        {{/if}}
+        {{#if level}}<span class="text-muted font-weight-light">(nivel {{level}})</span>{{/if}}
+        {{#if isHidden}}<i class="bi bi-eye-slash-fill text-danger"></i>{{/if}}
     </li>
     {{/each}}
 </ul>
