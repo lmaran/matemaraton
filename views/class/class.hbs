@@ -1,10 +1,6 @@
 <style>
-    .hidePresence {
-        display: none;
-    }
-
-    .hideStudent {
-        display: none;
+    .table th {
+        padding: 0;
     }
 </style>
 
@@ -40,26 +36,7 @@
 </form>
 {{/if}}
 
-{{!-- {{#if canCreateOrEditExercise}}
-<a href="{{#if contest}}/concursuri/{{contest._id}}{{/if}}/exercitii/{{exercise._id}}/modifica"
-    class="btn btn-primary"><i class="bi bi-pencil-fill"></i> Modifică</a>
-{{/if}}
-
-{{#if canDeleteExercise}}
-<form method="post" onsubmit="deleteBtn.disabled = true; return true;" style="display:inline">
-    <input type="hidden" name="exerciseId" value="{{exercise._id}}" />
-    <input type="hidden" name="contestId" value="{{contest._id}}" />
-
-    <button type="submit" formaction="{{#if contest}}/concursuri{{/if}}/exercitii/sterge" title="Șterge"
-        name="deleteBtn" class="btn btn-light btn-outline-primary"
-        onclick="return confirm('Ești sigur că vrei să ștergi acest exercițiu?');"><i
-            class="bi bi-trash-fill"></i></button>
-</form>
-{{/if}} --}}
-
-
-
-{{#unless (eq class.enrollmentInfo.status "open")}}
+{{!-- {{#unless (eq class.enrollmentInfo.status "open")}} --}}
 <h5 class="mt-4">Rapoarte:</h5>
 <ul>
     <li><a href="/clase/{{class._id}}/elevi">Elevi</a></li>
@@ -84,92 +61,14 @@
     {{/if}}
 
 </ul>
-{{/unless}}
+{{!-- {{/unless}} --}}
 
 {{#if class.description}}
 <h5>Descriere:</h5>
-<div class="text-muted font-weight-light mb-3">{{{class.description}}}</div>
+<div class="mb-3">{{{class.description}}}</div>
 {{/if}}
-
-{{#if @root.user.isAdmin}}
-{{#if class.courseCode}}
-<h5>Curs: <a href="/cursuri/{{courseSummary._id}}">{{courseSummary.code}}</a> - {{courseSummary.name}}</h5>
-{{/if}}
-{{/if}}
-
-{{!-- {{#if (or class.startDate class.numberOfSessions)}}
-<h5>Durata cursului:</h5>
-<ul>
-    {{#if class.startDate}}<li>{{class.startDate}} - {{class.endDate}}</li> {{/if}}
-    {{#if class.numberOfSessions}}<li>{{class.numberOfSessions}} sesiuni de curs</li> {{/if}}
-</ul>
-{{/if}} --}}
-
-{{#if class.startDate}}
-<h5>Perioada: <small>{{class.startDate}} - {{class.endDate}}</small></h5>
-{{/if}}
-
-{{#if class.numberOfSessions}}
-<h5>Durata: <small>{{class.numberOfSessions}} sesiuni de curs</small></h5>
-{{/if}}
-
-{{#if class.scheduleInfo}}
-<h5>Orar: <small>{{class.scheduleInfo.timeSlot}} (în fiecare {{class.scheduleInfo.day}})</small></h5>
-<h5>Locație: <small>{{class.scheduleInfo.place}}</small></h5>
-{{/if}}
-
-
-{{!-- <h5>Comunicare:</h5>
-<ul>
-    <li><a href="https://matemaraton.ro">matemaraton.ro</a> - materiale de lucru, rapoarte, statistici
-    <li><a href="https://www.whatsapp.com" target="_blank">whatsapp</a> - grup de lucru cu elevii
-        (<strong>{{class.whatsappGroupName}}</strong>)
-    </li>
-    <li><a href="https://www.facebook.com/matemaraton" target="_blank">facebook.com/matemaraton</a> - comunicare cu
-        părinții
-    </li>
-    <li><a href="https://www.facebook.com/groups/417125302327211" target="_blank">facebook</a> "<span
-            class="fw-bold">MateMaraton: ajutor la teme</span>" - trimite o
-        poză și precizează clasa. Atât! </li>
-</ul> --}}
-
-
-<h5>Mentor: <small>ing. Lucian Măran</small></h5>
-<h5>Pret: <small>Gratuit</small></h5>
-
-<hr class="mt-4 mb-4">
-
-
-{{#if class.enrollmentInfo}}
-<h5>Inscriere:</h5>
-<ul>
-    <li><strong>Locuri disponibile: </strong>{{class.enrollmentInfo.availablePlaces}}</li>
-    <li><strong>Condiții de participare: </strong>{{class.enrollmentInfo.conditionsOfParticipation}}</li>
-
-    {{#if class.enrollmentInfo.tieBreakingConditions}}
-    <li><strong>Condiții de departajare: </strong> În cazul în care numărul de elevi înscriși depășește numărul de
-        locuri disponibile, se va proceda la o selecție bazată, în ordine, pe următoarele criterii:</li>
-
-    <ul>
-        {{#each class.enrollmentInfo.tieBreakingConditions}}
-        <li>{{this}}</li>
-        {{/each}}
-    </ul>
-    {{/if}}
-
-    <li><strong>Perioada de înscriere: </strong>{{class.enrollmentInfo.enrollmentPeriod}}</li>
-
-</ul>
 
 <div class="mb-5">
-    {{#if (eq class.enrollmentInfo.status "notStarted")}}
-    Adresa pentru înscriere: va urma!
-    {{else }} {{!-- status="open / completed" --}}
-    <a class="btn btn-primary btn-sm" href="/clase/{{class._id}}/inscrieri/adauga" role="button">Cerere de
-        înscriere</a>
-
-    <a class="btn btn-secondary btn-sm" href="/clase/{{class._id}}/inscrieri" role="button">
-        Lista cererilor depuse</a>
-    {{/if}}
+    <a class="btn btn-primary btn-sm" href="/clase/{{class._id}}/inscrieri/adauga">Cerere de înscriere</a>
+    <a class="btn btn-secondary btn-sm" href="/clase/{{class._id}}/inscrieri">Lista cererilor depuse</a>
 </div>
-{{/if}}
