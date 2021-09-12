@@ -37,6 +37,7 @@
 {{/if}}
 
 {{!-- {{#unless (eq class.enrollmentInfo.status "open")}} --}}
+{{#if class.isCompleted}}
 <h5 class="mt-4">Rapoarte:</h5>
 <ul>
     <li><a href="/clase/{{class._id}}/elevi">Elevi</a></li>
@@ -61,7 +62,7 @@
     {{/if}}
 
 </ul>
-{{!-- {{/unless}} --}}
+{{/if}}
 
 {{#if class.description}}
 <h5>Descriere:</h5>
