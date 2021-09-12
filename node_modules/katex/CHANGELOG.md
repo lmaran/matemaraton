@@ -1,6 +1,42 @@
 # Changelog
 All notable changes to this project will be documented in this file. This CHANGELOG roughly follows the guidelines from [www.keepachangelog.com](https://keepachangelog.com/en/1.0.0/).
 
+## [0.13.18](https://github.com/KaTeX/KaTeX/compare/v0.13.17...v0.13.18) (2021-09-02)
+
+
+### Features
+
+* unicode support for minus and asterisk operators ([#3227](https://github.com/KaTeX/KaTeX/issues/3227)) ([9dbfc1c](https://github.com/KaTeX/KaTeX/commit/9dbfc1c91725a9db348ce212488690147b9b9dd4)), closes [#3225](https://github.com/KaTeX/KaTeX/issues/3225)
+
+## [0.13.17](https://github.com/KaTeX/KaTeX/compare/v0.13.16...v0.13.17) (2021-09-01)
+
+
+### Bug Fixes
+
+* **fonts:** remove hints from unknown symbols ([#3222](https://github.com/KaTeX/KaTeX/issues/3222)) ([9420f8a](https://github.com/KaTeX/KaTeX/commit/9420f8a2a98442158a9cd2b3fd650092d216d0a2)), closes [#3219](https://github.com/KaTeX/KaTeX/issues/3219)
+
+## [0.13.16](https://github.com/KaTeX/KaTeX/compare/v0.13.15...v0.13.16) (2021-08-28)
+
+
+### Bug Fixes
+
+* \char support for >16-bit Unicode characters ([#3006](https://github.com/KaTeX/KaTeX/issues/3006)) ([ff1734f](https://github.com/KaTeX/KaTeX/commit/ff1734f7c4882fb350cb0e1f366f04ce63675643)), closes [#3004](https://github.com/KaTeX/KaTeX/issues/3004)
+* remove local macros upon parse error ([#3114](https://github.com/KaTeX/KaTeX/issues/3114)) ([a6f29e3](https://github.com/KaTeX/KaTeX/commit/a6f29e36121a31b46866d1985bbc86a06080fbd4)), closes [#3122](https://github.com/KaTeX/KaTeX/issues/3122)
+
+## [0.13.15](https://github.com/KaTeX/KaTeX/compare/v0.13.14...v0.13.15) (2021-08-28)
+
+
+### Features
+
+* text-mode cedilla accent via \c ([#3036](https://github.com/KaTeX/KaTeX/issues/3036)) ([952fb84](https://github.com/KaTeX/KaTeX/commit/952fb844da9c99d5fca41a87b86e8857a677c899)), closes [#638](https://github.com/KaTeX/KaTeX/issues/638)
+
+## [0.13.14](https://github.com/KaTeX/KaTeX/compare/v0.13.13...v0.13.14) (2021-08-28)
+
+
+### Bug Fixes
+
+* **fonts:** update fonts dependencies ([#2866](https://github.com/KaTeX/KaTeX/issues/2866)) ([ea409ea](https://github.com/KaTeX/KaTeX/commit/ea409eaf1d7f8fe712a966edc66c545ae5fe5425))
+
 ## [0.13.13](https://github.com/KaTeX/KaTeX/compare/v0.13.12...v0.13.13) (2021-07-21)
 
 
