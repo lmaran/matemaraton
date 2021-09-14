@@ -29,6 +29,7 @@ const contestController = require("./controllers/contest.controller");
 const markdownController = require("./controllers/markdown.controller");
 const fileController = require("./controllers/file.controller");
 const enrollmentController = require("./controllers/enrollment.controller");
+const resourcesController = require("./controllers/resources.controller");
 
 // home
 router.get("/", homeController.getHomePage);
@@ -45,6 +46,9 @@ router.post("/clase/:classId/inscrieri/adauga", isAuthenticated, enrollmentContr
 
 // my page
 router.get("/pagina-mea", meController.getMyPage);
+
+// resources
+router.get("/materiale", resourcesController.getAll);
 
 // classes
 router.get("/clase", classController.getAll);
