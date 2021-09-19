@@ -122,6 +122,7 @@ exports.createOrEditPost = async (req, res) => {
         name: req.body.name,
         academicYear: req.body.academicYear,
         level: req.body.level,
+        position: req.body.position,
         description: req.body.description,
     };
 
@@ -142,6 +143,9 @@ exports.createOrEditPost = async (req, res) => {
         if (cls.level) modifiedFields.level = cls.level;
         else removedFields.level = "";
 
+        if (cls.position) modifiedFields.position = cls.position;
+        else removedFields.position = "";
+
         if (cls.description) modifiedFields.description = cls.description;
         else removedFields.description = "";
 
@@ -157,6 +161,7 @@ exports.createOrEditPost = async (req, res) => {
         modifiedFields.createdById = req.user._id.toString();
 
         if (cls.level) modifiedFields.level = cls.level;
+        if (cls.position) modifiedFields.position = cls.position;
         if (cls.description) modifiedFields.description = cls.description;
         if (req.body.isHidden === "on") modifiedFields.isHidden = true;
         if (req.body.isCompleted === "on") modifiedFields.isCompleted = true;
@@ -169,7 +174,8 @@ exports.createOrEditPost = async (req, res) => {
 };
 
 exports.getAll = async (req, res) => {
-    const classes = await classService.getAll();
+    let classes = await classService.getAll();
+    classes = classes.sort((a, b) => (a.position < b.position ? -1 : 1));
 
     const activeClasses = [];
     const archivedClasses = [];
