@@ -54,6 +54,14 @@
             <div class="text-muted">Ex: începător, mediu, avansat, olimpiadă</div>
             <div class="invalid-feedback mt-0">{{errors.level.msg}}</div>
         </div>
+
+        <div class="col-md-6 mb-3">
+            <label class="fw-bold">Poziția în listă:</label>
+            <input type="text" name="position" class="form-control {{#if errors.position}}is-invalid {{/if}}"
+                value="{{class.position}}" {{#if uiData.level.hasAutofocus}}autofocus {{/if}}>
+            <div class="text-muted">Acest număr va decide ordinea în care vor apărea clasele</div>
+            <div class="invalid-feedback mt-0">{{errors.position.msg}}</div>
+        </div>
     </div>
 
     <div class="row">
