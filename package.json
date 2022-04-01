@@ -21,7 +21,6 @@
     "license": "ISC",
     "dependencies": {
         "@azure/storage-blob": "^12.6.0",
-        "@gerhobbelt/markdown-it-attrs": "^4.0.0-22",
         "bcrypt": "^5.0.1",
         "busboy": "^0.3.1",
         "connect-mongo": "^4.4.1",
@@ -32,15 +31,14 @@
         "express-handlebars": "^5.3.2",
         "express-session": "^1.17.2",
         "jsonwebtoken": "^8.5.1",
-        "katex": "^0.13.11",
+        "katex": "^0.15.1",
         "lit-html": "^1.4.1",
         "mailgun-js": "^0.22.0",
-        "markdown-it": "^12.0.6",
-        "markdown-it-container": "^3.0.0",
-        "markdown-it-texmath": "^0.9.0",
+        "markdown-it": "^12.2.0",
+        "markdown-it-texmath": "^0.9.3",
         "mongodb": "^3.6.9",
         "uuid": "^8.3.2",
-        "validator": "^13.6.0"
+        "validator": "^13.7.0"
     },
     "devDependencies": {
         "browser-sync": "^2.27.1",
