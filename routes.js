@@ -203,7 +203,7 @@ router.get("/reset-password/ask-to-confirm", userResetPasswordController.display
 router.get("/reset-password/confirm/:resetPasswordCode", userResetPasswordController.getResetPasswordConfirm);
 router.get("/reset-password/confirm-success", userResetPasswordController.getResetPasswordConfirmSuccess);
 
-router.get("/editia-[1|2|3|4]", editionController.getEdition);
+router.get("/editia-[1|2|3|4|5]", editionController.getEdition);
 
 router.post("/uploadfile", fileController.upload);
 
