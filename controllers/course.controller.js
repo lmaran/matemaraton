@@ -1,8 +1,8 @@
 const courseService = require("../services/course.service");
-const lessonService = require("../services/lesson.service");
+// const lessonService = require("../services/lesson.service");
 const autz = require("../services/autz.service");
 // const dateTimeHelper = require("../helpers/date-time.helper");
-const arrayHelper = require("../helpers/array.helper");
+// const arrayHelper = require("../helpers/array.helper");
 
 exports.createOrEditGet = async (req, res) => {
     const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
@@ -21,7 +21,8 @@ exports.createOrEditGet = async (req, res) => {
 
     const categoryAvailableOptions = [
         { text: "Evaluare Națională", value: "Evaluare Națională" },
-        { text: "Olimpiadă", value: "Olimpiadă" },
+        { text: "Olimpiadă, etapa locală", value: "Olimpiadă, etapa locală" },
+        { text: "Olimpiadă, etapa județeană", value: "Olimpiadă, etapa județeană" },
         { text: "Altă categorie", value: "Altă categorie" },
     ];
 
@@ -33,37 +34,8 @@ exports.createOrEditGet = async (req, res) => {
     //let classId;
     if (isEditMode) {
         const course = await courseService.getOneById(req.params.id);
-        //await this.addLessonDetailsAsync(course);
-        //classId = courseSession.classId;
         data.course = course;
-    } else {
-        // classId = req.params.classId;
-        // const numberOfSessionForClass = await courseSessionService.getNumberOfSessionForClass(classId);
-        // data.courseSession = {
-        //     course: numberOfSessionForClass + 1,
-        //     date: dateTimeHelper.getShortDate(new Date()),
-        // };
     }
-    // const [cls, studentsMapByClassId] = await Promise.all([
-    //     await classService.getOneById(classId),
-    //     await studentsAndClassesService.getStudentsMapByClassId(classId),
-    // ]);
-    // const allStudentsIdsPerClass = studentsMapByClassId.map((x) => x.studentId);
-    // data.class = cls;
-    // const allStudentsPerClass = await personService.getAllByIds(allStudentsIdsPerClass);
-    // // add abandon info
-    // allStudentsPerClass.forEach((student) => {
-    //     student.isNotDroppedOut = studentsMapByClassId.find(
-    //         (x) => x.studentId == student._id.toString() && !x.droppedOut
-    //     );
-    // });
-    // // add presence info
-    // if (data.courseSession.studentsIds) {
-    //     allStudentsPerClass.forEach((student) => {
-    //         student.isPresent = data.courseSession.studentsIds.includes(student._id.toString());
-    //     });
-    // }
-    // data.students = allStudentsPerClass;
     //res.send(data);
     res.render("course/course-create-or-edit", data);
 };
@@ -76,18 +48,37 @@ exports.createOrEditPost = async (req, res) => {
         }
         const isEditMode = !!req.params.id;
 
-        const { id, code, name, description, grade, level } = req.body;
+        const { id, code, name, description, grade, category, isHidden, isActive } = req.body;
 
         const course = {
             code,
             name,
             description,
             grade,
-            level,
+            category,
+            isHidden,
+            isActive,
         };
 
         if (isEditMode) {
             course._id = id;
+
+            if (isHidden === "on") {
+                // If the 'value' attribute was omitted, the default value for the checkbox is 'on' (mozilla.org)
+                course.isHidden = true;
+            } else {
+                //delete course.isHidden;
+                course.isHidden = false;
+            }
+
+            if (isActive === "on") {
+                // If the 'value' attribute was omitted, the default value for the checkbox is 'on' (mozilla.org)
+                course.isActive = true;
+            } else {
+                //delete course.isHidden;
+                course.isActive = false;
+            }
+
             courseService.updateOne(course);
         } else {
             const result = await courseService.insertOne(course);
@@ -100,24 +91,54 @@ exports.createOrEditPost = async (req, res) => {
     }
 };
 
+exports.createOrEditListGet = async (req, res) => {
+    const canCreateOrEditCourseList = await autz.can(req.user, "create-or-edit:course-list");
+    if (!canCreateOrEditCourseList) {
+        return res.status(403).send("Lipsă permisiuni!"); // forbidden
+    }
+    //const isEditMode = !!req.params.id;
+
+    const courses = await courseService.getAll();
+
+    const data = {
+        //isEditMode,
+        // gradeAvailableOptions,
+        // categoryAvailableOptions,
+        courses,
+        canCreateOrEditCourseList,
+    };
+
+    // if (isEditMode) {
+    //     const course = await courseService.getOneById(req.params.id);
+    //     data.course = course;
+    // }
+    //res.send(data);
+    res.render("course/course-list-create-or-edit", data);
+};
+
 exports.getAll = async (req, res) => {
     const courses = await courseService.getAll();
 
     const generalCourses = [];
-    const highLevelCourses = [];
+    const localOlympiadCourses = [];
+    const countyOlympiadCourses = [];
     courses
+        .filter((x) => x.isActive && !x.isHidden)
         .sort((a, b) => (a.code > b.code ? 1 : -1))
         .forEach((course) => {
-            if (course.level === "Evaluare Națională") {
+            if (course.category === "Evaluare Națională") {
                 generalCourses.push(course);
-            } else if (course.level === "Olimpiadă") {
-                highLevelCourses.push(course);
+            } else if (course.category === "Olimpiadă, etapa locală") {
+                localOlympiadCourses.push(course);
+            } else if (course.category === "Olimpiadă, etapa județeană") {
+                countyOlympiadCourses.push(course);
             }
         });
 
     const data = {
         generalCourses,
-        highLevelCourses,
+        localOlympiadCourses,
+        countyOlympiadCourses,
         canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
     };
     //res.send(data);

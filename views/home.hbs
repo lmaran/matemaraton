@@ -4,22 +4,25 @@
     }
 </style>
 
-<div class="alert alert-info" role="alert">
+{{!-- <div class="alert alert-info" role="alert">
     <i class="bi bi-info-circle me-2"></i>
     Pentru <span class="fw-bold">înscrieri ediția 6</span> (2022-2023), selectați clasa dorită și apoi butonul "Cerere de înscriere".
-</div>
+</div> --}}
 
 <div class="text-center pt-5 pb-5">
-    <h1>Cursuri de matematică pentru gimnaziu</h1>
-    <p class="fs-5 fw-light">Un proiect implementat de voluntari, în parteneriat cu Școala 21 "Vicențiu Babeș",
+    <h1>Matematică pentru gimnaziu</h1>
+    {{!-- <p class="fs-5 fw-light">Un proiect implementat de voluntari, în parteneriat cu Școala 21 "Vicențiu Babeș",
         Timișoara.</p>
-    <p class="fs-5 fw-bold">Ediția 6 (2022-2023)</p>
+    <p class="fs-5 fw-bold">Ediția 6 (2022-2023)</p> --}}
+    
+    <a href="/cursuri" class="btn btn-primary _w-100">{{!<i class="bi bi-book"></i>}}
+        Vezi toate cursurile
+    </a>
 </div>
 
 <div class="row row-cols-1 row-cols-md-{{#if @root.user.isAdmin}}3{{else}}2{{/if}} g-4">
-    <div class="col">
+    {{!-- <div class="col">
         <div class="card h-100">
-            {{! <img src="..." class="card-img-top" alt="..." /> }}
             <i class="bi bi-people-fill text-center" style="font-size: 2.5rem; color: gray;"></i>
             <h3 class="card-title text-center">Clase</h3>
 
@@ -27,17 +30,16 @@
 
                 <p class="card-text">Grupe de 8-12 elevi care se pregătesc la matematică sub îndrumarea unui instructor.
                     Cursurile se țin la Școala 21 "Vicențiu Babeș, Timișoara". Totul gratuit.</p>
-                {{! <a href="/clase" class="btn btn-primary">Vezi toate clasele</a> }}
             </div>
             <div class="card-footer bg-white border-top-0 mx-auto">
-                <a href="/clase" class="btn btn-primary _w-100">{{!<i class="bi bi-people-fill"></i>}}
+                <a href="/clase" class="btn btn-primary _w-100">
                     Vezi toate clasele
                 </a>
             </div>
         </div>
-    </div>
+    </div> --}}
 
-    {{#if @root.user.isAdmin}}
+    {{!-- {{#if @root.user.isAdmin}}
     <div class="col">
         <div class="card h-100">
             <i class="bi bi-book text-center" style="font-size: 2.5rem; color: gray;"></i>
@@ -56,11 +58,10 @@
             </div>
         </div>
     </div>
-    {{/if}}
+    {{/if}} --}}
 
-    <div class="col">
+    {{!-- <div class="col">
         <div class="card h-100">
-            {{!-- <i class="bi bi-chat-dots text-center" style="font-size: 2.5rem; color: gray;"></i> --}}
             <i class="bi bi-facebook text-center" style="font-size: 2.5rem; color: gray;"></i>
             <h3 class="card-title text-center">Comunitate</h3>
             <div class="card-body">
@@ -71,55 +72,21 @@
             <div class="card-footer bg-white border-top-0 mx-auto">
                 <a href="https://www.facebook.com/groups/417125302327211" target="_blank"
                     class="btn btn-primary _w-100">
-                    {{!<i class="bi bi-facebook"></i>}}
                     Grup Facebook
                 </a>
             </div>
         </div>
-    </div>
+    </div> --}}
 </div>
 
-<h5 class="mt-5">Ediții anterioare:</h5>
+{{!-- <h5 class="mt-5">Ediții anterioare:</h5>
 <ul>
     <li><a href="/editia-5">Ediția 5</a> (2021 - 2022)</li>
     <li><a href="/editia-4">Ediția 4</a> (2020 - 2021)</li>
     <li><a href="/editia-3">Ediția 3</a> (2019 - 2020)</li>
     <li><a href="/editia-2">Ediția 2</a> (2018 - 2019)</li>
     <li><a href="/editia-1">Ediția 1</a> (2017 - 2018)</li>
-</ul>
-
-{{! <h5>Exemple (ediția 3)</h5>
-<ul>
-    <li><a href="/clase/5d92db9ba0da913a67b9a711">Cls 8 - Grupa 1</a>
-        <span class="text-muted">(pregătire pt. EN, nivel mediu-avansat)</span>
-    </li>
-    <li><a href="/clase/5d92dc63a0da913a67b9a713">Cls 6 - Grupa 3</a>
-        <span class="text-muted">(pregătire pt. olimpiadă și concursuri școlare)</span>
-    </li>
-</ul> }}
-
-{{!<h5>Orar:</h5>
-<ul>
-    <li>Cls 8 - Grupa 1: 09:00 - 10:45</li>
-    <li>Cls 8 - Grupa 2: 10:45 - 12:00</li>
-    <li>Cls 6 - Grupa 3: 12:00 - 13:30</li>
-    <li>Cls 8 - Grupa 4: 13:30 - 14:30</li>
-</ul>
-<p style="padding-left:40px">Cursurile se țin în fiecare sâmbătă, la <a href="https://scoala21.ro"
-        target="_blank">Școala 21</a>, Tm.</p> }}
-
-{{! <h5>Comunicare:</h5>
-<ul>
-    <li><a href="https://matemaraton.ro">matemaraton.ro</a> - materiale de lucru, rapoarte, statistici
-    <li><a href="https://www.whatsapp.com" target="_blank">whatsapp</a> - grupuri de lucru cu elevii (privat)</li>
-    <li><a href="https://www.facebook.com/matemaraton" target="_blank">facebook.com/matemaraton</a> - comunicare cu
-        părinții
-    </li>
-    <li><a href="https://www.facebook.com/groups/417125302327211" target="_blank">facebook</a> "<span
-            class="fw-bold">MateMaraton: ajutor la teme</span>" - trimite o
-        poză și precizează clasa. Atât! </li>
-</ul>
-}}
+</ul> --}}
 
 <h5>Contact:</h5>
 <ul>
@@ -143,10 +110,7 @@
 </ul>
 {{/if}}
 
-<h5>Diverse:</h5>
+{{!-- <h5>Diverse:</h5>
 <ul>
-    <li><a href="/concursuri">Olimpiade și concursuri</a>
-        <span> (subiecte rezolvate)</span>
-    </li>
     <li><a href="/materiale">Materiale</a><span> (resurse educaționale)</span></li>
-</ul>
+</ul> --}}

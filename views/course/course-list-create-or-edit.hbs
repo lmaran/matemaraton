@@ -1,0 +1,49 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item active">Cursuri</li>
+    </ol>
+</nav>
+
+<h1>Cursuri (admin)</h1>
+
+<form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;"></form>
+<table class="table thead-light table-bordered table-hover mt-5">
+    <thead>
+        <tr>
+            <th>Cod</th>
+            <th>Nume</th>
+            <th>Categorie</th>
+            <th>Clasa</th>
+            <th>Ascuns</th>
+            <th>Activ</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each courses}}
+        <tr>
+            <td>
+                {{code}}
+            </td>
+            <td>
+                <a href="/cursuri/{{_id}}">{{name}}
+            </td>
+            <td>{{category}}</td>
+            <td>
+                {{grade}}
+            </td>
+            <td>
+                {{#if isHidden}}
+                <i class="bi bi-check-lg" style="font-size2: 24px;color: green;"></i>
+                {{/if}}
+            </td>
+            <td class="text-center">
+                {{#if isActive}}
+                <i class="bi bi-check-lg" style="font-size2: 24px;color: green;"></i>
+                {{/if}}
+                </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+</form>

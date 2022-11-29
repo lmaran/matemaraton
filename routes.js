@@ -25,7 +25,6 @@ const courseLessonController = require("./controllers/course-lesson.controller")
 const courseArticleController = require("./controllers/course-article.controller");
 const homeworkController = require("./controllers/homework.controller");
 const lessonController = require("./controllers/lesson.controller");
-const contestController = require("./controllers/contest.controller");
 const markdownController = require("./controllers/markdown.controller");
 const fileController = require("./controllers/file.controller");
 const enrollmentController = require("./controllers/enrollment.controller");
@@ -66,6 +65,8 @@ router.get("/cursuri/:id/modifica", isAuthenticated, courseController.createOrEd
 router.post("/cursuri/:id/modifica", isAuthenticated, courseController.createOrEditPost);
 router.get("/cursuri/adauga", isAuthenticated, courseController.createOrEditGet);
 router.post("/cursuri/adauga", isAuthenticated, courseController.createOrEditPost);
+router.get("/cursuri/modifica", isAuthenticated, courseController.createOrEditListGet);
+//router.post("/cursuri/modifica", isAuthenticated, courseController.createOrEditListPost);
 router.get("/cursuri/:id", courseController.getOneById);
 router.get("/cursuri/:id/capitole", isAuthenticated, courseController.getOneById); // only for url access
 router.post("/cursuri/:id/sterge", isAuthenticated, courseController.deleteOneById);
@@ -99,20 +100,6 @@ router.post(
     isAuthenticated,
     courseArticleController.createOrEditPost
 );
-
-// contests
-router.get("/concursuri", contestController.getAll);
-router.get("/concursuri/:contestId/modifica", isAuthenticated, contestController.createOrEditGet);
-router.post("/concursuri/:contestId/modifica", isAuthenticated, contestController.createOrEditPost);
-router.get("/concursuri/adauga", isAuthenticated, contestController.createOrEditGet);
-router.post("/concursuri/adauga", isAuthenticated, contestController.createOrEditPost);
-router.get("/concursuri/:contestId", contestController.getOneById);
-router.get("/concursuri/:contestId/exercitii", (req, res) => res.redirect(`/concursuri/${req.params.contestId}`));
-router.post("/concursuri/sterge", isAuthenticated, contestController.deleteOneById);
-router.get("/concursuri/:contestId/exercitii/adauga", isAuthenticated, exerciseController.createOrEditGet);
-router.get("/concursuri/:contestId/exercitii/:id", exerciseController.getOneById);
-router.get("/concursuri/:contestId/exercitii/:id/modifica", isAuthenticated, exerciseController.createOrEditGet);
-router.post("/concursuri/exercitii/sterge", isAuthenticated, exerciseController.deleteOneById);
 
 // lessons
 router.get("/lectii", lessonController.getAll);

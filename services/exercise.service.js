@@ -31,10 +31,12 @@ exports.getAll = async (query) => {
 
 exports.count = async (filter) => {
     const db = await mongoHelper.getDb();
-    return db
-        .collection(collection)
-        .find(filter || {})
-        .count();
+    return db.collection(collection).countDocuments(filter || {});
+};
+
+exports.getNumberOfSessionForClass = async (classId) => {
+    const db = await mongoHelper.getDb();
+    return db.collection(collection).countDocuments({ classId });
 };
 
 exports.getOneById = async (id) => {
