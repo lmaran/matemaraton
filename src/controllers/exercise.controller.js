@@ -1,32 +1,16 @@
 const exerciseService = require("../services/exercise.service");
-const contestService = require("../services/contest.service");
 const idGeneratorMongoService = require("../services/id-generator-mongo.service");
 const autz = require("../services/autz.service");
 const markdownService = require("../services/markdown.service");
-const contestHelper = require("../helpers/contest.helper");
 
 exports.deleteOneById = async (req, res) => {
     const exerciseId = req.body.exerciseId;
-    const contestId = req.body.contestId;
     const canDeleteExercise = await autz.can(req.user, "delete:exercise");
     if (!canDeleteExercise) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
 
     exerciseService.deleteOneById(exerciseId);
-
-    if (contestId) {
-        // remove from contest
-        const contest = await contestService.getOneById(contestId);
-        if (contest && contest.exercises) {
-            const exerciseIndex = contest.exercises.findIndex((x) => x === exerciseId);
-            if (exerciseIndex > -1) {
-                contest.exercises.splice(exerciseIndex, 1); // remove from array
-                await contestService.updateOne(contest);
-            }
-        }
-        return res.redirect(`/concursuri/${contestId}`);
-    }
 
     res.redirect("/exercitii");
 };
@@ -120,15 +104,6 @@ exports.createOrEditGet = async (req, res) => {
         subchapterAvailableOptions,
         lessonAvailableOptions,
     };
-
-    // check if the request comes from contests
-    const contestId = req.params.contestId;
-    if (contestId) {
-        const contest = await contestService.getOneById(contestId);
-        contest.newCode = contestHelper.getNewCode(contest); // 37 -> 5.OL.37
-        data.contest = contest;
-        data.exercise = { grade: contest.grade, contestType: contest.contestType, contestName: contest.name };
-    }
 
     if (isEditMode) {
         const exercise = await exerciseService.getOneById(req.params.id);
@@ -270,16 +245,6 @@ exports.createOrEditPost = async (req, res) => {
             exercise._id = result.insertedId;
         }
 
-        const contestId = req.body.contestId;
-        if (contestId) {
-            const contest = await contestService.getOneById(contestId);
-            if (contest) {
-                contest.exercises.push(exercise._id);
-                await contestService.updateOne(contest);
-                return res.redirect(`/concursuri/${contestId}/exercitii/${exercise._id}/modifica`);
-            }
-        }
-
         //res.send(exercise);
         res.redirect(`/exercitii/${exercise._id}/modifica`);
     } catch (err) {
@@ -397,14 +362,6 @@ exports.getOneById = async (req, res) => {
         canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise"),
         canDeleteExercise: await autz.can(req.user, "delete:exercise"),
     };
-
-    // check if the request comes from contests
-    const contestId = req.params.contestId;
-    if (contestId) {
-        const contest = await contestService.getOneById(contestId);
-        contest.newCode = contestHelper.getNewCode(contest); // 37 -> 5.OL.37
-        data.contest = contest;
-    }
 
     //res.send(data);
     res.render("exercise/exercise", data);

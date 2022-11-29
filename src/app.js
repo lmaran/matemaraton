@@ -25,11 +25,11 @@ app.set("view engine", ".hbs");
 app.set("views", path.join(__dirname, "/views"));
 app.engine(
     ".hbs",
-    exphbs({
+    exphbs.engine({
         defaultLayout: "main",
         extname: ".hbs",
 
-        helpers: handlebarHelpers
+        helpers: handlebarHelpers,
     })
 );
 
@@ -45,7 +45,7 @@ const mongoClientAsPromise = mongoHelper.getClientAsPromise();
 app.use("/", express.static(path.join(__dirname, "./public")));
 app.use("/lib/lit-html", express.static(path.join(__dirname, "../node_modules/lit-html")));
 
-app.get("/check", function(req, res) {
+app.get("/check", function (req, res) {
     res.send("matemaraton-" + (process.env.DEPLOYMENT_SLOT || "noslot") + "-" + process.env.NODE_ENV);
 });
 
@@ -54,7 +54,7 @@ app.use(
         secret: "foo",
         resave: false,
         saveUninitialized: true,
-        store: MongoStore.create({ clientPromise: mongoClientAsPromise })
+        store: MongoStore.create({ clientPromise: mongoClientAsPromise }),
     })
 );
 app.use(flash());
