@@ -4,6 +4,7 @@ const isAuthenticated = require("./middlewares/is-authenticated.middleware").isA
 
 const upgradeOperationController = require("./controllers/upgrade-operation.controller");
 const homeController = require("./controllers/home.controller");
+const contactController = require("./controllers/contact.controller");
 const editionController = require("./controllers/edition.controller");
 const meController = require("./controllers/me.controller");
 const matemaratonController = require("./controllers/matemaraton.controller");
@@ -32,6 +33,7 @@ const resourcesController = require("./controllers/resources.controller");
 
 // home
 router.get("/", homeController.getHomePage);
+router.get("/contact", contactController.getContactPage);
 
 router.get("/upgrade-operation", isAuthenticated, upgradeOperationController.upgradeOperation);
 
