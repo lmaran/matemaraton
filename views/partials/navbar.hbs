@@ -36,6 +36,9 @@ if 2 similar sections are used, the last one will override the first one --}}
                         <li><a class="dropdown-item" href="/utilizatori">Utilizatori</a></li>
                     </ul>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/materiale">Materiale</a>
+                </li>
                 {{/if}}
 
             </ul>
@@ -44,6 +47,7 @@ if 2 similar sections are used, the last one will override the first one --}}
                 {{!-- <li class="nav-item">
                     <a class="nav-link" href="#">Link</a>
                 </li> --}}
+
                 {{#if @root.user}}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="/" id="navbarDropdown" role="button"

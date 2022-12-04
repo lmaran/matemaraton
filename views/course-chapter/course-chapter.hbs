@@ -25,22 +25,17 @@
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/{{course._id}}">{{course.code}}</a></li>
+        <li title="Editează" class="ms-auto"><a href="/cursuri/{{course._id}}/capitole/{{course.selectedChapter.id}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
     </ol>
 </nav>
 
-<h1>Cap.{{inc course.selectedChapter.index}}: {{course.selectedChapter.name}}
-    {{#if canCreateOrEditCourse}}
-    <a href="/cursuri/{{course._id}}/capitole/{{course.selectedChapter.id}}/modifica">
-        <i class="bi bi-pencil-fill" style="font-size: 50%"></i>
-    </a>
-    {{/if}}
-</h1>
+<h1>Cap.{{inc course.selectedChapter.index}}: {{course.selectedChapter.name}}</h1>
 
 <div class="text-muted">
     {{course.selectedChapter.description}}
 </div>
 
-<h4 class="mt-3">Lecții</h4>
+<h3 class="mt-3">Lecții:</h3>
 <ol id="table-of-contents" class="pl-0">
     {{#each course.selectedChapter.lessons}}
     <li>
@@ -52,6 +47,3 @@
     </li>
     {{/each}}
 </ol>
-
-<a href="/cursuri/{{course._id}}/capitole/{{course.selectedChapter.id}}/lectii/adauga" class="btn btn-primary btn-sm">
-    <i class="bi bi-plus-lg"></i> Adaugă lecție</a>

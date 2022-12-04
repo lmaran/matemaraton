@@ -2,10 +2,13 @@
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item active">Cursuri</li>
+        <li title="Vizualizează" class="ms-auto"><a href="/cursuri"><i class="bi bi-eye me-1"></i></a></li>
     </ol>
 </nav>
 
-<h1>Cursuri (admin)</h1>
+<h1>Cursuri</h1>
+
+<a href="/cursuri/adauga" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Adaugă curs</a>
 
 <form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;"></form>
 <table class="table thead-light table-bordered table-hover mt-5">
@@ -26,7 +29,7 @@
                 {{code}}
             </td>
             <td>
-                <a href="/cursuri/{{_id}}">{{name}}
+                <a href="/cursuri/{{_id}}/modifica">{{name}}{{#unless name}}Fără nume{{/unless}}
             </td>
             <td>{{category}}</td>
             <td>

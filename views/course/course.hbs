@@ -25,19 +25,11 @@
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
         <li class="breadcrumb-item active">{{course.code}}</li>
+        <li title="Editează" class="ms-auto"><a href="/cursuri/{{course._id}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
     </ol>
 </nav>
 
-<h1><span >Curs {{course.code}}</span>
-    {{#if canCreateOrEditCourse}}
-    {{!-- <a href="/cursuri/{{course._id}}/modifica">
-        <i class="bi bi-pencil-fill" style2="font-size: 75%"></i>
-    </a> --}}
-    <a class="btn btn-light btn-outline-primary align-top mt-1" href="/cursuri/{{course._id}}/modifica">
-        <i class="bi bi-pencil-fill" style2="font-size: 75%"></i>
-    </a>
-    {{/if}}
-</h1>
+<h1>Curs {{course.code}}</h1>
 
 <h3 class=" font-weight-light">{{course.name}}</h3>
 
@@ -46,7 +38,7 @@
 <ol id="table-of-contents" class="pl-0">
     {{#each course.chapters}}
     <li>
-        <a href="/cursuri/{{@root.course._id}}/capitole/{{id}}" class2="text-uppercase">{{name}}</a>
+        <a href="/cursuri/{{@root.course._id}}/capitole/{{id}}" class2="text-uppercase">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
 
         {{#if isHidden}}
         <a href="/cursuri/{{@root.course._id}}/capitole/{{id}}/modifica">
@@ -67,8 +59,3 @@
     </li>
     {{/each}}
 </ol>
-
-{{#if canCreateOrEditCourse}}
-<a href="/cursuri/{{course._id}}/capitole/adauga" class="btn btn-primary btn-sm">
-    <i class="bi bi-plus-lg"></i> Adaugă capitol</a>
-{{/if}}

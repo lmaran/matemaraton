@@ -139,7 +139,8 @@ exports.createOrEditPost = async (req, res) => {
         courseService.updateOne(course);
 
         //res.send(course);
-        res.redirect(`/cursuri/${course._id}/capitole/${course.selectedChapter.id}/lectii/${lesson.id}`);
+        //res.redirect(`/cursuri/${course._id}/capitole/${course.selectedChapter.id}/lectii/${lesson.id}`);
+        res.redirect(`/cursuri/${course._id}/capitole/${course.selectedChapter.id}`);
     } catch (err) {
         return res.status(500).json(err.message);
     }

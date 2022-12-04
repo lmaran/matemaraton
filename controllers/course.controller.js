@@ -28,6 +28,7 @@ exports.createOrEditGet = async (req, res) => {
 
     const data = {
         isEditMode,
+        isCreateMode: !isEditMode,
         gradeAvailableOptions,
         categoryAvailableOptions,
     };
@@ -85,14 +86,14 @@ exports.createOrEditPost = async (req, res) => {
             course._id = result.insertedId;
         }
         //res.send(course);
-        res.redirect(`/cursuri/${course._id}`);
+        res.redirect(`/cursuri/modifica`);
     } catch (err) {
         return res.status(500).json(err.message);
     }
 };
 
 exports.createOrEditListGet = async (req, res) => {
-    const canCreateOrEditCourseList = await autz.can(req.user, "create-or-edit:course-list");
+    const canCreateOrEditCourseList = await autz.can(req.user, "create-or-edit:courses");
     if (!canCreateOrEditCourseList) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
@@ -113,7 +114,7 @@ exports.createOrEditListGet = async (req, res) => {
     //     data.course = course;
     // }
     //res.send(data);
-    res.render("course/course-list-create-or-edit", data);
+    res.render("course/courses-create-or-edit", data);
 };
 
 exports.getAll = async (req, res) => {
@@ -171,7 +172,7 @@ exports.deleteOneById = async (req, res) => {
     }
 
     courseService.deleteOneById(req.body.id);
-    res.redirect(`/cursuri`);
+    res.redirect(`/cursuri/modifica`);
 };
 
 // exports.addLessonDetailsAsync = async (course) => {
