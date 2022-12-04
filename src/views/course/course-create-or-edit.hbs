@@ -17,9 +17,10 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
-        <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/modifica">Cursuri</a></li>
         {{#if isEditMode}}
         <li class="breadcrumb-item active">{{course.code}}</li>
+        <li title="Vizualizează" class="ms-auto"><a href="/cursuri/{{course._id}}"><i class="bi bi-eye me-1"></i></a></li>
         {{/if}}
     </ol>
 </nav>
@@ -97,8 +98,9 @@
 
         <div class="col-md-6">
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="isActiveCheck" name="isActive" {{#if
-                    course.isActive}}checked{{/if}}>
+                <input type="checkbox" class="form-check-input" id="isActiveCheck" name="isActive" 
+                {{!-- {{#if course.isActive}}checked{{/if}}> --}}
+                {{#if (or course.isActive isCreateMode)}}checked{{/if}}>
                 <label class="form-check-label fw-bold" for="isActiveCheck">Activ</label>
                 <small>
                     <p class="text-muted mb-0">Resursele dezactivate nu sunt vizibile în exterior.</p>
@@ -193,6 +195,40 @@
     </div>
 
 </form>
+
+<hr class="mt-5 mb-5">
+
+<h3 class=" font-weight-light">Capitole:</h3>
+
+<ol id="table-of-contents" class="pl-0">
+    {{#each course.chapters}}
+    <li>
+        <a href="/cursuri/{{@root.course._id}}/capitole/{{id}}/modifica" class2="text-uppercase">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
+
+        {{#if isHidden}}
+        <a href="/cursuri/{{@root.course._id}}/capitole/{{id}}/modifica">
+            <i class="bi bi-eye-slash text-danger"></i></a>
+        {{/if}}
+
+        <ol>
+            {{#each lessons}}
+            <li>
+                <a class="pl-1" href="/cursuri/{{@root.course._id}}/capitole/{{../id}}/lectii/{{id}}">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
+            </li>
+            {{/each}}
+            {{!-- <a href="/cursuri/{{@root.course._id}}/capitole/{{id}}/lectii/adauga"><i class="bi bi-plus-lg"></i>
+                Adaugă
+                lecție</a> --}}
+        </ol>
+
+    </li>
+    {{/each}}
+</ol>
+
+
+<a href="/cursuri/{{course._id}}/capitole/adauga" class="btn btn-primary btn-sm">
+    <i class="bi bi-plus-lg"></i> Adaugă capitol</a>
+
 
 {{#section 'script'}}
 <script type="module" src="/js/course/course-create-or-edit.main.js"></script>
