@@ -4,10 +4,10 @@
  * https://github.com/Azure/azure-sdk-for-js/blob/master/sdk/storage/storage-blob/samples/javascript/basic.js
  * @param {readableStream} readableStream
  */
-exports.streamToString = async readableStream => {
+exports.streamToString = async (readableStream) => {
     return new Promise((resolve, reject) => {
         const chunks = [];
-        readableStream.on("data", data => {
+        readableStream.on("data", (data) => {
             chunks.push(data.toString());
         });
         readableStream.on("end", () => {

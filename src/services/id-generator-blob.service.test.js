@@ -33,7 +33,12 @@ describe("id-generator.service.getBatchSize()", () => {
     it("should return correct specific batch size", () => {
         // arrange
         const scope = "exercises";
-        const config = { idGenerator: { defaultBatchSize: 10, specificBatchSize: { exercises: 5 } } };
+        const config = {
+            idGenerator: {
+                defaultBatchSize: 10,
+                specificBatchSize: { exercises: 5 },
+            },
+        };
 
         // act
         const actual = srcFile.getBatchSize(scope, config);

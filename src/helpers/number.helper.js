@@ -1,4 +1,4 @@
-exports.getValueAsText = value => {
+exports.getValueAsText = (value) => {
     const mapValueToText = {
         1: "unu",
         2: "doi",
@@ -9,7 +9,7 @@ exports.getValueAsText = value => {
         7: "sapte",
         8: "opt",
         9: "noua",
-        10: "zece"
+        10: "zece",
     };
     return mapValueToText[value];
 };

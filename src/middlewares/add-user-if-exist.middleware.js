@@ -22,7 +22,8 @@ exports.addUserIfExist = async (req, res, next) => {
                 let refreshToken = req.cookies && req.cookies.refresh_token;
 
                 // details about the wrapping parenthesis: https://stackoverflow.com/a/35576419
-                ({ token, refreshToken } = await authService.getTokensFromRefreshToken(refreshToken));
+                ({ token, refreshToken } =
+                    await authService.getTokensFromRefreshToken(refreshToken));
 
                 // save the new values for further use
                 cookieHelper.setCookies(res, token, refreshToken);
@@ -37,7 +38,7 @@ exports.addUserIfExist = async (req, res, next) => {
 
         const [user, roleAssignments] = await Promise.all([
             await userService.getOneByIdWithoutPsw(userId),
-            await roleAssignmentsService.getRolesBySubjectId(userId.toString())
+            await roleAssignmentsService.getRolesBySubjectId(userId.toString()),
         ]);
 
         if (!user) {
@@ -46,15 +47,18 @@ exports.addUserIfExist = async (req, res, next) => {
         }
 
         // attach user roles
-        user.roles = roleAssignments.map(r => r.roleName);
+        user.roles = roleAssignments.map((r) => r.roleName);
 
         // attach user permissions
-        const roleDefinitions = await roleDefinitionsService.getRoleDefinitionsByRoleNames(user.roles);
+        const roleDefinitions =
+            await roleDefinitionsService.getRoleDefinitionsByRoleNames(
+                user.roles
+            );
 
         // TODO: take into account also "exclude-permissions", "deny-permissions" etc
         const permissions = [];
-        roleDefinitions.forEach(r => {
-            (r.allowPermissions || []).forEach(p => {
+        roleDefinitions.forEach((r) => {
+            (r.allowPermissions || []).forEach((p) => {
                 permissions.push(p);
             });
         });

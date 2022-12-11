@@ -8,7 +8,10 @@ exports.getAll = async (req, res) => {
 
     const data = {
         practiceTests,
-        canCreateOrEditPracticeTest: await autz.can(req.user, "create-or-edit:practice-test"),
+        canCreateOrEditPracticeTest: await autz.can(
+            req.user,
+            "create-or-edit:practice-test"
+        ),
     };
     //res.send(data);
     res.render("practice-test/practice-test-list", data);
@@ -24,28 +27,40 @@ exports.getOneById = async (req, res) => {
 
         practiceTest.exercises.forEach((exercise, i) => {
             // const statement = `**[E.${exercise.code}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
-            const statement = `**[Problema ${++i}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
+            const statement = `**[Problema ${++i}.](/exercitii/${
+                exercise._id
+            })** ${exercise.question.statement.text}`;
             const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
 
             if (exercise.question.answerOptions) {
                 exercise.question.answerOptions.forEach((answerOption, idx) => {
                     // insert a label (letter) in front of each option: "a" for the 1st option, "b" for the 2nd a.s.o.
-                    answerOption.textPreview = markdownService.render(`${alphabet[idx]}) ${answerOption.text}`);
+                    answerOption.textPreview = markdownService.render(
+                        `${alphabet[idx]}) ${answerOption.text}`
+                    );
                     if (answerOption.isCorrect) {
-                        exercise.question.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
+                        exercise.question.correctAnswerPreview =
+                            markdownService.render(
+                                `**Răspuns:** ${answerOption.text}`
+                            );
                     }
                 });
             }
 
-            exercise.question.statement.textPreview = markdownService.render(statement);
+            exercise.question.statement.textPreview =
+                markdownService.render(statement);
 
             if (exercise.question.solution) {
                 //exercise.question.solution.textPreview = markdownService.render(`**Soluție:** ${exercise.question.solution.text}`);
-                exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
+                exercise.question.solution.textPreview = markdownService.render(
+                    exercise.question.solution.text
+                );
             }
             if (exercise.question.hints) {
                 exercise.question.hints.forEach((hint, idx) => {
-                    hint.textPreview = markdownService.render(`**Hint ${idx + 1}:** ${hint.text}`);
+                    hint.textPreview = markdownService.render(
+                        `**Hint ${idx + 1}:** ${hint.text}`
+                    );
                 });
             }
         });
@@ -66,7 +81,10 @@ exports.getOneById = async (req, res) => {
     const data = {
         practiceTest,
         // course,
-        canCreateOrEditPracticeTest: await autz.can(req.user, "create-or-edit:practice-test"),
+        canCreateOrEditPracticeTest: await autz.can(
+            req.user,
+            "create-or-edit:practice-test"
+        ),
         canDeletePracticeTest: await autz.can(req.user, "delete:practice-test"),
     };
     //res.send(data);
@@ -75,7 +93,10 @@ exports.getOneById = async (req, res) => {
 
 exports.createOrEditGet = async (req, res) => {
     const practiceTestId = req.params.practiceTestId;
-    const canCreateOrEditPracticeTest = await autz.can(req.user, "create-or-edit:practice-test");
+    const canCreateOrEditPracticeTest = await autz.can(
+        req.user,
+        "create-or-edit:practice-test"
+    );
     if (!canCreateOrEditPracticeTest) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
@@ -100,7 +121,9 @@ exports.createOrEditGet = async (req, res) => {
     };
 
     if (isEditMode) {
-        const practiceTest = await practiceTestService.getOneById(practiceTestId);
+        const practiceTest = await practiceTestService.getOneById(
+            practiceTestId
+        );
         data.practiceTest = practiceTest;
     }
 
@@ -111,7 +134,10 @@ exports.createOrEditGet = async (req, res) => {
 exports.createOrEditPost = async (req, res) => {
     const practiceTestId = req.params.practiceTestId;
     try {
-        const canCreateOrEditPracticeTest = await autz.can(req.user, "create-or-edit:practice-test");
+        const canCreateOrEditPracticeTest = await autz.can(
+            req.user,
+            "create-or-edit:practice-test"
+        );
         if (!canCreateOrEditPracticeTest) {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
@@ -140,7 +166,10 @@ exports.createOrEditPost = async (req, res) => {
 
 exports.deleteOneById = async (req, res) => {
     const practiceTestId = req.body._id;
-    const canDeletePracticeTest = await autz.can(req.user, "delete:practice-test");
+    const canDeletePracticeTest = await autz.can(
+        req.user,
+        "delete:practice-test"
+    );
     if (!canDeletePracticeTest) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }

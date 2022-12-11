@@ -17,7 +17,10 @@ exports.postInviteToSignup = async (req, res) => {
             return res.send("Există deja un utilizator activ cu acest email");
         }
 
-        const uniqueId = existingUser && existingUser.signupCode ? existingUser.signupCode : uuidv4(); // keep the original code if exists
+        const uniqueId =
+            existingUser && existingUser.signupCode
+                ? existingUser.signupCode
+                : uuidv4(); // keep the original code if exists
 
         const invitationInfo = {
             firstName,
@@ -75,11 +78,14 @@ exports.getSignup = async (req, res) => {
     const errors = arrayHelper.arrayToObject(validationErrors, "field");
     const data = arrayHelper.arrayToObject(initialValues, "field");
 
-    const existingUser = invitationCode && (await userService.getOneBySignupCode(invitationCode));
+    const existingUser =
+        invitationCode &&
+        (await userService.getOneBySignupCode(invitationCode));
     if (existingUser) {
         if (existingUser.status === "active") {
             const data = {
-                message: "Contul aferent accestei invitații a fost deja <strong>activat</strong>!",
+                message:
+                    "Contul aferent accestei invitații a fost deja <strong>activat</strong>!",
                 userIsNotAuthenticated: !req.user,
             };
             return res.render("user/signup-confirm-info", data);
@@ -134,37 +140,63 @@ exports.getSignup = async (req, res) => {
 
 exports.postSignup = async (req, res) => {
     try {
-        const { firstName, lastName, email, password, confirmPassword, invitationCode } = req.body;
+        const {
+            firstName,
+            lastName,
+            email,
+            password,
+            confirmPassword,
+            invitationCode,
+        } = req.body;
 
         // recaptcha verification
-        const captchaResponse = await recaptchaService.checkResponse(req.body["g-recaptcha-response"]);
+        const captchaResponse = await recaptchaService.checkResponse(
+            req.body["g-recaptcha-response"]
+        );
         // console.log(captchaResponse);
         if (!captchaResponse.success || captchaResponse.score <= 0.5) {
             // over 50% chance to be be a bot
-            const validationErrors = [{ field: "page", msg: "Nu ai trecut de validarea captcha. Mai încearcă odată!" }];
+            const validationErrors = [
+                {
+                    field: "page",
+                    msg: "Nu ai trecut de validarea captcha. Mai încearcă odată!",
+                },
+            ];
             return flashAndReloadSignupPage(req, res, validationErrors);
         }
 
         // handle static validation errors
-        const validationErrors = getSignupStaticValidationErrors(firstName, lastName, email, password, confirmPassword);
+        const validationErrors = getSignupStaticValidationErrors(
+            firstName,
+            lastName,
+            email,
+            password,
+            confirmPassword
+        );
         if (validationErrors.length) {
             return flashAndReloadSignupPage(req, res, validationErrors);
         }
 
         if (invitationCode) {
-            const { token, refreshToken } = await authService.signupByInvitationCode(
-                firstName,
-                lastName,
-                // email,
-                password,
-                invitationCode
-            );
+            const { token, refreshToken } =
+                await authService.signupByInvitationCode(
+                    firstName,
+                    lastName,
+                    // email,
+                    password,
+                    invitationCode
+                );
 
             cookieHelper.setCookies(res, token, refreshToken);
 
             res.redirect("/signup/confirm-success");
         } else {
-            const activationCode = await authService.signupByUserRegistration(firstName, lastName, email, password);
+            const activationCode = await authService.signupByUserRegistration(
+                firstName,
+                lastName,
+                email,
+                password
+            );
             // Send this code on email
             const rootUrl = config.externalUrl; // e.g. http://localhost:1417
             const link = `${rootUrl}/signup/confirm/${activationCode}`;
@@ -185,7 +217,10 @@ exports.postSignup = async (req, res) => {
         // handle dynamic validation errors
         const validationErrors = [];
         if (err.message === "EmailAlreadyExists") {
-            validationErrors.push({ field: "email", msg: "Există deja un cont cu acest email" });
+            validationErrors.push({
+                field: "email",
+                msg: "Există deja un cont cu acest email",
+            });
         }
 
         if (validationErrors.length) {
@@ -201,12 +236,16 @@ exports.getSignupConfirm = async (req, res) => {
     try {
         const activationCode = req.params.activationCode;
 
-        const { token, refreshToken } = await authService.signupByActivationCode(activationCode);
+        const { token, refreshToken } =
+            await authService.signupByActivationCode(activationCode);
 
         cookieHelper.setCookies(res, token, refreshToken);
         res.redirect("/signup/confirm-success");
     } catch (err) {
-        const data = { message: err.message, userIsNotAuthenticated: !req.user };
+        const data = {
+            message: err.message,
+            userIsNotAuthenticated: !req.user,
+        };
 
         if (err.message === "AccountAlreadyActivated") {
             data.message = "Acest cont a fost deja <strong>activat</strong>!";
@@ -235,39 +274,80 @@ exports.getSignupConfirmSuccess = async (req, res) => {
     res.render("user/signup-confirm-success", data);
 };
 
-const getSignupStaticValidationErrors = (firstName, lastName, email, password, confirmPassword) => {
+const getSignupStaticValidationErrors = (
+    firstName,
+    lastName,
+    email,
+    password,
+    confirmPassword
+) => {
     try {
         const validationErrors = [];
 
         // lastName
-        if (validator.isEmpty(lastName)) validationErrors.push({ field: "lastName", msg: "Câmp obligatoriu" });
+        if (validator.isEmpty(lastName))
+            validationErrors.push({
+                field: "lastName",
+                msg: "Câmp obligatoriu",
+            });
         else if (!validator.isLength(lastName, { max: 50 }))
-            validationErrors.push({ field: "lastName", msg: "Maxim 50 caractere" });
+            validationErrors.push({
+                field: "lastName",
+                msg: "Maxim 50 caractere",
+            });
 
         // firstName
-        if (validator.isEmpty(firstName)) validationErrors.push({ field: "firstName", msg: "Câmp obligatoriu" });
+        if (validator.isEmpty(firstName))
+            validationErrors.push({
+                field: "firstName",
+                msg: "Câmp obligatoriu",
+            });
         else if (!validator.isLength(firstName, { max: 50 }))
-            validationErrors.push({ field: "firstName", msg: "Maxim 50 caractere" });
+            validationErrors.push({
+                field: "firstName",
+                msg: "Maxim 50 caractere",
+            });
 
-        if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu" });
+        if (validator.isEmpty(email))
+            validationErrors.push({ field: "email", msg: "Câmp obligatoriu" });
         else if (!validator.isLength(email, { max: 50 }))
-            validationErrors.push({ field: "email", msg: "Maxim 50 caractere" });
-        else if (!validator.isEmail(email)) validationErrors.push({ field: "email", msg: "Email invalid" });
+            validationErrors.push({
+                field: "email",
+                msg: "Maxim 50 caractere",
+            });
+        else if (!validator.isEmail(email))
+            validationErrors.push({ field: "email", msg: "Email invalid" });
         // else if (await userService.getOneByEmail(email))
         //     validationErrors.push({ field: "email", msg: "Exista deja un cont cu acest email" });
 
         // password
-        if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu" });
+        if (validator.isEmpty(password))
+            validationErrors.push({
+                field: "password",
+                msg: "Câmp obligatoriu",
+            });
         else if (!validator.isLength(password, { min: 6 }))
-            validationErrors.push({ field: "password", msg: "Minim 6 caractere" });
+            validationErrors.push({
+                field: "password",
+                msg: "Minim 6 caractere",
+            });
         else if (!validator.isLength(password, { max: 50 }))
-            validationErrors.push({ field: "password", msg: "Maxim 50 caractere" });
+            validationErrors.push({
+                field: "password",
+                msg: "Maxim 50 caractere",
+            });
 
         // confirm password
         if (validator.isEmpty(confirmPassword))
-            validationErrors.push({ field: "confirmPassword", msg: "Câmp obligatoriu" });
+            validationErrors.push({
+                field: "confirmPassword",
+                msg: "Câmp obligatoriu",
+            });
         else if (confirmPassword !== password)
-            validationErrors.push({ field: "confirmPassword", msg: "Parolele nu coincid" });
+            validationErrors.push({
+                field: "confirmPassword",
+                msg: "Parolele nu coincid",
+            });
 
         return validationErrors;
     } catch (err) {

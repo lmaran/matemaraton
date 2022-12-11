@@ -18,13 +18,15 @@ const streamHelper = require("../helpers/stream.helper");
 const { BlobServiceClient } = require("@azure/storage-blob");
 
 // run only one time
-const blobServiceClient = BlobServiceClient.fromConnectionString(config.azureBlobStorageConnectionString);
+const blobServiceClient = BlobServiceClient.fromConnectionString(
+    config.azureBlobStorageConnectionString
+);
 const containerClient = blobServiceClient.getContainerClient("counters");
 
 let currentId = 0;
 let maxId = 0; // exclusive (actually the max id that can be used without a roundtrip to the blob is maxId-1)
 
-exports.getNextId = async scope => {
+exports.getNextId = async (scope) => {
     // in blob se va stoca urmatorul id disponibil
     // ex: pt. un batchSize=3, la primul request in blob se va stoca "3" iar in buffer-ul local vor fi disponibile numele 0,1 si 2
     // clientul va memora două numere:
@@ -47,12 +49,16 @@ exports.getNextId = async scope => {
 exports.uploadInMemoryCountersFromBlob = async (scope, writeAttempts) => {
     try {
         // read the current counter from blob
-        const blockBlobClient = containerClient.getBlockBlobClient(`${scope}.txt`);
+        const blockBlobClient = containerClient.getBlockBlobClient(
+            `${scope}.txt`
+        );
         const downloadBlockBlobResponse = await blockBlobClient.download(0);
 
         const originalETag = downloadBlockBlobResponse.originalResponse.etag; // etag: '"0x8D821EA1A932960"',
 
-        const oldValueInBlobAsString = await streamHelper.streamToString(downloadBlockBlobResponse.readableStreamBody);
+        const oldValueInBlobAsString = await streamHelper.streamToString(
+            downloadBlockBlobResponse.readableStreamBody
+        );
         const oldValueInBlob = Number(oldValueInBlobAsString);
 
         // calculate the new counter
@@ -65,7 +71,9 @@ exports.uploadInMemoryCountersFromBlob = async (scope, writeAttempts) => {
         // await timeHelper.sleepAsync(20000); // 20 sec
 
         const data = newValueInBlob.toString();
-        await blockBlobClient.upload(data, data.length, { conditions: { ifMatch: originalETag } });
+        await blockBlobClient.upload(data, data.length, {
+            conditions: { ifMatch: originalETag },
+        });
 
         // update the "max" and "current" counters in memory
         maxId = newValueInBlob;
@@ -88,7 +96,11 @@ exports.uploadInMemoryCountersFromBlob = async (scope, writeAttempts) => {
 
 exports.getBatchSize = (scope, config) => {
     let batchSize = 3; // default
-    if (config.idGenerator && config.idGenerator.specificBatchSize && config.idGenerator.specificBatchSize[scope]) {
+    if (
+        config.idGenerator &&
+        config.idGenerator.specificBatchSize &&
+        config.idGenerator.specificBatchSize[scope]
+    ) {
         batchSize = config.idGenerator.specificBatchSize[scope];
     } else {
         if (config.idGenerator && config.idGenerator.defaultBatchSize) {

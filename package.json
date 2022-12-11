@@ -14,11 +14,9 @@
         "test": "jest",
         "clean": "rimraf dist",
         "watch": "nodemon --config nodemon.json",
-        "lint": "eslint src test",
-        "lint:fix": "eslint --fix src test",
-        "prettier": "prettier --check src test",
-        "prettier:fix": "prettier  --write src test",
-        "format": "npm run prettier:fix && npm run lint:fix"
+        "lint": "eslint src",
+        "prettier": "prettier --check src",
+        "prettier:fix": "prettier  --write src"
     },
     "author": "",
     "license": "ISC",

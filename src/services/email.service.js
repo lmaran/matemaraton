@@ -4,10 +4,10 @@ const config = require("../config");
 const mg = mailgun({
     apiKey: config.mailgun_key,
     domain: config.mailgun_domain,
-    host: config.mailgun_host
+    host: config.mailgun_host,
 });
 
-exports.sendEmail = async data => {
+exports.sendEmail = async (data) => {
     try {
         data.from = data.from || config.mailgun_defaultSender;
         return await mg.messages().send(data);

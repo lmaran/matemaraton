@@ -32,25 +32,29 @@ const common = {
 
     httpLogDetails: {
         request: {
-            general: process.env.HTTP_LOG_DETAILS_REQUEST_GENERAL || LogDetail.FULL,
-            headers: process.env.HTTP_LOG_DETAILS_REQUEST_HEADERS || LogDetail.PARTIAL,
-            body: process.env.HTTP_LOG_DETAILS_REQUEST_BODY || false
+            general:
+                process.env.HTTP_LOG_DETAILS_REQUEST_GENERAL || LogDetail.FULL,
+            headers:
+                process.env.HTTP_LOG_DETAILS_REQUEST_HEADERS ||
+                LogDetail.PARTIAL,
+            body: process.env.HTTP_LOG_DETAILS_REQUEST_BODY || false,
         },
         response: {
             general: process.env.HTTP_LOG_DETAILS_RESPONSE_GENERAL || false,
             headers: process.env.HTTP_LOG_DETAILS_RESPONSE_HEADERS || false,
-            body: process.env.HTTP_LOG_DETAILS_RESPONSE_BODY || false
-        }
+            body: process.env.HTTP_LOG_DETAILS_RESPONSE_BODY || false,
+        },
     },
 
     // List of user roles
     userRoles: ["guest", "user", "partner", "admin"], // the order is important
 
     externalUrl: "http://localhost:1417",
-    azureBlobStorageConnectionString: process.env.AZURE_BLOB_STORAGE_CONNECTION_STRING || "",
+    azureBlobStorageConnectionString:
+        process.env.AZURE_BLOB_STORAGE_CONNECTION_STRING || "",
     idGenerator: { defaultBatchSize: 10, specificBatchSize: { exercises: 1 } },
     recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY,
-    recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY
+    recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY,
 };
 
 // Merge a `source` object to a `target` recursively
@@ -58,7 +62,8 @@ const common = {
 const merge = (target, source) => {
     // Iterate through `source` properties and if an `Object` set property to merge of `target` and `source` properties
     for (const key of Object.keys(source)) {
-        if (source[key] instanceof Object) Object.assign(source[key], merge(target[key], source[key]));
+        if (source[key] instanceof Object)
+            Object.assign(source[key], merge(target[key], source[key]));
     }
 
     // Join `target` and modified `source`

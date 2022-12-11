@@ -1,5 +1,5 @@
 import { markdownService } from "../markdown/markdown.service.js";
-import { domHelper } from "../helpers/dom.helper.js";
+//import { domHelper } from "../helpers/dom.helper.js";
 
 /**
  * DOM elements
@@ -19,30 +19,46 @@ const solutionPreviewDiv = document.getElementById("solution-preview-div");
 export const eventHandlers = {
     getStatementPreview: async (event) => {
         const data = { markdown: event.target.value };
-        statementPreviewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
+        statementPreviewDiv.innerHTML =
+            await markdownService.getRenderedMarkdown(data);
     },
     getAnswerPreview: async (event) => {
         const data = { markdown: event.target.value };
-        answerPreviewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
+        answerPreviewDiv.innerHTML = await markdownService.getRenderedMarkdown(
+            data
+        );
     },
     getSolutionPreview: async (event) => {
         const data = { markdown: event.target.value };
-        solutionPreviewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
+        solutionPreviewDiv.innerHTML =
+            await markdownService.getRenderedMarkdown(data);
     },
     handleKeyupForAllHints: async (event) => {
-        if (event.target && event.target.classList.contains("hint-editor-txt")) {
+        if (
+            event.target &&
+            event.target.classList.contains("hint-editor-txt")
+        ) {
             const data = { markdown: event.target.value };
             const parentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
             const previewDiv = parentDiv.querySelector(".hint-preview-div");
-            previewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
+            previewDiv.innerHTML = await markdownService.getRenderedMarkdown(
+                data
+            );
         }
     },
     handleKeyupForAllAnswerOptions: async (event) => {
-        if (event.target && event.target.classList.contains("answer-option-editor-txt")) {
+        if (
+            event.target &&
+            event.target.classList.contains("answer-option-editor-txt")
+        ) {
             const data = { markdown: event.target.value };
             const parentDiv = event.target.closest(".answer-option-parent-div"); // find the closest ancestor which matches the selectors
-            const previewDiv = parentDiv.querySelector(".answer-option-preview-div");
-            previewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
+            const previewDiv = parentDiv.querySelector(
+                ".answer-option-preview-div"
+            );
+            previewDiv.innerHTML = await markdownService.getRenderedMarkdown(
+                data
+            );
         }
     },
     // getHintPreview: async event => {
@@ -68,7 +84,8 @@ export const eventHandlers = {
     // },
     setDefaultContestName: async (event) => {
         const selectedContestType = event.target.value;
-        const selectedContestName = event.target.options[event.target.selectedIndex].text;
+        const selectedContestName =
+            event.target.options[event.target.selectedIndex].text;
         const contestNameInput = document.getElementById("contestNameInput");
 
         switch (selectedContestType) {
@@ -82,7 +99,8 @@ export const eventHandlers = {
                 contestNameInput.value = `${selectedContestName}, <anul>`;
                 break;
             case "alte-concursuri":
-                contestNameInput.value = "Concurs <nume-concurs>, <oras>, <anul>";
+                contestNameInput.value =
+                    "Concurs <nume-concurs>, <oras>, <anul>";
                 break;
             default:
                 contestNameInput.value = "";
@@ -90,7 +108,8 @@ export const eventHandlers = {
     },
     setDefaultSourceName: async (event) => {
         const selectedSourceType = event.target.value;
-        const selectedSourceName = event.target.options[event.target.selectedIndex].text;
+        const selectedSourceName =
+            event.target.options[event.target.selectedIndex].text;
         const sourceNameInput = document.getElementById("sourceNameInput");
 
         switch (selectedSourceType) {
@@ -170,7 +189,9 @@ export const eventHandlers = {
         if (target) {
             if (target.classList.contains("toggle-answer-option-editor-btn")) {
                 const parentDiv = target.closest(".answer-option-parent-div"); // find the closest ancestor which matches the selectors
-                const editorTxt = parentDiv.querySelector(".answer-option-editor-txt");
+                const editorTxt = parentDiv.querySelector(
+                    ".answer-option-editor-txt"
+                );
 
                 editorTxt.classList.toggle("d-none");
 
@@ -192,7 +213,9 @@ export const eventHandlers = {
 
         const markup = `
             <div class="hint-parent-div mb-4">
-                <label class="col-form-label fw-bold"> Indicația ${nrOfElements + 1}: </label>
+                <label class="col-form-label fw-bold"> Indicația ${
+                    nrOfElements + 1
+                }: </label>
 
                 <textarea
                     rows="2"
@@ -223,7 +246,9 @@ export const eventHandlers = {
 
         const markup = `
             <div class="answer-option-parent-div mb-4">
-                <label class="col-form-label fw-bold"> Răspunsul ${nrOfElements + 1}: </label>
+                <label class="col-form-label fw-bold"> Răspunsul ${
+                    nrOfElements + 1
+                }: </label>
 
                 <textarea
                     rows="2"
@@ -239,10 +264,12 @@ export const eventHandlers = {
                 ></div>
 
                 <div class="float-end form-check-inline me-0">
-                    <input class="form-check-input" type="checkbox" name="isCorrectAnswerChecks" value=${nrOfElements + 1} id="defaultCheck${
-            nrOfElements + 1
-        }">
-                    <label class="form-check-label text-muted" for="defaultCheck${nrOfElements + 1}">
+                    <input class="form-check-input" type="checkbox" name="isCorrectAnswerChecks" value=${
+                        nrOfElements + 1
+                    } id="defaultCheck${nrOfElements + 1}">
+                    <label class="form-check-label text-muted" for="defaultCheck${
+                        nrOfElements + 1
+                    }">
                         Răspuns corect
                     </label>
                     <span class="ms-2 me-2 text-muted"> | </span>

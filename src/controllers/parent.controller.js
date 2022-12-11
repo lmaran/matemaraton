@@ -10,28 +10,38 @@ const urlHelper = require("../helpers/url.helper");
 
 exports.getParentsPerClass = async (req, res) => {
     if (!req.user) {
-        return res.redirect(`/login?redirect_uri=${urlHelper.getCurrentEncodedUri(req)}`);
+        return res.redirect(
+            `/login?redirect_uri=${urlHelper.getCurrentEncodedUri(req)}`
+        );
     }
 
     const classId = req.params.classId;
 
     const [cls, studentsMapByClass] = await Promise.all([
         await classService.getOneById(classId),
-        await studentsAndClassesService.getStudentsMapByClassId(classId)
+        await studentsAndClassesService.getStudentsMapByClassId(classId),
     ]);
 
-    const studentIds = studentsMapByClass.map(x => x.studentId);
+    const studentIds = studentsMapByClass.map((x) => x.studentId);
 
-    const studentsAndTheirParents = await personService.getStudentsAndTheirParentsByIds(studentIds);
-    const students = studentsAndTheirParents.filter(x => studentIds.includes(x._id.toString()));
-    const parents = studentsAndTheirParents.filter(x => x.studentIds && x.studentIds.length > 0);
+    const studentsAndTheirParents =
+        await personService.getStudentsAndTheirParentsByIds(studentIds);
+    const students = studentsAndTheirParents.filter((x) =>
+        studentIds.includes(x._id.toString())
+    );
+    const parents = studentsAndTheirParents.filter(
+        (x) => x.studentIds && x.studentIds.length > 0
+    );
 
-    students.forEach(student => {
-        student.displayName = studentHelper.getLastAndShortNameForStudent(student);
+    students.forEach((student) => {
+        student.displayName =
+            studentHelper.getLastAndShortNameForStudent(student);
         student.parents = [];
         student.parentIds &&
-            student.parentIds.forEach(parentId => {
-                const parent = parents.find(p => p._id.toString() === parentId);
+            student.parentIds.forEach((parentId) => {
+                const parent = parents.find(
+                    (p) => p._id.toString() === parentId
+                );
                 student.parents.push(parent);
             });
     });
@@ -40,7 +50,7 @@ exports.getParentsPerClass = async (req, res) => {
         class: cls,
         // studentsAndTheirParents
         students,
-        parents
+        parents,
         // activeStudents: students.filter(x => !x.droppedOut),
         // inactiveStudents: students.filter(x => x.droppedOut)
     };
@@ -60,12 +70,14 @@ exports.getParent = async (req, res) => {
     // const students = await personService.getAllByIds(parent.studentIds);
 
     const [students, parentUser] = await Promise.all([
-        await await personService.getAllByIds(parent.studentIds),
-        await userService.getOneByEmail(parent.email)
+        await personService.getAllByIds(parent.studentIds),
+        await userService.getOneByEmail(parent.email),
     ]);
 
     if (parentUser) {
-        parentUser.lastActionDate = dateTimeHelper.getShortDateAndTimeDate(parentUser.modifiedOn || parentUser.createdOn); // "23-04-2020 13:07"
+        parentUser.lastActionDate = dateTimeHelper.getShortDateAndTimeDate(
+            parentUser.modifiedOn || parentUser.createdOn
+        ); // "23-04-2020 13:07"
     }
 
     const data = {
@@ -73,8 +85,8 @@ exports.getParent = async (req, res) => {
         parentUser,
         students,
         can: {
-            viewParentsLink: await autz.can(req.user, "read:parents")
-        }
+            viewParentsLink: await autz.can(req.user, "read:parents"),
+        },
     };
     //res.send(data);
     res.render("parent/parent", data);

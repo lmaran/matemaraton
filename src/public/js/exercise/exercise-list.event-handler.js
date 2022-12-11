@@ -32,7 +32,9 @@ export const eventHandlers = {
         if (target) {
             const page = target.dataset.page;
             if (page) {
-                const searchParams = new URLSearchParams(window.location.search);
+                const searchParams = new URLSearchParams(
+                    window.location.search
+                );
                 searchParams.set("page", page);
 
                 window.location.search = searchParams.toString(); // redirect to url

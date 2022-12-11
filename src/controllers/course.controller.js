@@ -5,7 +5,10 @@ const autz = require("../services/autz.service");
 // const arrayHelper = require("../helpers/array.helper");
 
 exports.createOrEditGet = async (req, res) => {
-    const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+    const canCreateOrEditCourse = await autz.can(
+        req.user,
+        "create-or-edit:course"
+    );
     if (!canCreateOrEditCourse) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
@@ -22,7 +25,10 @@ exports.createOrEditGet = async (req, res) => {
     const categoryAvailableOptions = [
         { text: "Evaluare Națională", value: "Evaluare Națională" },
         { text: "Olimpiadă, etapa locală", value: "Olimpiadă, etapa locală" },
-        { text: "Olimpiadă, etapa județeană", value: "Olimpiadă, etapa județeană" },
+        {
+            text: "Olimpiadă, etapa județeană",
+            value: "Olimpiadă, etapa județeană",
+        },
         { text: "Altă categorie", value: "Altă categorie" },
     ];
 
@@ -43,13 +49,25 @@ exports.createOrEditGet = async (req, res) => {
 
 exports.createOrEditPost = async (req, res) => {
     try {
-        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+        const canCreateOrEditCourse = await autz.can(
+            req.user,
+            "create-or-edit:course"
+        );
         if (!canCreateOrEditCourse) {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
         const isEditMode = !!req.params.id;
 
-        const { id, code, name, description, grade, category, isHidden, isActive } = req.body;
+        const {
+            id,
+            code,
+            name,
+            description,
+            grade,
+            category,
+            isHidden,
+            isActive,
+        } = req.body;
 
         const course = {
             code,
@@ -93,7 +111,10 @@ exports.createOrEditPost = async (req, res) => {
 };
 
 exports.createOrEditListGet = async (req, res) => {
-    const canCreateOrEditCourseList = await autz.can(req.user, "create-or-edit:courses");
+    const canCreateOrEditCourseList = await autz.can(
+        req.user,
+        "create-or-edit:courses"
+    );
     if (!canCreateOrEditCourseList) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
@@ -140,7 +161,10 @@ exports.getAll = async (req, res) => {
         generalCourses,
         localOlympiadCourses,
         countyOlympiadCourses,
-        canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
+        canCreateOrEditCourse: await autz.can(
+            req.user,
+            "create-or-edit:course"
+        ),
     };
     //res.send(data);
     res.render("course/courses", data);
@@ -152,7 +176,10 @@ exports.getOneById = async (req, res) => {
 
     const data = {
         course,
-        canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
+        canCreateOrEditCourse: await autz.can(
+            req.user,
+            "create-or-edit:course"
+        ),
     };
     //res.send(data);
     res.render("course/course", data);

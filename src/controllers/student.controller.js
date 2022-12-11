@@ -20,9 +20,15 @@ exports.getStudentsPerClass = async (req, res) => {
 
     let students = await personService.getAllByIds(studentsIds);
 
-    const canReadStudentFullName = await autz.can(req.user, "read:student/full-name");
+    const canReadStudentFullName = await autz.can(
+        req.user,
+        "read:student/full-name"
+    );
 
-    const studentsMapByClassIdObj = arrayHelper.arrayToObject(studentsMapByClassId, "studentId");
+    const studentsMapByClassIdObj = arrayHelper.arrayToObject(
+        studentsMapByClassId,
+        "studentId"
+    );
 
     students = students
         .map((student) => {
@@ -33,7 +39,8 @@ exports.getStudentsPerClass = async (req, res) => {
 
             const studentInfoInClass = studentsMapByClassIdObj[student._id];
 
-            student.droppedOut = studentInfoInClass && studentInfoInClass.droppedOut;
+            student.droppedOut =
+                studentInfoInClass && studentInfoInClass.droppedOut;
 
             if (studentInfoInClass && studentInfoInClass.classLetter) {
                 student.gradeAndLetter = `${studentInfoInClass.grade}${studentInfoInClass.classLetter}`; // e.g.  "8A"
@@ -60,10 +67,16 @@ exports.getStudent = async (req, res) => {
         await personService.getStudentAndTheirParentsById(studentId),
     ]);
 
-    const student = studentAndTheirParents.find((x) => x._id.toString() === studentId);
-    const parents = studentAndTheirParents.filter((x) => x.studentIds && x.studentIds.length > 0);
+    const student = studentAndTheirParents.find(
+        (x) => x._id.toString() === studentId
+    );
+    const parents = studentAndTheirParents.filter(
+        (x) => x.studentIds && x.studentIds.length > 0
+    );
 
-    const classes = await classService.getAllByIds(clsMapLines.map((x) => x.classId));
+    const classes = await classService.getAllByIds(
+        clsMapLines.map((x) => x.classId)
+    );
 
     // add "shortName" (e.g.  "Vali M.")
     student.shortName = studentHelper.getShortNameForStudent(student);
@@ -71,8 +84,15 @@ exports.getStudent = async (req, res) => {
 
     // add "gradeAndLetter" (e.g.  "8A")
 
-    const sortedClasses = classes.sort((a, b) => (a.academicYear < b.academicYear ? 1 : -1)); // sort descendent by academicYear
-    sortedClasses.forEach((x) => (x.editionInterval = stringHelper.getIntervalFromAcademicYear(x.academicYear)));
+    const sortedClasses = classes.sort((a, b) =>
+        a.academicYear < b.academicYear ? 1 : -1
+    ); // sort descendent by academicYear
+    sortedClasses.forEach(
+        (x) =>
+            (x.editionInterval = stringHelper.getIntervalFromAcademicYear(
+                x.academicYear
+            ))
+    );
 
     const data = {
         student,

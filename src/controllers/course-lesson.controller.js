@@ -9,7 +9,10 @@ exports.createOrEditGet = async (req, res) => {
     const chapterId = req.params.chapterId;
     const lessonId = req.params.lessonId;
 
-    const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+    const canCreateOrEditCourse = await autz.can(
+        req.user,
+        "create-or-edit:course"
+    );
     if (!canCreateOrEditCourse) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
@@ -33,7 +36,9 @@ exports.createOrEditGet = async (req, res) => {
         const lessons = course.selectedChapter.lessons || [];
 
         if (isEditMode) {
-            const selectedLessonIndex = lessons.findIndex((x) => x.id === lessonId);
+            const selectedLessonIndex = lessons.findIndex(
+                (x) => x.id === lessonId
+            );
             if (selectedLessonIndex > -1) {
                 course.selectedLesson = lessons[selectedLessonIndex];
                 course.selectedLesson.index = selectedLessonIndex;
@@ -60,7 +65,8 @@ exports.createOrEditGet = async (req, res) => {
                 index: chapters.length, // last position + 1
                 name: `${++data.positionOptions.length}: (ultima poziție)`,
             });
-            data.selectedPosition = data.positionOptions[data.positionOptions.length - 1].index; // select the id of the last element
+            data.selectedPosition =
+                data.positionOptions[data.positionOptions.length - 1].index; // select the id of the last element
         }
     }
 
@@ -76,7 +82,10 @@ exports.createOrEditPost = async (req, res) => {
     const lessonId = req.params.lessonId;
 
     try {
-        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+        const canCreateOrEditCourse = await autz.can(
+            req.user,
+            "create-or-edit:course"
+        );
         if (!canCreateOrEditCourse) {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
@@ -93,18 +102,24 @@ exports.createOrEditPost = async (req, res) => {
         const course = await courseService.getOneById(courseId);
         course.chapters = course.chapters || [];
 
-        const selectedChapterIndex = course.chapters.findIndex((x) => x.id === chapterId);
+        const selectedChapterIndex = course.chapters.findIndex(
+            (x) => x.id === chapterId
+        );
         if (selectedChapterIndex > -1) {
             course.selectedChapter = course.chapters[selectedChapterIndex];
             course.selectedChapter.index = selectedChapterIndex;
 
-            course.selectedChapter.lessons = course.selectedChapter.lessons || [];
+            course.selectedChapter.lessons =
+                course.selectedChapter.lessons || [];
 
             if (isEditMode) {
                 lesson.id = lessonId;
-                const lessonIndex = course.selectedChapter.lessons.findIndex((x) => x.id === lessonId);
+                const lessonIndex = course.selectedChapter.lessons.findIndex(
+                    (x) => x.id === lessonId
+                );
                 if (lessonIndex > -1) {
-                    const existingLesson = course.selectedChapter.lessons[lessonIndex];
+                    const existingLesson =
+                        course.selectedChapter.lessons[lessonIndex];
                     existingLesson.name = lesson.name;
                     existingLesson.description = lesson.description;
 
@@ -116,8 +131,16 @@ exports.createOrEditPost = async (req, res) => {
                     }
 
                     // move the lesson from one position (index) to another
-                    if (position != lessonIndex && position > -1 && position < course.selectedChapter.lessons.length) {
-                        arrayHelper.move(course.selectedChapter.lessons, lessonIndex, position);
+                    if (
+                        position != lessonIndex &&
+                        position > -1 &&
+                        position < course.selectedChapter.lessons.length
+                    ) {
+                        arrayHelper.move(
+                            course.selectedChapter.lessons,
+                            lessonIndex,
+                            position
+                        );
                     }
                 }
             } else {
@@ -128,7 +151,10 @@ exports.createOrEditPost = async (req, res) => {
                     lesson.isHidden = true;
                 }
 
-                if (position > -1 && position < course.selectedChapter.lessons.length) {
+                if (
+                    position > -1 &&
+                    position < course.selectedChapter.lessons.length
+                ) {
                     course.selectedChapter.lessons.splice(position, 0, lesson); // insert at the specified index
                 } else {
                     course.selectedChapter.lessons.push(lesson);
@@ -140,7 +166,9 @@ exports.createOrEditPost = async (req, res) => {
 
         //res.send(course);
         //res.redirect(`/cursuri/${course._id}/capitole/${course.selectedChapter.id}/lectii/${lesson.id}`);
-        res.redirect(`/cursuri/${course._id}/capitole/${course.selectedChapter.id}`);
+        res.redirect(
+            `/cursuri/${course._id}/capitole/${course.selectedChapter.id}`
+        );
     } catch (err) {
         return res.status(500).json(err.message);
     }
@@ -161,7 +189,9 @@ exports.getOneById = async (req, res) => {
 
         const lessons = course.selectedChapter.lessons;
         if (lessons) {
-            const selectedLessonIndex = lessons.findIndex((x) => x.id === lessonId);
+            const selectedLessonIndex = lessons.findIndex(
+                (x) => x.id === lessonId
+            );
             if (selectedLessonIndex > -1) {
                 course.selectedLesson = lessons[selectedLessonIndex];
                 course.selectedLesson.index = selectedLessonIndex;
@@ -169,7 +199,8 @@ exports.getOneById = async (req, res) => {
                 if (course.selectedLesson.articles) {
                     course.selectedLesson.articles.forEach((article) => {
                         if (article.content) {
-                            article.content.textPreview = markdownService.render(article.content.text);
+                            article.content.textPreview =
+                                markdownService.render(article.content.text);
                         }
                     });
                 }
@@ -179,7 +210,10 @@ exports.getOneById = async (req, res) => {
 
     const data = {
         course,
-        canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
+        canCreateOrEditCourse: await autz.can(
+            req.user,
+            "create-or-edit:course"
+        ),
     };
 
     //res.send(data);
@@ -191,7 +225,10 @@ exports.deleteOneById = async (req, res) => {
     const chapterId = req.params.chapterId;
     const lessonId = req.params.lessonId;
 
-    const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+    const canCreateOrEditCourse = await autz.can(
+        req.user,
+        "create-or-edit:course"
+    );
     if (!canCreateOrEditCourse) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
@@ -204,7 +241,7 @@ exports.deleteOneById = async (req, res) => {
 
     const lessonIndex = lessons.findIndex((x) => x.id === lessonId);
     if (lessonIndex > -1) {
-        const lesson = lessons[lessonIndex];
+        //const lesson = lessons[lessonIndex];
 
         // TODO fix it (delete only empty lessons)
         // if (lesson.lessons && chapter.lessons.length > 0) {

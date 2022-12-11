@@ -1,13 +1,20 @@
 export const uploadFilesHelper = {
     uploadFiles: (options) => {
-        const { uploadFileSelectInput, url, maxFiles, maxFileSizeInMB } = options;
+        const { uploadFileSelectInput, url, maxFiles, maxFileSizeInMB } =
+            options;
 
         const dropArea = uploadFileSelectInput.closest(".drop-area"); // find the closest ancestor which matches the selectors
         const progressBar = dropArea.querySelector(".progress-bar");
-        const uploadFileErrorDiv = dropArea.querySelector(".upload-file-error-div");
+        const uploadFileErrorDiv = dropArea.querySelector(
+            ".upload-file-error-div"
+        );
         const gallery = dropArea.querySelector(".gallery");
 
-        uploadFileSelectInput.addEventListener("change", handleInputFiles, false);
+        uploadFileSelectInput.addEventListener(
+            "change",
+            handleInputFiles,
+            false
+        );
 
         ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
             dropArea.addEventListener(eventName, preventDefaults, false);
@@ -51,7 +58,11 @@ export const uploadFilesHelper = {
         function handleFiles(files) {
             files = [...files]; // files is not an array, but a FileList. So, we’ll need to convert it to an array.
 
-            const validationFilesMessage = getValidationFilesMessage(files, maxFiles, maxFileSizeInMB);
+            const validationFilesMessage = getValidationFilesMessage(
+                files,
+                maxFiles,
+                maxFileSizeInMB
+            );
             if (validationFilesMessage) {
                 uploadFileSelectInput.classList.add("is-invalid");
                 uploadFileErrorDiv.innerHTML = validationFilesMessage;
@@ -69,16 +80,19 @@ export const uploadFilesHelper = {
             maxFiles = maxFiles || 20;
             maxFileSizeInMB = maxFileSizeInMB || 20;
 
-            if (files.length > maxFiles) return `Poți adăuga maxim ${maxFiles} poze!`;
+            if (files.length > maxFiles)
+                return `Poți adăuga maxim ${maxFiles} poze!`;
 
             let isFileSizeValid = true;
             //let isFileTypeValid = true; // useful for drag & drop
             files.forEach((file) => {
-                if (file.size > maxFileSizeInMB * 1024 * 1024) isFileSizeValid = false;
+                if (file.size > maxFileSizeInMB * 1024 * 1024)
+                    isFileSizeValid = false;
                 //if (!file.type.startsWith("image/")) isFileTypeValid = false;
             });
 
-            if (!isFileSizeValid) return `Un fișier poate avea maxim ${maxFileSizeInMB} MB!`;
+            if (!isFileSizeValid)
+                return `Un fișier poate avea maxim ${maxFileSizeInMB} MB!`;
             //if (!isFileTypeValid) return "Poți adăuga doar poze ('.jpeg / .png')!";
 
             return undefined;
@@ -94,7 +108,7 @@ export const uploadFilesHelper = {
                 updateProgress((e.loaded * 100.0) / e.total || 100);
             });
 
-            xhr.addEventListener("readystatechange", function (e) {
+            xhr.addEventListener("readystatechange", function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     previewFiles(xhr.response);
                 } else if (xhr.readyState == 4 && xhr.status != 200) {
@@ -137,7 +151,11 @@ export const uploadFilesHelper = {
                 const fileParts = file.url.split(".");
                 if (fileParts.length > 0) {
                     const fileExtension = fileParts[fileParts.length - 1];
-                    if (["jpg", "jpeg", "png"].includes(fileExtension.toLowerCase())) {
+                    if (
+                        ["jpg", "jpeg", "png"].includes(
+                            fileExtension.toLowerCase()
+                        )
+                    ) {
                         const img = document.createElement("img");
                         img.src = file.url;
                         fileContainerSpan.appendChild(img);

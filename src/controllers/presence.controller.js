@@ -17,18 +17,29 @@ exports.getTotalPresences = async (req, res) => {
     let allClassIdsForAllStudents = [];
     studentsMapByClassId.forEach((classMapByStudent) => {
         const classIdsPerIntervals = getClassIdsPerIntervals(classMapByStudent);
-        const allClassIdsForStudent = classIdsPerIntervals.map((x) => x.classId);
-        allClassIdsForAllStudents = allClassIdsForAllStudents.concat(allClassIdsForStudent);
+        const allClassIdsForStudent = classIdsPerIntervals.map(
+            (x) => x.classId
+        );
+        allClassIdsForAllStudents = allClassIdsForAllStudents.concat(
+            allClassIdsForStudent
+        );
     });
-    const allUniqueClassIdsForAllStudents = [...new Set(allClassIdsForAllStudents)]; // remove duplicates (if exists)
+    const allUniqueClassIdsForAllStudents = [
+        ...new Set(allClassIdsForAllStudents),
+    ]; // remove duplicates (if exists)
 
     const studentsIds = studentsMapByClassId.map((x) => x.studentId);
 
-    const [allCoursesForStudents, students, coursesWithPresenceForStudents] = await Promise.all([
-        await courseSessionService.getCourseSessionsByClassIds(allUniqueClassIdsForAllStudents),
-        await personService.getAllByIds(studentsIds),
-        await courseSessionService.getCourseSessionsByStudentsIds(studentsIds),
-    ]);
+    const [allCoursesForStudents, students, coursesWithPresenceForStudents] =
+        await Promise.all([
+            await courseSessionService.getCourseSessionsByClassIds(
+                allUniqueClassIdsForAllStudents
+            ),
+            await personService.getAllByIds(studentsIds),
+            await courseSessionService.getCourseSessionsByStudentsIds(
+                studentsIds
+            ),
+        ]);
 
     const studentsObj = arrayHelper.arrayToObject(students, "_id") || {};
 
@@ -36,15 +47,23 @@ exports.getTotalPresences = async (req, res) => {
     studentsMapByClassId.forEach((studentInfoInClass) => {
         const studentId = studentInfoInClass.studentId;
         const student = studentsObj[studentId];
-        const classIdsPerIntervals = getClassIdsPerIntervals(studentInfoInClass);
+        const classIdsPerIntervals =
+            getClassIdsPerIntervals(studentInfoInClass);
 
-        const coursesDateByDateForStudent = getCoursesDateByDate(classIdsPerIntervals, allCoursesForStudents);
-
-        const coursesWithPresenceForStudent = coursesWithPresenceForStudents.filter(
-            (x) =>
-                (x.studentsIds && x.studentsIds.includes(studentId)) ||
-                (x.studentsFromOtherClasses && x.studentsFromOtherClasses.map((y) => y.studentId).includes(studentId))
+        const coursesDateByDateForStudent = getCoursesDateByDate(
+            classIdsPerIntervals,
+            allCoursesForStudents
         );
+
+        const coursesWithPresenceForStudent =
+            coursesWithPresenceForStudents.filter(
+                (x) =>
+                    (x.studentsIds && x.studentsIds.includes(studentId)) ||
+                    (x.studentsFromOtherClasses &&
+                        x.studentsFromOtherClasses
+                            .map((y) => y.studentId)
+                            .includes(studentId))
+            );
 
         const presencesPerStudent = getPresencesPerStudent(
             coursesDateByDateForStudent,
@@ -55,15 +74,20 @@ exports.getTotalPresences = async (req, res) => {
 
         // add aggregated values
         const totalCourses = presencesPerStudent.length;
-        const totalPresences = presencesPerStudent.filter((x) => x.isPresent).length;
-        const totalPresencesAsPercent = totalCourses ? Math.round((totalPresences * 100) / totalCourses) : 0;
+        const totalPresences = presencesPerStudent.filter(
+            (x) => x.isPresent
+        ).length;
+        const totalPresencesAsPercent = totalCourses
+            ? Math.round((totalPresences * 100) / totalCourses)
+            : 0;
 
         presencesInfo.push({
             student: {
                 id: studentInfoInClass.studentId,
                 shortName: studentHelper.getShortNameForStudent(student),
                 gradeAndLetter:
-                    studentInfoInClass.classLetter && `${studentInfoInClass.grade}${studentInfoInClass.classLetter}`, // e.g.  "8A"
+                    studentInfoInClass.classLetter &&
+                    `${studentInfoInClass.grade}${studentInfoInClass.classLetter}`, // e.g.  "8A"
                 droppedOut: studentInfoInClass.droppedOut,
             },
             totalCourses,
@@ -72,13 +96,19 @@ exports.getTotalPresences = async (req, res) => {
         });
     });
 
-    presencesInfo = presencesInfo.sort((a, b) => (a.totalPresencesAsPercent < b.totalPresencesAsPercent ? 1 : -1));
+    presencesInfo = presencesInfo.sort((a, b) =>
+        a.totalPresencesAsPercent < b.totalPresencesAsPercent ? 1 : -1
+    );
 
     const data = {
         class: cls,
         allUniqueClassIdsForAllStudents,
-        presencesInfoForActiveStudents: presencesInfo.filter((x) => !x.student.droppedOut),
-        presencesInfoForInactiveStudents: presencesInfo.filter((x) => x.student.droppedOut),
+        presencesInfoForActiveStudents: presencesInfo.filter(
+            (x) => !x.student.droppedOut
+        ),
+        presencesInfoForInactiveStudents: presencesInfo.filter(
+            (x) => x.student.droppedOut
+        ),
     };
     //res.send(data);
     res.render("presence/total-presences", data);
@@ -99,13 +129,18 @@ exports.getPresencePerClass = async (req, res) => {
             allStudentsIds = allStudentsIds.concat(course.studentsIds || []);
         }
         if (course.studentsFromOtherClasses) {
-            allStudentsIds = allStudentsIds.concat(course.studentsFromOtherClasses.map((x) => x.studentId));
+            allStudentsIds = allStudentsIds.concat(
+                course.studentsFromOtherClasses.map((x) => x.studentId)
+            );
         }
     });
     // deduplicate studentsIds
     const allUniqueStudentsIds = [...new Set(allStudentsIds)];
 
-    const studentsMapByClassIdObj = arrayHelper.arrayToObject(studentsMapByClassId, "studentId");
+    const studentsMapByClassIdObj = arrayHelper.arrayToObject(
+        studentsMapByClassId,
+        "studentId"
+    );
 
     // get details for each student
     const students = await personService.getAllByIds(allUniqueStudentsIds);
@@ -122,7 +157,9 @@ exports.getPresencePerClass = async (req, res) => {
     const studentsObj = arrayHelper.arrayToObject(students, "_id") || {};
 
     courses.forEach((course) => {
-        course.dateAsString = dateTimeHelper.getStringFromStringNoDay(course.date);
+        course.dateAsString = dateTimeHelper.getStringFromStringNoDay(
+            course.date
+        );
         course.presences = [];
         if (course.studentsIds) {
             course.studentsIds.forEach((studentId) => {
@@ -142,7 +179,9 @@ exports.getPresencePerClass = async (req, res) => {
 
         // sort presences by shortName
         if (course.presences.length > 0) {
-            course.presences = course.presences.sort((a, b) => (a.student.shortName > b.student.shortName ? 1 : -1));
+            course.presences = course.presences.sort((a, b) =>
+                a.student.shortName > b.student.shortName ? 1 : -1
+            );
         }
     });
 
@@ -163,7 +202,10 @@ exports.getPresencePerStudent = async (req, res) => {
     let coursesWithPresence = null;
     [student, classMapByStudent, coursesWithPresence, cls] = await Promise.all([
         await personService.getOneById(studentId),
-        await studentsAndClassesService.getClassMapByStudentId(classId, studentId),
+        await studentsAndClassesService.getClassMapByStudentId(
+            classId,
+            studentId
+        ),
         await courseSessionService.getCourseSessionsByStudentId(studentId),
         await classService.getOneById(classId),
     ]);
@@ -173,11 +215,22 @@ exports.getPresencePerStudent = async (req, res) => {
     let allClassIdsForStudent = classIdsPerIntervals.map((x) => x.classId);
     allClassIdsForStudent = [...new Set(allClassIdsForStudent)]; // remove duplicates (if exists)
 
-    const allCoursesForStudent = await courseSessionService.getCourseSessionsByClassIds(allClassIdsForStudent);
+    const allCoursesForStudent =
+        await courseSessionService.getCourseSessionsByClassIds(
+            allClassIdsForStudent
+        );
 
-    const coursesDateByDate = getCoursesDateByDate(classIdsPerIntervals, allCoursesForStudent);
+    const coursesDateByDate = getCoursesDateByDate(
+        classIdsPerIntervals,
+        allCoursesForStudent
+    );
 
-    const presencesPerStudent = getPresencesPerStudent(coursesDateByDate, studentId, coursesWithPresence, cls._id);
+    const presencesPerStudent = getPresencesPerStudent(
+        coursesDateByDate,
+        studentId,
+        coursesWithPresence,
+        cls._id
+    );
 
     // add "shortName" (e.g.  "Vali M.")
     student.shortName = studentHelper.getShortNameForStudent(student);
@@ -185,8 +238,12 @@ exports.getPresencePerStudent = async (req, res) => {
 
     // add aggregated values
     const totalCourses = presencesPerStudent.length;
-    const totalPresences = presencesPerStudent.filter((x) => x.isPresent).length;
-    const totalPresencesAsPercent = totalCourses ? Math.round((totalPresences * 100) / totalCourses) : 0;
+    const totalPresences = presencesPerStudent.filter(
+        (x) => x.isPresent
+    ).length;
+    const totalPresencesAsPercent = totalCourses
+        ? Math.round((totalPresences * 100) / totalCourses)
+        : 0;
 
     const data = {
         coursesWithPresence,
@@ -217,11 +274,18 @@ exports.getPresencePerStudent = async (req, res) => {
 const getClassIdsPerIntervals = (classMapByStudent) => {
     let allClassIdsWithStartDates = [
         // we know the first element
-        { startDate: classMapByStudent.startDateInClass, classId: classMapByStudent.classId },
+        {
+            startDate: classMapByStudent.startDateInClass,
+            classId: classMapByStudent.classId,
+        },
     ];
     if (classMapByStudent.previousClassMaps) {
         classMapByStudent.previousClassMaps.forEach((cm) => {
-            if (!allClassIdsWithStartDates.find((x) => x.startDate === cm.startDateInClass)) {
+            if (
+                !allClassIdsWithStartDates.find(
+                    (x) => x.startDate === cm.startDateInClass
+                )
+            ) {
                 allClassIdsWithStartDates.push({
                     startDate: cm.startDateInClass,
                     classId: cm.classId,
@@ -231,7 +295,9 @@ const getClassIdsPerIntervals = (classMapByStudent) => {
     }
 
     // sort by startDate
-    allClassIdsWithStartDates = allClassIdsWithStartDates.sort((a, b) => (a.startDate > b.startDate ? 1 : -1));
+    allClassIdsWithStartDates = allClassIdsWithStartDates.sort((a, b) =>
+        a.startDate > b.startDate ? 1 : -1
+    );
 
     const classIdsPerIntervals = [];
     const length = allClassIdsWithStartDates.length;
@@ -239,7 +305,10 @@ const getClassIdsPerIntervals = (classMapByStudent) => {
         for (let i = 0; i < length; i++) {
             classIdsPerIntervals.push({
                 startDate: allClassIdsWithStartDates[i].startDate,
-                endDate: i == length - 1 ? "2999-12-12" : allClassIdsWithStartDates[i + 1].startDate,
+                endDate:
+                    i == length - 1
+                        ? "2999-12-12"
+                        : allClassIdsWithStartDates[i + 1].startDate,
                 classId: allClassIdsWithStartDates[i].classId,
             });
         }
@@ -275,7 +344,12 @@ const getCoursesDateByDate = (classIdsPerIntervals, allCoursesForStudent) => {
     return coursesDateByDate;
 };
 
-const getPresencesPerStudent = (coursesDateByDate, studentId, coursesWithPresence, lastClassId) => {
+const getPresencesPerStudent = (
+    coursesDateByDate,
+    studentId,
+    coursesWithPresence,
+    lastClassId
+) => {
     const presencesPerStudent = [];
     coursesDateByDate = coursesDateByDate.filter((x) => !x.noCourse); // ignore vacations etc
     coursesDateByDate.forEach((courseOriginal) => {
@@ -288,12 +362,17 @@ const getPresencesPerStudent = (coursesDateByDate, studentId, coursesWithPresenc
                 course = courseWithPresence;
             } else {
                 if (courseWithPresence.studentsFromOtherClasses) {
-                    courseWithPresence.studentsFromOtherClasses.forEach((other) => {
-                        if (other.studentId === studentId && other.creditForThisCourseId === courseOriginalId) {
-                            isPresent = true;
-                            course = courseWithPresence;
+                    courseWithPresence.studentsFromOtherClasses.forEach(
+                        (other) => {
+                            if (
+                                other.studentId === studentId &&
+                                other.creditForThisCourseId === courseOriginalId
+                            ) {
+                                isPresent = true;
+                                course = courseWithPresence;
+                            }
                         }
-                    });
+                    );
                 }
             }
         });
@@ -314,7 +393,8 @@ const getPresencesPerStudent = (coursesDateByDate, studentId, coursesWithPresenc
             description: course.description,
             classId: course.classId,
             //className,
-            isTemporaryCreditFromOtherCourse: course._id.toString() !== courseOriginalId,
+            isTemporaryCreditFromOtherCourse:
+                course._id.toString() !== courseOriginalId,
             isCreditFromOtherClass: lastClassId.toString() !== course.classId,
         };
 

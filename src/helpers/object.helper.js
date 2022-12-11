@@ -5,5 +5,8 @@ exports.removeFalsyProperties = (obj) => {
      * input: {a:null, b:123, c:"", d:0}
      * output: {b:123}
      */
-    return Object.entries(obj).reduce((a,[k,v]) => (v ? (a[k]=v, a) : a), {});
+    return Object.entries(obj).reduce(
+        (a, [k, v]) => (v ? ((a[k] = v), a) : a),
+        {}
+    );
 };

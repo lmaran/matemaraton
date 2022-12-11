@@ -21,11 +21,14 @@ let _clientAsPromise;
     }
 
     // about parameters: https://stackoverflow.com/a/57547013
-    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+    const client = new MongoClient(uri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
     _clientAsPromise = client.connect();
 })();
 
-exports.getDb = async specificDbName => {
+exports.getDb = async (specificDbName) => {
     try {
         if (!_db) {
             const client = await _clientAsPromise;

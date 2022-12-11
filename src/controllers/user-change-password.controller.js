@@ -29,13 +29,20 @@ exports.postChangePassword = async (req, res) => {
     try {
         const { oldPassword, newPassword } = req.body;
         // handle static validation errors
-        const validationErrors = getChangePasswordStaticValidationErrors(oldPassword, newPassword);
+        const validationErrors = getChangePasswordStaticValidationErrors(
+            oldPassword,
+            newPassword
+        );
 
         if (validationErrors.length) {
             return flashAndReloadChangePasswordPage(req, res, validationErrors);
         }
 
-        const { token, refreshToken } = await authService.changePassword(req.user.email, oldPassword, newPassword);
+        const { token, refreshToken } = await authService.changePassword(
+            req.user.email,
+            oldPassword,
+            newPassword
+        );
 
         cookieHelper.setCookies(res, token, refreshToken);
         res.redirect("/");
@@ -43,9 +50,15 @@ exports.postChangePassword = async (req, res) => {
         // handle dynamic validation errors
         const validationErrors = [];
         if (err.message === "UnknownEmail") {
-            validationErrors.push({ field: "oldPassword", msg: "Utilizator necunoscut" });
+            validationErrors.push({
+                field: "oldPassword",
+                msg: "Utilizator necunoscut",
+            });
         } else if (err.message === "IncorrectPassword") {
-            validationErrors.push({ field: "oldPassword", msg: "Parolă incorectă" });
+            validationErrors.push({
+                field: "oldPassword",
+                msg: "Parolă incorectă",
+            });
         }
 
         if (validationErrors.length) {
@@ -61,16 +74,33 @@ const getChangePasswordStaticValidationErrors = (oldPassword, newPassword) => {
     const validationErrors = [];
 
     // oldPassword
-    if (validator.isEmpty(oldPassword)) validationErrors.push({ field: "oldPassword", msg: "Câmp obligatoriu" });
+    if (validator.isEmpty(oldPassword))
+        validationErrors.push({
+            field: "oldPassword",
+            msg: "Câmp obligatoriu",
+        });
     else if (!validator.isLength(oldPassword, { max: 50 }))
-        validationErrors.push({ field: "oldPassword", msg: "Maxim 50 caractere" });
+        validationErrors.push({
+            field: "oldPassword",
+            msg: "Maxim 50 caractere",
+        });
 
     // newPassword
-    if (validator.isEmpty(newPassword)) validationErrors.push({ field: "newPassword", msg: "Câmp obligatoriu" });
+    if (validator.isEmpty(newPassword))
+        validationErrors.push({
+            field: "newPassword",
+            msg: "Câmp obligatoriu",
+        });
     else if (!validator.isLength(newPassword, { min: 6 }))
-        validationErrors.push({ field: "newPassword", msg: "Minim 6 caractere" });
+        validationErrors.push({
+            field: "newPassword",
+            msg: "Minim 6 caractere",
+        });
     else if (!validator.isLength(newPassword, { max: 50 }))
-        validationErrors.push({ field: "newPassword", msg: "Câmp obligatoriu" });
+        validationErrors.push({
+            field: "newPassword",
+            msg: "Câmp obligatoriu",
+        });
 
     return validationErrors;
 };
@@ -79,7 +109,7 @@ const flashAndReloadChangePasswordPage = (req, res, validationErrors) => {
     const { oldPassword, newPassword } = req.body;
     const initialValues = [
         { field: "oldPassword", val: oldPassword },
-        { field: "newPassword", val: newPassword }
+        { field: "newPassword", val: newPassword },
     ];
     req.flash("validationErrors", validationErrors);
     req.flash("initialValues", initialValues);

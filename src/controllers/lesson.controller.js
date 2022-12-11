@@ -13,7 +13,10 @@ exports.deleteLesson = async (req, res) => {
 };
 
 exports.createOrEditGet = async (req, res) => {
-    const canCreateOrEditLesson = await autz.can(req.user, "create-or-edit:lesson");
+    const canCreateOrEditLesson = await autz.can(
+        req.user,
+        "create-or-edit:lesson"
+    );
     if (!canCreateOrEditLesson) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
@@ -56,7 +59,9 @@ exports.createOrEditGet = async (req, res) => {
         const lesson = await lessonService.getOneById(req.params.id);
 
         if (lesson.content) {
-            lesson.content.textPreview = markdownService.render(lesson.content.text);
+            lesson.content.textPreview = markdownService.render(
+                lesson.content.text
+            );
         }
         data.lesson = lesson;
     }
@@ -67,7 +72,10 @@ exports.createOrEditGet = async (req, res) => {
 
 exports.createOrEditPost = async (req, res) => {
     try {
-        const canCreateOrEditLesson = await autz.can(req.user, "create-or-edit:lesson");
+        const canCreateOrEditLesson = await autz.can(
+            req.user,
+            "create-or-edit:lesson"
+        );
         if (!canCreateOrEditLesson) {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
@@ -105,7 +113,10 @@ exports.getAll = async (req, res) => {
 
     const data = {
         lessons,
-        canCreateOrEditLesson: await autz.can(req.user, "create-or-edit:lesson"),
+        canCreateOrEditLesson: await autz.can(
+            req.user,
+            "create-or-edit:lesson"
+        ),
     };
     //res.send(data);
     res.render("lesson/lesson-list", data);
@@ -126,13 +137,18 @@ exports.getOneById = async (req, res) => {
     }
 
     if (lesson.content) {
-        lesson.content.textPreview = markdownService.render(lesson.content.text);
+        lesson.content.textPreview = markdownService.render(
+            lesson.content.text
+        );
     }
 
     const data = {
         lesson,
         course,
-        canCreateOrEditLesson: await autz.can(req.user, "create-or-edit:lesson"),
+        canCreateOrEditLesson: await autz.can(
+            req.user,
+            "create-or-edit:lesson"
+        ),
     };
     // res.send(data);
     res.render("lesson/lesson", data);
