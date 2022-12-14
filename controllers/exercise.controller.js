@@ -50,14 +50,23 @@ exports.createOrEditGet = async (req, res) => {
         { text: "Olimpiadă, etapa județeană", value: "olimpiada-judeteana" },
         { text: "Olimpiadă, etapa națională", value: "olimpiada-nationala" },
         { text: "Evaluare Națională", value: "evaluare-nationala" },
-        { text: "Simulare Evaluare Națională", value: "simulare-evaluare-nationala" },
+        {
+            text: "Simulare Evaluare Națională",
+            value: "simulare-evaluare-nationala",
+        },
         { text: "Alte concursuri", value: "alte-concursuri" },
     ];
 
     const sourceTypeAvailableOptions = [
         { text: "Gazeta Matematică", value: "gazeta-matematica" },
-        { text: "Revista de Matematică din Timișoara", value: "revista-matematică-tm" },
-        { text: "Culegere 'Teme supliment Gazeta Matematică'", value: "teme-supliment-gazeta-matematica" },
+        {
+            text: "Revista de Matematică din Timișoara",
+            value: "revista-matematică-tm",
+        },
+        {
+            text: "Culegere 'Teme supliment Gazeta Matematică'",
+            value: "teme-supliment-gazeta-matematica",
+        },
         { text: "Culegere 'Mate2000 excelență'", value: "mate2000-excelenta" },
         {
             text: "Culegere 'Matematică pt. olimpiade și concursuri', N. Grigore",
@@ -67,8 +76,14 @@ exports.createOrEditGet = async (req, res) => {
             text: "Culegere 'Exerciții pt. cercurile de matematică', P. Năchilă",
             value: "cercuri-mate-pnachila",
         },
-        { text: "Culegere 'Mate2000 consolidare'", value: "mate2000-consolidare" },
-        { text: "Culegere 'Evaluarea Națională', Ed. Paralela 45", value: "evaluare-nationala-p45" },
+        {
+            text: "Culegere 'Mate2000 consolidare'",
+            value: "mate2000-consolidare",
+        },
+        {
+            text: "Culegere 'Evaluarea Națională', Ed. Paralela 45",
+            value: "evaluare-nationala-p45",
+        },
         { text: "Alte surse", value: "alte-surse" },
     ];
 
@@ -84,14 +99,23 @@ exports.createOrEditGet = async (req, res) => {
         { text: "Rapoarte și proporții", value: "rapoarte-si-proportii" },
         // { text: "Numere Raționale", value: "numere-rationale" },
         // { text: "Numere Reale", value: "numere-reale" }
-        { text: "Calculul măsurilor unor unghiuri", value: "calculul-masurilor-unor-unghiuri" },
+        {
+            text: "Calculul măsurilor unor unghiuri",
+            value: "calculul-masurilor-unor-unghiuri",
+        },
     ];
 
     const lessonAvailableOptions = [
-        { text: "Metoda reducerii numărului de variabile", value: "metoda-reducerii-numarului-de-variabile" },
+        {
+            text: "Metoda reducerii numărului de variabile",
+            value: "metoda-reducerii-numarului-de-variabile",
+        },
         // { text: "Numere Raționale", value: "numere-rationale" },
         // { text: "Numere Reale", value: "numere-reale" }
-        { text: "Calculul măsurilor unor unghiuri", value: "calculul-masurilor-unor-unghiuri" },
+        {
+            text: "Calculul măsurilor unor unghiuri",
+            value: "calculul-masurilor-unor-unghiuri",
+        },
     ];
 
     const data = {
@@ -164,7 +188,11 @@ exports.createOrEditPost = async (req, res) => {
         const isEditMode = !!id;
 
         const exercise = {
-            question: { statement: { text: statement }, solution: { text: solution }, answer: { text: answer } },
+            question: {
+                statement: { text: statement },
+                solution: { text: solution },
+                answer: { text: answer },
+            },
             grade,
             branch,
             contestType,

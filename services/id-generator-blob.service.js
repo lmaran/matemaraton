@@ -24,7 +24,7 @@ const containerClient = blobServiceClient.getContainerClient("counters");
 let currentId = 0;
 let maxId = 0; // exclusive (actually the max id that can be used without a roundtrip to the blob is maxId-1)
 
-exports.getNextId = async scope => {
+exports.getNextId = async (scope) => {
     // in blob se va stoca urmatorul id disponibil
     // ex: pt. un batchSize=3, la primul request in blob se va stoca "3" iar in buffer-ul local vor fi disponibile numele 0,1 si 2
     // clientul va memora două numere:
@@ -65,7 +65,9 @@ exports.uploadInMemoryCountersFromBlob = async (scope, writeAttempts) => {
         // await timeHelper.sleepAsync(20000); // 20 sec
 
         const data = newValueInBlob.toString();
-        await blockBlobClient.upload(data, data.length, { conditions: { ifMatch: originalETag } });
+        await blockBlobClient.upload(data, data.length, {
+            conditions: { ifMatch: originalETag },
+        });
 
         // update the "max" and "current" counters in memory
         maxId = newValueInBlob;

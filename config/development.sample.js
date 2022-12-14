@@ -18,16 +18,16 @@ const config = {
         request: {
             general: LogDetail.PARTIAL,
             headers: LogDetail.NONE,
-            body: false
+            body: false,
         },
         response: {
             general: false,
             headers: false,
-            body: false
-        }
+            body: false,
+        },
     },
     azureBlobStorageConnectionString: "<azure-blob-storage-connection-string>",
     recaptchaSiteKey: "recaptcha-site-key",
-    recaptchaSecretKey: "recaptcha-secret-key"
+    recaptchaSecretKey: "recaptcha-secret-key",
 };
 module.exports = config;

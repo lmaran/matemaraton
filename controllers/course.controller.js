@@ -22,7 +22,10 @@ exports.createOrEditGet = async (req, res) => {
     const categoryAvailableOptions = [
         { text: "Evaluare Națională", value: "Evaluare Națională" },
         { text: "Olimpiadă, etapa locală", value: "Olimpiadă, etapa locală" },
-        { text: "Olimpiadă, etapa județeană", value: "Olimpiadă, etapa județeană" },
+        {
+            text: "Olimpiadă, etapa județeană",
+            value: "Olimpiadă, etapa județeană",
+        },
         { text: "Altă categorie", value: "Altă categorie" },
     ];
 

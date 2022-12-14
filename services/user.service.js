@@ -13,32 +13,32 @@ exports.getAll = async () => {
     return db.collection(collection).find().project({ password: 0 }).toArray();
 };
 
-exports.getOneByEmail = async email => {
+exports.getOneByEmail = async (email) => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).findOne({ email: email.toLowerCase() });
 };
 
-exports.getOneBySignupCode = async signupCode => {
+exports.getOneBySignupCode = async (signupCode) => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).findOne({ signupCode });
 };
 
-exports.getOneByResetPasswordCode = async resetPasswordCode => {
+exports.getOneByResetPasswordCode = async (resetPasswordCode) => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).findOne({ resetPasswordCode });
 };
 
-exports.getOneById = async id => {
+exports.getOneById = async (id) => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).findOne({ _id: new ObjectID(id) });
 };
 
-exports.getOneByIdWithoutPsw = async id => {
+exports.getOneByIdWithoutPsw = async (id) => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).findOne({ _id: new ObjectID(id) }, { projection: {password: 0 } });
+    return db.collection(collection).findOne({ _id: new ObjectID(id) }, { projection: { password: 0 } });
 };
 
-exports.updateOne = async user => {
+exports.updateOne = async (user) => {
     const db = await mongoHelper.getDb();
     user._id = new ObjectID(user._id);
     return db.collection(collection).updateOne({ _id: user._id }, { $set: user });
@@ -46,12 +46,10 @@ exports.updateOne = async user => {
 
 exports.resetPassword = async (userIdAsString, modifiedFields, removedFields) => {
     const db = await mongoHelper.getDb();
-    return db
-        .collection(collection)
-        .updateOne({ _id: new ObjectID(userIdAsString) }, { $set: modifiedFields, $unset: removedFields });
+    return db.collection(collection).updateOne({ _id: new ObjectID(userIdAsString) }, { $set: modifiedFields, $unset: removedFields });
 };
 
-exports.insertOne = async item => {
+exports.insertOne = async (item) => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).insertOne(item);
 };

@@ -23,7 +23,9 @@ exports.getOneById = async (req, res) => {
         canCreateOrEditClass: await autz.can(req.user, "create-or-edit:class"),
         canDeleteClass: await autz.can(req.user, "delete:class"),
         can: {
-            viewParentsLink: await autz.can(req.user, "read:parents", { classId }),
+            viewParentsLink: await autz.can(req.user, "read:parents", {
+                classId,
+            }),
         },
     };
 
@@ -53,7 +55,9 @@ exports.createOrEditGet = async (req, res) => {
         data.class = cls;
     } else {
         const today = new Date();
-        data.class = { academicYear: `${today.getFullYear()}-${today.getFullYear() + 1}` };
+        data.class = {
+            academicYear: `${today.getFullYear()}-${today.getFullYear() + 1}`,
+        };
     }
 
     // Overwrite existing data with initial values
@@ -132,7 +136,10 @@ exports.createOrEditPost = async (req, res) => {
         return flashAndReloadPage(req, res, validationErrors, cls);
     }
 
-    const modifiedFields = { name: cls.name, academicYear: stringHelper.getAcademicYearFromInterval(cls.academicYear) };
+    const modifiedFields = {
+        name: cls.name,
+        academicYear: stringHelper.getAcademicYearFromInterval(cls.academicYear),
+    };
 
     if (isEditMode) {
         const removedFields = {};
@@ -295,7 +302,9 @@ const validateField = (fieldName, data, validationErrors) => {
             if (validator.isEmpty(data[fieldName])) {
                 validationErrors[fieldName] = { msg: "Câmp obligatoriu" };
             } else if (!validator.isLength(data[fieldName], { min: 9, max: 9 })) {
-                validationErrors[fieldName] = { msg: "Fix 9 caractere (YYYY-YYYY)" };
+                validationErrors[fieldName] = {
+                    msg: "Fix 9 caractere (YYYY-YYYY)",
+                };
             }
             break;
         case "level":
@@ -308,7 +317,9 @@ const validateField = (fieldName, data, validationErrors) => {
         case "description":
             if (data[fieldName]) {
                 if (!validator.isLength(data[fieldName], { max: 2000 })) {
-                    validationErrors[fieldName] = { msg: `Maxim 2000 caractere (actual:${data[fieldName].length})` };
+                    validationErrors[fieldName] = {
+                        msg: `Maxim 2000 caractere (actual:${data[fieldName].length})`,
+                    };
                 }
             }
             break;

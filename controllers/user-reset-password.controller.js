@@ -21,7 +21,7 @@ exports.getResetPassword = async (req, res) => {
         if (req.user) {
             data.email = {
                 field: "email",
-                val: req.user.email
+                val: req.user.email,
             };
         }
 
@@ -60,7 +60,12 @@ exports.postResetPassword = async (req, res) => {
         // console.log(captchaResponse);
         if (!captchaResponse.success || captchaResponse.score <= 0.5) {
             // over 50% chance to be be a bot
-            const validationErrors = [{ field: "page", msg: "Nu ai trecut de validarea captcha. Mai încearcă odată!" }];
+            const validationErrors = [
+                {
+                    field: "page",
+                    msg: "Nu ai trecut de validarea captcha. Mai încearcă odată!",
+                },
+            ];
             return flashAndReloadResetPasswordPage(req, res, validationErrors);
         }
 
@@ -78,7 +83,7 @@ exports.postResetPassword = async (req, res) => {
         const data = {
             to: email,
             subject: "Resetare parolă",
-            html: `<html>Te rugăm să confirmi operația de resetare a parolei folosind acest <a href="${link}">link</a>!</html>`
+            html: `<html>Te rugăm să confirmi operația de resetare a parolei folosind acest <a href="${link}">link</a>!</html>`,
         };
         await emailService.sendEmail(data);
 
@@ -87,7 +92,10 @@ exports.postResetPassword = async (req, res) => {
         // handle dynamic validation errors
         const validationErrors = [];
         if (err.message === "AccountNotExists") {
-            validationErrors.push({ field: "email", msg: "Nu există un cont activ cu acest email" });
+            validationErrors.push({
+                field: "email",
+                msg: "Nu există un cont activ cu acest email",
+            });
         }
 
         if (validationErrors.length) {
@@ -118,8 +126,7 @@ exports.getResetPasswordConfirm = async (req, res) => {
         if (err.message === "InvalidResetPasswordCode")
             data.message = "Codul pentru resetarea parolei este <strong>invalid</strong> sau <strong>expirat</strong>!";
         else if (err.message === "InactiveUser") data.message = "Utilizatorul aferent acestui cod este inactiv!";
-        else if (err.message === "InvalidResetPasswordInfo")
-            data.message = "Lipsesc informațiile necesare pentru resetarea parolei!";
+        else if (err.message === "InvalidResetPasswordInfo") data.message = "Lipsesc informațiile necesare pentru resetarea parolei!";
 
         res.render("user/reset-password-confirm-error", data);
     }
@@ -131,21 +138,40 @@ const getResetPasswordStaticValidationErrors = (email, password, confirmPassword
 
         if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu" });
         else if (!validator.isLength(email, { max: 50 }))
-            validationErrors.push({ field: "email", msg: "Maxim 50 caractere" });
+            validationErrors.push({
+                field: "email",
+                msg: "Maxim 50 caractere",
+            });
         else if (!validator.isEmail(email)) validationErrors.push({ field: "email", msg: "Email invalid" });
 
         // password
-        if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu" });
+        if (validator.isEmpty(password))
+            validationErrors.push({
+                field: "password",
+                msg: "Câmp obligatoriu",
+            });
         else if (!validator.isLength(password, { min: 6 }))
-            validationErrors.push({ field: "password", msg: "Minim 6 caractere" });
+            validationErrors.push({
+                field: "password",
+                msg: "Minim 6 caractere",
+            });
         else if (!validator.isLength(password, { max: 50 }))
-            validationErrors.push({ field: "password", msg: "Maxim 50 caractere" });
+            validationErrors.push({
+                field: "password",
+                msg: "Maxim 50 caractere",
+            });
 
         // confirm password
         if (validator.isEmpty(confirmPassword))
-            validationErrors.push({ field: "confirmPassword", msg: "Câmp obligatoriu" });
+            validationErrors.push({
+                field: "confirmPassword",
+                msg: "Câmp obligatoriu",
+            });
         else if (confirmPassword !== password)
-            validationErrors.push({ field: "confirmPassword", msg: "Parolele nu coincid" });
+            validationErrors.push({
+                field: "confirmPassword",
+                msg: "Parolele nu coincid",
+            });
 
         return validationErrors;
     } catch (err) {
@@ -158,7 +184,7 @@ const flashAndReloadResetPasswordPage = (req, res, validationErrors) => {
     const initialValues = [
         { field: "email", val: email },
         { field: "password", val: password },
-        { field: "confirmPassword", val: confirmPassword }
+        { field: "confirmPassword", val: confirmPassword },
     ];
     // keep old values at page reload by setting a flash message (a key, followed by a value)
     req.flash("validationErrors", validationErrors);
@@ -169,7 +195,7 @@ const flashAndReloadResetPasswordPage = (req, res, validationErrors) => {
 
 exports.getResetPasswordConfirmSuccess = async (req, res) => {
     const data = {
-        userIsNotAuthenticated: !req.user
+        userIsNotAuthenticated: !req.user,
     };
     res.render("user/reset-password-confirm-success", data);
 };

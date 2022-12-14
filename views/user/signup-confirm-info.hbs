@@ -1,10 +1,13 @@
 <div class="container-fluid">
     <div class="alert alert-info">
-        <i class="bi bi-info-circle me-2"></i> {{{message}}}
+        <i class="bi bi-info-circle me-2"></i>
+        {{{message}}}
     </div>
     {{#if userIsNotAuthenticated}}
-    Poți continua cu pagina de <a href='/login'>login</a>
+        Poți continua cu pagina de
+        <a href="/login">login</a>
     {{else}}
-    Poți continua cu <a href='/'>pagina principală</a>.
+        Poți continua cu
+        <a href="/">pagina principală</a>.
     {{/if}}
 </div>

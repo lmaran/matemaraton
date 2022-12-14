@@ -11,13 +11,13 @@ exports.getAll = async (req, res) => {
 
     const users = await userService.getAll();
 
-    users.forEach(user => {
+    users.forEach((user) => {
         user.createdOn = dateTimeHelper.getShortDate(user.createdOn);
     });
 
     const data = {
         users,
-        canReadUsers
+        canReadUsers,
     };
     //res.send(data);
     res.render("user/user-list", data);
@@ -32,19 +32,18 @@ exports.getOneById = async (req, res) => {
     const user = await userService.getOneByIdWithoutPsw(req.params.id);
     user.createdOn = dateTimeHelper.getShortDate(user.createdOn);
 
-    if(user && user.email){
+    if (user && user.email) {
         const person = await personService.getOneByEmail(user.email);
         //console.log(person);
-        if(person){
-            if(person.isParent && person.studentIds){
+        if (person) {
+            if (person.isParent && person.studentIds) {
                 person.students = await personService.getAllByIds(person.studentIds);
             }
-            if(person.isStudent && person.parentsIds){
+            if (person.isStudent && person.parentsIds) {
                 person.parents = await personService.getAllByIds(person.parentsIds);
             }
             user.person = person;
         }
-        
     }
 
     const data = {

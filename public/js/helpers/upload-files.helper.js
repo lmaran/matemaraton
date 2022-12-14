@@ -94,7 +94,7 @@ export const uploadFilesHelper = {
                 updateProgress((e.loaded * 100.0) / e.total || 100);
             });
 
-            xhr.addEventListener("readystatechange", function (e) {
+            xhr.addEventListener("readystatechange", function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     previewFiles(xhr.response);
                 } else if (xhr.readyState == 4 && xhr.status != 200) {

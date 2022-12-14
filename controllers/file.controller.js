@@ -21,33 +21,27 @@ exports.upload_Old = async (req, res) => {
 
     // res.send("bbb");
 
-    const startTime = Date.now();
-    const batchItems = [];
-    const batchSize = 1000; // this is also default batchSize in Mongodb la BulkWrite (internally used by InsertMany)
+    //const startTime = Date.now();
+    //const batchItems = [];
+    //const batchSize = 1000; // this is also default batchSize in Mongodb la BulkWrite (internally used by InsertMany)
 
     //const inputFileNames = [];
     const result = [];
     const result2 = [];
-    let files = 0,
-        finished = false;
+    let files = 0;
+    //const finished = false;
 
     // I abort upload if file is over 10 MB limit
-    const busboy = new Busboy({ headers: req.headers, limits: { fileSize: fileSizeLimit } });
+    const busboy = new Busboy({
+        headers: req.headers,
+        limits: { fileSize: fileSizeLimit },
+    });
     busboy.on("file", async function (fieldname, uploadFileStream, fileName, encoding, mimeType) {
         result.push({ fileName });
-        ++files;
+        files = files + 1;
         //validate against empty file name
         if (fileName.length > 0) {
-            console.log(
-                "File [" +
-                    fieldname +
-                    "]: filename: " +
-                    fileName +
-                    ", encoding: " +
-                    encoding +
-                    ", mimetype: " +
-                    mimeType
-            );
+            console.log("File [" + fieldname + "]: filename: " + fileName + ", encoding: " + encoding + ", mimetype: " + mimeType);
             // uploadFileStream.on("data", function(data) {
             //     console.log("File [" + fieldname + "] got " + data.length + " bytes");
             // });
@@ -129,20 +123,14 @@ exports.upload_Old = async (req, res) => {
             const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
             try {
-                await blockBlobClient.uploadStream(
-                    uploadFileStream,
-                    uploadOptions.bufferSize,
-                    uploadOptions.maxBuffers,
-                    { blobHTTPHeaders: { blobContentType: mimeType } }
-                );
+                await blockBlobClient.uploadStream(uploadFileStream, uploadOptions.bufferSize, uploadOptions.maxBuffers, {
+                    blobHTTPHeaders: { blobContentType: mimeType },
+                });
                 //res.render("success", { message: "File uploaded to Azure Blob storage." });
                 //console.log(fileName + ": done!");
                 const fileInResult = result.find((x) => x.fileName === fileName);
 
-                fileInResult.url =
-                    "https://" +
-                    blobServiceClient.accountName +
-                    ".blob.core.windows.net/files/5f4bfb45d8278706d442058c-lg.jpg";
+                fileInResult.url = "https://" + blobServiceClient.accountName + ".blob.core.windows.net/files/5f4bfb45d8278706d442058c-lg.jpg";
                 console.log(fileInResult);
                 result2.push(fileInResult);
                 console.log(fileName + " aaa");
@@ -182,22 +170,16 @@ exports.upload = async (req, res) => {
         finished = false;
 
     // I abort upload if file is over 10 MB limit
-    const busboy = new Busboy({ headers: req.headers, limits: { fileSize: fileSizeLimit } });
+    const busboy = new Busboy({
+        headers: req.headers,
+        limits: { fileSize: fileSizeLimit },
+    });
     busboy.on("file", async function (fieldname, uploadFileStream, fileName, encoding, mimeType) {
         result.push({ fileName });
         ++files;
         //validate against empty file name
         if (fileName.length > 0) {
-            console.log(
-                "File [" +
-                    fieldname +
-                    "]: filename: " +
-                    fileName +
-                    ", encoding: " +
-                    encoding +
-                    ", mimetype: " +
-                    mimeType
-            );
+            console.log("File [" + fieldname + "]: filename: " + fileName + ", encoding: " + encoding + ", mimetype: " + mimeType);
             // uploadFileStream.on("data", function(data) {
             //     console.log("File [" + fieldname + "] got " + data.length + " bytes");
             // });
@@ -219,18 +201,14 @@ exports.upload = async (req, res) => {
             const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
             try {
-                await blockBlobClient.uploadStream(
-                    uploadFileStream,
-                    uploadOptions.bufferSize,
-                    uploadOptions.maxBuffers,
-                    { blobHTTPHeaders: { blobContentType: mimeType } }
-                );
+                await blockBlobClient.uploadStream(uploadFileStream, uploadOptions.bufferSize, uploadOptions.maxBuffers, {
+                    blobHTTPHeaders: { blobContentType: mimeType },
+                });
                 //res.render("success", { message: "File uploaded to Azure Blob storage." });
                 //console.log(fileName + ": done!");
                 const fileInResult = result.find((x) => x.fileName === fileName);
 
-                fileInResult.url =
-                    "https://" + blobServiceClient.accountName + ".blob.core.windows.net/files/" + blobName;
+                fileInResult.url = "https://" + blobServiceClient.accountName + ".blob.core.windows.net/files/" + blobName;
                 //console.log(fileInResult);
                 //result.push(fileInResult);
                 //console.log(fileName + " aaa");

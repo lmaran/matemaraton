@@ -9,7 +9,7 @@ exports.getMyPage = async (req, res) => {
 
     const data = {
         ctx: req.ctx,
-        parent
+        parent,
     };
     // res.send(data);
     res.render("me/my-page", data);

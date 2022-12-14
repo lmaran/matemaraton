@@ -1,11 +1,5 @@
 <style>
-    .hidePresence {
-        display: none;
-    }
-
-    .hideStudent {
-        display: none;
-    }
+    .hidePresence { display: none; } .hideStudent { display: none; }
 </style>
 
 <nav aria-label="breadcrumb">
@@ -21,83 +15,75 @@
 <h2 class="mb-5">{{class.name}}</h2>
 
 {{#each homeworkInfoForActiveStudents}}
-<div>
-    <a href="/elevi/{{_id}}">{{shortName}}</a>
-    {{#if gradeAndLetter}} ({{gradeAndLetter}}){{/if}}
-    - exerciții: <a href="/clase/{{@root.class._id}}/elevi/{{_id}}/teme-predate">{{totalSubmittedQuestions}}</a> din <a
-        href="/clase/{{@root.class._id}}/teme-propuse">{{@root.totalQuestions}}</a>
-    ({{totalSubmittedQuestionsAsPercent}}%)
-    <div class="progress mb-2">
-        <div class="progress-bar" role="progressbar" style="width: {{totalSubmittedQuestionsAsPercent}}%"
-            aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-    </div>
-</div>
-{{/each}}
-
-{{#if homeworkInfoForInactiveStudents.length}}
-<hr class="mt-5" />
-
-<div id="inactiveStudentsDiv" class="d-none">
-    {{#each homeworkInfoForInactiveStudents}}
     <div>
         <a href="/elevi/{{_id}}">{{shortName}}</a>
         {{#if gradeAndLetter}} ({{gradeAndLetter}}){{/if}}
-        - exerciții: <a href="/clase/{{@root.class._id}}/elevi/{{_id}}/teme-predate">{{totalSubmittedQuestions}}</a> din <a
-            href="/clase/{{@root.class._id}}/teme-propuse">{{@root.totalQuestions}}</a>
+        - exerciții:
+        <a href="/clase/{{@root.class._id}}/elevi/{{_id}}/teme-predate">{{totalSubmittedQuestions}}</a>
+        din
+        <a href="/clase/{{@root.class._id}}/teme-propuse">{{@root.totalQuestions}}</a>
         ({{totalSubmittedQuestionsAsPercent}}%)
         <div class="progress mb-2">
-            <div class="progress-bar" role="progressbar" style="width: {{totalSubmittedQuestionsAsPercent}}%"
-                aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            <div
+                class="progress-bar"
+                role="progressbar"
+                style="width: {{totalSubmittedQuestionsAsPercent}}%"
+                aria-valuenow="25"
+                aria-valuemin="0"
+                aria-valuemax="100"
+            ></div>
         </div>
     </div>
-    {{/each}}
-</div>
+{{/each}}
 
+{{#if homeworkInfoForInactiveStudents.length}}
+    <hr class="mt-5" />
 
-<div class="mt-4 mb-5">
-    <a class="toggleInactiveStudentsBtn" href="/">Vezi și elevii care au abandonat</a>
-    <small><i class="bi bi-chevron-double-right text-muted"></i></small>
-</div>
+    <div id="inactiveStudentsDiv" class="d-none">
+        {{#each homeworkInfoForInactiveStudents}}
+            <div>
+                <a href="/elevi/{{_id}}">{{shortName}}</a>
+                {{#if gradeAndLetter}} ({{gradeAndLetter}}){{/if}}
+                - exerciții:
+                <a href="/clase/{{@root.class._id}}/elevi/{{_id}}/teme-predate">{{totalSubmittedQuestions}}</a>
+                din
+                <a href="/clase/{{@root.class._id}}/teme-propuse">{{@root.totalQuestions}}</a>
+                ({{totalSubmittedQuestionsAsPercent}}%)
+                <div class="progress mb-2">
+                    <div
+                        class="progress-bar"
+                        role="progressbar"
+                        style="width: {{totalSubmittedQuestionsAsPercent}}%"
+                        aria-valuenow="25"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                    ></div>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+
+    <div class="mt-4 mb-5">
+        <a class="toggleInactiveStudentsBtn" href="/">Vezi și elevii care au abandonat</a>
+        <small><i class="bi bi-chevron-double-right text-muted"></i></small>
+    </div>
 {{/if}}
 
 <div class="mt-5 mb-5">
-    <span class="fw-bold">Obs</span>: Au fost contorizate toate exercițiile (inclusiv cele rezolvate parțial
-    sau cele complet greșite).
+    <span class="fw-bold">Obs</span>: Au fost contorizate toate exercițiile (inclusiv cele rezolvate parțial sau cele complet greșite).
 </div>
 
-{{#section 'script-after'}}
-<script>
+{{#section "script-after"}}
+    <script>
 
-    document.addEventListener('DOMContentLoaded', (event) => {
-        // DOM ready
+        document.addEventListener('DOMContentLoaded', (event) => { // DOM ready // event binders var toggleInactiveStudentsElem =
+        document.querySelector("a.toggleInactiveStudentsBtn"); if(toggleInactiveStudentsElem) toggleInactiveStudentsElem.addEventListener("click",
+        eventHandlers.toggleInactiveStudents); }); const eventHandlers = { toggleInactiveStudents: async event => { event.preventDefault(); const div
+        = document.getElementById("inactiveStudentsDiv"); div.classList.toggle("d-none"); // toggle button-text const divIsHide =
+        div.classList.contains("d-none"); event.target.textContent = divIsHide ? "Vezi și elevii care au abandonat" : "Vezi doar elevii activi"; //
+        toggle button-icon const icon = event.target.closest("div").querySelector("i"); if(icon.classList.contains("bi-chevron-double-right")) {
+        icon.classList.remove("bi-chevron-double-right"); icon.classList.add("bi-chevron-double-left"); } else {
+        icon.classList.remove("bi-chevron-double-left"); icon.classList.add("bi-chevron-double-right"); } }, }
 
-        // event binders
-        var toggleInactiveStudentsElem = document.querySelector("a.toggleInactiveStudentsBtn");
-        if(toggleInactiveStudentsElem) toggleInactiveStudentsElem.addEventListener("click", eventHandlers.toggleInactiveStudents);
-    });
-
-    const eventHandlers = {
-        toggleInactiveStudents: async event => {
-            event.preventDefault();
-
-            const div = document.getElementById("inactiveStudentsDiv");
-            div.classList.toggle("d-none");
-
-            // toggle button-text
-            const divIsHide = div.classList.contains("d-none");
-            event.target.textContent = divIsHide ? "Vezi și elevii care au abandonat" : "Vezi doar elevii activi";
-
-            // toggle button-icon
-            const icon = event.target.closest("div").querySelector("i");
-            if(icon.classList.contains("bi-chevron-double-right")) {
-                icon.classList.remove("bi-chevron-double-right");
-                icon.classList.add("bi-chevron-double-left");
-            } else {
-                icon.classList.remove("bi-chevron-double-left");
-                icon.classList.add("bi-chevron-double-right");
-            }
-        },
-    }
-
-</script>
+    </script>
 {{/section}}

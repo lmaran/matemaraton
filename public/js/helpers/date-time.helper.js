@@ -17,7 +17,7 @@ export const dateTimeHelper = {
      * Sleep but does not block the thread
      * USAGE: await dateTimeHelper.sleepAsync(500);
      */
-    sleepAsync: milliseconds => {
-        return new Promise(resolve => setTimeout(resolve, milliseconds));
-    }
+    sleepAsync: (milliseconds) => {
+        return new Promise((resolve) => setTimeout(resolve, milliseconds));
+    },
 };

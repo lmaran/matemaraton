@@ -4,7 +4,12 @@ const tm = require("markdown-it-texmath");
 const md = require("markdown-it")().use(tm, {
     engine: katex,
     delimiters: "dollars",
-    katexOptions: { macros: { "\\RR": "\\mathbb{R}" }, minRuleThickness: 0.05, fleqn: true, throwOnError: false },
+    katexOptions: {
+        macros: { "\\RR": "\\mathbb{R}" },
+        minRuleThickness: 0.05,
+        fleqn: true,
+        throwOnError: false,
+    },
 });
 
 // added "minRuleThickness" option because dividing lines for \frac and \dfrac sometimes disappear (Chrome, zoom 100%)

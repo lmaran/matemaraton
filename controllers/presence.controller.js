@@ -46,12 +46,7 @@ exports.getTotalPresences = async (req, res) => {
                 (x.studentsFromOtherClasses && x.studentsFromOtherClasses.map((y) => y.studentId).includes(studentId))
         );
 
-        const presencesPerStudent = getPresencesPerStudent(
-            coursesDateByDateForStudent,
-            studentId,
-            coursesWithPresenceForStudent,
-            cls._id
-        );
+        const presencesPerStudent = getPresencesPerStudent(coursesDateByDateForStudent, studentId, coursesWithPresenceForStudent, cls._id);
 
         // add aggregated values
         const totalCourses = presencesPerStudent.length;
@@ -62,8 +57,7 @@ exports.getTotalPresences = async (req, res) => {
             student: {
                 id: studentInfoInClass.studentId,
                 shortName: studentHelper.getShortNameForStudent(student),
-                gradeAndLetter:
-                    studentInfoInClass.classLetter && `${studentInfoInClass.grade}${studentInfoInClass.classLetter}`, // e.g.  "8A"
+                gradeAndLetter: studentInfoInClass.classLetter && `${studentInfoInClass.grade}${studentInfoInClass.classLetter}`, // e.g.  "8A"
                 droppedOut: studentInfoInClass.droppedOut,
             },
             totalCourses,
@@ -217,7 +211,10 @@ exports.getPresencePerStudent = async (req, res) => {
 const getClassIdsPerIntervals = (classMapByStudent) => {
     let allClassIdsWithStartDates = [
         // we know the first element
-        { startDate: classMapByStudent.startDateInClass, classId: classMapByStudent.classId },
+        {
+            startDate: classMapByStudent.startDateInClass,
+            classId: classMapByStudent.classId,
+        },
     ];
     if (classMapByStudent.previousClassMaps) {
         classMapByStudent.previousClassMaps.forEach((cm) => {
@@ -264,10 +261,7 @@ const getCoursesDateByDate = (classIdsPerIntervals, allCoursesForStudent) => {
     const coursesDateByDate = [];
     classIdsPerIntervals.forEach((classIdPerInterval) => {
         const courses = allCoursesForStudent.filter(
-            (x) =>
-                x.classId === classIdPerInterval.classId &&
-                x.date >= classIdPerInterval.startDate &&
-                x.date < classIdPerInterval.endDate
+            (x) => x.classId === classIdPerInterval.classId && x.date >= classIdPerInterval.startDate && x.date < classIdPerInterval.endDate
         );
         coursesDateByDate.push(...courses);
     });

@@ -8,59 +8,60 @@
 
 <h1>Cursuri</h1>
 
-
 {{#if generalCourses}}
-<h3 class="mt-4">Evaluare Națională:</h3>
-<div class="text-muted">Aceste cursuri se doresc a fi utile pentru <strong>pregătirea la clasă</strong> și <strong>Evaluarea Națională</strong>. Structura unităților de învățare s-a făcut plecând de la
-    <a href="http://programe.ise.ro/Portals/1/Curriculum/2017-progr/24-Matematica.pdf" target="_blank">programa
-        școlară</a>
-    <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>.
-    Fiecare lecție a fost gândită pentru a putea fi abordată independent, de elevi cu grade diferite de pregătire:
-    <strong>începător</strong>,
-    <strong>mediu</strong> și <strong>avansat</strong>.
-</div>
+    <h3 class="mt-4">Evaluare Națională:</h3>
+    <div class="text-muted">Aceste cursuri se doresc a fi utile pentru
+        <strong>pregătirea la clasă</strong>
+        și
+        <strong>Evaluarea Națională</strong>. Structura unităților de învățare s-a făcut plecând de la
+        <a href="http://programe.ise.ro/Portals/1/Curriculum/2017-progr/24-Matematica.pdf" target="_blank">programa școlară</a>
+        <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>. Fiecare lecție a fost gândită pentru a putea fi abordată
+        independent, de elevi cu grade diferite de pregătire:
+        <strong>începător</strong>,
+        <strong>mediu</strong>
+        și
+        <strong>avansat</strong>.
+    </div>
 
-<ul class="mt-2">
-    {{#each generalCourses}}
-    <li>{{code}}: <a href="/cursuri/{{_id}}">{{name}} </a></li>
-    {{/each}}
-</ul>
+    <ul class="mt-2">
+        {{#each generalCourses}}
+            <li>{{code}}: <a href="/cursuri/{{_id}}">{{name}} </a></li>
+        {{/each}}
+    </ul>
 {{else}}
-<div class="mt-4">Nu există cursuri active!</div>
+    <div class="mt-4">Nu există cursuri active!</div>
 {{/if}}
-
 
 {{#if localOlympiadCourses}}
-<h3 class="mt-4">Olimpiadă, etapa locală:</h3>
-<div class="text-muted">Aceste cursuri se adresează elevilor care doresc să facă primul pas spre matematica de performanță.
-    Temele abordate au la bază <a href="http://programe.ise.ro/Portals/1/Curriculum/2017-progr/24-Matematica.pdf" target="_blank">programa
-        școlară</a> <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>, <a href="https://satmar.ro/web/uploads/files/programa-olimpiada-gimnaziu-2019-2020.pdf"
-        target="_blank">programa de olimpiada</a>
-    <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>, dar si o analiză a
-    subiectelor date în anii anteriori la <strong>etapa locală</strong> a <strong>ONM</strong>. 
-    Conceptele noi sunt prezentate detaliat, astfel încât să poată fi ușor înțelese și de
-    elevii mai puțin experimentați.
-</div>
+    <h3 class="mt-4">Olimpiadă, etapa locală:</h3>
+    <div class="text-muted">Aceste cursuri se adresează elevilor care doresc să facă primul pas spre matematica de performanță. Temele abordate au la
+        bază
+        <a href="http://programe.ise.ro/Portals/1/Curriculum/2017-progr/24-Matematica.pdf" target="_blank">programa școlară</a>
+        <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>,
+        <a href="https://satmar.ro/web/uploads/files/programa-olimpiada-gimnaziu-2019-2020.pdf" target="_blank">programa de olimpiada</a>
+        <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>, dar si o analiză a subiectelor date în anii anteriori la
+        <strong>etapa locală</strong>
+        a
+        <strong>ONM</strong>. Conceptele noi sunt prezentate detaliat, astfel încât să poată fi ușor înțelese și de elevii mai puțin experimentați.
+    </div>
 
-<ul class="mt-2">
-    {{#each localOlympiadCourses}}
-    <li>{{code}}: <a href="/cursuri/{{_id}}">{{name}} </a></li>
-    {{/each}}
-</ul>
+    <ul class="mt-2">
+        {{#each localOlympiadCourses}}
+            <li>{{code}}: <a href="/cursuri/{{_id}}">{{name}} </a></li>
+        {{/each}}
+    </ul>
 {{/if}}
 
-
 {{#if countyOlympiadCourses}}
-<h3 class="mt-4">Olimpiadă, etapa județeană:</h3>
-<div class="text-muted">Aceste cursuri reprezintă o extensie a cursurilor de la olimpiada locală.
-    De data aceasta, ne îndepărtăm de programele școlare. 
-    Tehnicile și problemele selectate vor fi grupate în cele patru mari categorii specifice concursurilor de acest nivel:
-    algebră, geometrie, teoria numerelor și combinatorică. 
-</div>
+    <h3 class="mt-4">Olimpiadă, etapa județeană:</h3>
+    <div class="text-muted">Aceste cursuri reprezintă o extensie a cursurilor de la olimpiada locală. De data aceasta, ne îndepărtăm de programele
+        școlare. Tehnicile și problemele selectate vor fi grupate în cele patru mari categorii specifice concursurilor de acest nivel: algebră,
+        geometrie, teoria numerelor și combinatorică.
+    </div>
 
-<ul class="mt-2">
-    {{#each countyOlympiadCourses}}
-    <li>{{code}}: <a href="/cursuri/{{_id}}">{{name}} </a></li>
-    {{/each}}
-</ul>
+    <ul class="mt-2">
+        {{#each countyOlympiadCourses}}
+            <li>{{code}}: <a href="/cursuri/{{_id}}">{{name}} </a></li>
+        {{/each}}
+    </ul>
 {{/if}}

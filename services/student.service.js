@@ -3,17 +3,14 @@ const { ObjectID } = require("mongodb");
 
 const collection = "students";
 
-exports.getOneById = async id => {
+exports.getOneById = async (id) => {
     const db = await mongoHelper.getDb();
     return db.collection("students").findOne({ _id: new ObjectID(id) });
 };
 
 exports.getAll = async () => {
     const db = await mongoHelper.getDb();
-    return db
-        .collection(collection)
-        .find()
-        .toArray();
+    return db.collection(collection).find().toArray();
 };
 
 exports.getAllFromSiiir = async () => {
@@ -31,17 +28,17 @@ exports.getAllFromSiiir = async () => {
             "COD FORMATIUNE": 1,
             "TIP FORMATIUNE": 1,
             // NIVEL: 1,
-            "STATUS ELEV": 1
+            "STATUS ELEV": 1,
         })
         .toArray();
 };
 
-exports.insertMany = async items => {
+exports.insertMany = async (items) => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).insertMany(items);
 };
 
-exports.insertOne = async item => {
+exports.insertOne = async (item) => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).insertOne(item);
 };

@@ -117,10 +117,7 @@ exports.getOneById = async (req, res) => {
 
     let lesson, course;
     if (courseId) {
-        [lesson, course] = await Promise.all([
-            await lessonService.getOneById(id),
-            await courseService.getOneById(courseId),
-        ]);
+        [lesson, course] = await Promise.all([await lessonService.getOneById(id), await courseService.getOneById(courseId)]);
     } else {
         lesson = await lessonService.getOneById(id);
     }

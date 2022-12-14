@@ -34,13 +34,13 @@ const common = {
         request: {
             general: process.env.HTTP_LOG_DETAILS_REQUEST_GENERAL || LogDetail.FULL,
             headers: process.env.HTTP_LOG_DETAILS_REQUEST_HEADERS || LogDetail.PARTIAL,
-            body: process.env.HTTP_LOG_DETAILS_REQUEST_BODY || false
+            body: process.env.HTTP_LOG_DETAILS_REQUEST_BODY || false,
         },
         response: {
             general: process.env.HTTP_LOG_DETAILS_RESPONSE_GENERAL || false,
             headers: process.env.HTTP_LOG_DETAILS_RESPONSE_HEADERS || false,
-            body: process.env.HTTP_LOG_DETAILS_RESPONSE_BODY || false
-        }
+            body: process.env.HTTP_LOG_DETAILS_RESPONSE_BODY || false,
+        },
     },
 
     // List of user roles
@@ -50,7 +50,7 @@ const common = {
     azureBlobStorageConnectionString: process.env.AZURE_BLOB_STORAGE_CONNECTION_STRING || "",
     idGenerator: { defaultBatchSize: 10, specificBatchSize: { exercises: 1 } },
     recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY,
-    recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY
+    recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY,
 };
 
 // Merge a `source` object to a `target` recursively

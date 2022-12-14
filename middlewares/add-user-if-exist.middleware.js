@@ -37,7 +37,7 @@ exports.addUserIfExist = async (req, res, next) => {
 
         const [user, roleAssignments] = await Promise.all([
             await userService.getOneByIdWithoutPsw(userId),
-            await roleAssignmentsService.getRolesBySubjectId(userId.toString())
+            await roleAssignmentsService.getRolesBySubjectId(userId.toString()),
         ]);
 
         if (!user) {
@@ -46,15 +46,15 @@ exports.addUserIfExist = async (req, res, next) => {
         }
 
         // attach user roles
-        user.roles = roleAssignments.map(r => r.roleName);
+        user.roles = roleAssignments.map((r) => r.roleName);
 
         // attach user permissions
         const roleDefinitions = await roleDefinitionsService.getRoleDefinitionsByRoleNames(user.roles);
 
         // TODO: take into account also "exclude-permissions", "deny-permissions" etc
         const permissions = [];
-        roleDefinitions.forEach(r => {
-            (r.allowPermissions || []).forEach(p => {
+        roleDefinitions.forEach((r) => {
+            (r.allowPermissions || []).forEach((p) => {
                 permissions.push(p);
             });
         });

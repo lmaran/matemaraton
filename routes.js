@@ -24,6 +24,7 @@ const courseController = require("./controllers/course.controller");
 const courseChapterController = require("./controllers/course-chapter.controller");
 const courseLessonController = require("./controllers/course-lesson.controller");
 const courseArticleController = require("./controllers/course-article.controller");
+const courseTheoryController = require("./controllers/course-theory.controller");
 const homeworkController = require("./controllers/homework.controller");
 const lessonController = require("./controllers/lesson.controller");
 const markdownController = require("./controllers/markdown.controller");
@@ -101,6 +102,13 @@ router.post(
     "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/articole/:articleId/modifica",
     isAuthenticated,
     courseArticleController.createOrEditPost
+);
+
+// course-theory
+router.get(
+    "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/teorie/:theoryId/modifica",
+    isAuthenticated,
+    courseTheoryController.createOrEditGet
 );
 
 // lessons

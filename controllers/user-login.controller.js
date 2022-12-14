@@ -10,7 +10,7 @@ exports.getLogin = (req, res) => {
         const data = {
             isInfo: true,
             message: "Ești deja autentificat!",
-            details: "Dacă dorești să te re-autentifici, trebuie întâi să te deconectezi: <a href='/logout'>logout</a>."
+            details: "Dacă dorești să te re-autentifici, trebuie întâi să te deconectezi: <a href='/logout'>logout</a>.",
         };
         return res.render("user/login-response", data);
     }
@@ -46,7 +46,12 @@ exports.postLogin = async (req, res) => {
         // console.log(captchaResponse);
         if (!captchaResponse.success || captchaResponse.score <= 0.5) {
             // over 50% chance to be be a bot
-            const validationErrors = [{ field: "page", msg: "Nu ai trecut de validarea captcha. Mai încearcă odată!" }];
+            const validationErrors = [
+                {
+                    field: "page",
+                    msg: "Nu ai trecut de validarea captcha. Mai încearcă odată!",
+                },
+            ];
             return flashAndReloadLoginPage(req, res, validationErrors);
         }
 
@@ -66,9 +71,15 @@ exports.postLogin = async (req, res) => {
         if (err.message === "UnknownEmail") {
             validationErrors.push({ field: "email", msg: "Email necunoscut" });
         } else if (err.message === "IncorrectPassword") {
-            validationErrors.push({ field: "password", msg: "Parolă incorectă" });
+            validationErrors.push({
+                field: "password",
+                msg: "Parolă incorectă",
+            });
         } else if (err.message === "InactiveUser") {
-            validationErrors.push({ field: "email", msg: "Utilizator inactiv" });
+            validationErrors.push({
+                field: "email",
+                msg: "Utilizator inactiv",
+            });
         }
 
         if (validationErrors.length) {
@@ -85,13 +96,11 @@ const getLoginStaticValidationErrors = (email, password) => {
 
     // email
     if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu" });
-    else if (!validator.isLength(email, { max: 50 }))
-        validationErrors.push({ field: "email", msg: "Maxim 50 caractere" });
+    else if (!validator.isLength(email, { max: 50 })) validationErrors.push({ field: "email", msg: "Maxim 50 caractere" });
 
     // password
     if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu" });
-    else if (!validator.isLength(password, { max: 50 }))
-        validationErrors.push({ field: "password", msg: "Maxim 50 caractere" });
+    else if (!validator.isLength(password, { max: 50 })) validationErrors.push({ field: "password", msg: "Maxim 50 caractere" });
 
     return validationErrors;
 };
@@ -100,7 +109,7 @@ const flashAndReloadLoginPage = (req, res, validationErrors) => {
     const { email, password } = req.body;
     const initialValues = [
         { field: "email", val: email },
-        { field: "password", val: password }
+        { field: "password", val: password },
     ];
     req.flash("validationErrors", validationErrors);
     req.flash("initialValues", initialValues);

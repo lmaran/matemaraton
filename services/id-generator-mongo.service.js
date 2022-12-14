@@ -8,7 +8,7 @@ const collection = "idGenerator";
 let currentId = 0;
 let maxId = 0; // exclusive (actually the max id that can be used without a roundtrip to the blob is maxId-1)
 
-exports.getNextId = async scope => {
+exports.getNextId = async (scope) => {
     // in Mongo se va stoca urmatorul id disponibil
     // ex: pt. un batchSize=3, la primul request in blob se va stoca "3" iar in buffer-ul local vor fi disponibile numele 0,1 si 2
     // clientul va memora două numere:
@@ -27,15 +27,13 @@ exports.getNextId = async scope => {
     return nextId.toString();
 };
 
-exports.uploadInMemoryCountersFromMongo = async scope => {
+exports.uploadInMemoryCountersFromMongo = async (scope) => {
     // calculate the new counter
     const batchSize = this.getBatchSize(scope, config);
 
     // Increment nextId using findOneAndUpdate to ensure that the nextId field will be incremented atomically with the fetch of this document"
     const db = await mongoHelper.getDb();
-    const result = await db
-        .collection(collection)
-        .findOneAndUpdate({ _id: scope }, { $inc: { nextId: batchSize } }, { returnOriginal: false });
+    const result = await db.collection(collection).findOneAndUpdate({ _id: scope }, { $inc: { nextId: batchSize } }, { returnOriginal: false });
 
     const newValueInBlob = result.value.nextId;
 

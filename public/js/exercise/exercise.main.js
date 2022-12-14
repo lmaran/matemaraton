@@ -1,5 +1,5 @@
 import { eventHandlers } from "./exercise.event-handler.js";
-import { uploadFilesHelper } from "../helpers/upload-files.helper.js";
+//import { uploadFilesHelper } from "../helpers/upload-files.helper.js";
 
 /**
  * event binders (alias 'router')

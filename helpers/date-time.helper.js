@@ -1,4 +1,4 @@
-exports.getRoDay = dayOfWeek => {
+exports.getRoDay = (dayOfWeek) => {
     if (dayOfWeek === 0) return "Duminica";
     else if (dayOfWeek === 1) return "Luni";
     else if (dayOfWeek === 2) return "Marti";
@@ -8,7 +8,7 @@ exports.getRoDay = dayOfWeek => {
     else if (dayOfWeek === 6) return "Sambata";
 };
 
-exports.getRoShortDay = dayOfWeek => {
+exports.getRoShortDay = (dayOfWeek) => {
     if (dayOfWeek === 0) return "Du";
     else if (dayOfWeek === 1) return "Lu";
     else if (dayOfWeek === 2) return "Ma";
@@ -18,7 +18,7 @@ exports.getRoShortDay = dayOfWeek => {
     else if (dayOfWeek === 6) return "Sa";
 };
 
-exports.getRoMonth = monthOfYear => {
+exports.getRoMonth = (monthOfYear) => {
     if (monthOfYear === 0) return "Ianuarie";
     else if (monthOfYear === 1) return "Februari";
     else if (monthOfYear === 2) return "Martie";
@@ -33,7 +33,7 @@ exports.getRoMonth = monthOfYear => {
     else if (monthOfYear === 11) return "Decembrie";
 };
 
-exports.getRoShortMonth = monthOfYear => {
+exports.getRoShortMonth = (monthOfYear) => {
     if (monthOfYear === 0) return "Ian";
     else if (monthOfYear === 1) return "Feb";
     else if (monthOfYear === 2) return "Mar";
@@ -48,7 +48,6 @@ exports.getRoShortMonth = monthOfYear => {
     else if (monthOfYear === 11) return "Dec";
 };
 
-
 const getDateParts = (date) => {
     // javascript date object
     const d = date.getDate();
@@ -61,31 +60,31 @@ const getDateParts = (date) => {
     let mm = m;
     if (mm < 10) mm = `0${m}`;
 
-    return {yyyy, m, mm, d, dd}
-}
+    return { yyyy, m, mm, d, dd };
+};
 
 const getTimeParts = (date) => {
     let hours = date.getHours(); // hour returned in 24 hour format
     if (hours < 10) hours = `0${hours}`;
-    
-    let minutes = date.getMinutes();
-    if (minutes < 10) minutes = `0${minutes}`
 
-    return {hours, minutes}
-}
+    let minutes = date.getMinutes();
+    if (minutes < 10) minutes = `0${minutes}`;
+
+    return { hours, minutes };
+};
 
 exports.getShortDate = (date) => {
-    const dateParts = getDateParts(date)
-    return `${dateParts.yyyy}-${dateParts.mm}-${dateParts.dd}`
-}
+    const dateParts = getDateParts(date);
+    return `${dateParts.yyyy}-${dateParts.mm}-${dateParts.dd}`;
+};
 
 exports.getShortDateAndTimeDate = (date) => {
-    const dateParts = getDateParts(date)
-    const timeParts = getTimeParts(date)
-    return `${dateParts.yyyy}-${dateParts.mm}-${dateParts.dd} ${timeParts.hours}:${timeParts.minutes}`
-}
+    const dateParts = getDateParts(date);
+    const timeParts = getTimeParts(date);
+    return `${dateParts.yyyy}-${dateParts.mm}-${dateParts.dd} ${timeParts.hours}:${timeParts.minutes}`;
+};
 
-exports.getFriendlyDateOld = date => {
+exports.getFriendlyDateOld = (date) => {
     // javascript date object
     const d = date.getDate();
     const m = date.getMonth() + 1; // January is 0!
@@ -99,9 +98,9 @@ exports.getFriendlyDateOld = date => {
 
     let hours = date.getHours(); // hour returned in 24 hour format
     if (hours < 10) hours = `0${hours}`;
-    
+
     let minutes = date.getMinutes();
-    if (minutes < 10) minutes = `0${minutes}`
+    if (minutes < 10) minutes = `0${minutes}`;
 
     return {
         dayAsString: this.getRoDay(date.getDay()), // Joi
@@ -114,11 +113,11 @@ exports.getFriendlyDateOld = date => {
         ymd: yyyy + "-" + mm + "-" + dd, // 2015-07-23
         dmy: dd + "." + mm + "." + yyyy, // 23.07.2015
 
-        time: hours + ":" + minutes // 13:07
+        time: hours + ":" + minutes, // 13:07
     };
 };
 
-exports.getDateFromString = function(date) {
+exports.getDateFromString = function (date) {
     // "yyyy-mm-dd"
     const array = date.split("-");
     let mm = array[1];
@@ -127,7 +126,7 @@ exports.getDateFromString = function(date) {
     return new Date(array[0], mm, array[2]);
 };
 
-exports.getStringFromString = function(dateStr) {
+exports.getStringFromString = function (dateStr) {
     // "yyyy-mm-dd"
     const date = this.getDateFromString(dateStr);
     const f = this.getFriendlyDateOld(date);
@@ -135,7 +134,7 @@ exports.getStringFromString = function(dateStr) {
     return dateStrRo; // "Joi, 07 Apr. 2015"
 };
 
-exports.getStringFromStringNoDay = function(dateStr) {
+exports.getStringFromStringNoDay = function (dateStr) {
     // "yyyy-mm-dd"
     const date = this.getDateFromString(dateStr);
     const f = this.getFriendlyDateOld(date);
@@ -143,13 +142,12 @@ exports.getStringFromStringNoDay = function(dateStr) {
     return dateStrRo; // "07 Apr. 2015"
 };
 
-exports.getMonthAndDayFomString = function(dateStr) {
+exports.getMonthAndDayFomString = function (dateStr) {
     // "yyyy-mm-dd" --> 07.Mar
     const date = this.getDateFromString(dateStr);
     const f = this.getFriendlyDateOld(date);
     return `${f.dayOfMonth}-${f.monthAsShortString}`;
 };
-
 
 // exports.getRoToday = function() {
 //     // javascript date object (Ro time)
@@ -195,7 +193,7 @@ exports.getMonthAndDayFomString = function(dateStr) {
  * @param {*} timer
  * @returns {number}
  */
-exports.elapsedTime = timer => {
+exports.elapsedTime = (timer) => {
     const precision = 3; // 3 decimal places
 
     const secondsPart1 = process.hrtime(timer)[0];
@@ -213,7 +211,7 @@ exports.elapsedTime = timer => {
  * ONLY FOR TESTING (sleep and block the thread)
  * USAGE: timeHelper.sleep(500); // 500 ms
  */
-exports.sleep = milliseconds => {
+exports.sleep = (milliseconds) => {
     const date = Date.now();
     let currentDate = null;
     do {
@@ -226,6 +224,6 @@ exports.sleep = milliseconds => {
  * Sleep but does not block the thread
  * USAGE: await dateTimeHelper.sleepAsync(500);
  */
-exports.sleepAsync = milliseconds => {
-    return new Promise(resolve => setTimeout(resolve, milliseconds));
+exports.sleepAsync = (milliseconds) => {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };

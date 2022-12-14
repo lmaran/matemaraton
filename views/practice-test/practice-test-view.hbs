@@ -5,10 +5,10 @@
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         {{#if course}}
-        <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
-        <li class="breadcrumb-item"><a href="/cursuri/{{course._id}}/">{{course.code}}</a></li>
+            <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
+            <li class="breadcrumb-item"><a href="/cursuri/{{course._id}}/">{{course.code}}</a></li>
         {{else}}
-        <li class="breadcrumb-item"><a href="/teste/">Teste</a></li>
+            <li class="breadcrumb-item"><a href="/teste/">Teste</a></li>
         {{/if}}
         {{!-- <li class="breadcrumb-item active">{{practiceTest.name}}</li> --}}
     </ol>
@@ -21,58 +21,63 @@
     <div class="col-md-7s offset-md-3s">
 
         {{#if canDeletePracticeTest}}
-        <a href="/teste/{{practiceTest._id}}/adauga" class="btn btn-primary"><i class="bi bi-plus-lg"></i>
-            Adaugă exercițiu</a>
+            <a href="/teste/{{practiceTest._id}}/adauga" class="btn btn-primary"><i class="bi bi-plus-lg"></i>
+                Adaugă exercițiu</a>
 
-        <a href="/teste/{{practiceTest._id}}/modifica" class="btn btn-light"><i class="bi bi-pencil-fill"></i>
-            Modifică</a>
+            <a href="/teste/{{practiceTest._id}}/modifica" class="btn btn-light"><i class="bi bi-pencil-fill"></i>
+                Modifică</a>
         {{/if}}
 
         {{#if canDeletePracticeTest}}
-        <form method="post" onsubmit="deleteBtn.disabled = true; return true;" style="display:inline">
-            <input type="hidden" name="_id" value="{{practiceTest._id}}" />
-            <button type="submit" formaction="/teste/sterge" name="deleteBtn" class="btn btn-link"
-                onclick="return confirm('Ești sigur că vrei să ștergi acest test?');"><i class="bi bi-trash-fill"></i>
-                Șterge</button>
-        </form>
+            <form method="post" onsubmit="deleteBtn.disabled = true; return true;" style="display:inline">
+                <input type="hidden" name="_id" value="{{practiceTest._id}}" />
+                <button
+                    type="submit"
+                    formaction="/teste/sterge"
+                    name="deleteBtn"
+                    class="btn btn-link"
+                    onclick="return confirm('Ești sigur că vrei să ștergi acest test?');"
+                ><i class="bi bi-trash-fill"></i>
+                    Șterge</button>
+            </form>
         {{/if}}
     </div>
 </div>
 
 {{#each practiceTest.exercises}}
-<div class="mb-4">
-    <div style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
-        {{{question.statement.textPreview}}}
-        {{#if question.answerOptions}}
-        <div class="row">
-            {{#each question.answerOptions}}
-            <div class="col text-nowrap">{{{textPreview}}}</div>
-            {{/each}}
-        </div>
-        {{/if}}
-    </div>
-    {{!-- <div class="font-italic small text-right text-muted">{{contestName}}</div>
-    <div class="font-italic small text-right text-muted">{{sourceName}}</div> --}}
-
-    {{#if question.solution}}
-    <div class="fw-bold mt-2">Soluție:</div>
-    <div style2="border: 1px solid lightgray; padding: 6px 12px; background-color: min-height:58px">
-        {{{question.solution.textPreview}}}</div>
-    {{/if}}
-
-    <hr class="mb-1">
-
-    <div class="row">
-        <div class="col text-nowrap">
+    <div class="mb-4">
+        <div style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
+            {{{question.statement.textPreview}}}
             {{#if question.answerOptions}}
-            {{{question.correctAnswerPreview}}}
-            {{else}}
-            {{{question.answer.textPreview}}}
+                <div class="row">
+                    {{#each question.answerOptions}}
+                        <div class="col text-nowrap">{{{textPreview}}}</div>
+                    {{/each}}
+                </div>
             {{/if}}
         </div>
-        <div class="col text-nowrap font-italic font-weight-light small text-right text-muted">Rezolvare: L. Măran
-        </div>
-    </div>
+        {{!-- <div class="font-italic small text-right text-muted">{{contestName}}</div>
+    <div class="font-italic small text-right text-muted">{{sourceName}}</div> --}}
 
-</div>
+        {{#if question.solution}}
+            <div class="fw-bold mt-2">Soluție:</div>
+            <div style2="border: 1px solid lightgray; padding: 6px 12px; background-color: min-height:58px">
+                {{{question.solution.textPreview}}}</div>
+        {{/if}}
+
+        <hr class="mb-1" />
+
+        <div class="row">
+            <div class="col text-nowrap">
+                {{#if question.answerOptions}}
+                    {{{question.correctAnswerPreview}}}
+                {{else}}
+                    {{{question.answer.textPreview}}}
+                {{/if}}
+            </div>
+            <div class="col text-nowrap font-italic font-weight-light small text-right text-muted">Rezolvare: L. Măran
+            </div>
+        </div>
+
+    </div>
 {{/each}}

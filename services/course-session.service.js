@@ -20,7 +20,9 @@ exports.getCourseSessionsByStudentId = async (studentId) => {
     const db = await mongoHelper.getDb();
     return db
         .collection(collection)
-        .find({ $or: [{ studentsIds: studentId }, { "studentsFromOtherClasses.studentId": studentId }] })
+        .find({
+            $or: [{ studentsIds: studentId }, { "studentsFromOtherClasses.studentId": studentId }],
+        })
         .toArray();
 };
 
@@ -29,10 +31,7 @@ exports.getCourseSessionsByStudentsIds = async (studentsIds) => {
     return db
         .collection(collection)
         .find({
-            $or: [
-                { studentsIds: { $in: studentsIds } },
-                { "studentsFromOtherClasses.studentId": { $in: studentsIds } },
-            ],
+            $or: [{ studentsIds: { $in: studentsIds } }, { "studentsFromOtherClasses.studentId": { $in: studentsIds } }],
         })
         .toArray();
 };

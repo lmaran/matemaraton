@@ -35,27 +35,16 @@
 
 <div class="h4 font-weight-light">{{course.description}}</div>
 
-<ol id="table-of-contents" class="pl-0">
-    {{#each course.chapters}}
-    <li>
-        <a href="/cursuri/{{@root.course._id}}/capitole/{{id}}" class2="text-uppercase">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
+{{#each course.chapters}}
+<div>
+    <strong>{{inc @index}}. {{name}}{{#unless name}}Fără nume{{/unless}}</strong>
+    (<a href="/cursuri/{{@root.course._id}}/capitole/{{id}}">{{ lessons.length }}{{#unless lessons.length}}0{{/unless}}</a>)
 
-        {{#if isHidden}}
-        <a href="/cursuri/{{@root.course._id}}/capitole/{{id}}/modifica">
-            <i class="bi bi-eye-slash text-danger"></i></a>
-        {{/if}}
-
-        <ol>
-            {{#each lessons}}
-            <li>
-                <a class="pl-1" href="/cursuri/{{@root.course._id}}/capitole/{{../id}}/lectii/{{id}}">{{name}}</a>
-            </li>
-            {{/each}}
-            {{!-- <a href="/cursuri/{{@root.course._id}}/capitole/{{id}}/lectii/adauga"><i class="bi bi-plus-lg"></i>
-                Adaugă
-                lecție</a> --}}
-        </ol>
-
-    </li>
+    {{#each lessons}}
+        <div class="ps-3">
+            {{inc ../index}}.{{inc @index}}. 
+            <a class="pl-1" href="/cursuri/{{@root.course._id}}/capitole/{{../id}}/lectii/{{id}}">{{name}}</a>
+        </div>
     {{/each}}
-</ol>
+</div>
+{{/each}}

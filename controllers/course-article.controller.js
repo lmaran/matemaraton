@@ -1,7 +1,6 @@
 const courseService = require("../services/course.service");
 //const lessonService = require("../services/lesson.service");
 const autz = require("../services/autz.service");
-const arrayHelper = require("../helpers/array.helper");
 
 exports.createOrEditGet = async (req, res) => {
     const courseId = req.params.courseId;
@@ -38,30 +37,30 @@ exports.createOrEditGet = async (req, res) => {
             course.selectedLesson.index = selectedLessonIndex;
         }
 
-        if (isEditMode) {
-            lessons.forEach((x, index) => {
-                const incIndex = index + 1;
-                // if (x.id === lessonId) {
-                //     data.selectedPosition = index; // select the index of the ccurrent element
-                //     positionPrefix = "(după)";
-                //     positionName = `${incIndex}: "${x.name}"`;
-                // } else {
-                //     positionName = `${incIndex}: ${positionPrefix} "${x.name}"`;
-                // }
-                // data.positionOptions.push({ index, name: positionName });
-            });
-        } else {
-            lessons.forEach((x, index) => {
-                const incIndex = index + 1;
-                // positionName = `${incIndex}: ${positionPrefix} "${x.name}"`;
-                // data.positionOptions.push({ index, name: positionName });
-            });
-            // data.positionOptions.push({
-            //     index: chapters.length, // last position + 1
-            //     name: `${++data.positionOptions.length}: (ultima poziție)`,
-            // });
-            // data.selectedPosition = data.positionOptions[data.positionOptions.length - 1].index; // select the id of the last element
-        }
+        // if (isEditMode) {
+        //     // lessons.forEach((x, index) => {
+        //     //     //const incIndex = index + 1;
+        //     //     // if (x.id === lessonId) {
+        //     //     //     data.selectedPosition = index; // select the index of the ccurrent element
+        //     //     //     positionPrefix = "(după)";
+        //     //     //     positionName = `${incIndex}: "${x.name}"`;
+        //     //     // } else {
+        //     //     //     positionName = `${incIndex}: ${positionPrefix} "${x.name}"`;
+        //     //     // }
+        //     //     // data.positionOptions.push({ index, name: positionName });
+        //     // });
+        // } else {
+        //     // lessons.forEach((x, index) => {
+        //     //     // const incIndex = index + 1;
+        //     //     // positionName = `${incIndex}: ${positionPrefix} "${x.name}"`;
+        //     //     // data.positionOptions.push({ index, name: positionName });
+        //     // });
+        //     // data.positionOptions.push({
+        //     //     index: chapters.length, // last position + 1
+        //     //     name: `${++data.positionOptions.length}: (ultima poziție)`,
+        //     // });
+        //     // data.selectedPosition = data.positionOptions[data.positionOptions.length - 1].index; // select the id of the last element
+        // }
     }
 
     data.course = course;
@@ -147,6 +146,7 @@ exports.getOneById = async (req, res) => {
     const courseId = req.params.courseId;
     const chapterId = req.params.chapterId;
     const lessonId = req.params.lessonId;
+
     const course = await courseService.getOneById(courseId);
 
     const chapters = course.chapters || [];
@@ -193,7 +193,7 @@ exports.deleteOneById = async (req, res) => {
 
     const lessonIndex = lessons.findIndex((x) => x.id === lessonId);
     if (lessonIndex > -1) {
-        const lesson = lessons[lessonIndex];
+        // const lesson = lessons[lessonIndex];
 
         // TODO fix it (delete only empty lessons)
         // if (lesson.lessons && chapter.lessons.length > 0) {

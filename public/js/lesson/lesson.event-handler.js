@@ -1,5 +1,5 @@
 import { markdownService } from "../markdown/markdown.service.js";
-import { domHelper } from "../helpers/dom.helper.js";
+//import { domHelper } from "../helpers/dom.helper.js";
 
 /**
  * DOM elements

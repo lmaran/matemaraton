@@ -23,10 +23,10 @@
             <label for="gradeSelect" class="fw-bold">Clasa:</label>
             <select name="grade" class="form-control" id="gradeSelect">
                 {{#select practiceTest.grade}}
-                <option value=""></option>
-                {{#each gradeAvailableOptions}}
-                <option value="{{value}}">{{text}}</option>
-                {{/each}}
+                    <option value=""></option>
+                    {{#each gradeAvailableOptions}}
+                        <option value="{{value}}">{{text}}</option>
+                    {{/each}}
 
                 {{/select}}
             </select>
@@ -37,10 +37,10 @@
                 <span class="text-muted font-weight-normal">(la care a fost dat accest ex.)</span>:</label>
             <select name="contestType" class="form-control" id="contestTypeSelect">
                 {{#select practiceTest.contestType}}
-                <option value=""></option>
-                {{#each contestTypeAvailableOptions}}
-                <option value="{{value}}">{{text}}</option>
-                {{/each}}
+                    <option value=""></option>
+                    {{#each contestTypeAvailableOptions}}
+                        <option value="{{value}}">{{text}}</option>
+                    {{/each}}
                 {{/select}}
             </select>
         </div>
@@ -50,8 +50,7 @@
     <div class="row">
         <div class="col-md-12">
             <label for="titleInput" class="required fw-bold">Titlu:</label>
-            <input type="text" name="name" class="form-control" id="titleInput" placeholder=""
-                value="{{practiceTest.name}}">
+            <input type="text" name="name" class="form-control" id="titleInput" placeholder="" value="{{practiceTest.name}}" />
         </div>
     </div>
 
@@ -69,7 +68,7 @@
 
 </form>
 
-{{#section 'script'}}
-{{!--
-<script type="module" src="/js/lesson/lesson.main.js"></script> --}}
+{{#section "script"}}
+    {{!
+<script type="module" src="/js/lesson/lesson.main.js"></script> }}
 {{/section}}
