@@ -17,10 +17,7 @@ exports.postInviteToSignup = async (req, res) => {
             return res.send("Există deja un utilizator activ cu acest email");
         }
 
-        const uniqueId =
-            existingUser && existingUser.signupCode
-                ? existingUser.signupCode
-                : uuidv4(); // keep the original code if exists
+        const uniqueId = existingUser && existingUser.signupCode ? existingUser.signupCode : uuidv4(); // keep the original code if exists
 
         const invitationInfo = {
             firstName,
@@ -78,14 +75,11 @@ exports.getSignup = async (req, res) => {
     const errors = arrayHelper.arrayToObject(validationErrors, "field");
     const data = arrayHelper.arrayToObject(initialValues, "field");
 
-    const existingUser =
-        invitationCode &&
-        (await userService.getOneBySignupCode(invitationCode));
+    const existingUser = invitationCode && (await userService.getOneBySignupCode(invitationCode));
     if (existingUser) {
         if (existingUser.status === "active") {
             const data = {
-                message:
-                    "Contul aferent accestei invitații a fost deja <strong>activat</strong>!",
+                message: "Contul aferent accestei invitații a fost deja <strong>activat</strong>!",
                 userIsNotAuthenticated: !req.user,
             };
             return res.render("user/signup-confirm-info", data);
@@ -140,19 +134,10 @@ exports.getSignup = async (req, res) => {
 
 exports.postSignup = async (req, res) => {
     try {
-        const {
-            firstName,
-            lastName,
-            email,
-            password,
-            confirmPassword,
-            invitationCode,
-        } = req.body;
+        const { firstName, lastName, email, password, confirmPassword, invitationCode } = req.body;
 
         // recaptcha verification
-        const captchaResponse = await recaptchaService.checkResponse(
-            req.body["g-recaptcha-response"]
-        );
+        const captchaResponse = await recaptchaService.checkResponse(req.body["g-recaptcha-response"]);
         // console.log(captchaResponse);
         if (!captchaResponse.success || captchaResponse.score <= 0.5) {
             // over 50% chance to be be a bot
@@ -166,37 +151,25 @@ exports.postSignup = async (req, res) => {
         }
 
         // handle static validation errors
-        const validationErrors = getSignupStaticValidationErrors(
-            firstName,
-            lastName,
-            email,
-            password,
-            confirmPassword
-        );
+        const validationErrors = getSignupStaticValidationErrors(firstName, lastName, email, password, confirmPassword);
         if (validationErrors.length) {
             return flashAndReloadSignupPage(req, res, validationErrors);
         }
 
         if (invitationCode) {
-            const { token, refreshToken } =
-                await authService.signupByInvitationCode(
-                    firstName,
-                    lastName,
-                    // email,
-                    password,
-                    invitationCode
-                );
+            const { token, refreshToken } = await authService.signupByInvitationCode(
+                firstName,
+                lastName,
+                // email,
+                password,
+                invitationCode
+            );
 
             cookieHelper.setCookies(res, token, refreshToken);
 
             res.redirect("/signup/confirm-success");
         } else {
-            const activationCode = await authService.signupByUserRegistration(
-                firstName,
-                lastName,
-                email,
-                password
-            );
+            const activationCode = await authService.signupByUserRegistration(firstName, lastName, email, password);
             // Send this code on email
             const rootUrl = config.externalUrl; // e.g. http://localhost:1417
             const link = `${rootUrl}/signup/confirm/${activationCode}`;
@@ -236,8 +209,7 @@ exports.getSignupConfirm = async (req, res) => {
     try {
         const activationCode = req.params.activationCode;
 
-        const { token, refreshToken } =
-            await authService.signupByActivationCode(activationCode);
+        const { token, refreshToken } = await authService.signupByActivationCode(activationCode);
 
         cookieHelper.setCookies(res, token, refreshToken);
         res.redirect("/signup/confirm-success");
@@ -274,13 +246,7 @@ exports.getSignupConfirmSuccess = async (req, res) => {
     res.render("user/signup-confirm-success", data);
 };
 
-const getSignupStaticValidationErrors = (
-    firstName,
-    lastName,
-    email,
-    password,
-    confirmPassword
-) => {
+const getSignupStaticValidationErrors = (firstName, lastName, email, password, confirmPassword) => {
     try {
         const validationErrors = [];
 
@@ -308,15 +274,13 @@ const getSignupStaticValidationErrors = (
                 msg: "Maxim 50 caractere",
             });
 
-        if (validator.isEmpty(email))
-            validationErrors.push({ field: "email", msg: "Câmp obligatoriu" });
+        if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu" });
         else if (!validator.isLength(email, { max: 50 }))
             validationErrors.push({
                 field: "email",
                 msg: "Maxim 50 caractere",
             });
-        else if (!validator.isEmail(email))
-            validationErrors.push({ field: "email", msg: "Email invalid" });
+        else if (!validator.isEmail(email)) validationErrors.push({ field: "email", msg: "Email invalid" });
         // else if (await userService.getOneByEmail(email))
         //     validationErrors.push({ field: "email", msg: "Exista deja un cont cu acest email" });
 

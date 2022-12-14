@@ -22,8 +22,7 @@ exports.addUserIfExist = async (req, res, next) => {
                 let refreshToken = req.cookies && req.cookies.refresh_token;
 
                 // details about the wrapping parenthesis: https://stackoverflow.com/a/35576419
-                ({ token, refreshToken } =
-                    await authService.getTokensFromRefreshToken(refreshToken));
+                ({ token, refreshToken } = await authService.getTokensFromRefreshToken(refreshToken));
 
                 // save the new values for further use
                 cookieHelper.setCookies(res, token, refreshToken);
@@ -50,10 +49,7 @@ exports.addUserIfExist = async (req, res, next) => {
         user.roles = roleAssignments.map((r) => r.roleName);
 
         // attach user permissions
-        const roleDefinitions =
-            await roleDefinitionsService.getRoleDefinitionsByRoleNames(
-                user.roles
-            );
+        const roleDefinitions = await roleDefinitionsService.getRoleDefinitionsByRoleNames(user.roles);
 
         // TODO: take into account also "exclude-permissions", "deny-permissions" etc
         const permissions = [];

@@ -56,9 +56,7 @@ exports.postResetPassword = async (req, res) => {
         const { email, password, confirmPassword } = req.body;
 
         // recaptcha verification
-        const captchaResponse = await recaptchaService.checkResponse(
-            req.body["g-recaptcha-response"]
-        );
+        const captchaResponse = await recaptchaService.checkResponse(req.body["g-recaptcha-response"]);
         // console.log(captchaResponse);
         if (!captchaResponse.success || captchaResponse.score <= 0.5) {
             // over 50% chance to be be a bot
@@ -72,19 +70,12 @@ exports.postResetPassword = async (req, res) => {
         }
 
         // handle static validation errors
-        const validationErrors = getResetPasswordStaticValidationErrors(
-            email,
-            password,
-            confirmPassword
-        );
+        const validationErrors = getResetPasswordStaticValidationErrors(email, password, confirmPassword);
         if (validationErrors.length) {
             return flashAndReloadResetPasswordPage(req, res, validationErrors);
         }
 
-        const resetPasswordCode = await authService.saveResetPasswordRequest(
-            email,
-            password
-        );
+        const resetPasswordCode = await authService.saveResetPasswordRequest(email, password);
 
         // Send this code on email
         const rootUrl = config.externalUrl; // e.g. http://localhost:1417
@@ -133,35 +124,25 @@ exports.getResetPasswordConfirm = async (req, res) => {
         const data = { message: err.message };
 
         if (err.message === "InvalidResetPasswordCode")
-            data.message =
-                "Codul pentru resetarea parolei este <strong>invalid</strong> sau <strong>expirat</strong>!";
-        else if (err.message === "InactiveUser")
-            data.message = "Utilizatorul aferent acestui cod este inactiv!";
-        else if (err.message === "InvalidResetPasswordInfo")
-            data.message =
-                "Lipsesc informațiile necesare pentru resetarea parolei!";
+            data.message = "Codul pentru resetarea parolei este <strong>invalid</strong> sau <strong>expirat</strong>!";
+        else if (err.message === "InactiveUser") data.message = "Utilizatorul aferent acestui cod este inactiv!";
+        else if (err.message === "InvalidResetPasswordInfo") data.message = "Lipsesc informațiile necesare pentru resetarea parolei!";
 
         res.render("user/reset-password-confirm-error", data);
     }
 };
 
-const getResetPasswordStaticValidationErrors = (
-    email,
-    password,
-    confirmPassword
-) => {
+const getResetPasswordStaticValidationErrors = (email, password, confirmPassword) => {
     try {
         const validationErrors = [];
 
-        if (validator.isEmpty(email))
-            validationErrors.push({ field: "email", msg: "Câmp obligatoriu" });
+        if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu" });
         else if (!validator.isLength(email, { max: 50 }))
             validationErrors.push({
                 field: "email",
                 msg: "Maxim 50 caractere",
             });
-        else if (!validator.isEmail(email))
-            validationErrors.push({ field: "email", msg: "Email invalid" });
+        else if (!validator.isEmail(email)) validationErrors.push({ field: "email", msg: "Email invalid" });
 
         // password
         if (validator.isEmpty(password))

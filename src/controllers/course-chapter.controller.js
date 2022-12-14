@@ -6,10 +6,7 @@ exports.createOrEditGet = async (req, res) => {
     const courseId = req.params.courseId;
     const chapterId = req.params.chapterId;
 
-    const canCreateOrEditCourse = await autz.can(
-        req.user,
-        "create-or-edit:course"
-    );
+    const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
     if (!canCreateOrEditCourse) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
@@ -28,9 +25,7 @@ exports.createOrEditGet = async (req, res) => {
     const chapters = course.chapters || [];
 
     if (isEditMode) {
-        const selectedChapterIndex = chapters.findIndex(
-            (x) => x.id === chapterId
-        );
+        const selectedChapterIndex = chapters.findIndex((x) => x.id === chapterId);
         if (selectedChapterIndex > -1) {
             course.selectedChapter = chapters[selectedChapterIndex];
             course.selectedChapter.index = selectedChapterIndex;
@@ -57,8 +52,7 @@ exports.createOrEditGet = async (req, res) => {
             index: chapters.length, // last position + 1
             name: `${++data.positionOptions.length}: (ultima poziție)`,
         });
-        data.selectedPosition =
-            data.positionOptions[data.positionOptions.length - 1].index; // select the id of the last element
+        data.selectedPosition = data.positionOptions[data.positionOptions.length - 1].index; // select the id of the last element
     }
 
     data.course = course;
@@ -71,10 +65,7 @@ exports.createOrEditPost = async (req, res) => {
     const courseId = req.params.courseId;
     const chapterId = req.params.chapterId;
     try {
-        const canCreateOrEditCourse = await autz.can(
-            req.user,
-            "create-or-edit:course"
-        );
+        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
         if (!canCreateOrEditCourse) {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
@@ -92,9 +83,7 @@ exports.createOrEditPost = async (req, res) => {
 
         course.chapters = course.chapters || [];
         if (isEditMode) {
-            const chapterIndex = course.chapters.findIndex(
-                (x) => x.id === chapterId
-            );
+            const chapterIndex = course.chapters.findIndex((x) => x.id === chapterId);
             if (chapterIndex > -1) {
                 const existingChapter = course.chapters[chapterIndex];
                 existingChapter.name = chapter.name;
@@ -108,11 +97,7 @@ exports.createOrEditPost = async (req, res) => {
                 }
 
                 // move the chapter from one position (index) to another
-                if (
-                    position != chapterIndex &&
-                    position > -1 &&
-                    position < course.chapters.length
-                ) {
+                if (position != chapterIndex && position > -1 && position < course.chapters.length) {
                     arrayHelper.move(course.chapters, chapterIndex, position);
                 }
             }
@@ -153,10 +138,7 @@ exports.getOneById = async (req, res) => {
 
     const data = {
         course,
-        canCreateOrEditCourse: await autz.can(
-            req.user,
-            "create-or-edit:course"
-        ),
+        canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
     };
 
     //res.send(data);
@@ -167,10 +149,7 @@ exports.deleteOneById = async (req, res) => {
     const courseId = req.params.courseId;
     const chapterId = req.params.chapterId;
 
-    const canCreateOrEditCourse = await autz.can(
-        req.user,
-        "create-or-edit:course"
-    );
+    const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
     if (!canCreateOrEditCourse) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }

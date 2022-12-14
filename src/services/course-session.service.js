@@ -21,10 +21,7 @@ exports.getCourseSessionsByStudentId = async (studentId) => {
     return db
         .collection(collection)
         .find({
-            $or: [
-                { studentsIds: studentId },
-                { "studentsFromOtherClasses.studentId": studentId },
-            ],
+            $or: [{ studentsIds: studentId }, { "studentsFromOtherClasses.studentId": studentId }],
         })
         .toArray();
 };
@@ -34,21 +31,14 @@ exports.getCourseSessionsByStudentsIds = async (studentsIds) => {
     return db
         .collection(collection)
         .find({
-            $or: [
-                { studentsIds: { $in: studentsIds } },
-                { "studentsFromOtherClasses.studentId": { $in: studentsIds } },
-            ],
+            $or: [{ studentsIds: { $in: studentsIds } }, { "studentsFromOtherClasses.studentId": { $in: studentsIds } }],
         })
         .toArray();
 };
 
 exports.getCourseSessionsByClassId = async (classId) => {
     const db = await mongoHelper.getDb();
-    return db
-        .collection(collection)
-        .find({ classId })
-        .sort({ date: -1 })
-        .toArray();
+    return db.collection(collection).find({ classId }).sort({ date: -1 }).toArray();
 };
 
 exports.getCourseSessionsByClassIds = async (classIds) => {
@@ -78,9 +68,7 @@ exports.insertOne = async (item) => {
 exports.updateOne = async (item) => {
     const db = await mongoHelper.getDb();
     item._id = new ObjectID(item._id);
-    return db
-        .collection(collection)
-        .updateOne({ _id: item._id }, { $set: item });
+    return db.collection(collection).updateOne({ _id: item._id }, { $set: item });
 };
 
 exports.deleteOneById = async (id) => {

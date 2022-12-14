@@ -32,12 +32,7 @@ exports.changePassword = async (email, oldPassword, newPassword) => {
     }
 };
 
-exports.signupByInvitationCode = async (
-    firstName,
-    lastName,
-    password,
-    invitationCode
-) => {
+exports.signupByInvitationCode = async (firstName, lastName, password, invitationCode) => {
     const existingUser = await userService.getOneBySignupCode(invitationCode);
     if (existingUser) {
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -60,15 +55,11 @@ exports.signupByInvitationCode = async (
 
 exports.signupByUserRegistration = async (firstName, lastName, email, psw) => {
     const existingUser = await userService.getOneByEmail(email);
-    if (existingUser && existingUser.status === "active")
-        throw new Error("EmailAlreadyExists");
+    if (existingUser && existingUser.status === "active") throw new Error("EmailAlreadyExists");
 
     const password = await bcrypt.hash(psw, 10);
 
-    const uniqueId =
-        existingUser && existingUser.signupCode
-            ? existingUser.signupCode
-            : uuidv4(); // keep the original code if exists
+    const uniqueId = existingUser && existingUser.signupCode ? existingUser.signupCode : uuidv4(); // keep the original code if exists
 
     if (existingUser) {
         existingUser.firstName = firstName;
@@ -100,8 +91,7 @@ exports.signupByUserRegistration = async (firstName, lastName, email, psw) => {
 
 exports.saveResetPasswordRequest = async (email, password) => {
     const existingUser = await userService.getOneByEmail(email);
-    if (!existingUser || (existingUser && existingUser.status !== "active"))
-        throw new Error("AccountNotExists");
+    if (!existingUser || (existingUser && existingUser.status !== "active")) throw new Error("AccountNotExists");
 
     const resetPasswordCode = uuidv4();
 
@@ -137,14 +127,11 @@ exports.signupByActivationCode = async (activationCode) => {
 };
 
 exports.resetPasswordByCode = async (resetPasswordCode) => {
-    const existingUser = await userService.getOneByResetPasswordCode(
-        resetPasswordCode
-    );
+    const existingUser = await userService.getOneByResetPasswordCode(resetPasswordCode);
 
     if (!existingUser) throw new Error("InvalidResetPasswordCode");
     else if (existingUser.status !== "active") throw new Error("InactiveUser");
-    else if (!existingUser.resetPasswordInfo)
-        throw new Error("InvalidResetPasswordInfo");
+    else if (!existingUser.resetPasswordInfo) throw new Error("InvalidResetPasswordInfo");
 
     // update user info
     const currentDate = new Date();
@@ -160,11 +147,7 @@ exports.resetPasswordByCode = async (resetPasswordCode) => {
         resetPasswordInfo: "",
     };
 
-    return await userService.resetPassword(
-        existingUser._id,
-        modifiedFields,
-        removedFields
-    );
+    return await userService.resetPassword(existingUser._id, modifiedFields, removedFields);
 };
 
 exports.getJwtPayload = async (token) => {
@@ -179,8 +162,7 @@ exports.getTokensFromRefreshToken = async (refreshToken) => {
     const existingUser = await userService.getOneById(userId);
 
     // TODO: check here for other conditions, as needed (eg: new roles/permissions)
-    if (!existingUser || existingUser.status !== "active")
-        throw new Error("InvalidUser");
+    if (!existingUser || existingUser.status !== "active") throw new Error("InvalidUser");
     else return getAccessAndRefreshTokens(existingUser);
 };
 

@@ -1,24 +1,27 @@
 <div class="container-fluid">
 
     {{#if isSuccess}}
-    <div class="alert alert-success">
-        <i class="bi bi-check-circle me-2"></i> {{{message}}}
-    </div>
-    {{{details}}}
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle me-2"></i>
+            {{{message}}}
+        </div>
+        {{{details}}}
     {{/if}}
 
     {{#if isError}}
-    <div class="alert alert-danger">
-        <i class="bi bi-exclamation-circle me-2"></i> {{{message}}}
-    </div>
-    {{{details}}}
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-circle me-2"></i>
+            {{{message}}}
+        </div>
+        {{{details}}}
     {{/if}}
 
     {{#if isInfo}}
-    <div class="alert alert-info">
-        <i class="bi bi-info-circle me-2"></i> {{{message}}}
-    </div>
-    {{{details}}}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            {{{message}}}
+        </div>
+        {{{details}}}
     {{/if}}
 
 </div>

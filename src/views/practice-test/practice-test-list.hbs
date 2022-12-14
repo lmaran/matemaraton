@@ -1,9 +1,9 @@
-{{!-- <style>
+{{! <style>
     .source {
         _font-style: italic;
         _font-size: 8px;
     }
-</style> --}}
+</style> }}
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
@@ -14,18 +14,18 @@
 <h1>Teste</h1>
 
 {{#if canCreateOrEditPracticeTest}}
-<a href="/teste/adauga" class="btn btn-primary mt-2 mb-4"><i class="bi bi-plus-lg"></i> Adaugă test</a>
+    <a href="/teste/adauga" class="btn btn-primary mt-2 mb-4"><i class="bi bi-plus-lg"></i> Adaugă test</a>
 {{/if}}
 
-{{!-- <h3< class="mt-4">>Ediția curentă:</h3> --}}
-    {{#if practiceTests}}
+{{! <h3< class="mt-4">>Ediția curentă:</h3> }}
+{{#if practiceTests}}
     <ul>
         {{#each practiceTests}}
-        <li><a href="/teste/{{_id}}">{{name}} </a>
-            <span class="text-muted font-weight-light"></span>
-        </li>
+            <li><a href="/teste/{{_id}}">{{name}} </a>
+                <span class="text-muted font-weight-light"></span>
+            </li>
         {{/each}}
     </ul>
-    {{else}}
+{{else}}
     <div class="mt-4">Nu există teste!</div>
-    {{/if}}
+{{/if}}

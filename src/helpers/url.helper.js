@@ -39,22 +39,8 @@ const stringHelper = require("../helpers/string.helper");
 // };
 
 exports.isReservedSubdomain = (subdomain) => {
-    const isReserved1 = [
-        "stg",
-        "temp",
-        "temp-stg",
-        "blue",
-        "blue-stg",
-        "green",
-        "green-stg",
-        "dev",
-    ].includes(subdomain);
-    const isReserved2 = stringHelper.endsWithValueFromList(subdomain, [
-        "-blue",
-        "-green",
-        "-blue-stg",
-        "-green-stg",
-    ]);
+    const isReserved1 = ["stg", "temp", "temp-stg", "blue", "blue-stg", "green", "green-stg", "dev"].includes(subdomain);
+    const isReserved2 = stringHelper.endsWithValueFromList(subdomain, ["-blue", "-green", "-blue-stg", "-green-stg"]);
     return isReserved1 || isReserved2;
 };
 

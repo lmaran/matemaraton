@@ -33,13 +33,7 @@ exports.uploadInMemoryCountersFromMongo = async (scope) => {
 
     // Increment nextId using findOneAndUpdate to ensure that the nextId field will be incremented atomically with the fetch of this document"
     const db = await mongoHelper.getDb();
-    const result = await db
-        .collection(collection)
-        .findOneAndUpdate(
-            { _id: scope },
-            { $inc: { nextId: batchSize } },
-            { returnOriginal: false }
-        );
+    const result = await db.collection(collection).findOneAndUpdate({ _id: scope }, { $inc: { nextId: batchSize } }, { returnOriginal: false });
 
     const newValueInBlob = result.value.nextId;
 
@@ -50,11 +44,7 @@ exports.uploadInMemoryCountersFromMongo = async (scope) => {
 
 exports.getBatchSize = (scope, config) => {
     let batchSize = 3; // default
-    if (
-        config.idGenerator &&
-        config.idGenerator.specificBatchSize &&
-        config.idGenerator.specificBatchSize[scope]
-    ) {
+    if (config.idGenerator && config.idGenerator.specificBatchSize && config.idGenerator.specificBatchSize[scope]) {
         batchSize = config.idGenerator.specificBatchSize[scope];
     } else {
         if (config.idGenerator && config.idGenerator.defaultBatchSize) {

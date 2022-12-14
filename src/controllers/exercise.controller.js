@@ -16,10 +16,7 @@ exports.deleteOneById = async (req, res) => {
 };
 
 exports.createOrEditGet = async (req, res) => {
-    const canCreateOrEditExercise = await autz.can(
-        req.user,
-        "create-or-edit:exercise"
-    );
+    const canCreateOrEditExercise = await autz.can(req.user, "create-or-edit:exercise");
     if (!canCreateOrEditExercise) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
@@ -135,19 +132,13 @@ exports.createOrEditGet = async (req, res) => {
     if (isEditMode) {
         const exercise = await exerciseService.getOneById(req.params.id);
 
-        exercise.question.statement.textPreview = markdownService.render(
-            exercise.question.statement.text
-        );
+        exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
         if (exercise.question.answer && exercise.question.answer.text) {
-            exercise.question.answer.textPreview = markdownService.render(
-                exercise.question.answer.text
-            );
+            exercise.question.answer.textPreview = markdownService.render(exercise.question.answer.text);
         }
 
         if (exercise.question.solution && exercise.question.solution.text) {
-            exercise.question.solution.textPreview = markdownService.render(
-                exercise.question.solution.text
-            );
+            exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
         }
 
         if (exercise.question.hints) {
@@ -158,9 +149,7 @@ exports.createOrEditGet = async (req, res) => {
 
         if (exercise.question.answerOptions) {
             exercise.question.answerOptions.forEach((answerOption) => {
-                answerOption.textPreview = markdownService.render(
-                    answerOption.text
-                );
+                answerOption.textPreview = markdownService.render(answerOption.text);
             });
         }
 
@@ -173,10 +162,7 @@ exports.createOrEditGet = async (req, res) => {
 
 exports.createOrEditPost = async (req, res) => {
     try {
-        const canCreateOrEditExercise = await autz.can(
-            req.user,
-            "create-or-edit:exercise"
-        );
+        const canCreateOrEditExercise = await autz.can(req.user, "create-or-edit:exercise");
         if (!canCreateOrEditExercise) {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
@@ -247,15 +233,10 @@ exports.createOrEditPost = async (req, res) => {
                         const newAnswerOption = { text: answerOption.trim() };
 
                         // set isCorrectAnswer (if apply)
-                        const isCorrectAnswerChecks =
-                            req.body.isCorrectAnswerChecks;
+                        const isCorrectAnswerChecks = req.body.isCorrectAnswerChecks;
                         if (isCorrectAnswerChecks) {
                             if (Array.isArray(isCorrectAnswerChecks)) {
-                                if (
-                                    isCorrectAnswerChecks.includes(
-                                        String(idx + 1)
-                                    )
-                                ) {
+                                if (isCorrectAnswerChecks.includes(String(idx + 1))) {
                                     newAnswerOption.isCorrect = true;
                                 }
                             } else {
@@ -274,12 +255,8 @@ exports.createOrEditPost = async (req, res) => {
                     const newAnswerOption = { text: answerOptions.trim() };
 
                     // set isCorrectAnswer (if apply)
-                    const isCorrectAnswerChecks =
-                        req.body.isCorrectAnswerChecks;
-                    if (
-                        isCorrectAnswerChecks &&
-                        isCorrectAnswerChecks === "1"
-                    ) {
+                    const isCorrectAnswerChecks = req.body.isCorrectAnswerChecks;
+                    if (isCorrectAnswerChecks && isCorrectAnswerChecks === "1") {
                         newAnswerOption.isCorrect = true;
                     }
                     exercise.question.answerOptions.push(newAnswerOption);
@@ -291,9 +268,7 @@ exports.createOrEditPost = async (req, res) => {
             exercise._id = id;
             exerciseService.updateOne(exercise);
         } else {
-            exercise.code = await idGeneratorMongoService.getNextId(
-                "exercises"
-            );
+            exercise.code = await idGeneratorMongoService.getNextId("exercises");
             const result = await exerciseService.insertOne(exercise);
             exercise._id = result.insertedId;
         }
@@ -325,10 +300,7 @@ exports.getAll = async (req, res) => {
         limit,
     };
 
-    const [exercises, totalExercises] = await Promise.all([
-        await exerciseService.getAll(query),
-        await exerciseService.count(),
-    ]);
+    const [exercises, totalExercises] = await Promise.all([await exerciseService.getAll(query), await exerciseService.count()]);
 
     if (endIndex > totalExercises) endIndex = totalExercises; // fix endIndex for the last page
 
@@ -341,19 +313,14 @@ exports.getAll = async (req, res) => {
             });
         }
 
-        exercise.question.statement.textPreview =
-            markdownService.render(statement);
+        exercise.question.statement.textPreview = markdownService.render(statement);
 
         if (exercise.question.solution) {
-            exercise.question.solution.textPreview = markdownService.render(
-                exercise.question.solution.text
-            );
+            exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
         }
         if (exercise.question.hints) {
             exercise.question.hints.forEach((hint, idx) => {
-                hint.textPreview = markdownService.render(
-                    `**Hint ${idx + 1}:** ${hint.text}`
-                );
+                hint.textPreview = markdownService.render(`**Hint ${idx + 1}:** ${hint.text}`);
             });
         }
     });
@@ -378,10 +345,7 @@ exports.getAll = async (req, res) => {
 
     const data = {
         exercises,
-        canCreateOrEditExercise: await autz.can(
-            req.user,
-            "create-or-edit:exercise"
-        ),
+        canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise"),
         pageResults,
     };
     // res.send(data);
@@ -400,47 +364,30 @@ exports.getOneById = async (req, res) => {
             if (exercise.question.answerOptions) {
                 exercise.question.answerOptions.forEach((answerOption, idx) => {
                     // insert a label (letter) in front of each option: "a" for the 1st option, "b" for the 2nd a.s.o.
-                    answerOption.textPreview = markdownService.render(
-                        `${alphabet[idx]}) ${answerOption.text}`
-                    );
+                    answerOption.textPreview = markdownService.render(`${alphabet[idx]}) ${answerOption.text}`);
                     if (answerOption.isCorrect) {
-                        exercise.question.correctAnswerPreview =
-                            markdownService.render(
-                                `**Răspuns:** ${answerOption.text}`
-                            );
+                        exercise.question.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
                     }
                 });
             }
 
-            exercise.question.statement.textPreview =
-                markdownService.render(statement);
+            exercise.question.statement.textPreview = markdownService.render(statement);
         }
 
-        if (exercise.question.answer)
-            exercise.question.answer.textPreview = markdownService.render(
-                `**Răspuns:** ${exercise.question.answer.text}`
-            );
+        if (exercise.question.answer) exercise.question.answer.textPreview = markdownService.render(`**Răspuns:** ${exercise.question.answer.text}`);
 
-        if (exercise.question.solution)
-            exercise.question.solution.textPreview = markdownService.render(
-                exercise.question.solution.text
-            );
+        if (exercise.question.solution) exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
 
         if (exercise.question.hints) {
             exercise.question.hints.forEach((hint, idx) => {
-                hint.textPreview = markdownService.render(
-                    `**Indicația ${idx + 1}:** ${hint.text}`
-                );
+                hint.textPreview = markdownService.render(`**Indicația ${idx + 1}:** ${hint.text}`);
             });
         }
     }
 
     const data = {
         exercise,
-        canCreateOrEditExercise: await autz.can(
-            req.user,
-            "create-or-edit:exercise"
-        ),
+        canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise"),
         canDeleteExercise: await autz.can(req.user, "delete:exercise"),
     };
 

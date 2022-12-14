@@ -10,8 +10,7 @@ exports.getLogin = (req, res) => {
         const data = {
             isInfo: true,
             message: "Ești deja autentificat!",
-            details:
-                "Dacă dorești să te re-autentifici, trebuie întâi să te deconectezi: <a href='/logout'>logout</a>.",
+            details: "Dacă dorești să te re-autentifici, trebuie întâi să te deconectezi: <a href='/logout'>logout</a>.",
         };
         return res.render("user/login-response", data);
     }
@@ -43,9 +42,7 @@ exports.postLogin = async (req, res) => {
         const { email, password, redirectUri } = req.body;
 
         // recaptcha verification
-        const captchaResponse = await recaptchaService.checkResponse(
-            req.body["g-recaptcha-response"]
-        );
+        const captchaResponse = await recaptchaService.checkResponse(req.body["g-recaptcha-response"]);
         // console.log(captchaResponse);
         if (!captchaResponse.success || captchaResponse.score <= 0.5) {
             // over 50% chance to be be a bot
@@ -59,18 +56,12 @@ exports.postLogin = async (req, res) => {
         }
 
         // handle static validation errors
-        const validationErrors = getLoginStaticValidationErrors(
-            email,
-            password
-        );
+        const validationErrors = getLoginStaticValidationErrors(email, password);
         if (validationErrors.length) {
             return flashAndReloadLoginPage(req, res, validationErrors);
         }
 
-        const { token, refreshToken } = await authService.login(
-            email,
-            password
-        );
+        const { token, refreshToken } = await authService.login(email, password);
 
         cookieHelper.setCookies(res, token, refreshToken);
         res.redirect(redirectUri || "/");
@@ -104,16 +95,12 @@ const getLoginStaticValidationErrors = (email, password) => {
     const validationErrors = [];
 
     // email
-    if (validator.isEmpty(email))
-        validationErrors.push({ field: "email", msg: "Câmp obligatoriu" });
-    else if (!validator.isLength(email, { max: 50 }))
-        validationErrors.push({ field: "email", msg: "Maxim 50 caractere" });
+    if (validator.isEmpty(email)) validationErrors.push({ field: "email", msg: "Câmp obligatoriu" });
+    else if (!validator.isLength(email, { max: 50 })) validationErrors.push({ field: "email", msg: "Maxim 50 caractere" });
 
     // password
-    if (validator.isEmpty(password))
-        validationErrors.push({ field: "password", msg: "Câmp obligatoriu" });
-    else if (!validator.isLength(password, { max: 50 }))
-        validationErrors.push({ field: "password", msg: "Maxim 50 caractere" });
+    if (validator.isEmpty(password)) validationErrors.push({ field: "password", msg: "Câmp obligatoriu" });
+    else if (!validator.isLength(password, { max: 50 })) validationErrors.push({ field: "password", msg: "Maxim 50 caractere" });
 
     return validationErrors;
 };

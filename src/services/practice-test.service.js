@@ -27,7 +27,5 @@ exports.insertOne = async (item) => {
 exports.updateOne = async (item) => {
     const db = await mongoHelper.getDb();
     item._id = new ObjectID(item._id);
-    return db
-        .collection(collection)
-        .updateOne({ _id: item._id }, { $set: item });
+    return db.collection(collection).updateOne({ _id: item._id }, { $set: item });
 };

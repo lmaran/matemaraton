@@ -37,14 +37,10 @@ exports.getOneById = async (req, res) => {
         //console.log(person);
         if (person) {
             if (person.isParent && person.studentIds) {
-                person.students = await personService.getAllByIds(
-                    person.studentIds
-                );
+                person.students = await personService.getAllByIds(person.studentIds);
             }
             if (person.isStudent && person.parentsIds) {
-                person.parents = await personService.getAllByIds(
-                    person.parentsIds
-                );
+                person.parents = await personService.getAllByIds(person.parentsIds);
             }
             user.person = person;
         }

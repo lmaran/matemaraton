@@ -31,14 +31,10 @@ module.exports = {
         return v1 >= v2;
     },
     and: function () {
-        return Array.prototype.slice
-            .call(arguments, 0, arguments.length - 1)
-            .every(Boolean);
+        return Array.prototype.slice.call(arguments, 0, arguments.length - 1).every(Boolean);
     },
     or: function () {
-        return Array.prototype.slice
-            .call(arguments, 0, arguments.length - 1)
-            .some(Boolean);
+        return Array.prototype.slice.call(arguments, 0, arguments.length - 1).some(Boolean);
     },
     inc: function (v) {
         // https://stackoverflow.com/a/22103990
@@ -51,9 +47,7 @@ module.exports = {
             .split("\n")
             .map(function (v) {
                 const t = `value="${value}"`;
-                return !RegExp(t).test(v)
-                    ? v
-                    : v.replace(t, `${t} selected="selected"`);
+                return !RegExp(t).test(v) ? v : v.replace(t, `${t} selected="selected"`);
             })
             .join("\n");
     },

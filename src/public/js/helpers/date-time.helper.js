@@ -8,10 +8,7 @@ export const dateTimeHelper = {
         return (...args) => {
             const context = this;
             clearTimeout(timeout);
-            timeout = setTimeout(
-                () => callback.apply(context, args),
-                milliseconds
-            );
+            timeout = setTimeout(() => callback.apply(context, args), milliseconds);
         };
     },
 

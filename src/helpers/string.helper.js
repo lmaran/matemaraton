@@ -12,10 +12,7 @@ exports.endsWithValueFromList = (str, endValues) => {
 exports.getIntervalFromAcademicYear = (academicYear, noSpace) => {
     if (!academicYear || academicYear.length != 6) return academicYear;
     const space = noSpace ? "" : " ";
-    return `${academicYear.substr(
-        0,
-        4
-    )}${space}-${space}20${academicYear.substr(4, 2)}`;
+    return `${academicYear.substr(0, 4)}${space}-${space}20${academicYear.substr(4, 2)}`;
 };
 
 /**

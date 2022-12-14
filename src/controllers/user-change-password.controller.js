@@ -29,20 +29,13 @@ exports.postChangePassword = async (req, res) => {
     try {
         const { oldPassword, newPassword } = req.body;
         // handle static validation errors
-        const validationErrors = getChangePasswordStaticValidationErrors(
-            oldPassword,
-            newPassword
-        );
+        const validationErrors = getChangePasswordStaticValidationErrors(oldPassword, newPassword);
 
         if (validationErrors.length) {
             return flashAndReloadChangePasswordPage(req, res, validationErrors);
         }
 
-        const { token, refreshToken } = await authService.changePassword(
-            req.user.email,
-            oldPassword,
-            newPassword
-        );
+        const { token, refreshToken } = await authService.changePassword(req.user.email, oldPassword, newPassword);
 
         cookieHelper.setCookies(res, token, refreshToken);
         res.redirect("/");

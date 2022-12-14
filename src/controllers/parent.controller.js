@@ -10,9 +10,7 @@ const urlHelper = require("../helpers/url.helper");
 
 exports.getParentsPerClass = async (req, res) => {
     if (!req.user) {
-        return res.redirect(
-            `/login?redirect_uri=${urlHelper.getCurrentEncodedUri(req)}`
-        );
+        return res.redirect(`/login?redirect_uri=${urlHelper.getCurrentEncodedUri(req)}`);
     }
 
     const classId = req.params.classId;
@@ -24,24 +22,16 @@ exports.getParentsPerClass = async (req, res) => {
 
     const studentIds = studentsMapByClass.map((x) => x.studentId);
 
-    const studentsAndTheirParents =
-        await personService.getStudentsAndTheirParentsByIds(studentIds);
-    const students = studentsAndTheirParents.filter((x) =>
-        studentIds.includes(x._id.toString())
-    );
-    const parents = studentsAndTheirParents.filter(
-        (x) => x.studentIds && x.studentIds.length > 0
-    );
+    const studentsAndTheirParents = await personService.getStudentsAndTheirParentsByIds(studentIds);
+    const students = studentsAndTheirParents.filter((x) => studentIds.includes(x._id.toString()));
+    const parents = studentsAndTheirParents.filter((x) => x.studentIds && x.studentIds.length > 0);
 
     students.forEach((student) => {
-        student.displayName =
-            studentHelper.getLastAndShortNameForStudent(student);
+        student.displayName = studentHelper.getLastAndShortNameForStudent(student);
         student.parents = [];
         student.parentIds &&
             student.parentIds.forEach((parentId) => {
-                const parent = parents.find(
-                    (p) => p._id.toString() === parentId
-                );
+                const parent = parents.find((p) => p._id.toString() === parentId);
                 student.parents.push(parent);
             });
     });
@@ -75,9 +65,7 @@ exports.getParent = async (req, res) => {
     ]);
 
     if (parentUser) {
-        parentUser.lastActionDate = dateTimeHelper.getShortDateAndTimeDate(
-            parentUser.modifiedOn || parentUser.createdOn
-        ); // "23-04-2020 13:07"
+        parentUser.lastActionDate = dateTimeHelper.getShortDateAndTimeDate(parentUser.modifiedOn || parentUser.createdOn); // "23-04-2020 13:07"
     }
 
     const data = {

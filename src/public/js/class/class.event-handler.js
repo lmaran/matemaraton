@@ -5,9 +5,7 @@ import { toastService } from "../toast/toast.service.js";
 /**
  * DOM elements
  */
-const descriptionPreviewDiv = document.getElementById(
-    "description-preview-div"
-);
+const descriptionPreviewDiv = document.getElementById("description-preview-div");
 
 /**
  * event handlers (alias 'controller')
@@ -15,15 +13,12 @@ const descriptionPreviewDiv = document.getElementById(
 export const eventHandlers = {
     getDescriptionPreview: async (event) => {
         const data = { markdown: event.target.value };
-        descriptionPreviewDiv.innerHTML =
-            await markdownService.getRenderedMarkdown(data);
+        descriptionPreviewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
     },
 
     toggleDescriptionEditor: async (event) => {
         const editorTxt = document.getElementById("description-editor-txt");
-        const saveDescriptionDiv = document.getElementById(
-            "save-description-div"
-        );
+        const saveDescriptionDiv = document.getElementById("save-description-div");
 
         editorTxt.classList.toggle("d-none");
         saveDescriptionDiv.classList.toggle("d-none");
@@ -37,12 +32,8 @@ export const eventHandlers = {
 
     saveDescription: async () => {
         const classIdContainer = document.getElementById("class-id-container");
-        const descriptionTxt = document.getElementById(
-            "description-editor-txt"
-        );
-        const descriptionPreviewDiv = document.getElementById(
-            "description-preview-div"
-        );
+        const descriptionTxt = document.getElementById("description-editor-txt");
+        const descriptionPreviewDiv = document.getElementById("description-preview-div");
 
         const data = {
             classId: classIdContainer.dataset.classId,

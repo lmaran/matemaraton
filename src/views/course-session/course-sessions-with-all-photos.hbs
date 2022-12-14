@@ -12,28 +12,27 @@
 <h1>Sesiuni de curs <span class="h3 font-weight-light text-muted">(toate pozele)</span></h1>
 <h2 class="mb-5">{{class.name}}</h2>
 
-
 {{#each courses}}
-<div class="h4 mt-5">
-    <a href="/sesiuni-curs/{{_id}}">Sesiunea {{course}}</a>
-    <span class="h5 font-weight-light text-muted"> - {{dateAsString}}
-        {{#if videos}}
-        <a href="/sesiuni-curs/{{_id}}"><i class="bi bi-youtube" style="color:red"></i></a>
-        {{/if}}
-    </span>
-</div>
+    <div class="h4 mt-5">
+        <a href="/sesiuni-curs/{{_id}}">Sesiunea {{course}}</a>
+        <span class="h5 font-weight-light text-muted">
+            -
+            {{dateAsString}}
+            {{#if videos}}
+                <a href="/sesiuni-curs/{{_id}}"><i class="bi bi-youtube" style="color:red"></i></a>
+            {{/if}}
+        </span>
+    </div>
 
+    <div class="h6 font-weight-normal mb-5a mt-2">{{description}}</div>
 
-<div class="h6 font-weight-normal mb-5a mt-2">{{description}}</div>
-
-{{#each images}}
-<p>{{description}}</p>
-<img src={{url}} class="img-fluid border" alt="">
-<div>
-    <a class="mb-4" href={{highQualityUrl}}>Vezi poza la calitate maximă</a> <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>
-</div>
-{{/each}}
-
-
+    {{#each images}}
+        <p>{{description}}</p>
+        <img src={{url}} class="img-fluid border" alt="" />
+        <div>
+            <a class="mb-4" href={{highQualityUrl}}>Vezi poza la calitate maximă</a>
+            <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>
+        </div>
+    {{/each}}
 
 {{/each}}

@@ -15,9 +15,7 @@ exports.getOneById = async (req, res) => {
         cls.description = markdownService.render(cls.description);
     }
 
-    const courseSummary = await courseService.getCourseSummaryByCode(
-        cls.courseCode
-    );
+    const courseSummary = await courseService.getCourseSummaryByCode(cls.courseCode);
 
     const data = {
         class: cls,
@@ -37,10 +35,7 @@ exports.getOneById = async (req, res) => {
 
 exports.createOrEditGet = async (req, res) => {
     // Authorize
-    const canCreateOrEditClass = await autz.can(
-        req.user,
-        "create-or-edit:class"
-    );
+    const canCreateOrEditClass = await autz.can(req.user, "create-or-edit:class");
     if (!canCreateOrEditClass) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
@@ -53,10 +48,7 @@ exports.createOrEditGet = async (req, res) => {
     // Get values from DB
     if (isEditMode) {
         const cls = await classService.getOneById(classId);
-        cls.academicYear = stringHelper.getIntervalFromAcademicYear(
-            cls.academicYear,
-            true
-        );
+        cls.academicYear = stringHelper.getIntervalFromAcademicYear(cls.academicYear, true);
         if (cls.description) {
             cls.descriptionPreview = markdownService.render(cls.description);
         }
@@ -121,10 +113,7 @@ exports.createOrEditGet = async (req, res) => {
 
 exports.createOrEditPost = async (req, res) => {
     // Authorize
-    const canCreateOrEditClass = await autz.can(
-        req.user,
-        "create-or-edit:class"
-    );
+    const canCreateOrEditClass = await autz.can(req.user, "create-or-edit:class");
     if (!canCreateOrEditClass) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
@@ -149,9 +138,7 @@ exports.createOrEditPost = async (req, res) => {
 
     const modifiedFields = {
         name: cls.name,
-        academicYear: stringHelper.getAcademicYearFromInterval(
-            cls.academicYear
-        ),
+        academicYear: stringHelper.getAcademicYearFromInterval(cls.academicYear),
     };
 
     if (isEditMode) {
@@ -207,38 +194,26 @@ exports.getAll = async (req, res) => {
         }
     });
 
-    const unorderedActiveClasses = arrayHelper.groupBy(
-        activeClasses,
-        "academicYear"
-    );
+    const unorderedActiveClasses = arrayHelper.groupBy(activeClasses, "academicYear");
     const orderedActiveClasses = [];
     const academicYears1 = Object.keys(unorderedActiveClasses);
     academicYears1
         .sort((a, b) => b - a) // sort by academicYear, desc
         .forEach(function (academicYear) {
             orderedActiveClasses.push({
-                editionInterval: stringHelper.getIntervalFromAcademicYear(
-                    academicYear,
-                    false
-                ),
+                editionInterval: stringHelper.getIntervalFromAcademicYear(academicYear, false),
                 values: unorderedActiveClasses[academicYear],
             });
         });
 
-    const unorderedArchivedClasses = arrayHelper.groupBy(
-        archivedClasses,
-        "academicYear"
-    );
+    const unorderedArchivedClasses = arrayHelper.groupBy(archivedClasses, "academicYear");
     const orderedArchivedClasses = [];
     const academicYears = Object.keys(unorderedArchivedClasses);
     academicYears
         .sort((a, b) => b - a) // sort by academicYear, desc
         .forEach(function (academicYear) {
             orderedArchivedClasses.push({
-                editionInterval: stringHelper.getIntervalFromAcademicYear(
-                    academicYear,
-                    false
-                ),
+                editionInterval: stringHelper.getIntervalFromAcademicYear(academicYear, false),
                 values: unorderedArchivedClasses[academicYear],
             });
         });
@@ -267,10 +242,7 @@ exports.deleteOneById = async (req, res) => {
 
 exports.saveDescription = async (req, res) => {
     // Authorize
-    const canCreateOrEditClass = await autz.can(
-        req.user,
-        "create-or-edit:class"
-    );
+    const canCreateOrEditClass = await autz.can(req.user, "create-or-edit:class");
     if (!canCreateOrEditClass) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
@@ -287,9 +259,7 @@ exports.saveDescription = async (req, res) => {
     validateField("description", cls, validationErrors);
     const descriptionError = validationErrors.description;
     if (descriptionError) {
-        return res
-            .status(400)
-            .json({ error: { message: descriptionError.msg } });
+        return res.status(400).json({ error: { message: descriptionError.msg } });
     }
 
     const modifiedFields = {},
@@ -303,9 +273,7 @@ exports.saveDescription = async (req, res) => {
 
     classService.updateOne(classId, modifiedFields, removedFields);
 
-    cls.descriptionPreview = cls.description
-        ? markdownService.render(cls.description)
-        : "";
+    cls.descriptionPreview = cls.description ? markdownService.render(cls.description) : "";
 
     res.json(cls);
 };
@@ -333,9 +301,7 @@ const validateField = (fieldName, data, validationErrors) => {
         case "academicYear":
             if (validator.isEmpty(data[fieldName])) {
                 validationErrors[fieldName] = { msg: "Câmp obligatoriu" };
-            } else if (
-                !validator.isLength(data[fieldName], { min: 9, max: 9 })
-            ) {
+            } else if (!validator.isLength(data[fieldName], { min: 9, max: 9 })) {
                 validationErrors[fieldName] = {
                     msg: "Fix 9 caractere (YYYY-YYYY)",
                 };

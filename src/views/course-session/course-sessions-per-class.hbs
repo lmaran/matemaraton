@@ -11,27 +11,29 @@
 <h1>Sesiuni de curs</h1>
 <h2 class="mb-5">{{class.name}}</h2>
 
-
-<div class="mb-5">Vezi pozele de la toate sesiunile de curs <span class="fw-bold">pe o singură pagină</span> <a
-        href="/clase/{{class._id}}/sesiuni-curs/poze">aici</a>.</div>
+<div class="mb-5">Vezi pozele de la toate sesiunile de curs
+    <span class="fw-bold">pe o singură pagină</span>
+    <a href="/clase/{{class._id}}/sesiuni-curs/poze">aici</a>.</div>
 <hr />
 
 {{#if canCreateOrEditCourseSession}}
-<a href="/clase/{{class._id}}/sesiuni-curs/adauga" class="btn btn-primary mt-2 mb-4"><i class="bi bi-plus-lg"></i> Adaugă sesiune de curs</a>
+    <a href="/clase/{{class._id}}/sesiuni-curs/adauga" class="btn btn-primary mt-2 mb-4"><i class="bi bi-plus-lg"></i> Adaugă sesiune de curs</a>
 {{/if}}
 
 {{#each courses}}
-<div class="h4">
-    <a href="/sesiuni-curs/{{_id}}">Sesiunea {{course}}</a>
-    <span class="h5 font-weight-light text-muted"> - {{dateAsString}}
-        {{#if videos}}
-        <a href="/sesiuni-curs/{{_id}}"><i class="bi bi-youtube" style="color:red"></i></a>
-        {{/if}}
-        {{#if images}}
-        <a href="/sesiuni-curs/{{_id}}"><i class="bi bi-camera-fill" style="color:rgb(90, 143, 5)"></i></a>
-        {{/if}}
-    </span>
-</div>
+    <div class="h4">
+        <a href="/sesiuni-curs/{{_id}}">Sesiunea {{course}}</a>
+        <span class="h5 font-weight-light text-muted">
+            -
+            {{dateAsString}}
+            {{#if videos}}
+                <a href="/sesiuni-curs/{{_id}}"><i class="bi bi-youtube" style="color:red"></i></a>
+            {{/if}}
+            {{#if images}}
+                <a href="/sesiuni-curs/{{_id}}"><i class="bi bi-camera-fill" style="color:rgb(90, 143, 5)"></i></a>
+            {{/if}}
+        </span>
+    </div>
 
-<div class="h6 font-weight-normal mb-5 mt-2">{{description}}</div>
+    <div class="h6 font-weight-normal mb-5 mt-2">{{description}}</div>
 {{/each}}

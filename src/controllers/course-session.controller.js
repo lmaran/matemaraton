@@ -6,10 +6,7 @@ const studentsAndClassesService = require("../services/studentsAndClasses.servic
 const personService = require("../services/person.service");
 
 exports.deleteOneById = async (req, res) => {
-    const canDeleteCourseSession = await autz.can(
-        req.user,
-        "delete:course-session"
-    );
+    const canDeleteCourseSession = await autz.can(req.user, "delete:course-session");
     if (!canDeleteCourseSession) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
@@ -18,10 +15,7 @@ exports.deleteOneById = async (req, res) => {
 };
 
 exports.createOrEditGet = async (req, res) => {
-    const canCreateOrEditCourseSession = await autz.can(
-        req.user,
-        "create-or-edit:course-session"
-    );
+    const canCreateOrEditCourseSession = await autz.can(req.user, "create-or-edit:course-session");
     if (!canCreateOrEditCourseSession) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
@@ -34,9 +28,7 @@ exports.createOrEditGet = async (req, res) => {
 
     let classId;
     if (isEditMode) {
-        const courseSession = await courseSessionService.getOneById(
-            req.params.id
-        );
+        const courseSession = await courseSessionService.getOneById(req.params.id);
         classId = courseSession.classId;
         data.courseSession = courseSession;
 
@@ -55,8 +47,7 @@ exports.createOrEditGet = async (req, res) => {
         }
     } else {
         classId = req.params.classId;
-        const numberOfSessionForClass =
-            await courseSessionService.getNumberOfSessionForClass(classId);
+        const numberOfSessionForClass = await courseSessionService.getNumberOfSessionForClass(classId);
         data.courseSession = {
             course: numberOfSessionForClass + 1,
             date: dateTimeHelper.getShortDate(new Date()),
@@ -72,23 +63,17 @@ exports.createOrEditGet = async (req, res) => {
 
     data.class = cls;
 
-    const allStudentsPerClass = await personService.getAllByIds(
-        allStudentsIdsPerClass
-    );
+    const allStudentsPerClass = await personService.getAllByIds(allStudentsIdsPerClass);
 
     // add abandon info
     allStudentsPerClass.forEach((student) => {
-        student.isNotDroppedOut = studentsMapByClassId.find(
-            (x) => x.studentId == student._id.toString() && !x.droppedOut
-        );
+        student.isNotDroppedOut = studentsMapByClassId.find((x) => x.studentId == student._id.toString() && !x.droppedOut);
     });
 
     // add presence info
     if (data.courseSession.studentsIds) {
         allStudentsPerClass.forEach((student) => {
-            student.isPresent = data.courseSession.studentsIds.includes(
-                student._id.toString()
-            );
+            student.isPresent = data.courseSession.studentsIds.includes(student._id.toString());
         });
     }
     data.students = allStudentsPerClass;
@@ -99,24 +84,12 @@ exports.createOrEditGet = async (req, res) => {
 
 exports.createOrEditPost = async (req, res) => {
     try {
-        const canCreateOrEditCourseSession = await autz.can(
-            req.user,
-            "create-or-edit:course-session"
-        );
+        const canCreateOrEditCourseSession = await autz.can(req.user, "create-or-edit:course-session");
         if (!canCreateOrEditCourseSession) {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
         //const classId = req.params.classId;
-        const {
-            id,
-            classId,
-            course,
-            date,
-            description,
-            studentsIds,
-            images,
-            videos,
-        } = req.body;
+        const { id, classId, course, date, description, studentsIds, images, videos } = req.body;
 
         const isEditMode = !!id;
 
@@ -185,10 +158,7 @@ exports.getCourseSessionsPerClass = async (req, res) => {
         class: cls,
         courses: newCourses,
         totalCourses: newCourses.length,
-        canCreateOrEditCourseSession: await autz.can(
-            req.user,
-            "create-or-edit:course-session"
-        ),
+        canCreateOrEditCourseSession: await autz.can(req.user, "create-or-edit:course-session"),
     };
     //res.send(data);
     res.render("course-session/course-sessions-per-class", data);
@@ -207,13 +177,7 @@ exports.getCourseSessionsPerClassWithPhotos = async (req, res) => {
         .map((x) => {
             x.dateAsString = dateTimeHelper.getStringFromStringNoDay(x.date);
             if (x.images) {
-                x.images.forEach(
-                    (image) =>
-                        (image.highQualityUrl = image.url.replace(
-                            "courses-lg",
-                            "courses"
-                        ))
-                );
+                x.images.forEach((image) => (image.highQualityUrl = image.url.replace("courses-lg", "courses")));
             }
             return x;
         });
@@ -230,32 +194,19 @@ exports.getCourseSessionsPerClassWithPhotos = async (req, res) => {
 exports.getCourseSession = async (req, res) => {
     const courseSessionId = req.params.courseSessionId;
 
-    const courseSession = await courseSessionService.getOneById(
-        courseSessionId
-    );
+    const courseSession = await courseSessionService.getOneById(courseSessionId);
     const cls = await classService.getOneById(courseSession.classId);
 
-    courseSession.dateAsString = dateTimeHelper.getStringFromStringNoDay(
-        courseSession.date
-    );
+    courseSession.dateAsString = dateTimeHelper.getStringFromStringNoDay(courseSession.date);
 
     if (courseSession.images) {
-        courseSession.images.forEach(
-            (image) =>
-                (image.highQualityUrl = image.url.replace(
-                    "courses-lg",
-                    "courses"
-                ))
-        );
+        courseSession.images.forEach((image) => (image.highQualityUrl = image.url.replace("courses-lg", "courses")));
     }
 
     const data = {
         class: cls,
         courseSession,
-        canCreateOrEditCourseSession: await autz.can(
-            req.user,
-            "create-or-edit:course-session"
-        ),
+        canCreateOrEditCourseSession: await autz.can(req.user, "create-or-edit:course-session"),
     };
     //res.send(data);
     res.render("course-session/course-session", data);

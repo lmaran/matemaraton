@@ -8,43 +8,42 @@
 <h1>Clase</h1>
 
 {{#if canCreateOrEditClass}}
-<a href="clase/adauga" class="btn btn-primary mt-2 mb-4"><i class="bi bi-plus-lg"></i> Adaugă clasă</a>
+    <a href="clase/adauga" class="btn btn-primary mt-2 mb-4"><i class="bi bi-plus-lg"></i> Adaugă clasă</a>
 {{/if}}
 
 {{#if orderedActiveClasses}}
-{{#each orderedActiveClasses}}
-<h5>An școlar {{editionInterval}}:</h5>
+    {{#each orderedActiveClasses}}
+        <h5>An școlar {{editionInterval}}:</h5>
 
-<ul>
-    {{#each values}}
-    <li><a href="/clase/{{_id}}">{{name}}</a>
-        {{#if level}}<span class="text-muted font-weight-light"> (nivel {{level}})</span>{{/if}}
-        {{#if isHidden}}<i class="bi bi-eye-slash-fill text-danger"></i>{{/if}}
-    </li>
+        <ul>
+            {{#each values}}
+                <li><a href="/clase/{{_id}}">{{name}}</a>
+                    {{#if level}}<span class="text-muted font-weight-light"> (nivel {{level}})</span>{{/if}}
+                    {{#if isHidden}}<i class="bi bi-eye-slash-fill text-danger"></i>{{/if}}
+                </li>
+            {{/each}}
+        </ul>
     {{/each}}
-</ul>
-{{/each}}
 {{else}}
-<div class="mt-4">Nu au fost definite clasele pentru ediția curentă!</div>
+    <div class="mt-4">Nu au fost definite clasele pentru ediția curentă!</div>
 {{/if}}
 
-
 {{#if orderedArchivedClasses}}
-<hr class="mt-5">
+    <hr class="mt-5" />
 
-<h3 class="mt-5">Arhivă:</h3>
+    <h3 class="mt-5">Arhivă:</h3>
 
-{{#each orderedArchivedClasses}}
-<h5>{{editionInterval}}:</h5>
+    {{#each orderedArchivedClasses}}
+        <h5>{{editionInterval}}:</h5>
 
-<ul>
-    {{#each values}}
-    <li><a href="/clase/{{_id}}">{{name}}</a>
-        {{#if level}}<span class="text-muted font-weight-light">(nivel {{level}})</span>{{/if}}
-        {{#if isHidden}}<i class="bi bi-eye-slash-fill text-danger"></i>{{/if}}
-    </li>
+        <ul>
+            {{#each values}}
+                <li><a href="/clase/{{_id}}">{{name}}</a>
+                    {{#if level}}<span class="text-muted font-weight-light">(nivel {{level}})</span>{{/if}}
+                    {{#if isHidden}}<i class="bi bi-eye-slash-fill text-danger"></i>{{/if}}
+                </li>
+            {{/each}}
+        </ul>
     {{/each}}
-</ul>
-{{/each}}
 
 {{/if}}

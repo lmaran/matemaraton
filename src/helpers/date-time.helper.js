@@ -130,14 +130,7 @@ exports.getStringFromString = function (dateStr) {
     // "yyyy-mm-dd"
     const date = this.getDateFromString(dateStr);
     const f = this.getFriendlyDateOld(date);
-    const dateStrRo =
-        f.dayAsString +
-        ", " +
-        f.dayOfMonth +
-        " " +
-        f.monthAsShortString +
-        ". " +
-        f.year;
+    const dateStrRo = f.dayAsString + ", " + f.dayOfMonth + " " + f.monthAsShortString + ". " + f.year;
     return dateStrRo; // "Joi, 07 Apr. 2015"
 };
 

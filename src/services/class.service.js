@@ -21,10 +21,7 @@ exports.getAll = async () => {
 
 exports.getOpenEnrollments = async () => {
     const db = await mongoHelper.getDb();
-    return db
-        .collection(collection)
-        .find({ "enrollmentInfo.status": "open" })
-        .toArray();
+    return db.collection(collection).find({ "enrollmentInfo.status": "open" }).toArray();
 };
 
 exports.deleteOneById = async (id) => {
@@ -56,12 +53,8 @@ exports.updateOne = async (idAsString, modifiedFields, removedFields) => {
     const db = await mongoHelper.getDb();
 
     const operations = {};
-    if (modifiedFields && Object.keys(modifiedFields).length > 0)
-        operations.$set = modifiedFields;
-    if (removedFields && Object.keys(removedFields).length > 0)
-        operations.$unset = removedFields;
+    if (modifiedFields && Object.keys(modifiedFields).length > 0) operations.$set = modifiedFields;
+    if (removedFields && Object.keys(removedFields).length > 0) operations.$unset = removedFields;
 
-    return db
-        .collection(collection)
-        .updateOne({ _id: new ObjectID(idAsString) }, operations);
+    return db.collection(collection).updateOne({ _id: new ObjectID(idAsString) }, operations);
 };

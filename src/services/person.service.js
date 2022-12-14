@@ -40,10 +40,7 @@ exports.getStudentsAndTheirParentsByIds = async (studentsIds) => {
     return db
         .collection(collection)
         .find({
-            $or: [
-                { _id: { $in: studentsIdsAsObjectID } },
-                { studentIds: { $in: studentsIds } },
-            ],
+            $or: [{ _id: { $in: studentsIdsAsObjectID } }, { studentIds: { $in: studentsIds } }],
         })
         .toArray();
 };

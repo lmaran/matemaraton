@@ -8,10 +8,7 @@ exports.createOrEditGet = async (req, res) => {
     const lessonId = req.params.lessonId;
     const articleId = req.params.articleId;
 
-    const canCreateOrEditCourse = await autz.can(
-        req.user,
-        "create-or-edit:course"
-    );
+    const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
     if (!canCreateOrEditCourse) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
@@ -79,10 +76,7 @@ exports.createOrEditPost = async (req, res) => {
     const articleId = req.params.articleId;
 
     try {
-        const canCreateOrEditCourse = await autz.can(
-            req.user,
-            "create-or-edit:course"
-        );
+        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
         if (!canCreateOrEditCourse) {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
@@ -100,21 +94,16 @@ exports.createOrEditPost = async (req, res) => {
         const course = await courseService.getOneById(courseId);
         course.chapters = course.chapters || [];
 
-        const selectedChapterIndex = course.chapters.findIndex(
-            (x) => x.id === chapterId
-        );
+        const selectedChapterIndex = course.chapters.findIndex((x) => x.id === chapterId);
         if (selectedChapterIndex > -1) {
             const selectedChapter = course.chapters[selectedChapterIndex];
             //selectedChapter.index = selectedChapterIndex;
 
             selectedChapter.lessons = selectedChapter.lessons || [];
 
-            const selectedLessonIndex = selectedChapter.lessons.findIndex(
-                (x) => x.id === lessonId
-            );
+            const selectedLessonIndex = selectedChapter.lessons.findIndex((x) => x.id === lessonId);
             if (selectedLessonIndex > -1) {
-                const selectedLesson =
-                    selectedChapter.lessons[selectedLessonIndex];
+                const selectedLesson = selectedChapter.lessons[selectedLessonIndex];
                 //selectedLesson.index = selectedLessonIndex;
 
                 selectedLesson.articles = selectedLesson.articles || [];
@@ -147,9 +136,7 @@ exports.createOrEditPost = async (req, res) => {
         courseService.updateOne(course);
 
         //res.send(course);
-        res.redirect(
-            `/cursuri/${course._id}/capitole/${chapterId}/lectii/${lessonId}`
-        );
+        res.redirect(`/cursuri/${course._id}/capitole/${chapterId}/lectii/${lessonId}`);
     } catch (err) {
         return res.status(500).json(err.message);
     }
@@ -159,6 +146,7 @@ exports.getOneById = async (req, res) => {
     const courseId = req.params.courseId;
     const chapterId = req.params.chapterId;
     const lessonId = req.params.lessonId;
+
     const course = await courseService.getOneById(courseId);
 
     const chapters = course.chapters || [];
@@ -170,9 +158,7 @@ exports.getOneById = async (req, res) => {
 
         const lessons = course.selectedChapter.lessons;
         if (lessons) {
-            const selectedLessonIndex = lessons.findIndex(
-                (x) => x.id === lessonId
-            );
+            const selectedLessonIndex = lessons.findIndex((x) => x.id === lessonId);
             if (selectedLessonIndex > -1) {
                 course.selectedLesson = lessons[selectedLessonIndex];
                 course.selectedLesson.index = selectedLessonIndex;
@@ -182,10 +168,7 @@ exports.getOneById = async (req, res) => {
 
     const data = {
         course,
-        canCreateOrEditCourse: await autz.can(
-            req.user,
-            "create-or-edit:course"
-        ),
+        canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
     };
 
     res.send(data);
@@ -197,10 +180,7 @@ exports.deleteOneById = async (req, res) => {
     const chapterId = req.params.chapterId;
     const lessonId = req.params.lessonId;
 
-    const canCreateOrEditCourse = await autz.can(
-        req.user,
-        "create-or-edit:course"
-    );
+    const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
     if (!canCreateOrEditCourse) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }

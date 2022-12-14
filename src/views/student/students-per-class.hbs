@@ -12,69 +12,45 @@
 
 <ul>
     {{#each activeStudents}}
-    <li><a href="/elevi/{{_id}}">{{displayName}}</a>
-        {{#if gradeAndLetter}}
-        ({{gradeAndLetter}})
-        {{/if}}
-    </li>
+        <li><a href="/elevi/{{_id}}">{{displayName}}</a>
+            {{#if gradeAndLetter}}
+                ({{gradeAndLetter}})
+            {{/if}}
+        </li>
     {{/each}}
 </ul>
 
 {{#if inactiveStudents.length}}
-<hr class="mt-5" />
+    <hr class="mt-5" />
 
-<ul id="inactiveStudentsUl" class="d-none">
-    {{#each inactiveStudents}}
-    <li><a href="/elevi/{{_id}}">{{displayName}}</a>
-        {{#if gradeAndLetter}}
-        ({{gradeAndLetter}})
-        {{/if}}
-        <span class="text-danger">abandon</span>
-    </li>
-    {{/each}}
-</ul>
+    <ul id="inactiveStudentsUl" class="d-none">
+        {{#each inactiveStudents}}
+            <li><a href="/elevi/{{_id}}">{{displayName}}</a>
+                {{#if gradeAndLetter}}
+                    ({{gradeAndLetter}})
+                {{/if}}
+                <span class="text-danger">abandon</span>
+            </li>
+        {{/each}}
+    </ul>
 
-<div class="mt-4 mb-5">
-    <a class="toggleInactiveStudentsBtn" href="/">Vezi și elevii care au abandonat</a>
-    <small><i class="bi bi-chevron-double-right text-muted"></i></small>
-</div>
+    <div class="mt-4 mb-5">
+        <a class="toggleInactiveStudentsBtn" href="/">Vezi și elevii care au abandonat</a>
+        <small><i class="bi bi-chevron-double-right text-muted"></i></small>
+    </div>
 {{/if}}
 
+{{#section "script-after"}}
+    <script>
 
-{{#section 'script-after'}}
-<script>
+        document.addEventListener('DOMContentLoaded', (event) => { // DOM ready // event binders var toggleInactiveStudentsElem =
+        document.querySelector("a.toggleInactiveStudentsBtn") .addEventListener("click", eventHandlers.toggleInactiveStudents); }); const
+        eventHandlers = { toggleInactiveStudents: async event => { event.preventDefault(); const elem = document.getElementById("inactiveStudentsUl");
+        elem.classList.toggle("d-none"); // toggle button-text const elemIsHide = elem.classList.contains("d-none"); event.target.textContent =
+        elemIsHide ? "Vezi și elevii care au abandonat" : "Vezi doar elevii activi"; // toggle button-icon const icon =
+        event.target.closest("div").querySelector("i"); if(icon.classList.contains("bi-chevron-double-right")) {
+        icon.classList.remove("bi-chevron-double-right"); icon.classList.add("bi-chevron-double-left"); } else {
+        icon.classList.remove("bi-chevron-double-left"); icon.classList.add("bi-chevron-double-right"); } }, }
 
-    document.addEventListener('DOMContentLoaded', (event) => {
-        // DOM ready
-
-        // event binders
-        var toggleInactiveStudentsElem = document.querySelector("a.toggleInactiveStudentsBtn")
-            .addEventListener("click", eventHandlers.toggleInactiveStudents);
-    });
-
-    const eventHandlers = {
-        toggleInactiveStudents: async event => {
-            event.preventDefault();
-
-            const elem = document.getElementById("inactiveStudentsUl");
-            elem.classList.toggle("d-none");
-
-            // toggle button-text
-            const elemIsHide = elem.classList.contains("d-none");
-            event.target.textContent = elemIsHide ? "Vezi și elevii care au abandonat" : "Vezi doar elevii activi";
-
-            // toggle button-icon
-            const icon = event.target.closest("div").querySelector("i");
-            if(icon.classList.contains("bi-chevron-double-right")) {
-                icon.classList.remove("bi-chevron-double-right");
-                icon.classList.add("bi-chevron-double-left");
-            } else {
-                icon.classList.remove("bi-chevron-double-left");
-                icon.classList.add("bi-chevron-double-right");
-            }
-        },
-    }
-
-
-</script>
+    </script>
 {{/section}}

@@ -1,15 +1,14 @@
 <style>
-    .table th {
-        padding: 0;
-    }
+    .table th { padding: 0; }
 </style>
 
 {{#if (or (eq2 class._id "5d92dba4a0da913a67b9a712") (eq2 class._id "5db470a58f57b35330bc93c5"))}}
-<div class="alert alert-info" role="alert">
-    <i class="bi bi-info-circle me-2"></i>
-    Cursurile pentru această grupă au fost întrerupte în <span class="fw-bold">01 Aprilie 2020</span> (din
-    lipsă de elevi - vezi prezența).
-</div>
+    <div class="alert alert-info" role="alert">
+        <i class="bi bi-info-circle me-2"></i>
+        Cursurile pentru această grupă au fost întrerupte în
+        <span class="fw-bold">01 Aprilie 2020</span>
+        (din lipsă de elevi - vezi prezența).
+    </div>
 {{/if}}
 
 <nav aria-label="breadcrumb">
@@ -24,16 +23,20 @@
 <h3 class="text-muted2 font-weight-light">Nivel {{class.level}}</h3>
 
 {{#if canCreateOrEditClass}}
-<a href="clase/{{class._id}}/modifica" class="btn btn-primary"><i class="bi bi-pencil-fill"></i> Modifică</a>
+    <a href="clase/{{class._id}}/modifica" class="btn btn-primary"><i class="bi bi-pencil-fill"></i> Modifică</a>
 {{/if}}
 
 {{#if canDeleteClass}}
-<form method="post" onsubmit="deleteBtn.disabled = true; return true;" style="display:inline">
-    <button type="submit" formaction="/clase/{{class._id}}/sterge" title="Șterge" name="deleteBtn"
-        class="btn btn-light btn-outline-primary"
-        onclick="return confirm('Ești sigur că vrei să ștergi această clasă?');"><i
-            class="bi bi-trash-fill"></i></button>
-</form>
+    <form method="post" onsubmit="deleteBtn.disabled = true; return true;" style="display:inline">
+        <button
+            type="submit"
+            formaction="/clase/{{class._id}}/sterge"
+            title="Șterge"
+            name="deleteBtn"
+            class="btn btn-light btn-outline-primary"
+            onclick="return confirm('Ești sigur că vrei să ștergi această clasă?');"
+        ><i class="bi bi-trash-fill"></i></button>
+    </form>
 {{/if}}
 
 {{!-- {{#unless (eq class.enrollmentInfo.status "open")}} --}}
@@ -44,29 +47,28 @@
     <li class="mb-3"><a href="/clase/{{class._id}}/sesiuni-curs">Sesiuni de curs</a>
         <span class="text-muted">(poze de pe tablă
             {{#if (or (eq2 class._id "5d92db9ba0da913a67b9a711") (eq2 class._id "5d92dc63a0da913a67b9a713"))}}
-            <span class="fw-bold">și video</span>
+                <span class="fw-bold">și video</span>
             {{/if}})
         </span>
     </li>
 
     <li><a href="/clase/{{class._id}}/prezenta">Prezența</a> <span class="text-muted">(pe zile)</span></li>
-    <li class="mb-3"><a href="/clase/{{class._id}}/total-prezente">Total prezențe</a><span class="text-muted"> (pe
-            elevi)</span></li>
+    <li class="mb-3"><a href="/clase/{{class._id}}/total-prezente">Total prezențe</a><span class="text-muted"> (pe elevi)</span></li>
 
-    <li><a href="/clase/{{class._id}}/teme-propuse">Teme propuse</a> <span class="text-muted"> (pentru acasă)</span>
+    <li><a href="/clase/{{class._id}}/teme-propuse">Teme propuse</a>
+        <span class="text-muted"> (pentru acasă)</span>
     </li>
-    <li><a href="/clase/{{class._id}}/total-teme-predate">Total teme predate</a> <span class="text-muted"> (făcute
-            acasă)</span> </li>
+    <li><a href="/clase/{{class._id}}/total-teme-predate">Total teme predate</a> <span class="text-muted"> (făcute acasă)</span> </li>
     {{#if can.viewParentsLink}}
-    <li><a href="/clase/{{class._id}}/parinti">Parinți</a></li>
+        <li><a href="/clase/{{class._id}}/parinti">Parinți</a></li>
     {{/if}}
 
 </ul>
 {{!-- {{/if}} --}}
 
 {{#if class.description}}
-<h5>Descriere:</h5>
-<div class="mb-3">{{{class.description}}}</div>
+    <h5>Descriere:</h5>
+    <div class="mb-3">{{{class.description}}}</div>
 {{/if}}
 
 <div class="mb-5">

@@ -33,9 +33,7 @@ exports.updateOne = async (item) => {
     const db = await mongoHelper.getDb();
     item._id = new ObjectID(item._id);
     //problem.modifiedOn = new Date();
-    return db
-        .collection(collection)
-        .updateOne({ _id: item._id }, { $set: item });
+    return db.collection(collection).updateOne({ _id: item._id }, { $set: item });
 };
 
 exports.deleteOneById = async (id) => {

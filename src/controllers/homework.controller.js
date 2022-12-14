@@ -23,11 +23,8 @@ exports.getHomeworkSubmissionsPerStudent = async (req, res) => {
 
     if (homeworkRequests) {
         homeworkRequests.forEach((homeworkRequest) => {
-            const submission = homeworkRequest.submissions.find(
-                (x) => x.studentId === studentId
-            );
-            homeworkRequest.totalSubmittedQuestions =
-                (submission && submission.totalSubmittedQuestions) || 0;
+            const submission = homeworkRequest.submissions.find((x) => x.studentId === studentId);
+            homeworkRequest.totalSubmittedQuestions = (submission && submission.totalSubmittedQuestions) || 0;
         });
     }
 
@@ -38,16 +35,11 @@ exports.getHomeworkSubmissionsPerStudent = async (req, res) => {
     let totalUserSubmittedQuestions = 0;
     if (homeworkRequests) {
         homeworkRequests.forEach((x) => {
-            const userSubmission = x.submissions.find(
-                (x) => x.studentId === studentId
-            );
-            x.userSubmittedQuestions =
-                (userSubmission && userSubmission.totalSubmittedQuestions) || 0;
+            const userSubmission = x.submissions.find((x) => x.studentId === studentId);
+            x.userSubmittedQuestions = (userSubmission && userSubmission.totalSubmittedQuestions) || 0;
             totalUserSubmittedQuestions += x.userSubmittedQuestions;
             totalQuestions += x.totalRequestedQuestions;
-            x.dueDateAsString = dateTimeHelper.getStringFromStringNoDay(
-                x.dueDate
-            );
+            x.dueDateAsString = dateTimeHelper.getStringFromStringNoDay(x.dueDate);
 
             // totalQuestions += x.totalRequestedQuestions;
             // (x.submissions || []).forEach(submission => {
@@ -59,9 +51,7 @@ exports.getHomeworkSubmissionsPerStudent = async (req, res) => {
         });
     }
 
-    const totalUserSubmittedQuestionsAsPercent = totalQuestions
-        ? Math.round((totalUserSubmittedQuestions * 100) / totalQuestions)
-        : 0;
+    const totalUserSubmittedQuestionsAsPercent = totalQuestions ? Math.round((totalUserSubmittedQuestions * 100) / totalQuestions) : 0;
 
     // console.log(homeworkRequests);
 
@@ -94,9 +84,7 @@ exports.getHomeworkSubmissionsPerStudent = async (req, res) => {
     };
 
     if (homeworkRequests) {
-        data.closedRequests = homeworkRequests
-            .filter((x) => x.dueDate < today)
-            .sort((a, b) => (a.dueDate < b.dueDate ? 1 : -1));
+        data.closedRequests = homeworkRequests.filter((x) => x.dueDate < today).sort((a, b) => (a.dueDate < b.dueDate ? 1 : -1));
     }
 
     //res.send(data);
@@ -121,24 +109,14 @@ exports.getHomeworkRequest = async (req, res) => {
     ]);
 
     homeworkRequest.submissions.forEach((submission) => {
-        submission.student =
-            students.find((x) => x._id == submission.studentId) || {};
-        submission.student.displayName = studentHelper.getShortNameForStudent(
-            submission.student
-        );
+        submission.student = students.find((x) => x._id == submission.studentId) || {};
+        submission.student.displayName = studentHelper.getShortNameForStudent(submission.student);
     });
-    homeworkRequest.submissions = homeworkRequest.submissions.sort((a, b) =>
-        a.totalSubmittedQuestions < b.totalSubmittedQuestions ? 1 : -1
-    );
+    homeworkRequest.submissions = homeworkRequest.submissions.sort((a, b) => (a.totalSubmittedQuestions < b.totalSubmittedQuestions ? 1 : -1));
 
-    homeworkRequest.relatedCourses = courses.sort((a, b) =>
-        a.date > b.date ? 1 : -1
-    );
-    homeworkRequest.dueDateAsString = dateTimeHelper.getStringFromStringNoDay(
-        homeworkRequest.dueDate
-    );
-    homeworkRequest.publishedDateAsString =
-        dateTimeHelper.getStringFromStringNoDay(homeworkRequest.publishedDate);
+    homeworkRequest.relatedCourses = courses.sort((a, b) => (a.date > b.date ? 1 : -1));
+    homeworkRequest.dueDateAsString = dateTimeHelper.getStringFromStringNoDay(homeworkRequest.dueDate);
+    homeworkRequest.publishedDateAsString = dateTimeHelper.getStringFromStringNoDay(homeworkRequest.publishedDate);
 
     const today = dateTimeHelper.getShortDate(new Date()); // 2020-02-17
 
@@ -178,9 +156,7 @@ exports.getHomeworkRequests = async (req, res) => {
     const data = {
         currentRequest,
         class: cls,
-        homeworkRequests: homeworkRequests
-            .filter((x) => x._id !== currentRequestId)
-            .sort((a, b) => (a.dueDate < b.dueDate ? 1 : -1)),
+        homeworkRequests: homeworkRequests.filter((x) => x._id !== currentRequestId).sort((a, b) => (a.dueDate < b.dueDate ? 1 : -1)),
     };
     //res.send(data);
     res.render("homework/homework-requests", data);
@@ -200,49 +176,35 @@ exports.getTotalHomeworkSubmissions = async (req, res) => {
     const students = await personService.getAllByIds(studentsIds);
 
     const today = dateTimeHelper.getShortDate(new Date()); // 2020-02-17
-    const closedRequests =
-        homeworkRequests.filter((x) => x.dueDate < today) || [];
+    const closedRequests = homeworkRequests.filter((x) => x.dueDate < today) || [];
 
     let totalQuestions = 0;
     closedRequests.forEach((x) => {
         totalQuestions += x.totalRequestedQuestions;
         (x.submissions || []).forEach((submission) => {
-            const studentCrt = students.find(
-                (x) => x._id.toString() === submission.studentId
-            );
-            studentCrt.totalSubmittedQuestions =
-                (studentCrt.totalSubmittedQuestions || 0) +
-                submission.totalSubmittedQuestions;
+            const studentCrt = students.find((x) => x._id.toString() === submission.studentId);
+            studentCrt.totalSubmittedQuestions = (studentCrt.totalSubmittedQuestions || 0) + submission.totalSubmittedQuestions;
         });
     });
 
-    const studentsMapByClassIdObj = arrayHelper.arrayToObject(
-        studentsMapByClassId,
-        "studentId"
-    );
+    const studentsMapByClassIdObj = arrayHelper.arrayToObject(studentsMapByClassId, "studentId");
 
     students.forEach((student) => {
         // add aggregated values
 
         student.totalSubmittedQuestions = student.totalSubmittedQuestions || 0;
-        const totalSubmittedQuestionsAsPercent = totalQuestions
-            ? Math.round(
-                  (student.totalSubmittedQuestions * 100) / totalQuestions
-              )
-            : 0;
+        const totalSubmittedQuestionsAsPercent = totalQuestions ? Math.round((student.totalSubmittedQuestions * 100) / totalQuestions) : 0;
 
         const studentInfoInClass = studentsMapByClassIdObj[student._id];
 
-        student.droppedOut =
-            studentInfoInClass && studentInfoInClass.droppedOut;
+        student.droppedOut = studentInfoInClass && studentInfoInClass.droppedOut;
         if (studentInfoInClass && studentInfoInClass.classLetter) {
             student.gradeAndLetter = `${studentInfoInClass.grade}${studentInfoInClass.classLetter}`; // e.g.  "8A"
         }
 
         student.shortName = studentHelper.getShortNameForStudent(student);
 
-        student.totalSubmittedQuestionsAsPercent =
-            totalSubmittedQuestionsAsPercent;
+        student.totalSubmittedQuestionsAsPercent = totalSubmittedQuestionsAsPercent;
     });
 
     const data = {
@@ -250,14 +212,10 @@ exports.getTotalHomeworkSubmissions = async (req, res) => {
         totalQuestions,
         homeworkInfoForActiveStudents: students
             .filter((x) => !x.droppedOut)
-            .sort((a, b) =>
-                a.totalSubmittedQuestions < b.totalSubmittedQuestions ? 1 : -1
-            ),
+            .sort((a, b) => (a.totalSubmittedQuestions < b.totalSubmittedQuestions ? 1 : -1)),
         homeworkInfoForInactiveStudents: students
             .filter((x) => x.droppedOut)
-            .sort((a, b) =>
-                a.totalSubmittedQuestions < b.totalSubmittedQuestions ? 1 : -1
-            ),
+            .sort((a, b) => (a.totalSubmittedQuestions < b.totalSubmittedQuestions ? 1 : -1)),
     };
     //res.send(data);
     res.render("homework/total-homework-submissions", data);

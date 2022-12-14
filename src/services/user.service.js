@@ -35,31 +35,18 @@ exports.getOneById = async (id) => {
 
 exports.getOneByIdWithoutPsw = async (id) => {
     const db = await mongoHelper.getDb();
-    return db
-        .collection(collection)
-        .findOne({ _id: new ObjectID(id) }, { projection: { password: 0 } });
+    return db.collection(collection).findOne({ _id: new ObjectID(id) }, { projection: { password: 0 } });
 };
 
 exports.updateOne = async (user) => {
     const db = await mongoHelper.getDb();
     user._id = new ObjectID(user._id);
-    return db
-        .collection(collection)
-        .updateOne({ _id: user._id }, { $set: user });
+    return db.collection(collection).updateOne({ _id: user._id }, { $set: user });
 };
 
-exports.resetPassword = async (
-    userIdAsString,
-    modifiedFields,
-    removedFields
-) => {
+exports.resetPassword = async (userIdAsString, modifiedFields, removedFields) => {
     const db = await mongoHelper.getDb();
-    return db
-        .collection(collection)
-        .updateOne(
-            { _id: new ObjectID(userIdAsString) },
-            { $set: modifiedFields, $unset: removedFields }
-        );
+    return db.collection(collection).updateOne({ _id: new ObjectID(userIdAsString) }, { $set: modifiedFields, $unset: removedFields });
 };
 
 exports.insertOne = async (item) => {

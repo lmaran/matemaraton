@@ -10,8 +10,7 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const flash = require("express-flash");
-const addUserIfExist =
-    require("./middlewares/add-user-if-exist.middleware").addUserIfExist;
+const addUserIfExist = require("./middlewares/add-user-if-exist.middleware").addUserIfExist;
 
 const mongoHelper = require("./helpers/mongo.helper");
 
@@ -44,18 +43,10 @@ const mongoClientAsPromise = mongoHelper.getClientAsPromise();
 // routes for static files; in prod set NGINX to serve them
 // app.use("/", express.static(path.join(__dirname, "../public"), { maxAge: 31557600000 })); // one year in milliseconds
 app.use("/", express.static(path.join(__dirname, "./public")));
-app.use(
-    "/lib/lit-html",
-    express.static(path.join(__dirname, "../node_modules/lit-html"))
-);
+app.use("/lib/lit-html", express.static(path.join(__dirname, "../node_modules/lit-html")));
 
 app.get("/check", function (req, res) {
-    res.send(
-        "matemaraton-" +
-            (process.env.DEPLOYMENT_SLOT || "noslot") +
-            "-" +
-            process.env.NODE_ENV
-    );
+    res.send("matemaraton-" + (process.env.DEPLOYMENT_SLOT || "noslot") + "-" + process.env.NODE_ENV);
 });
 
 app.use(

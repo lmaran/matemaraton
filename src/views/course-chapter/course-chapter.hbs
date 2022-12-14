@@ -1,31 +1,12 @@
-<style>
-    OL {
-        counter-reset: item;
-    }
-
-    LI {
-        display: block;
-    }
-
-    #agenda LI:before {
-        /* only <li>s in agenda section */
-        content: counters(item, ".") ". ";
-        counter-increment: item
-    }
-
-    #table-of-contents LI:before {
-        /* only <li>s in agenda section */
-        content: counters(item, ".") ". ";
-        counter-increment: item
-    }
-</style>
-
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/{{course._id}}">{{course.code}}</a></li>
-        <li title="Editează" class="ms-auto"><a href="/cursuri/{{course._id}}/capitole/{{course.selectedChapter.id}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
+        <li class="breadcrumb-item active">Cap.{{inc course.selectedChapter.index}}</li>
+        <li title="Editează" class="ms-auto"><a href="/cursuri/{{course._id}}/capitole/{{course.selectedChapter.id}}/modifica"><i
+                    class="bi bi-pencil me-1"
+                ></i></a></li>
     </ol>
 </nav>
 
@@ -38,12 +19,12 @@
 <h3 class="mt-3">Lecții:</h3>
 <ol id="table-of-contents" class="pl-0">
     {{#each course.selectedChapter.lessons}}
-    <li>
-        <a href="/cursuri/{{@root.course._id}}/capitole/{{@root.course.selectedChapter.id}}/lectii/{{id}}">{{name}}</a>
-        {{#if isHidden}}
-        <a href="/cursuri/{{@root.course._id}}/capitole/{{@root.course.selectedChapter.id}}/lectii/{{id}}/modifica">
-            <i class="bi bi-eye-slash text-danger"></i></a>
-        {{/if}}
-    </li>
+        <li>
+            <a href="/cursuri/{{@root.course._id}}/capitole/{{@root.course.selectedChapter.id}}/lectii/{{id}}">{{name}}</a>
+            {{#if isHidden}}
+                <a href="/cursuri/{{@root.course._id}}/capitole/{{@root.course.selectedChapter.id}}/lectii/{{id}}/modifica">
+                    <i class="bi bi-eye-slash text-danger"></i></a>
+            {{/if}}
+        </li>
     {{/each}}
 </ol>

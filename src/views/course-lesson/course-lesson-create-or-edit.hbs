@@ -5,6 +5,8 @@
         <li class="breadcrumb-item"><a href="/cursuri/{{course._id}}">{{course.code}}</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/{{course._id}}/capitole/{{course.selectedChapter.id}}">
                 Cap.{{inc course.selectedChapter.index}}</a></li>
+        <li class="breadcrumb-item active">L.{{inc course.selectedLesson.index}}</li>
+        <li title="Vizualizează" class="ms-auto"><a href="/cursuri/{{course._id}}/capitole/{{course.selectedChapter.id}}/lectii/{{course.selectedLesson.id}}"><i class="bi bi-eye me-1"></i></a></li>
     </ol>
 </nav>
 
@@ -81,3 +83,46 @@
     </div>
 
 </form>
+
+<hr class="mt-5 mb-5">
+
+<h4 class="mt-3">1. Noțiuni teoretice</h4>
+
+{{#if course.selectedLesson.articles}}
+
+{{#each course.selectedLesson.articles}}
+
+<div id="content-preview-div"
+    style="border: 1px solid #cbcccc; padding: 6px 12px; background-color2: #fff9f8; min-height:58px">
+    {{{content.textPreview}}}
+</div>
+
+<span class="float-end"><a href="/cursuri/{{@root.course._id}}/capitole/{{@root.course.selectedChapter.id}}/lectii/{{@root.course.selectedLesson.id}}/teorie/{{id}}/modifica" target2="_blank" >Modifică</a>
+                <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small></span>
+
+<a
+    href="/cursuri/{{@root.course._id}}/capitole/{{@root.course.selectedChapter.id}}/lectii/{{@root.course.selectedLesson.id}}/articole/{{id}}/modifica">
+    Adaugă noțiuni teoretice</a>
+<br>
+
+{{/each}}
+
+{{else}}
+<a href="/cursuri/{{course._id}}/capitole/{{course.selectedChapter.id}}/lectii/{{course.selectedLesson.id}}/articole/adauga"
+    class="btn btn-primary btn-sm">
+    <i class="bi bi-plus-lg"></i> Adaugă noțiuni teoretice</a>
+<hr />
+{{/if}}
+
+
+<h4 class="mt-3">2. Exerciții rezolvate</h4>
+<a href="/cursuri/{{course._id}}/capitole/{{course.selectedChapter.id}}/lectii/adauga-exercițiu-rezolvat"
+    class="btn btn-primary btn-sm">
+    <i class="bi bi-plus-lg"></i> Adaugă exercițiu rezolvat</a>
+
+<hr />
+<h4 class="mt-3">3. Exerciții propuse</h4>
+
+<a href="/cursuri/{{course._id}}/capitole/{{course.selectedChapter.id}}/lectii/adauga-exercițiu-propus"
+    class="btn btn-primary btn-sm">
+    <i class="bi bi-plus-lg"></i> Adaugă exercițiu propus</a>
