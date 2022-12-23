@@ -1,7 +1,7 @@
 /**
  * event handlers (alias 'controller')
  */
-export const eventHandlers = {
+export const commonEventHandler = {
     toggleLevel: async (event) => {
         event.preventDefault();
         const target = event.target; // shortcut

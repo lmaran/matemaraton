@@ -115,6 +115,8 @@ export const eventHandlers = {
         }
     },
     toggleStatementEditor: async (event) => {
+        event.preventDefault();
+
         const editorTxt = document.getElementById("statement-editor-txt");
         editorTxt.classList.toggle("d-none");
 
@@ -125,6 +127,8 @@ export const eventHandlers = {
         previewDiv.style.borderTopStyle = editorIsHide ? "solid" : "dashed";
     },
     toggleAnswerEditor: async (event) => {
+        event.preventDefault();
+
         const editorTxt = document.getElementById("answer-editor-txt");
         editorTxt.classList.toggle("d-none");
 
@@ -135,6 +139,8 @@ export const eventHandlers = {
         previewDiv.style.borderTopStyle = editorIsHide ? "solid" : "dashed";
     },
     toggleSolutionEditor: async (event) => {
+        event.preventDefault();
+
         const editorTxt = document.getElementById("solution-editor-txt");
         editorTxt.classList.toggle("d-none");
 
@@ -145,6 +151,9 @@ export const eventHandlers = {
         previewDiv.style.borderTopStyle = editorIsHide ? "solid" : "dashed";
     },
     handleClickForAllHints: async (event) => {
+        event.preventDefault();
+        // if (target.tagName != "INPUT") event.preventDefault();
+
         // handle 'toggle edit' and 'delete' events
         const target = event.target; // shortcut
         if (target) {
@@ -168,6 +177,8 @@ export const eventHandlers = {
         // handle 'toggle edit' and 'delete' events
         const target = event.target; // shortcut
         if (target) {
+            if (target.tagName != "INPUT") event.preventDefault();
+
             if (target.classList.contains("toggle-answer-option-editor-btn")) {
                 const parentDiv = target.closest(".answer-option-parent-div"); // find the closest ancestor which matches the selectors
                 const editorTxt = parentDiv.querySelector(".answer-option-editor-txt");
@@ -191,7 +202,7 @@ export const eventHandlers = {
         const nrOfElements = mainDiv.childElementCount;
 
         const markup = `
-            <div class="hint-parent-div mb-4">
+            <div class="col-md-12 hint-parent-div mb-4">
                 <label class="col-form-label fw-bold"> Indicația ${nrOfElements + 1}: </label>
 
                 <textarea
@@ -223,7 +234,7 @@ export const eventHandlers = {
 
         const markup = `
             <div class="answer-option-parent-div mb-4">
-                <label class="col-form-label fw-bold"> Răspunsul ${nrOfElements + 1}: </label>
+                <label class="col-form-label fw-bold"> Variantă de răspuns ${nrOfElements + 1}: </label>
 
                 <textarea
                     rows="2"
@@ -238,7 +249,7 @@ export const eventHandlers = {
                     style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px"
                 ></div>
 
-                <div class="float-end form-check-inline me-0">
+                <div class="float-end">
                     <input class="form-check-input" type="checkbox" name="isCorrectAnswerChecks" value=${nrOfElements + 1} id="defaultCheck${
             nrOfElements + 1
         }">
@@ -246,9 +257,9 @@ export const eventHandlers = {
                         Răspuns corect
                     </label>
                     <span class="ms-2 me-2 text-muted"> | </span>
-                    <button type="button" class="toggle-answer-option-editor-btn btn btn-link p-0">Editează</button>
+                    <a class="toggle-answer-option-editor-btn" href="">Editează</a>
                     <span class="ms-2 me-2 text-muted"> | </span>
-                    <button type="button" class="delete-answer-option-btn btn btn-link p-0">Șterge</button>
+                    <a class="delete-answer-option-btn" href="">Șterge</a>
                 </div>
             </div>
         `;
@@ -274,7 +285,7 @@ const updateAnswerOptionLabels = () => {
     for (const parent of mainDiv.children) {
         idx++;
         const label = parent.querySelector("label");
-        label.innerHTML = `Opțiunea ${idx}:`;
+        label.innerHTML = `Variantă de răspuns ${idx}:`;
 
         // update also checkbox values
         const checkboxInput = parent.querySelector(".form-check-input");

@@ -124,8 +124,18 @@
 
 
 {{!-- <div class="font-italic small text-right text-muted">Cls.{{grade}}, {{branch}}</div> --}}
-<div class="font-italic small text-right text-muted">{{contestName}}</div>
-<div class="font-italic small text-right text-muted">{{sourceName}}</div>
+{{#if exerciseType}}
+<div class="float-end font-italic small text-muted">, tip: {{exerciseType}}</div>
+{{/if}}
+
+{{#if grade}}
+<div class="float-end font-italic small text-muted">, clasa a {{grade}}-a</div>
+{{/if}}
+
+<div class="float-end font-italic small text-muted">{{contestName}}</div>
+</br>
+<div class="float-end font-italic small text-muted">{{sourceName}}</div>
+
 
 {{#if question.hints}}
 {{#each question.hints}}

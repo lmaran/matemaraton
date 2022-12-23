@@ -3,16 +3,47 @@ const idGeneratorMongoService = require("../services/id-generator-mongo.service"
 const autz = require("../services/autz.service");
 const markdownService = require("../services/markdown.service");
 
-exports.deleteOneById = async (req, res) => {
-    const exerciseId = req.body.exerciseId;
-    const canDeleteExercise = await autz.can(req.user, "delete:exercise");
-    if (!canDeleteExercise) {
-        return res.status(403).send("Lipsă permisiuni!"); // forbidden
+exports.getOneById = async (req, res) => {
+    const exercise = await exerciseService.getOneById(req.params.id);
+
+    if (exercise && exercise.question) {
+        if (exercise.question.statement) {
+            const statement = `**E.${exercise.code}.** ${exercise.question.statement.text}`;
+            // const statement = `**[Problema ${++i}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
+            const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+
+            if (exercise.question.answerOptions) {
+                exercise.question.answerOptions.forEach((answerOption, idx) => {
+                    // insert a label (letter) in front of each option: "a" for the 1st option, "b" for the 2nd a.s.o.
+                    answerOption.textPreview = markdownService.render(`${alphabet[idx]}) ${answerOption.text}`);
+                    if (answerOption.isCorrect) {
+                        exercise.question.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
+                    }
+                });
+            }
+
+            exercise.question.statement.textPreview = markdownService.render(statement);
+        }
+
+        if (exercise.question.answer) exercise.question.answer.textPreview = markdownService.render(`**Răspuns:** ${exercise.question.answer.text}`);
+
+        if (exercise.question.solution) exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
+
+        if (exercise.question.hints) {
+            exercise.question.hints.forEach((hint, idx) => {
+                hint.textPreview = markdownService.render(`**Indicația ${idx + 1}:** ${hint.text}`);
+            });
+        }
     }
 
-    exerciseService.deleteOneById(exerciseId);
+    const data = {
+        exercise,
+        canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise"),
+        canDeleteExercise: await autz.can(req.user, "delete:exercise"),
+    };
 
-    res.redirect("/exercitii");
+    //res.send(data);
+    res.render("exercise/exercise", data);
 };
 
 exports.createOrEditGet = async (req, res) => {
@@ -23,26 +54,18 @@ exports.createOrEditGet = async (req, res) => {
 
     const isEditMode = !!req.params.id;
 
+    const exerciseTypeAvailableOptions = [
+        { text: "Cu răspuns deschis", value: "1" },
+        { text: "Cu răspuns tip grilă (selecție unică)", value: "2" },
+        { text: "Cu răspuns exact (tip numeric)", value: "3" },
+    ];
+
     const gradeAvailableOptions = [
         { text: "Primar", value: "P" },
         { text: "Clasa a V-a", value: "5" },
         { text: "Clasa a VI-a", value: "6" },
         { text: "Clasa a VII-a", value: "7" },
         { text: "Clasa a VIII-a", value: "8" },
-    ];
-
-    const branchAvailableOptions = [
-        // { text: "Aritmetică (primar)", value: "aritmetica" },
-        // { text: "Algebră (gimnaziu)", value: "algebra" },
-        // { text: "Geometrie (gimnaziu)", value: "geometrie" },
-        // { text: "Algebră (liceu)", value: "algebra" },
-        // { text: "Geometrie și Trigonometrie (liceu)", value: "geometrie-trigonometrie" },
-        // { text: "Analiză matematică", value: "analiza" }
-
-        // { text: "Aritmetică (primar)", value: "aritmetica" },
-        { text: "Algebră", value: "algebra" },
-        { text: "Geometrie", value: "geometrie" },
-        { text: "Analiză matematică", value: "analiza" },
     ];
 
     const contestTypeAvailableOptions = [
@@ -87,46 +110,12 @@ exports.createOrEditGet = async (req, res) => {
         { text: "Alte surse", value: "alte-surse" },
     ];
 
-    const chapterAvailableOptions = [
-        { text: "Numere Naturale", value: "numere-naturale" },
-        { text: "Numere Raționale", value: "numere-rationale" },
-        { text: "Numere Reale", value: "numere-reale" },
-        { text: "Triunghiuri", value: "triunghiuri" },
-        { text: "Patrulatere", value: "patrulatere" },
-    ];
-
-    const subchapterAvailableOptions = [
-        { text: "Rapoarte și proporții", value: "rapoarte-si-proportii" },
-        // { text: "Numere Raționale", value: "numere-rationale" },
-        // { text: "Numere Reale", value: "numere-reale" }
-        {
-            text: "Calculul măsurilor unor unghiuri",
-            value: "calculul-masurilor-unor-unghiuri",
-        },
-    ];
-
-    const lessonAvailableOptions = [
-        {
-            text: "Metoda reducerii numărului de variabile",
-            value: "metoda-reducerii-numarului-de-variabile",
-        },
-        // { text: "Numere Raționale", value: "numere-rationale" },
-        // { text: "Numere Reale", value: "numere-reale" }
-        {
-            text: "Calculul măsurilor unor unghiuri",
-            value: "calculul-masurilor-unor-unghiuri",
-        },
-    ];
-
     const data = {
         isEditMode,
         gradeAvailableOptions,
-        branchAvailableOptions,
         contestTypeAvailableOptions,
+        exerciseTypeAvailableOptions,
         sourceTypeAvailableOptions,
-        chapterAvailableOptions,
-        subchapterAvailableOptions,
-        lessonAvailableOptions,
     };
 
     if (isEditMode) {
@@ -152,8 +141,9 @@ exports.createOrEditGet = async (req, res) => {
                 answerOption.textPreview = markdownService.render(answerOption.text);
             });
         }
-
         data.exercise = exercise;
+    } else {
+        data.exercise = { exerciseType: "1" }; // Set 'open answer' as a default exercise type
     }
 
     //res.send(data);
@@ -167,24 +157,7 @@ exports.createOrEditPost = async (req, res) => {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
 
-        const {
-            id,
-            grade,
-            branch,
-            contestType,
-            contestName,
-            sourceType,
-            sourceName,
-            chapter,
-            subchapter,
-            lesson,
-            author,
-            tags,
-            obs,
-            statement,
-            answer,
-            solution,
-        } = req.body;
+        const { id, grade, contestType, contestName, sourceType, exerciseType, sourceName, author, statement, answer, solution } = req.body;
         const isEditMode = !!id;
 
         const exercise = {
@@ -194,17 +167,12 @@ exports.createOrEditPost = async (req, res) => {
                 answer: { text: answer },
             },
             grade,
-            branch,
             contestType,
+            exerciseType,
             contestName,
             sourceType,
             sourceName,
-            chapter,
-            subchapter,
-            lesson,
             author,
-            tags,
-            obs,
         };
 
         const hints = req.body.hints;
@@ -352,47 +320,16 @@ exports.getAll = async (req, res) => {
     res.render("exercise/exercise-list", data);
 };
 
-exports.getOneById = async (req, res) => {
-    const exercise = await exerciseService.getOneById(req.params.id);
-
-    if (exercise && exercise.question) {
-        if (exercise.question.statement) {
-            const statement = `**E.${exercise.code}.** ${exercise.question.statement.text}`;
-            // const statement = `**[Problema ${++i}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
-            const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
-
-            if (exercise.question.answerOptions) {
-                exercise.question.answerOptions.forEach((answerOption, idx) => {
-                    // insert a label (letter) in front of each option: "a" for the 1st option, "b" for the 2nd a.s.o.
-                    answerOption.textPreview = markdownService.render(`${alphabet[idx]}) ${answerOption.text}`);
-                    if (answerOption.isCorrect) {
-                        exercise.question.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
-                    }
-                });
-            }
-
-            exercise.question.statement.textPreview = markdownService.render(statement);
-        }
-
-        if (exercise.question.answer) exercise.question.answer.textPreview = markdownService.render(`**Răspuns:** ${exercise.question.answer.text}`);
-
-        if (exercise.question.solution) exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
-
-        if (exercise.question.hints) {
-            exercise.question.hints.forEach((hint, idx) => {
-                hint.textPreview = markdownService.render(`**Indicația ${idx + 1}:** ${hint.text}`);
-            });
-        }
+exports.deleteOneById = async (req, res) => {
+    const exerciseId = req.body.exerciseId;
+    const canDeleteExercise = await autz.can(req.user, "delete:exercise");
+    if (!canDeleteExercise) {
+        return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
 
-    const data = {
-        exercise,
-        canCreateOrEditExercise: await autz.can(req.user, "create-or-edit:exercise"),
-        canDeleteExercise: await autz.can(req.user, "delete:exercise"),
-    };
+    exerciseService.deleteOneById(exerciseId);
 
-    //res.send(data);
-    res.render("exercise/exercise", data);
+    res.redirect("/exercitii");
 };
 
 exports.addMySolution = async (req, res) => {

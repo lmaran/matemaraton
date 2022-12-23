@@ -1,0 +1,327 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+
+        {{#if contest}}
+        <li class="breadcrumb-item"><a href="/concursuri">Concursuri</a></li>
+        <li class="breadcrumb-item"><a href="/concursuri/{{contest._id}}">{{contest.newCode}}</a></li>
+        <li class="breadcrumb-item"><a href="/concursuri/{{contest._id}}/exercitii">Exerciții</a></li>
+        {{else}}
+
+        <li class="breadcrumb-item"><a href="/exercitii">Exerciții</a></li>
+        {{/if}}
+
+        <li class="breadcrumb-item active">
+            {{#if isEditMode}}E.{{exercise.code}}{{else}}Adaugă{{/if}}</li>
+
+    </ol>
+</nav>
+
+<h1 id="exercise-id-container" data-exercise-id="{{exercise._id}}">
+    {{#if isEditMode}}Exercițiul {{exercise.code}}{{else}} Exercițiu nou:{{/if}}
+</h1>
+
+
+<form method="post" action="/exercitii/adauga" novalidate onsubmit="saveBtn.disabled = true; return true;">
+
+    {{!-- statement --}}
+    <div class="row">
+        <div class="col-md-12 statement-div">
+            <label class="required fw-bold"> Enunț: </label>
+
+            {{!-- close the textarea tag on the same line to get rid of the unintended spaces: https://stackoverflow.com/a/34102261 --}}
+            <textarea id="statement-editor-txt" rows="8" name="statement"
+                style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
+                class="form-control {{#if errors.statement}}is-invalid{{/if}} {{#if isEditMode}}d-none{{/if}}" placeholder="">{{{exercise.question.statement.text}}}</textarea>
+            <div class="invalid-feedback">{{errors.statement.msg}}</div>
+
+
+            <div id="statement-preview-div"
+                style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
+                {{{exercise.question.statement.textPreview}}}
+            </div>
+
+            <span class="float-end">
+                <a id="toggle-statement-editor-btn" href="">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</a>
+            </span>
+        </div>
+    </div>
+
+    {{!-- answerOptions --}}
+    <div id="answer-option-main-div" class="col-md-12 row">
+        {{#each exercise.question.answerOptions}}
+        <div class="col-md-12 answer-option-parent-div mb-4">
+
+            <label class="col-form-label fw-bold"> Răspunsul {{inc @index}}: </label>
+
+            <textarea rows="2" name="answerOptions" style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
+                class="answer-option-editor-txt form-control {{#if errors.solution}}is-invalid {{/if}} {{#if @root.isEditMode}}d-none{{/if}}"
+                value="{{data.solution.val}}">{{{text}}}</textarea>
+
+
+            <div class="answer-option-preview-div"
+                style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
+                {{{textPreview}}}
+            </div>
+
+            <div class="float-end form-check-inline me-0">
+                <input class="form-check-input" type="checkbox" name="isCorrectAnswerChecks" value={{inc @index}}
+                    id="isCorrectAnswerCheck{{inc @index}}" {{#if isCorrect}}checked{{/if}}>
+                <label class="form-check-label text-muted" for="isCorrectAnswerCheck{{inc @index}}">
+                    Răspuns corect
+                </label>
+                <span class="ms-2 me-2 text-muted"> | </span>
+                <button type="button" class="toggle-answer-option-editor-btn btn btn-link p-0">Editează</button>
+                <span class="ms-2 me-2 text-muted"> | </span>
+                <button type="button" class="delete-answer-option-btn btn btn-link p-0">Șterge</button>
+            </div>
+
+        </div>
+        {{/each}}
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-7s offset-md-3s">
+            <button id="add-answer-option-btn" class="btn btn-sm"
+                style="border-color: #bb815d; background-color: #fff9f8; color: black">
+                Adaugă variantă de răspuns</button>
+        </div>
+    </div>
+
+    {{!-- answer --}}
+    <div class="form-group">
+        <label for="answer-editor-txt" class="fw-bold"> Rezultatul final: </label>
+
+        <textarea id="answer-editor-txt" rows="2" name="answer"
+            style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
+            class="form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.question.answer.text}}}</textarea>
+        <div class="invalid-feedback">{{errors.answer.msg}}</div>
+
+
+        <div id="answer-preview-div"
+            style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
+            {{{exercise.question.answer.textPreview}}}
+        </div>
+
+        <button id="toggle-answer-editor-btn" type="button" class="btn btn-link p-0 mt-n1 float-end">{{#if
+            isEditMode}}Editează{{else}}Ascunde{{/if}}</button>
+    </div>
+
+    {{!-- hints --}}
+    <div id="hint-main-div" class="form-group">
+        {{#each exercise.question.hints}}
+        <div class="hint-parent-div mb-4">
+
+            <label class="col-form-label fw-bold"> Indicația {{inc @index}}: </label>
+
+            <textarea rows="2" name="hints" style="border-radius:0; border-bottom-width:0; border-color:#007bff"
+                class="hint-editor-txt form-control {{#if errors.solution}}is-invalid {{/if}} {{#if @root.isEditMode}}d-none{{/if}}"
+                value="{{data.solution.val}}">{{{text}}}</textarea>
+
+
+            <div class="hint-preview-div"
+                style="border: 1px solid #007bff; padding: 6px 12px; background-color: #f5faff; min-height:58px">
+                {{{textPreview}}}
+            </div>
+
+            {{!-- {{#if @root.isEditMode}} --}}
+            <button type="button" class="delete-hint-btn btn btn-link p-0 mt-n1 float-end">Șterge</button>
+            <span class="float-end mt-n1s2 me-2 text-muted"> | </span>
+            <button type="button" class="toggle-hint-editor-btn btn btn-link p-0 mt-n1 float-end">Editează</button>
+            {{!-- {{/if}} --}}
+
+        </div>
+        {{/each}}
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-7s offset-md-3s">
+            <button id="add-hint-btn" class="btn btn-sm"
+                style="border-color: #007bff; background-color: #f5faff; color: black">
+                Adaugă indicație</button>
+        </div>
+    </div>
+
+    {{!-- solution --}}
+    <div class="form-group">
+        <label for="solution-editor-txt" class="fw-bold"> Rezolvare completă: </label>
+
+        <textarea id="solution-editor-txt" rows="8" name="solution"
+            style="border-radius:0; border-bottom-width:0; border-color:#008000"
+            class="form-control {{#if errors.solution}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.question.solution.text}}}</textarea>
+        <div class="invalid-feedback">{{errors.solution.msg}}</div>
+
+        <div id="solution-preview-div"
+            style="border: 1px solid #008000; padding: 6px 12px; background-color: #f5fff5; min-height:58px">
+            {{{exercise.question.solution.textPreview}}}
+        </div>
+
+        <button id="toggle-solution-editor-btn" type="button" class="btn btn-link p-0 mt-n1 float-end">{{#if
+            isEditMode}}Editează{{else}}Ascunde{{/if}}</button>
+    </div>
+
+    <br>
+
+    <div class="row">
+        <div class="col-md-6">
+            <label for="gradeSelect" class="fw-bold">Clasa:</label>
+            <select name="grade" class="form-select" id="gradeSelect">
+                {{#select exercise.grade}}
+                <option value=""></option>
+                {{#each gradeAvailableOptions}}
+                <option value="{{value}}">{{text}}</option>
+                {{/each}}
+
+                {{/select}}
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label for="branchSelect" class="fw-bold">Ramura:</label>
+            <select name="branch" class="form-select" id="branchSelect">
+                {{#select exercise.branch}}
+                <option value=""></option>
+                {{#each branchAvailableOptions}}
+                <option value="{{value}}">{{text}}</option>
+                {{/each}}
+
+                {{/select}}
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <label for="contestTypeSelect" class="fw-bold">Tipul concursului
+                <span class="text-muted font-weight-normal">(la care a fost dat accest ex.)</span>:</label>
+            <select name="contestType" class="form-select" id="contestTypeSelect">
+                {{#select exercise.contestType}}
+                <option value=""></option>
+                {{#each contestTypeAvailableOptions}}
+                <option value="{{value}}">{{text}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label for="contestNameInput" class="fw-bold">Numele concursului:</label>
+            <input type="text" name="contestName" class="form-control" id="contestNameInput" placeholder=""
+                value="{{exercise.contestName}}">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <label for="sourceTypeSelect" class="fw-bold">Tipul sursei
+                <span class="text-muted font-weight-normal">(de unde a fost copiat ex.)</span>:</label>
+            <select name="sourceType" class="form-select" id="sourceTypeSelect">
+                {{#select exercise.sourceType}}
+                <option value=""></option>
+                {{#each sourceTypeAvailableOptions}}
+                <option value="{{value}}">{{text}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label for="sourceNameInput" class="fw-bold">Numele sursei:</label>
+            <input type="text" name="sourceName" class="form-control" id="sourceNameInput" placeholder=""
+                value="{{exercise.sourceName}}">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <label for="chapterSelect" class="fw-bold">Capitol:
+                {{!-- <span class="text-muted">(de unde a fost copiat ex.)</span>:--}}</label>
+            <select name="chapter" class="form-select" id="chapterSelect">
+                {{#select exercise.chapter}}
+                <option value=""></option>
+                {{#each chapterAvailableOptions}}
+                <option value="{{value}}">{{text}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label for="authorInput" class="fw-bold">Autor:</label>
+            <input type="text" name="author" class="form-control" id="authorInput" placeholder=""
+                value="{{exercise.author}}">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <label for="subchapterSelect" class="fw-bold">Subcapitol
+                <span class="text-muted font-weight-normal">(unitate de învățare)</span>:</label>
+            <select name="subchapter" class="form-select" id="subchapterSelect">
+                {{#select exercise.subchapter}}
+                <option value=""></option>
+                {{#each subchapterAvailableOptions}}
+                <option value="{{value}}">{{text}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label for="lessonSelect" class="fw-bold">Lecție:
+                {{!-- <span class="text-muted font-weight-normal">(unitate de învățare)</span>:--}}</label>
+            <select name="lesson" class="form-select" id="lessonSelect">
+                {{#select exercise.lesson}}
+                <option value=""></option>
+                {{#each lessonAvailableOptions}}
+                <option value="{{value}}">{{text}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <label for="tagsInput" class="fw-bold">Etichete:</label>
+            <input type="text" name="tags" class="form-control" id="tagsInput" placeholder="" value="{{exercise.tags}}">
+        </div>
+
+        <div class="col-md-6">
+            <label for="obsInput" class="fw-bold">Observații:</label>
+            <input type="text" name="obs" class="form-control" id="obsInput" placeholder="" value="{{exercise.obs}}">
+        </div>
+    </div>
+
+    <input type="hidden" name="id" value="{{exercise._id}}" />
+    {{#if contest}}
+    <input type="hidden" name="contestId" value="{{contest._id}}" />
+    {{/if}}
+
+
+    <div class="row mb-32">
+        <div class="col-md-7s offset-md-3s">
+            <button type="submit" name="saveBtn" class="btn btn-primary"><i class="bi bi-save"></i>
+                Salveaza</button>
+
+            {{#if isEditMode}}
+            <a href="{{#if contest}}/concursuri/{{contest._id}}{{/if}}/exercitii/{{exercise._id}}"
+                class="btn btn-light"><i class="bi bi-eye"></i> Vizualizează</a>
+            {{/if}}
+
+            <label class="col-md-3s col-form-label float-end"> Ajutor:
+                <a href="https://markdown-it.github.io/" target="_blank">markdon</a>
+                <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>
+                +
+                <a href="https://katex.org/docs/supported.html" target="_blank">latex </a>
+                <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small></label>
+        </div>
+
+    </div>
+
+</form>
+
+{{#section 'script'}}
+<script type="module" src="/js/exercise/exercise-create-or-edit.main.js"></script>
+{{/section}}
