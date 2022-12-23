@@ -24,7 +24,7 @@
     <div class="row">
         <div class="col-md-6">
             <label for="gradeSelect" class="fw-bold">Clasa:</label>
-            <select name="grade" class="form-control" id="gradeSelect">
+            <select name="grade" class="form-select" id="gradeSelect">
                 {{#select lesson.grade}}
                 <option value=""></option>
                 {{#each gradeAvailableOptions}}
@@ -38,7 +38,7 @@
         <div class="col-md-6">
             <label for="scopeSelect" class="fw-bold">Scop:
                 {{!-- <span class="text-muted">(de unde a fost copiat ex.)</span>:--}}</label>
-            <select name="scope" class="form-control" id="scopeSelect">
+            <select name="scope" class="form-select" id="scopeSelect">
                 {{#select lesson.scope}}
                 <option value=""></option>
                 {{#each scopeAvailableOptions}}
@@ -54,7 +54,7 @@
 
         <div class="col-md-6">
             <label for="branchSelect" class="fw-bold">Ramura:</label>
-            <select name="branch" class="form-control" id="branchSelect">
+            <select name="branch" class="form-select" id="branchSelect">
                 {{#select lesson.branch}}
                 <option value=""></option>
                 {{#each branchAvailableOptions}}
@@ -68,7 +68,7 @@
         <div class="col-md-6">
             <label for="chapterSelect" class="fw-bold">Capitol:
                 {{!-- <span class="text-muted">(de unde a fost copiat ex.)</span>:--}}</label>
-            <select name="chapter" class="form-control" id="chapterSelect">
+            <select name="chapter" class="form-select" id="chapterSelect">
                 {{#select lesson.chapter}}
                 <option value=""></option>
                 {{#each chapterAvailableOptions}}

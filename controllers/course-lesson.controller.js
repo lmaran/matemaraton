@@ -5,70 +5,203 @@ const arrayHelper = require("../helpers/array.helper");
 const markdownService = require("../services/markdown.service");
 const exerciseHelper = require("../helpers/exercise.helper");
 
+exports.getOneById = async (req, res) => {
+    const courseId = req.params.courseId;
+    const chapterId = req.params.chapterId;
+    const lessonId = req.params.lessonId;
+
+    try {
+        // validate parameters
+        const course = await courseService.getOneById(courseId);
+        if (!course) return res.status(500).send("Curs negăsit!");
+
+        const chapterRef = (course.chapters || []).find((x) => x.id === chapterId);
+        if (!chapterRef) return res.status(500).send("Capitol negăsit!");
+
+        const lessonRef = (chapterRef.lessons || []).find((x) => x.id === lessonId);
+        if (!lessonRef) return res.status(500).send("Lecție negăsită!");
+
+        const courseCode = course.code;
+        const chapterIndex = (course.chapters || []).findIndex((x) => x.id === chapterId);
+        lessonRef.index = chapterRef.lessons.findIndex((x) => x.id === lessonId);
+
+        if (lessonRef.theory) {
+            lessonRef.theory.textPreview = markdownService.render(lessonRef.theory.text);
+        }
+
+        const exercisesFromDb = await getAllExercisesInLesson(lessonRef);
+
+        lessonRef.sectionsObj = getSectionsObj(lessonRef.exercises, exercisesFromDb, true);
+
+        // remove unnecessary fields
+        if (lessonRef.theory) delete lessonRef.theory.text;
+        delete lessonRef.exercises;
+
+        const data = {
+            lesson: lessonRef,
+            courseId,
+            courseCode,
+            chapterId,
+            chapterIndex,
+            canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
+        };
+
+        //res.send(data);
+        res.render("course-lesson/course-lesson", data);
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
+};
+
 exports.createOrEditGet = async (req, res) => {
     const courseId = req.params.courseId;
     const chapterId = req.params.chapterId;
     const lessonId = req.params.lessonId;
 
-    const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
-    if (!canCreateOrEditCourse) {
-        return res.status(403).send("Lipsă permisiuni!"); // forbidden
-    }
+    const activeSectionId = req.query.sectionId;
+    const activeLevelId = req.query.levelId;
+
     const isEditMode = !!lessonId;
 
-    const course = await courseService.getOneById(courseId);
+    let lessonRef, courseCode, chapterIndex, positionOptions, selectedPosition;
 
-    const data = {
-        isEditMode,
-        positionOptions: [],
-    };
+    try {
+        //let lesson, positionOptions, selectedPosition;
 
-    let positionPrefix = "(înainte de)";
-    let positionName;
-    const chapters = course.chapters || [];
-    const selectedChapterIndex = chapters.findIndex((x) => x.id === chapterId);
-    if (selectedChapterIndex > -1) {
-        course.selectedChapter = chapters[selectedChapterIndex];
-        course.selectedChapter.index = selectedChapterIndex;
+        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+        if (!canCreateOrEditCourse) {
+            return res.status(403).send("Lipsă permisiuni!"); // forbidden
+        }
 
-        const lessons = course.selectedChapter.lessons || [];
+        const course = await courseService.getOneById(courseId);
+        if (!course) return res.status(500).send("Curs negăsit!");
 
-        if (lessons) {
-            const selectedLessonIndex = lessons.findIndex((x) => x.id === lessonId);
-            if (selectedLessonIndex > -1) {
-                course.selectedLesson = lessons[selectedLessonIndex];
-                course.selectedLesson.index = selectedLessonIndex;
+        const chapterRef = (course.chapters || []).find((x) => x.id === chapterId);
+        if (!chapterRef) return res.status(500).send("Capitol negăsit!");
 
-                if (course.selectedLesson.articles) {
-                    course.selectedLesson.articles.forEach((article) => {
-                        if (article.content) {
-                            article.content.textPreview = markdownService.render(article.content.text);
-                        }
-                    });
-                }
+        if (isEditMode) {
+            lessonRef = (chapterRef.lessons || []).find((x) => x.id === lessonId);
+            if (!lessonRef) return res.status(500).send("Lecție negăsită!");
+
+            courseCode = course.code;
+            chapterIndex = (course.chapters || []).findIndex((x) => x.id === chapterId);
+            lessonRef.index = chapterRef.lessons.findIndex((x) => x.id === lessonId);
+
+            if (lessonRef.theory) {
+                lessonRef.theory.textPreview = markdownService.render(lessonRef.theory.text);
             }
 
-            lessons.forEach((x, index) => {
-                const incIndex = index + 1;
-                if (x.id === lessonId) {
-                    data.selectedPosition = index; // select the index of the current element
-                    positionPrefix = "(după)";
-                    positionName = `${incIndex}: "${x.name}"`;
-                } else {
-                    positionName = `${incIndex}: ${positionPrefix} "${x.name}"`;
-                }
-                data.positionOptions.push({ index, name: positionName });
-            });
+            const exercisesFromDb = await getAllExercisesInLesson(lessonRef);
+
+            lessonRef.sectionsObj = getSectionsObj(lessonRef.exercises, exercisesFromDb, true);
+
+            setActivelLevel(lessonRef.sectionsObj, activeSectionId, activeLevelId);
+
+            // remove unnecessary fields
+            delete lessonRef.exercises;
+
+            // in editMode, lessonId will be undefined (falsy)
+            // The parentheses ( ... ) around the assignment statement are required when using object literal destructuring assignment without a declaration.
+            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
+            ({ positionOptions, selectedPosition } = getPositionOptions(chapterRef.lessons, lessonId));
         }
+
+        const data = {
+            isEditMode,
+            courseId,
+            courseCode,
+            chapterId,
+            chapterIndex,
+            lesson: lessonRef,
+            positionOptions,
+            selectedPosition,
+        };
+
+        //res.send(data);
+        res.render("course-lesson/course-lesson-create-or-edit", data);
+    } catch (err) {
+        return res.status(500).json(err.message);
     }
-
-    data.course = course;
-
-    //res.send(data);
-    res.render("course-lesson/course-lesson-create-or-edit", data);
 };
 
 exports.createOrEditPost = async (req, res) => {
+    const courseId = req.params.courseId;
+    const chapterId = req.params.chapterId;
+    let lessonId = req.params.lessonId;
+
+    try {
+        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+        if (!canCreateOrEditCourse) {
+            return res.status(403).send("Lipsă permisiuni!"); // forbidden
+        }
+        const isEditMode = !!lessonId;
+
+        const { name, description, isHidden, position, theory } = req.body;
+
+        const course = await courseService.getOneById(courseId);
+        if (!course) return res.status(500).send("Curs negăsit!");
+
+        const chapterRef = (course.chapters || []).find((x) => x.id === chapterId);
+        if (!chapterRef) return res.status(500).send("Capitol negăsit!");
+
+        if (isEditMode) {
+            const lessonRef = (chapterRef.lessons || []).find((x) => x.id === lessonId);
+            if (!lessonRef) return res.status(500).send("Lecție negăsită!");
+
+            // update lesson fields
+            lessonRef.name = name;
+            lessonRef.description = description;
+            lessonRef.theory = {
+                text: theory.trim(),
+            };
+
+            if (isHidden === "on") {
+                // If the 'value' attribute was omitted, the default value for the checkbox is 'on' (mozilla.org)
+                lessonRef.isHidden = true;
+            } else delete lessonRef.isHidden;
+
+            // move the lesson from one position (index) to another
+            const lessonIndex = (chapterRef.lessons || []).findIndex((x) => x.id === lessonId);
+
+            const lessonsRef = chapterRef.lessons || [];
+            if (position != lessonIndex && position > -1 && position < lessonsRef.length) {
+                arrayHelper.move(lessonsRef, lessonIndex, position);
+            }
+        } else {
+            // new lesson
+            lessonId = courseService.getObjectId().toString();
+            const newLesson = {
+                id: lessonId,
+                name,
+                description,
+                position,
+                theory: { text: theory.trim() },
+            };
+
+            if (isHidden === "on") {
+                // If the 'value' attribute was omitted, the default value for the checkbox is 'on' (mozilla.org)
+                newLesson.isHidden = true;
+            }
+
+            const lessonsRef = chapterRef.lessons || [];
+            if (position > -1 && position < lessonsRef.length) {
+                lessonsRef.splice(position, 0, newLesson); // insert at the specified index
+            } else {
+                lessonsRef.push(newLesson);
+            }
+        }
+
+        courseService.updateOne(course);
+
+        //const data = { courseCode, chapterIndex, course };
+        //res.send(data);
+        res.redirect(`/cursuri/${courseId}/capitole/${chapterId}/lectii/${lessonId}/modifica`);
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
+};
+
+exports.deleteOneById = async (req, res) => {
     const courseId = req.params.courseId;
     const chapterId = req.params.chapterId;
     const lessonId = req.params.lessonId;
@@ -78,229 +211,196 @@ exports.createOrEditPost = async (req, res) => {
         if (!canCreateOrEditCourse) {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
-        const isEditMode = !!lessonId;
-
-        const { name, description, isHidden, position } = req.body;
-
-        const lesson = {
-            name,
-            description,
-            isHidden,
-        };
 
         const course = await courseService.getOneById(courseId);
-        course.chapters = course.chapters || [];
+        if (!course) return res.status(500).send("Curs negăsit!");
 
-        const selectedChapterIndex = course.chapters.findIndex((x) => x.id === chapterId);
-        if (selectedChapterIndex > -1) {
-            course.selectedChapter = course.chapters[selectedChapterIndex];
-            course.selectedChapter.index = selectedChapterIndex;
+        const chapterRef = (course.chapters || []).find((x) => x.id === chapterId);
+        if (!chapterRef) return res.status(500).send("Capitol negăsit!");
 
-            course.selectedChapter.lessons = course.selectedChapter.lessons || [];
+        const lessonIndex = chapterRef.lessons.findIndex((x) => x.id === lessonId);
+        if (lessonIndex > -1) {
+            //const lesson = lessons[lessonIndex];
 
-            if (isEditMode) {
-                lesson.id = lessonId;
-                const lessonIndex = course.selectedChapter.lessons.findIndex((x) => x.id === lessonId);
-                if (lessonIndex > -1) {
-                    const existingLesson = course.selectedChapter.lessons[lessonIndex];
-                    existingLesson.name = lesson.name;
-                    existingLesson.description = lesson.description;
+            // TODO fix it (delete only empty lessons)
+            // if (lesson.lessons && chapter.lessons.length > 0) {
+            //     return res.status(403).send("Șterge întâi lecțiile!");
+            // }
 
-                    if (lesson.isHidden === "on") {
-                        // If the 'value' attribute was omitted, the default value for the checkbox is 'on' (mozilla.org)
-                        existingLesson.isHidden = true;
-                    } else {
-                        delete existingLesson.isHidden;
-                    }
-
-                    // move the lesson from one position (index) to another
-                    if (position != lessonIndex && position > -1 && position < course.selectedChapter.lessons.length) {
-                        arrayHelper.move(course.selectedChapter.lessons, lessonIndex, position);
-                    }
-                }
-            } else {
-                lesson.id = courseService.getObjectId().toString();
-
-                if (lesson.isHidden === "on") {
-                    // If the 'value' attribute was omitted, the default value for the checkbox is 'on' (mozilla.org)
-                    lesson.isHidden = true;
-                }
-
-                if (position > -1 && position < course.selectedChapter.lessons.length) {
-                    course.selectedChapter.lessons.splice(position, 0, lesson); // insert at the specified index
-                } else {
-                    course.selectedChapter.lessons.push(lesson);
-                }
-            }
+            chapterRef.lessons.splice(lessonIndex, 1); // remove from array
+            courseService.updateOne(course);
         }
 
-        courseService.updateOne(course);
-
-        //res.send(course);
-        //res.redirect(`/cursuri/${course._id}/capitole/${course.selectedChapter.id}/lectii/${lesson.id}`);
-        res.redirect(`/cursuri/${course._id}/capitole/${course.selectedChapter.id}`);
+        res.redirect(`/cursuri/${courseId}/capitole/${chapterId}/modifica`);
     } catch (err) {
         return res.status(500).json(err.message);
     }
 };
 
-exports.getOneById = async (req, res) => {
-    const courseId = req.params.courseId;
-    const chapterId = req.params.chapterId;
-    const lessonId = req.params.lessonId;
-    const course = await courseService.getOneById(courseId);
+// Input:  a list of chapters, lessons or any other items with at least "id" and "name".
+// Output: result: {
+//     positionOptions: [
+//         {index: 0, name: "1: "Teorema împărțirii cu rest (TIR)""},
+//         {index: 1, name: "2: (după) "Lectia 1""},
+//         {index: 2, name: "3: (după) "Lectia 2""}
+//     ],
+//     selectedPosition: 0
+// }
+const getPositionOptions = (items, itemId) => {
+    // Omit "itemId" in "editMode".
+    const result = {
+        positionOptions: [],
+        selectedPosition: -1,
+    };
 
-    const chapters = course.chapters || [];
-    const courseCode = course.code;
-    let lesson, lessonIndex, chapter;
-
-    const chapterIndex = chapters.findIndex((x) => x.id === chapterId);
-    if (chapterIndex > -1) {
-        chapter = chapters[chapterIndex];
-
-        if (chapter.lessons) {
-            lessonIndex = chapter.lessons.findIndex((x) => x.id === lessonId);
-            if (lessonIndex > -1) {
-                lesson = chapter.lessons[lessonIndex];
-
-                if (lesson.articles) {
-                    lesson.articles.forEach((article) => {
-                        if (article.content) {
-                            article.content.textPreview = markdownService.render(article.content.text);
-                        }
-                    });
+    let positionName;
+    const itemsLength = items.length;
+    if (itemId) {
+        // only in edit mode we have an itemId
+        let indexIncrement = 0;
+        items.forEach((x, index) => {
+            if (index + 1 < itemsLength) {
+                if (x.id === itemId) {
+                    indexIncrement = 1;
                 }
-
-                let allExercisesIds = [],
-                    allExercises = [];
-                if (lesson.solvedExercises) {
-                    const solvedExercisesIds = lesson.solvedExercises.map((x) => x.id);
-                    allExercisesIds = allExercisesIds.concat(solvedExercisesIds || []);
-                }
-                if (lesson.proposedExercises) {
-                    const proposedExercisesIds = lesson.proposedExercises.map((x) => x.id);
-                    allExercisesIds = allExercisesIds.concat(proposedExercisesIds || []);
-                }
-
-                // deduplicate exercisesIds
-                const allUniqueExercisesIds = [...new Set(allExercisesIds)];
-                if (allUniqueExercisesIds.length > 0) {
-                    allExercises = await exerciseService.getAllByIds(allUniqueExercisesIds);
-                }
-
-                //  lesson.solvedExercises: [
-                //     { id: '5f4636cd17efad83f707e937', level: 1 },
-                //     { id: '5f47d415eb57b91c67e5367d', level: 1 },
-                //     { id: '5f47dec6eb57b91c67e5367e', level: 2 }]
-                if (lesson.solvedExercises) {
-                    lesson.solvedExercises = lesson.solvedExercises.map((x, idx) => {
-                        const exercise = allExercises.find((y) => y._id.toString() === x.id);
-                        // add level property to
-                        exercise.level = x.level;
-                        // add preview
-                        //const statementNumber = `**[R.${++idx}](/exercitii/${exercise._id})**`;
-                        const statementNumber = `**R${++idx}.**&nbsp;`;
-                        exerciseHelper.addPreview(exercise, statementNumber);
-                        return exercise;
-                    });
-                    lesson.solvedExercises = getExercisesByLevel(lesson.solvedExercises);
-                }
-
-                if (lesson.proposedExercises) {
-                    lesson.proposedExercises = lesson.proposedExercises.map((x, idx) => {
-                        const exercise = allExercises.find((y) => y._id.toString() === x.id);
-                        // add level property to
-                        exercise.level = x.level;
-                        // add preview
-                        //const statementNumber = `**[R.${++idx}](/exercitii/${exercise._id})**`;
-                        const statementNumber = `**P${++idx}.**&nbsp;`;
-                        exerciseHelper.addPreview(exercise, statementNumber);
-                        return exercise;
-                    });
-                    lesson.proposedExercises = getExercisesByLevel(lesson.proposedExercises);
-                }
+                positionName = `${index + 1}: (înainte de) "${items[index + indexIncrement].name}"`;
+            } else {
+                positionName = `${index + 1}: (ultima poziție)`;
             }
-        }
+
+            result.positionOptions.push({ index, name: positionName });
+
+            if (x.id === itemId) {
+                result.selectedPosition = index; // select the index of the current element
+            }
+        });
+    } else {
+        items.forEach((x, index) => {
+            positionName = `${index + 1}: (înainte de) "${x.name}"`;
+            result.positionOptions.push({ index, name: positionName });
+        });
+
+        // Add a new position and set it as default
+        result.positionOptions.push({
+            index: itemsLength, // last position + 1
+            name: `${itemsLength + 1}: (ultima poziție)`,
+        });
+
+        result.selectedPosition = itemsLength;
     }
-
-    const data = {
-        lesson,
-        lessonIndex,
-        courseId,
-        courseCode,
-        chapterId,
-        chapterIndex,
-        canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
-    };
-
-    //res.send(data);
-    res.render("course-lesson/course-lesson", data);
+    return result;
 };
 
-exports.deleteOneById = async (req, res) => {
-    const courseId = req.params.courseId;
-    const chapterId = req.params.chapterId;
-    const lessonId = req.params.lessonId;
+// Get all unique exercises in a lesson
+const getAllExercisesInLesson = async (lesson) => {
+    let allExercises = [];
+    const allExercisesIds = (lesson.exercises || []).map((x) => x.id);
 
-    const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
-    if (!canCreateOrEditCourse) {
-        return res.status(403).send("Lipsă permisiuni!"); // forbidden
+    // deduplicate exercisesIds
+    const allUniqueExercisesIds = [...new Set(allExercisesIds)];
+
+    // get exercises from DB
+    if (allUniqueExercisesIds.length > 0) {
+        allExercises = await exerciseService.getAllByIds(allUniqueExercisesIds);
     }
 
-    const course = await courseService.getOneById(courseId);
-    const chapters = course.chapters || [];
-
-    const selectedChapter = chapters.find((x) => x.id === chapterId);
-    const lessons = selectedChapter.lessons || [];
-
-    const lessonIndex = lessons.findIndex((x) => x.id === lessonId);
-    if (lessonIndex > -1) {
-        //const lesson = lessons[lessonIndex];
-
-        // TODO fix it (delete only empty lessons)
-        // if (lesson.lessons && chapter.lessons.length > 0) {
-        //     return res.status(403).send("Șterge întâi lecțiile!");
-        // }
-
-        lessons.splice(lessonIndex, 1); // remove from array
-        courseService.updateOne(course);
-    }
-
-    res.redirect(`/cursuri/${courseId}/capitole/${chapterId}`);
+    return allExercises;
 };
 
-const getExercisesByLevel = (exercises) => {
-    const newExercises = {
-        total: 0,
-        levels: [
-            {
-                level: 1,
-                levelName: "Nivel introductiv",
-                exercises: [],
-            },
-            {
-                level: 2,
-                levelName: "Nivel mediu",
-                exercises: [],
-            },
-            {
-                level: 3,
-                levelName: "Nivel avansat",
-                exercises: [],
-            },
-            {
-                level: 0,
-                levelName: "Diverse",
-                exercises: [],
-            },
-        ],
-    };
+//  exercisesRef: [
+//     { id: '5f4636cd17efad83f707e937', sectionId:1, level: 1 },
+//     { id: '5f47d415eb57b91c67e5367d', sectionId:1, level: 1 },
+//     { id: '5f47dec6eb57b91c67e5367e', sectionId:1, level: 2 }]
+const getSectionsObj = (exercisesRef, exercisesFromDb, clear) => {
+    const sectionsDetails = [
+        {
+            id: 1,
+            name: "Exerciții rezolvate",
+            displayNumber: 2,
+        },
+        {
+            id: 2,
+            name: "Exerciții propuse",
+            displayNumber: 3,
+        },
+    ];
 
-    exercises.forEach((x) => {
-        const found = newExercises.levels.find((y) => y.level === x.level);
-        if (found) found.exercises.push(x);
-        newExercises.total++;
+    const levelsDetails = [
+        {
+            id: 1,
+            name: "Nivel introductiv",
+        },
+        {
+            id: 2,
+            name: "Nivel mediu",
+        },
+        {
+            id: 3,
+            name: "Nivel avansat",
+        },
+        {
+            id: 0,
+            name: "Diverse",
+        },
+    ];
+
+    // initialize the section backbone (we need all sections and levels in editMode)
+    const sections = [];
+    sectionsDetails.forEach((s) => {
+        s.total = 0;
+        s.levels = [];
+        levelsDetails.forEach((l) => {
+            s.levels.push({
+                id: l.id,
+                name: l.name,
+                total: 0,
+                exercises: [],
+            });
+        });
+        sections.push(s);
     });
 
-    return newExercises;
+    const sectionsObj = {
+        total: 0,
+        sections: sections,
+    };
+
+    if (!exercisesRef) return sectionsObj;
+
+    const exercises = exercisesRef.map((x, idx) => {
+        const exercise = exercisesFromDb.find((y) => y._id.toString() === x.id);
+        // add preview
+        //const statementNumber = `**[R.${++idx}](/exercitii/${exercise._id})**`;
+        const statementNumber = x.sectionId == 1 ? `**R${++idx}.**&nbsp;` : `**P${++idx}.**&nbsp;`;
+        exerciseHelper.addPreview(exercise, statementNumber, clear);
+        return exercise;
+    });
+
+    exercisesRef.forEach((e) => {
+        const exercise = exercises.find((x) => x._id.toString() === e.id);
+
+        const section = sectionsObj.sections.find((s) => s.id == e.sectionId);
+
+        if (section) {
+            const level = section.levels.find((l) => l.id == e.levelId);
+            if (level) {
+                level.exercises.push(exercise);
+                level.total++;
+                section.total++;
+                sectionsObj.total++;
+            }
+        }
+    });
+
+    return sectionsObj;
+};
+
+const setActivelLevel = (sectionsObj, activeSectionId, activeLevelId) => {
+    sectionsObj.sections.forEach((section) => {
+        if (section.id == activeSectionId) {
+            section.levels.forEach((level) => {
+                if (level.id == activeLevelId) level.isActive = true;
+            });
+        }
+    });
 };

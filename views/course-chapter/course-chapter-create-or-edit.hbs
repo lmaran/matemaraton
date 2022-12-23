@@ -34,8 +34,8 @@
 
     <div class="row">
         <div class="col-md-6">
-            <label for="positionSelect" class="fw-bold">Poziția:</label>
-            <select name="position" class="form-control" id="positionSelect">
+            <label for="positionSelect" class="fw-bold">Poziție:</label>
+            <select name="position" class="form-select" id="positionSelect">
                 {{#select selectedPosition}}
                 {{#each positionOptions}}
                 <option value="{{index}}">{{name}}</option>
@@ -87,7 +87,7 @@
 <ol id="table-of-contents" class="pl-0">
     {{#each course.selectedChapter.lessons}}
     <li>
-        <a href="/cursuri/{{@root.course._id}}/capitole/{{@root.course.selectedChapter.id}}/lectii/{{id}}">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
+        <a href="/cursuri/{{@root.course._id}}/capitole/{{@root.course.selectedChapter.id}}/lectii/{{id}}/modifica">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
         {{#if isHidden}}
         <a href="/cursuri/{{@root.course._id}}/capitole/{{@root.course.selectedChapter.id}}/lectii/{{id}}/modifica">
             <i class="bi bi-eye-slash text-danger"></i></a>

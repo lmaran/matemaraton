@@ -59,7 +59,7 @@
     <div class="row">
         <div class="col-md-6">
             <label for="gradeSelect" class="fw-bold">Clasa:</label>
-            <select name="grade" class="form-control" id="gradeSelect">
+            <select name="grade" class="form-select" id="gradeSelect">
                 {{#select course.grade}}
                 <option value=""></option>
                 {{#each gradeAvailableOptions}}
@@ -72,7 +72,7 @@
 
         <div class="col-md-6">
             <label for="branchSelect" class="fw-bold">Categoria:</label>
-            <select name="category" class="form-control" id="branchSelect">
+            <select name="category" class="form-select" id="branchSelect">
                 {{#select course.category}}
                 <option value=""></option>
                 {{#each categoryAvailableOptions}}
