@@ -120,7 +120,15 @@
 {{#each exercises}}
 
 <div style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
-    {{{question.statement.textPreview}}}</div>
+    {{{question.statement.textPreview}}}
+    {{#if question.answerOptions}}
+    <div class="row">
+        {{#each question.answerOptions}}
+        <div class="col text-nowrap">{{{textPreview}}}</div>
+        {{/each}}
+    </div>
+    {{/if}}
+</div>
 
 
 {{!-- <div class="font-italic small text-right text-muted">Cls.{{grade}}, {{branch}}</div> --}}

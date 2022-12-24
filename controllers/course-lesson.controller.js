@@ -66,8 +66,6 @@ exports.createOrEditGet = async (req, res) => {
     let lessonRef, courseCode, chapterIndex, positionOptions, selectedPosition;
 
     try {
-        //let lesson, positionOptions, selectedPosition;
-
         const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
         if (!canCreateOrEditCourse) {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
@@ -75,16 +73,16 @@ exports.createOrEditGet = async (req, res) => {
 
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
+        courseCode = course.code;
 
         const chapterRef = (course.chapters || []).find((x) => x.id === chapterId);
         if (!chapterRef) return res.status(500).send("Capitol negăsit!");
+        chapterIndex = course.chapters.findIndex((x) => x.id === chapterId);
 
         if (isEditMode) {
             lessonRef = (chapterRef.lessons || []).find((x) => x.id === lessonId);
             if (!lessonRef) return res.status(500).send("Lecție negăsită!");
 
-            courseCode = course.code;
-            chapterIndex = (course.chapters || []).findIndex((x) => x.id === chapterId);
             lessonRef.index = chapterRef.lessons.findIndex((x) => x.id === lessonId);
 
             if (lessonRef.theory) {

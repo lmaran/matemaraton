@@ -60,62 +60,9 @@ exports.createOrEditGet = async (req, res) => {
         { text: "Cu răspuns exact (tip numeric)", value: "3" },
     ];
 
-    const gradeAvailableOptions = [
-        { text: "Primar", value: "P" },
-        { text: "Clasa a V-a", value: "5" },
-        { text: "Clasa a VI-a", value: "6" },
-        { text: "Clasa a VII-a", value: "7" },
-        { text: "Clasa a VIII-a", value: "8" },
-    ];
-
-    const contestTypeAvailableOptions = [
-        { text: "Olimpiadă, etapa locală", value: "olimpiada-locala" },
-        { text: "Olimpiadă, etapa județeană", value: "olimpiada-judeteana" },
-        { text: "Olimpiadă, etapa națională", value: "olimpiada-nationala" },
-        { text: "Evaluare Națională", value: "evaluare-nationala" },
-        {
-            text: "Simulare Evaluare Națională",
-            value: "simulare-evaluare-nationala",
-        },
-        { text: "Alte concursuri", value: "alte-concursuri" },
-    ];
-
-    const sourceTypeAvailableOptions = [
-        { text: "Gazeta Matematică", value: "gazeta-matematica" },
-        {
-            text: "Revista de Matematică din Timișoara",
-            value: "revista-matematică-tm",
-        },
-        {
-            text: "Culegere 'Teme supliment Gazeta Matematică'",
-            value: "teme-supliment-gazeta-matematica",
-        },
-        { text: "Culegere 'Mate2000 excelență'", value: "mate2000-excelenta" },
-        {
-            text: "Culegere 'Matematică pt. olimpiade și concursuri', N. Grigore",
-            value: "mate-olimpiade-ngrigore",
-        },
-        {
-            text: "Culegere 'Exerciții pt. cercurile de matematică', P. Năchilă",
-            value: "cercuri-mate-pnachila",
-        },
-        {
-            text: "Culegere 'Mate2000 consolidare'",
-            value: "mate2000-consolidare",
-        },
-        {
-            text: "Culegere 'Evaluarea Națională', Ed. Paralela 45",
-            value: "evaluare-nationala-p45",
-        },
-        { text: "Alte surse", value: "alte-surse" },
-    ];
-
     const data = {
         isEditMode,
-        gradeAvailableOptions,
-        contestTypeAvailableOptions,
         exerciseTypeAvailableOptions,
-        sourceTypeAvailableOptions,
     };
 
     if (isEditMode) {
@@ -273,11 +220,22 @@ exports.getAll = async (req, res) => {
     if (endIndex > totalExercises) endIndex = totalExercises; // fix endIndex for the last page
 
     exercises.forEach((exercise) => {
-        let statement = `**[E.${exercise.code}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
+        const statement = `**[E.${exercise.code}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
+
+        // if (exercise.question.answerOptions) {
+        //     exercise.question.answerOptions.forEach((answerOption) => {
+        //         statement = statement + "\n" + "* " + answerOption.text;
+        //     });
+        // }
+        const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
 
         if (exercise.question.answerOptions) {
-            exercise.question.answerOptions.forEach((answerOption) => {
-                statement = statement + "\n" + "* " + answerOption.text;
+            exercise.question.answerOptions.forEach((answerOption, idx) => {
+                // insert a label (letter) in front of each option: "a" for the 1st option, "b" for the 2nd a.s.o.
+                answerOption.textPreview = markdownService.render(`${alphabet[idx]}) ${answerOption.text}`);
+                if (answerOption.isCorrect) {
+                    exercise.question.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
+                }
             });
         }
 
