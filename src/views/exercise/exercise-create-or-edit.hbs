@@ -37,12 +37,6 @@
                 {{/select}}
             </select>
         </div>
-
-        {{!-- <div class="col-md-6">
-            <label for="contestNameInput" class="fw-bold">Numele concursului:</label>
-            <input type="text" name="contestName" class="form-control" id="contestNameInput" placeholder=""
-                value="{{exercise.contestName}}">
-        </div> --}}
     </div>
 
     {{!-- statement --}}
@@ -67,9 +61,34 @@
         </div>
     </div>
 
-    {{!-- answerOptions --}}
-    <div class="row">
-         <div class="col-md-12" id="answer-option-main-div">
+    {{!-- final answer (type 1 and 3) --}} 
+    <div id="answer-main-row" class="row mt-3 mb-3 {{#if (eq2 exercise.exerciseType 2)}}d-none{{/if}}">
+        <div id="answer-main-div" class="col-md-12">
+            <label for="answer-editor-txt" class="fw-bold"> 
+                    <span id="answer-type1-lbl" class="{{#if (eq2 exercise.exerciseType 3)}}d-none{{/if}}">Rezultatul final<span class="fw-light text-muted ms-1">(pentru autoverificare)</span>:</span>
+                    <span id="answer-type3-lbl" class="{{#if (eq2 exercise.exerciseType 1)}}d-none{{/if}}">Răspunsul exact<span class="fw-light text-muted ms-1">(tip numeric)</span>:</span>
+            </label>
+
+            <textarea id="answer-editor-txt" rows="2" name="answer"
+                style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
+                class="form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.question.answer.text}}}</textarea>
+            <div class="invalid-feedback">{{errors.answer.msg}}</div>
+
+
+            <div id="answer-preview-div"
+                style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
+                {{{exercise.question.answer.textPreview}}}
+            </div>
+
+            <div class="float-end">
+                <a id="toggle-answer-editor-btn" href="">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</a>
+            </div>
+        </div>
+    </div>
+
+    {{!-- answerOptions with correct answer (type 2)--}}
+    <div id="answer-option-main-row" class="row {{#unless (eq2 exercise.exerciseType 2)}}d-none{{/unless}}">
+         <div id="answer-option-main-div" class="col-md-12">
             {{#each exercise.question.answerOptions}}
             <div class="answer-option-parent-div mb-4">
 
@@ -107,30 +126,8 @@
         </div>       
     </div>
 
-    {{!-- answer --}}
-    <div class="row mt-3 mb-3">
-        <div class="col-md-12">
-            <label for="answer-editor-txt" class="fw-bold"> Rezultatul final: </label>
-
-            <textarea id="answer-editor-txt" rows="2" name="answer"
-                style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
-                class="form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.question.answer.text}}}</textarea>
-            <div class="invalid-feedback">{{errors.answer.msg}}</div>
-
-
-            <div id="answer-preview-div"
-                style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
-                {{{exercise.question.answer.textPreview}}}
-            </div>
-
-            <div class="float-end">
-                <a id="toggle-answer-editor-btn" href="">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</a>
-            </div>
-        </div>
-    </div>
-
     {{!-- hints --}}
-    <div class="row">
+    <div class="row mt-3">
         <div class="col-md-12" id="hint-main-div">
             {{#each exercise.question.hints}}
             <div class="hint-parent-div mb-4">
@@ -187,64 +184,23 @@
 
     <div class="row mt-3">
         <div class="col-md-6">
-            <label for="gradeSelect" class="fw-bold">Clasa:</label>
-            <select name="grade" class="form-select" id="gradeSelect">
-                {{#select exercise.grade}}
-                <option value=""></option>
-                {{#each gradeAvailableOptions}}
-                <option value="{{value}}">{{text}}</option>
-                {{/each}}
-
-                {{/select}}
-            </select>
-        </div>
-
-        <div class="col-md-6">
             <label for="authorInput" class="fw-bold">Autor:</label>
             <input type="text" name="author" class="form-control" id="authorInput" placeholder=""
                 value="{{exercise.author}}">
-        </div>
-    </div>
-
-    <div class="row mt-3">
-        <div class="col-md-6">
-            <label for="contestTypeSelect" class="fw-bold">Tipul concursului
-                <span class="text-muted font-weight-normal">(la care a fost dat accest ex.)</span>:</label>
-            <select name="contestType" class="form-select" id="contestTypeSelect">
-                {{#select exercise.contestType}}
-                <option value=""></option>
-                {{#each contestTypeAvailableOptions}}
-                <option value="{{value}}">{{text}}</option>
-                {{/each}}
-                {{/select}}
-            </select>
-        </div>
-
-        <div class="col-md-6">
-            <label for="contestNameInput" class="fw-bold">Numele concursului:</label>
-            <input type="text" name="contestName" class="form-control" id="contestNameInput" placeholder=""
-                value="{{exercise.contestName}}">
-        </div>
-    </div>
-
-    <div class="row mt-3">
-        <div class="col-md-6">
-            <label for="sourceTypeSelect" class="fw-bold">Tipul sursei
-                <span class="text-muted font-weight-normal">(de unde a fost copiat ex.)</span>:</label>
-            <select name="sourceType" class="form-select" id="sourceTypeSelect">
-                {{#select exercise.sourceType}}
-                <option value=""></option>
-                {{#each sourceTypeAvailableOptions}}
-                <option value="{{value}}">{{text}}</option>
-                {{/each}}
-                {{/select}}
-            </select>
         </div>
 
         <div class="col-md-6">
             <label for="sourceNameInput" class="fw-bold">Numele sursei:</label>
             <input type="text" name="sourceName" class="form-control" id="sourceNameInput" placeholder=""
                 value="{{exercise.sourceName}}">
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <label for="contestNameInput" class="fw-bold">Numele concursului:</label>
+            <input type="text" name="contestName" class="form-control" id="contestNameInput" placeholder=""
+                value="{{exercise.contestName}}">
         </div>
     </div>
 

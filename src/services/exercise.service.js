@@ -17,6 +17,7 @@ exports.getAll = async (query) => {
 
     let qr = db.collection(collection).find(query.filter, query.select || {});
 
+    qr.sort({ _id: -1 }); // sort descending
     // if (query.$sort) {
     //     qr = qr.sort(query.$sort);
     // }

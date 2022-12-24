@@ -11,8 +11,7 @@ document.getElementById("answer-editor-txt").addEventListener("keyup", dateTimeH
 
 document.getElementById("solution-editor-txt").addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.getSolutionPreview, 500)); // with debouncer (500 ms)
 
-document.getElementById("contestTypeSelect").addEventListener("change", eventHandlers.setDefaultContestName);
-document.getElementById("sourceTypeSelect").addEventListener("change", eventHandlers.setDefaultSourceName);
+document.getElementById("exerciseTypeSelect").addEventListener("change", eventHandlers.setDefaultAnswerType);
 
 document.getElementById("toggle-statement-editor-btn").addEventListener("click", eventHandlers.toggleStatementEditor);
 document.getElementById("toggle-answer-editor-btn").addEventListener("click", eventHandlers.toggleAnswerEditor);
@@ -22,11 +21,14 @@ document.getElementById("add-hint-btn").addEventListener("click", eventHandlers.
 document.getElementById("hint-main-div").addEventListener("click", eventHandlers.handleClickForAllHints);
 document.getElementById("hint-main-div").addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.handleKeyupForAllHints, 500));
 
-document.getElementById("add-answer-option-btn").addEventListener("click", eventHandlers.addAnswerOptionHtmlNode);
-document.getElementById("answer-option-main-div").addEventListener("click", eventHandlers.handleClickForAllAnswerOptions);
-document
-    .getElementById("answer-option-main-div")
-    .addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.handleKeyupForAllAnswerOptions, 500));
+const addAnswerOptionBtn = document.getElementById("add-answer-option-btn");
+if (addAnswerOptionBtn) addAnswerOptionBtn.addEventListener("click", eventHandlers.addAnswerOptionHtmlNode);
+
+const answerOptionMainDiv = document.getElementById("answer-option-main-div");
+if (answerOptionMainDiv) {
+    answerOptionMainDiv.addEventListener("click", eventHandlers.handleClickForAllAnswerOptions);
+    answerOptionMainDiv.addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.handleKeyupForAllAnswerOptions, 500));
+}
 
 // const deleteHintButtons = document.getElementsByClassName("delete-hint-btn");
 // for (const deleteHintBtn of deleteHintButtons) {

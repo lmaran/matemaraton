@@ -1,9 +1,7 @@
 const courseService = require("../services/course.service");
 const exerciseService = require("../services/exercise.service");
 const autz = require("../services/autz.service");
-const arrayHelper = require("../helpers/array.helper");
 const markdownService = require("../services/markdown.service");
-const exerciseHelper = require("../helpers/exercise.helper");
 
 exports.createOrEditGet = async (req, res) => {
     const courseId = req.params.courseId;
@@ -15,12 +13,18 @@ exports.createOrEditGet = async (req, res) => {
     const sectionId = req.params.sectionId;
     const levelId = req.params.levelId;
 
+    const exerciseTypeAvailableOptions = [
+        { text: "Cu răspuns deschis", value: "1" },
+        { text: "Cu răspuns tip grilă (selecție unică)", value: "2" },
+        { text: "Cu răspuns exact (tip numeric)", value: "3" },
+    ];
+
     // const activeSection = req.query.section;
     // const activeLevel = req.query.level;
 
     const isEditMode = !!exerciseId;
 
-    // let lessonRef, courseCode, chapterIndex, positionOptions, selectedPosition;
+    let lessonRef, courseCode, chapterIndex, positionOptions, selectedPosition, exercise;
 
     try {
         const canCreateOrEditExercise = await autz.can(req.user, "create-or-edit:exercise");
@@ -28,116 +32,17 @@ exports.createOrEditGet = async (req, res) => {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
 
-        const gradeAvailableOptions = [
-            { text: "Primar", value: "P" },
-            { text: "Clasa a V-a", value: "5" },
-            { text: "Clasa a VI-a", value: "6" },
-            { text: "Clasa a VII-a", value: "7" },
-            { text: "Clasa a VIII-a", value: "8" },
-        ];
+        const course = await courseService.getOneById(courseId);
+        if (!course) return res.status(500).send("Curs negăsit!");
+        courseCode = course.code;
 
-        const branchAvailableOptions = [
-            // { text: "Aritmetică (primar)", value: "aritmetica" },
-            // { text: "Algebră (gimnaziu)", value: "algebra" },
-            // { text: "Geometrie (gimnaziu)", value: "geometrie" },
-            // { text: "Algebră (liceu)", value: "algebra" },
-            // { text: "Geometrie și Trigonometrie (liceu)", value: "geometrie-trigonometrie" },
-            // { text: "Analiză matematică", value: "analiza" }
+        const chapterRef = (course.chapters || []).find((x) => x.id === chapterId);
+        if (!chapterRef) return res.status(500).send("Capitol negăsit!");
+        chapterIndex = course.chapters.findIndex((x) => x.id === chapterId);
 
-            // { text: "Aritmetică (primar)", value: "aritmetica" },
-            { text: "Algebră", value: "algebra" },
-            { text: "Geometrie", value: "geometrie" },
-            { text: "Analiză matematică", value: "analiza" },
-        ];
-
-        const contestTypeAvailableOptions = [
-            { text: "Olimpiadă, etapa locală", value: "olimpiada-locala" },
-            { text: "Olimpiadă, etapa județeană", value: "olimpiada-judeteana" },
-            { text: "Olimpiadă, etapa națională", value: "olimpiada-nationala" },
-            { text: "Evaluare Națională", value: "evaluare-nationala" },
-            {
-                text: "Simulare Evaluare Națională",
-                value: "simulare-evaluare-nationala",
-            },
-            { text: "Alte concursuri", value: "alte-concursuri" },
-        ];
-
-        const sourceTypeAvailableOptions = [
-            { text: "Gazeta Matematică", value: "gazeta-matematica" },
-            {
-                text: "Revista de Matematică din Timișoara",
-                value: "revista-matematică-tm",
-            },
-            {
-                text: "Culegere 'Teme supliment Gazeta Matematică'",
-                value: "teme-supliment-gazeta-matematica",
-            },
-            { text: "Culegere 'Mate2000 excelență'", value: "mate2000-excelenta" },
-            {
-                text: "Culegere 'Matematică pt. olimpiade și concursuri', N. Grigore",
-                value: "mate-olimpiade-ngrigore",
-            },
-            {
-                text: "Culegere 'Exerciții pt. cercurile de matematică', P. Năchilă",
-                value: "cercuri-mate-pnachila",
-            },
-            {
-                text: "Culegere 'Mate2000 consolidare'",
-                value: "mate2000-consolidare",
-            },
-            {
-                text: "Culegere 'Evaluarea Națională', Ed. Paralela 45",
-                value: "evaluare-nationala-p45",
-            },
-            { text: "Alte surse", value: "alte-surse" },
-        ];
-
-        const chapterAvailableOptions = [
-            { text: "Numere Naturale", value: "numere-naturale" },
-            { text: "Numere Raționale", value: "numere-rationale" },
-            { text: "Numere Reale", value: "numere-reale" },
-            { text: "Triunghiuri", value: "triunghiuri" },
-            { text: "Patrulatere", value: "patrulatere" },
-        ];
-
-        const subchapterAvailableOptions = [
-            { text: "Rapoarte și proporții", value: "rapoarte-si-proportii" },
-            // { text: "Numere Raționale", value: "numere-rationale" },
-            // { text: "Numere Reale", value: "numere-reale" }
-            {
-                text: "Calculul măsurilor unor unghiuri",
-                value: "calculul-masurilor-unor-unghiuri",
-            },
-        ];
-
-        const lessonAvailableOptions = [
-            {
-                text: "Metoda reducerii numărului de variabile",
-                value: "metoda-reducerii-numarului-de-variabile",
-            },
-            // { text: "Numere Raționale", value: "numere-rationale" },
-            // { text: "Numere Reale", value: "numere-reale" }
-            {
-                text: "Calculul măsurilor unor unghiuri",
-                value: "calculul-masurilor-unor-unghiuri",
-            },
-        ];
-
-        const data = {
-            courseId,
-            chapterId,
-            lessonId,
-            sectionId,
-            levelId,
-            isEditMode,
-            gradeAvailableOptions,
-            branchAvailableOptions,
-            contestTypeAvailableOptions,
-            sourceTypeAvailableOptions,
-            chapterAvailableOptions,
-            subchapterAvailableOptions,
-            lessonAvailableOptions,
-        };
+        lessonRef = (chapterRef.lessons || []).find((x) => x.id === lessonId);
+        if (!lessonRef) return res.status(500).send("Lecție negăsită!");
+        lessonRef.index = chapterRef.lessons.findIndex((x) => x.id === lessonId);
 
         if (isEditMode) {
             const exercise = await exerciseService.getOneById(req.params.id);
@@ -162,9 +67,24 @@ exports.createOrEditGet = async (req, res) => {
                     answerOption.textPreview = markdownService.render(answerOption.text);
                 });
             }
-
-            data.exercise = exercise;
+        } else {
+            exercise = { exerciseType: 1 }; // Set 'open answer' as a default exercise type
         }
+
+        const data = {
+            isEditMode,
+            courseId,
+            courseCode,
+            chapterId,
+            chapterIndex,
+            lesson: lessonRef,
+            sectionId,
+            levelId,
+            positionOptions,
+            selectedPosition,
+            exercise,
+            exerciseTypeAvailableOptions,
+        };
 
         //res.send(data);
         res.render("course-exercise/course-exercise-create-or-edit", data);

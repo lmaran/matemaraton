@@ -45,73 +45,38 @@ export const eventHandlers = {
             previewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
         }
     },
-    // getHintPreview: async event => {
-    //     const data = { markdown: event.target.value };
 
-    //     const hintParentDiv = event.target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
-    //     const hintPreviewDiv = hintParentDiv.querySelector(".hint-preview-div");
-    //     hintPreviewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
-    // },
+    setDefaultAnswerType: async (event) => {
+        //alert(event.target.value);
+        const selectedExerciseType = event.target.value;
+        //const selectedContestName = event.target.options[event.target.selectedIndex].text;
+        //const contestNameInput = document.getElementById("contestNameInput");
 
-    // saveExercise: async () => {
-    //     const data = {
-    //         exerciseId: exerciseIdContainer.dataset.exerciseId,
-    //         exerciseStatement: exerciseStatementTxt.value,
-    //         exerciseSolution: exerciseSolutionTxt.value
-    //     };
-    //     const newExercise = await markdownService.saveExercise(data);
-    //     statementPreviewDiv.innerHTML = newExercise.question.statement.textPreview;
-    //     solutionPreviewDiv.innerHTML = newExercise.question.solution.textPreview;
+        const answerMainRow = document.getElementById("answer-main-row");
+        const answerOptionMainRow = document.getElementById("answer-option-main-row");
 
-    //     // show and fadeOut status icon
-    //     domHelper.showAndFadeOut(saveStatementStatusIcon, 500);
-    // },
-    setDefaultContestName: async (event) => {
-        const selectedContestType = event.target.value;
-        const selectedContestName = event.target.options[event.target.selectedIndex].text;
-        const contestNameInput = document.getElementById("contestNameInput");
+        const answerType1Lbl = document.getElementById("answer-type1-lbl");
+        const answerType3Lbl = document.getElementById("answer-type3-lbl");
 
-        switch (selectedContestType) {
-            case "olimpiada-locala":
-                contestNameInput.value = `${selectedContestName}, <judet>, <anul> (nr_pb)`;
-                break;
-            case "olimpiada-judeteana":
-            case "olimpiada-nationala":
-            case "evaluare-nationala":
-            case "simulare-evaluare-nationala":
-                contestNameInput.value = `${selectedContestName}, <anul>`;
-                break;
-            case "alte-concursuri":
-                contestNameInput.value = "Concurs <nume-concurs>, <oras>, <anul>";
-                break;
-            default:
-                contestNameInput.value = "";
-        }
-    },
-    setDefaultSourceName: async (event) => {
-        const selectedSourceType = event.target.value;
-        const selectedSourceName = event.target.options[event.target.selectedIndex].text;
-        const sourceNameInput = document.getElementById("sourceNameInput");
+        switch (selectedExerciseType) {
+            case "1":
+            case "3":
+                answerMainRow.classList.remove("d-none");
+                answerOptionMainRow.classList.add("d-none");
 
-        switch (selectedSourceType) {
-            case "gazeta-matematica":
-            case "revista-matematică-tm":
-                sourceNameInput.value = `${selectedSourceName}, <nr>/<anul>`;
+                if (selectedExerciseType == "1") {
+                    answerType1Lbl.classList.remove("d-none");
+                    answerType3Lbl.classList.add("d-none");
+                } else {
+                    answerType1Lbl.classList.add("d-none");
+                    answerType3Lbl.classList.remove("d-none");
+                }
+
                 break;
-            case "teme-supliment-gazeta-matematica":
-            case "mate2000-excelenta":
-            case "mate-olimpiade-ngrigore":
-            case "cercuri-mate-pnachila":
-                sourceNameInput.value = `${selectedSourceName}, cls.<>, <ex>/<pag>`;
+            case "2":
+                answerMainRow.classList.add("d-none");
+                answerOptionMainRow.classList.remove("d-none");
                 break;
-            case "evaluare-nationala-p45":
-                sourceNameInput.value = `${selectedSourceName}, ex.<>/<pag>`;
-                break;
-            case "mate2000-consolidare":
-                sourceNameInput.value = `${selectedSourceName}, cls.<>, partea <>, <ex>/<pag>`;
-                break;
-            default:
-                sourceNameInput.value = "";
         }
     },
     toggleStatementEditor: async (event) => {
