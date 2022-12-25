@@ -5,11 +5,11 @@
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/modifica">{{courseCode}}</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/modifica">
                 Cap.{{inc chapterIndex}}</a></li>
-        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lesson.id}}/modifica">L.{{inc lesson.index}}</a></li>
-        
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/modifica?sectionId={{sectionId}}&levelId={{levelId}}#section{{sectionId}}-level{{levelId}}">L.{{inc lesson.index}}</a></li>
+
         {{#if isEditMode}}
-        <li class="breadcrumb-item active">L.{{inc lesson.index}}</li>
-        <li title="Vizualizează" class="ms-auto"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lesson.id}}"><i class="bi bi-eye me-1"></i></a></li>
+        <li class="breadcrumb-item active">E.{{exercise.code}}</li>
+        <li title="Vizualizează" class="ms-auto"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}"><i class="bi bi-eye me-1"></i></a></li>
         {{/if}}
     </ol>
 </nav>
@@ -18,8 +18,9 @@
     {{#if isEditMode}}Exercițiul {{exercise.code}}{{else}} Exercițiu nou:{{/if}}
 </h1>
 
+{{!-- {{toJSON exercise}} --}}
 
-<form method="post" action="/exercitii/adauga" novalidate onsubmit="saveBtn.disabled = true; return true;">
+<form method="post" action="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/sectiuni/{{sectionId}}/niveluri/{{levelId}}/exercitii/adauga" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
     {{!-- Exercise type --}}
     <div class="row mt-3 mb-3">
@@ -202,8 +203,13 @@
     </div>
 
     <input type="hidden" name="id" value="{{exercise._id}}" />
-    {{#if contest}}
-    <input type="hidden" name="contestId" value="{{contest._id}}" />
+
+    {{#if exerciseInLesson}}
+    <input type="hidden" name="courseId" value="{{courseId}}" />
+    <input type="hidden" name="chapterId" value="{{chapterId}}" />
+    <input type="hidden" name="lessonId" value="{{lessonId}}" />
+    <input type="hidden" name="sectionId" value="{{sectionId}}" />
+    <input type="hidden" name="levelId" value="{{levelId}}" />
     {{/if}}
 
 

@@ -104,7 +104,7 @@ exports.createOrEditPost = async (req, res) => {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
 
-        const { id, grade, contestType, contestName, sourceType, exerciseType, sourceName, author, statement, answer, solution } = req.body;
+        const { id, grade, contestName, exerciseType, sourceName, author, statement, answer, solution } = req.body;
         const isEditMode = !!id;
 
         const exercise = {
@@ -114,10 +114,8 @@ exports.createOrEditPost = async (req, res) => {
                 answer: { text: answer },
             },
             grade,
-            contestType,
             exerciseType,
             contestName,
-            sourceType,
             sourceName,
             author,
         };
