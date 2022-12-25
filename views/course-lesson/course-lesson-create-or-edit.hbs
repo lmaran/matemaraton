@@ -52,7 +52,7 @@
                 {{{lesson.theory.textPreview}}}
             </div>
 
-            <span class="float-end">
+            <span class="ms-end">
                 <a id="toggle-theory-editor-btn" href="">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</a>
             </span>
 
@@ -75,8 +75,6 @@
             </small>
         </div>
     </div>
-
-    {{!-- <label class="fw-bold">Vizibilitate:</label> --}}
 
     <div class="form-check">
         <input type="checkbox" class="form-check-input" id="isHiddenCheck" name="isHidden" {{#if
@@ -110,14 +108,14 @@
                     {{else}} ({{exercises.length}} exerciții):
                     {{/if}} 
                 </span>
-                <a class="add-exercise-btn me-2" title="Adaugă exercițiu" href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lesson.id}}/sectiune/{{../id}}/nivel/{{id}}/exercitii/adauga"><i class="bi bi-plus-square"></i></a>
+                {{!-- <a class="add-exercise-btn me-2" title="Adaugă exercițiu" href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lesson.id}}/sectiuni/{{../id}}/niveluri/{{id}}/exercitii/adauga"><i class="bi bi-plus-square"></i></a> --}}
                 {{#if exercises.length}}
                 <a class="toggle-level-btn me-2" href="#">{{#if isActive}}Ascunde exercițiile{{else}}Afișează{{/if}}</a>
                 {{!-- <span class="text-muted ms-2 me-2"></span> --}}
                 {{/if}}
                 
             </div>
-            <div class="level-content-div mb-3 {{#unless isActive}}d-none{{/unless}}">
+            <div class="level-content-div mb-3 ms-4 {{#unless isActive}}d-none{{/unless}}">
             {{#each exercises}}
             <div class="exercise-div">
                 <div class="statement-div mt-3" style="border: 1px solid #b99888; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
@@ -131,15 +129,45 @@
                     {{/if}}
                 </div>
 
-                <div class="exercise-menu-div">
-                    {{#if question.hints}}
-                        <a class="toggle-hints-btn" href="">Indicații</a>
-                        <span class="text-muted">({{question.hints.length}})</span>
-                        <span class="text-muted ms-2 me-2">|</span>
-                    {{/if}}
-                    {{#if question.solution.textPreview}}
-                        <a class="toggle-solution-btn" href="">Soluție</a>
-                    {{/if}}
+                <div class="exercise-menu-div clearfix">
+                    <div class="float-start">
+                        {{#if question.hints}}
+                            <a class="toggle-hints-btn" href="">Indicații</a>
+                            <span class="text-muted">({{question.hints.length}})</span>
+                            <span class="text-muted ms-2 me-2">|</span>
+                        {{/if}}
+
+                        {{#if question.solution.textPreview}}
+                            <a class="toggle-solution-btn" href="">Soluție</a>
+                        {{/if}}
+                    </div>
+
+                    {{!-- Exercise menu --}}
+                    <div class="float-end">
+                        <a id="view-exercise-btn" title="Vizualizează exercițiul" 
+                            href="">
+                            <i class="bi bi-eye me-1"></i></a>
+                        
+                        <a id="edit-exercise-btn" title="Editează exercițiul" 
+                            href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lesson.id}}/sectiuni/{{../../id}}/niveluri/{{../id}}/exercitii/{{_id}}/modifica">
+                            <i class="bi bi-pencil me-1"></i></a>
+                        
+                        {{!-- <a id="edit-exercise-btn" title="Șterge exercițiul" 
+                            onclick="return confirm('Ești sigur că vrei să ștergi acest exercițiu?');"
+                            formaction="/exercitii/sterge" 
+                            href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lesson.id}}/sectiuni/{{../../id}}/niveluri/{{../id}}/exercitii/{{_id}}/modifica">
+                            <i class="bi bi-trash me-1"></i></a> --}}
+
+                        <form method="post" onsubmit="deleteBtn.disabled = true; return true;" style="display:inline">
+                            {{!-- <input type="hidden" name="exerciseId" value="{{exercise._id}}" /> --}}
+
+                            <button title = "Șterge exercițiul" type="submit" 
+                                formaction="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lesson.id}}/exercitii/{{_id}}/sterge" title="Șterge"
+                                name="deleteBtn" class="btn btn-link btn-outline-primary2 p-0 border-0 me-1 align-top"
+                                onclick="return confirm('Ești sigur că vrei să ștergi acest exercițiu?');"><i
+                                    class="bi bi-trash"></i></button>
+                        </form>
+                    </div>
                 </div>
 
                 {{#if question.hints}}
@@ -164,8 +192,11 @@
                 {{/if}}
             </div>
             {{/each}}
+            
+            <a class="btn btn-outline-primary btn-sm mt-3" href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lesson.id}}/sectiuni/{{../id}}/niveluri/{{id}}/exercitii/adauga"><i class="bi bi-plus-lg"></i> Adaugă exercițiu</a> 
+            {{!-- <a class="add-exercise-btn me-2" title="Adaugă exercițiu" href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lesson.id}}/sectiuni/{{../id}}/niveluri/{{id}}/exercitii/adauga"><i class="bi bi-plus-square"></i></a>
+             --}}
             </div>
-            {{!-- {{/if}} --}}
         {{/each}}
         {{/each}}
     {{else}}
