@@ -114,6 +114,11 @@ router.get(
 
 // course-exercise
 router.get(
+    "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/sectiuni/:sectionId/niveluri/:levelId/exercitii/:exerciseId",
+    isAuthenticated,
+    courseExerciseController.getOneById
+);
+router.get(
     "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/sectiuni/:sectionId/niveluri/:levelId/exercitii/:exerciseId/modifica",
     isAuthenticated,
     courseExerciseController.createOrEditGet
@@ -137,6 +142,11 @@ router.post(
     "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/exercitii/:exerciseId/sterge",
     isAuthenticated,
     courseExerciseController.deleteOneById
+);
+router.get(
+    "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/sectiuni/:sectionId/niveluri/:levelId/exercitii/:exerciseId/json",
+    isAuthenticated,
+    courseExerciseController.jsonGet
 );
 //router.post("/cursuri/:courseId/capitole/:chapterId/lectii/adauga", isAuthenticated, courseLessonController.createOrEditPost);
 

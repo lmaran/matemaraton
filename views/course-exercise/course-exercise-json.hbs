@@ -1,0 +1,26 @@
+{{#section 'head'}}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/default.min.css">
+{{/section}}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/modifica">Cursuri</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/modifica">{{courseCode}}</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/modifica">
+                Cap.{{inc chapterIndex}}</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/modifica?sectionId={{sectionId}}&levelId={{levelId}}#section{{sectionId}}-level{{levelId}}">L.{{inc lessonIndex}}</a></li>
+
+        <li class="breadcrumb-item active">E.{{exercise.code}}</li>
+        <li title="Vizualizează" class="ms-auto"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/sectiuni/{{sectionId}}/niveluri/{{levelId}}/exercitii/{{exercise._id}}"><i class="bi bi-eye me-1"></i></a></li>
+        <li title="Modifică" class="ms-auto2"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/sectiuni/{{sectionId}}/niveluri/{{levelId}}/exercitii/{{exercise._id}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
+    </ol>
+</nav>
+
+<h1 id="exercise-id-container" data-exercise-id="{{exercise._id}}">Exercițiul {{exercise.code}}</h1>
+
+{{!-- <pre><code>{{formattedExercise}}</code></pre> --}}
+
+<pre><code>{{{prettyExercise}}}</code></pre>
+
+
