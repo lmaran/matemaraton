@@ -4,6 +4,102 @@ const autz = require("../services/autz.service");
 const markdownService = require("../services/markdown.service");
 const idGeneratorMongoService = require("../services/id-generator-mongo.service");
 
+const { exerciseTypeAvailableOptions } = require("../constants/constants");
+
+const hljs = require("highlight.js/lib/core");
+hljs.registerLanguage("json", require("highlight.js/lib/languages/json"));
+
+exports.getOneById = async (req, res) => {
+    const { courseId, chapterId, lessonId, sectionId, levelId, exerciseId } = req.params;
+
+    const isEditMode = !!exerciseId;
+    const exerciseInLesson = !!(courseId && chapterId && lessonId);
+
+    let lessonRef, courseCode, chapterIndex, positionOptions, selectedPosition, exercise;
+
+    try {
+        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+        if (!canCreateOrEditCourse) {
+            return res.status(403).send("Lipsă permisiuni!"); // forbidden
+        }
+
+        const course = await courseService.getOneById(courseId);
+        if (!course) return res.status(500).send("Curs negăsit!");
+        courseCode = course.code;
+
+        const chapterRef = (course.chapters || []).find((x) => x.id === chapterId);
+        if (!chapterRef) return res.status(500).send("Capitol negăsit!");
+        chapterIndex = course.chapters.findIndex((x) => x.id === chapterId);
+
+        lessonRef = (chapterRef.lessons || []).find((x) => x.id === lessonId);
+        if (!lessonRef) return res.status(500).send("Lecție negăsită!");
+        lessonRef.index = chapterRef.lessons.findIndex((x) => x.id === lessonId);
+
+        // console.log(exerciseInLesson);
+        // return;
+
+        exercise = await exerciseService.getOneById(exerciseId);
+
+        if (exercise && exercise.question) {
+            const statement = `**E.${exercise.code}.** ${exercise.question.statement?.text}`;
+            // const statement = `**[Problema ${++i}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
+
+            exercise.question.statement.textPreview = markdownService.render(statement);
+
+            if (exercise.question.answer && exercise.question.answer.text) {
+                exercise.question.answer.textPreview = markdownService.render(exercise.question.answer.text);
+            }
+
+            if (exercise.question.solution && exercise.question.solution.text) {
+                exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
+            }
+
+            if (exercise.question.hints) {
+                exercise.question.hints.forEach((hint, idx) => {
+                    hint.textPreview = markdownService.render(`**Indicația ${idx + 1}:** ${hint.text}`);
+                });
+            }
+
+            const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+            if (exercise.question.answerOptions) {
+                exercise.question.answerOptions.forEach((answerOption, idx) => {
+                    // insert a label (letter) in front of each option: "a" for the 1st option, "b" for the 2nd a.s.o.
+                    answerOption.textPreview = markdownService.render(`${alphabet[idx]}) ${answerOption.text}`);
+                    if (answerOption.isCorrect) {
+                        exercise.question.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
+                    }
+                });
+            }
+        }
+
+        exercise.exerciseType = exerciseTypeAvailableOptions.find((x) => x.value == exercise.exerciseType);
+
+        const data = {
+            isEditMode,
+
+            courseId,
+            chapterId,
+            lessonId,
+            sectionId,
+            levelId,
+
+            courseCode,
+            chapterIndex,
+            lesson: lessonRef,
+            positionOptions,
+            selectedPosition,
+            exercise,
+            exerciseTypeAvailableOptions,
+            exerciseInLesson,
+        };
+
+        //res.send(data);
+        res.render("course-exercise/course-exercise", data);
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
+};
+
 exports.createOrEditGet = async (req, res) => {
     const { courseId, chapterId, lessonId, sectionId, levelId, exerciseId } = req.params;
 
@@ -233,6 +329,72 @@ exports.createOrEditPost = async (req, res) => {
         } else {
             res.redirect(`/exercitii/${exercise._id}/modifica`);
         }
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
+};
+
+exports.jsonGet = async (req, res) => {
+    const { courseId, chapterId, lessonId, sectionId, levelId, exerciseId } = req.params;
+
+    //const isEditMode = !!exerciseId;
+    //const exerciseInLesson = !!(courseId && chapterId && lessonId);
+
+    // const exerciseTypeAvailableOptions = [
+    //     { text: "Cu răspuns deschis", value: "1" },
+    //     { text: "Cu răspuns tip grilă (selecție unică)", value: "2" },
+    //     { text: "Cu răspuns exact (tip numeric)", value: "3" },
+    // ];
+
+    let lessonRef, courseCode, chapterIndex, lessonIndex, exercise;
+
+    try {
+        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+        if (!canCreateOrEditCourse) {
+            return res.status(403).send("Lipsă permisiuni!"); // forbidden
+        }
+
+        exercise = await exerciseService.getOneById(exerciseId);
+
+        const course = await courseService.getOneById(courseId);
+        if (!course) return res.status(500).send("Curs negăsit!");
+        courseCode = course.code;
+
+        const chapterRef = (course.chapters || []).find((x) => x.id === chapterId);
+        if (!chapterRef) return res.status(500).send("Capitol negăsit!");
+        chapterIndex = course.chapters.findIndex((x) => x.id === chapterId);
+
+        lessonRef = (chapterRef.lessons || []).find((x) => x.id === lessonId);
+        if (!lessonRef) return res.status(500).send("Lecție negăsită!");
+        lessonIndex = chapterRef.lessons.findIndex((x) => x.id === lessonId);
+
+        // 1. format (indent, new lines)
+        // it requires <pre>, <code> and 2 curly braces: "<pre><code>{{formattedExercise}}</code></pre>""
+        const formattedExercise = JSON.stringify(exercise, null, 4);
+
+        // 2. highlight (inject html tags in order to support colors, borders etc)
+        // it requires <pre>, <code> and 3 curly braces: "<pre><code>{{prettyExercise}}</code></pre>""
+        const prettyExercise = hljs.highlight(formattedExercise, { language: "json" }).value;
+
+        const data = {
+            courseId,
+            chapterId,
+            lessonId,
+            sectionId,
+            levelId,
+
+            courseCode,
+            chapterIndex,
+            lessonIndex,
+
+            exercise,
+            //formattedExercise,
+            prettyExercise,
+        };
+
+        //res.send(data);
+
+        res.render("course-exercise/course-exercise-json", data);
     } catch (err) {
         return res.status(500).json(err.message);
     }

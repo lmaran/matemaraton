@@ -136,5 +136,15 @@ https://github.com/twbs/bootstrap/issues/20643#issuecomment-325579156 */
     border-color: #bb815d;
 }
 
-.markdown-textarea-gray {
+/* Overwrite some highlight.js settings */
+.hljs-attr {
+    font-weight: bold;
+}
+
+.hljs-string {
+    color: green;
+}
+
+.hljs-keyword {
+    color: firebrick;
 }

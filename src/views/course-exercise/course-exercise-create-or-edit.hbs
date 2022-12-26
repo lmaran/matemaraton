@@ -9,7 +9,9 @@
 
         {{#if isEditMode}}
         <li class="breadcrumb-item active">E.{{exercise.code}}</li>
-        <li title="Vizualizează" class="ms-auto"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}"><i class="bi bi-eye me-1"></i></a></li>
+        <li title="Json" class="ms-auto me-2"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/sectiuni/{{sectionId}}/niveluri/{{levelId}}/exercitii/{{exercise._id}}/json"><i class="bi bi-braces me-1"></i></a></li>
+        <li title="Vizualizează" class="ms-auto2"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/sectiuni/{{sectionId}}/niveluri/{{levelId}}/exercitii/{{exercise._id}}"><i class="bi bi-eye me-1"></i></a></li>
+        
         {{/if}}
     </ol>
 </nav>
@@ -218,10 +220,10 @@
             <button type="submit" name="saveBtn" class="btn btn-primary"><i class="bi bi-save"></i>
                 Salveaza</button>
 
-            {{#if isEditMode}}
+            {{!-- {{#if isEditMode}}
             <a href="{{#if contest}}/concursuri/{{contest._id}}{{/if}}/exercitii/{{exercise._id}}"
                 class="btn btn-light"><i class="bi bi-eye"></i> Vizualizează</a>
-            {{/if}}
+            {{/if}} --}}
 
             <label class="col-md-3s col-form-label float-end"> Ajutor:
                 <a href="https://markdown-it.github.io/" target="_blank">markdon</a>

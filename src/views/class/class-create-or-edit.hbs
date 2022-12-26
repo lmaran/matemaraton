@@ -68,7 +68,7 @@
         <div class="col-md-12 mb-3">
             <label class="fw-bold">Descriere:</label>
             <textarea id="description-editor-txt" rows="5" type="text" name="description"
-                class="form-control markdown-textarea markdown-textarea-gray {{#if errors.description}}is-invalid {{/if}}
+                class="form-control markdown-textarea {{#if errors.description}}is-invalid {{/if}}
                 {{#if isEditMode}}d-none{{/if}}" 
                 {{#if uiData.description.hasAutofocus}}autofocus {{/if}}>{{class.description}}</textarea>
 
