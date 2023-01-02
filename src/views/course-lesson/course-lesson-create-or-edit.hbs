@@ -132,6 +132,23 @@
                         {{/each}}
                         </div>
                     {{/if}}
+
+
+                    <div class="exercise-details-div clearfix">
+                        <div class="float-start"></div>
+                        <div class="float-end">
+                            {{#if authorAndSource1}}<span class="text-muted fw-light fst-italic"><small>{{authorAndSource1}}</small></span>{{/if}}
+                        </div>
+
+                    </div>
+
+                    <div class="exercise-details-div clearfix">
+                        <div class="float-start"></div>
+                        <div class="float-end">
+                            {{#if source2}}<span class="text-muted fw-light fst-italic"><small>{{source2}}</small></span>{{/if}}
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="exercise-menu-div clearfix">
@@ -165,26 +182,6 @@
                         <a title="Mută exercițiul" 
                             href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lessonId}}/sectiuni/{{../../id}}/niveluri/{{../id}}/exercitii/{{_id}}/muta">
                             <i class="bi bi-arrows-move me-1"></i></a>
-                    </div>
-                </div>
-
-                <div class="exercise-details-div clearfix">
-                    <div class="float-start">
-                        
-                        {{!-- {{#if question.hints}}
-                            <a class="toggle-hints-btn" href="">Indicații</a>
-                            <span class="text-muted">({{question.hints.length}})</span>
-                            <span class="text-muted ms-2 me-2">|</span>
-                        {{/if}}
-
-                        {{#if question.solution.textPreview}}
-                            <a class="toggle-solution-btn" href="">Soluție</a>
-                        {{/if}} --}}
-                    </div>
-
-                    {{!-- Exercise menu --}}
-                    <div class="float-end">
-                        <span class="text-muted">{{author}}</span>
                     </div>
                 </div>
 
