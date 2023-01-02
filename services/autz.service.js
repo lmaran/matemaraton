@@ -33,10 +33,6 @@ exports.can = async (user, rp) => {
         return up.includes("*:*") || up.includes(rp);
     } else if (rp === "delete:course") {
         return up.includes("*:*") || up.includes(rp);
-    } else if (rp === "create-or-edit:contest") {
-        return up.includes("*:*") || up.includes(rp);
-    } else if (rp === "delete:contest") {
-        return up.includes("*:*") || up.includes(rp);
     } else if (rp === "read:users") {
         return up.includes("*:*") || up.includes(rp);
     } else if (rp === "read:user") {

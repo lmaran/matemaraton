@@ -1,9 +1,5 @@
-import { exerciseService } from "./exercise.service.js";
-// import { domHelper } from "../helpers/dom.helper.js";
+import { exerciseService } from "..services/exercise.service.js";
 
-/**
- * event handlers (alias 'controller')
- */
 export const eventHandlers = {
     toggleAnswer: async (event) => {
         const div = document.getElementById("answer-div");
@@ -55,8 +51,5 @@ export const eventHandlers = {
         const data = { exerciseId, submittedSolution: { comment, files } };
 
         await exerciseService.submitMySolution(data);
-        //const response = await exerciseService.submitMySolution(data);
-
-        //console.log(response);
     },
 };

@@ -29,7 +29,7 @@ exports.getOneById = async (req, res) => {
 
         if (exercise.question.answer) exercise.question.answer.textPreview = markdownService.render(`**Răspuns:** ${exercise.question.answer.text}`);
 
-        if (exercise.question.solution) exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
+        if (exercise.question.solution?.text) exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
 
         if (exercise.question.hints) {
             exercise.question.hints.forEach((hint, idx) => {
@@ -214,13 +214,13 @@ exports.getAll = async (req, res) => {
     if (endIndex > totalExercises) endIndex = totalExercises; // fix endIndex for the last page
 
     exercises.forEach((exercise) => {
-        const statement = `**[E.${exercise.code}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
+        let statement = `**[E.${exercise.code}.](/exercitii/${exercise._id})** ${exercise.question.statement?.text}`;
 
-        // if (exercise.question.answerOptions) {
-        //     exercise.question.answerOptions.forEach((answerOption) => {
-        //         statement = statement + "\n" + "* " + answerOption.text;
-        //     });
-        // }
+        if (exercise.question.answerOptions) {
+            exercise.question.answerOptions.forEach((answerOption) => {
+                statement = statement + "\n" + "* " + answerOption.text;
+            });
+        }
         const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
 
         if (exercise.question.answerOptions) {
@@ -232,10 +232,11 @@ exports.getAll = async (req, res) => {
                 }
             });
         }
+        if (exercise.question.statement) {
+            exercise.question.statement.textPreview = markdownService.render(statement);
+        }
 
-        exercise.question.statement.textPreview = markdownService.render(statement);
-
-        if (exercise.question.solution) {
+        if (exercise.question.solution?.text) {
             exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
         }
         if (exercise.question.hints) {

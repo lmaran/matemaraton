@@ -81,32 +81,6 @@ exports.createOrEditGet = async (req, res) => {
         data.uiData.name = { hasAutofocus: true }; // no errors (e.g. first page request)s
     }
 
-    // const gradeAvailableOptions = [
-    //     { text: "Clasa a V-a", value: "5" },
-    //     { text: "Clasa a VI-a", value: "6" },
-    //     { text: "Clasa a VII-a", value: "7" },
-    //     { text: "Clasa a VIII-a", value: "8" },
-    // ];
-
-    // const contestTypeAvailableOptions = [
-    //     { text: "Olimpiadă, etapa locală", value: "olimpiada-locala" },
-    //     { text: "Olimpiadă, etapa județeană", value: "olimpiada-judeteana" },
-    //     { text: "Olimpiadă, etapa națională", value: "olimpiada-nationala" },
-    //     { text: "Alte concursuri", value: "alte-concursuri" },
-    // ];
-
-    // const data = {
-    //     isEditMode,
-    //     // gradeAvailableOptions,
-    //     // contestTypeAvailableOptions,
-    // };
-    // data.isEditMode = isEditMode;
-
-    // if (isEditMode) {
-    //     const cls = await classService.getOneById(classId);
-    //     data.class = cls;
-    // }
-
     //res.send(data);
     res.render("class/class-create-or-edit", data);
 };

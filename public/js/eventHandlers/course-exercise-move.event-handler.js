@@ -1,7 +1,3 @@
-//import { commonEventHandler } from "./course-lesson.common-event-handler.js";
-// import { dateTimeHelper } from "../helpers/date-time.helper.js";
-// import { markdownService } from "../markdown/markdown.service.js";
-
 import { courseExerciseService } from "../services/course-exercise.service.js";
 
 export const eventHandlers = {

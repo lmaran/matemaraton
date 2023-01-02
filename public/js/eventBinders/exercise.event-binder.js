@@ -1,9 +1,5 @@
-import { eventHandlers } from "./exercise.event-handler.js";
+import { eventHandlers } from "../eventHandlers/exercise.event-handler.js";
 //import { uploadFilesHelper } from "../helpers/upload-files.helper.js";
-
-/**
- * event binders (alias 'router')
- */
 
 const toggleAnswerBtn = document.getElementById("toggle-answer-btn");
 if (toggleAnswerBtn) toggleAnswerBtn.addEventListener("click", eventHandlers.toggleAnswer);

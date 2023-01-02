@@ -63,11 +63,6 @@ exports.deleteOneById = async (req, res) => {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
 
-    // const user = await userService.getOneById(id);
-    // if (contest.exercises && contest.exercises.length > 0) {
-    //     return res.status(403).send("Șterge întâi exercițiile!");
-    // }
-
     userService.deleteOneById(userId);
     res.redirect("/utilizatori");
 };

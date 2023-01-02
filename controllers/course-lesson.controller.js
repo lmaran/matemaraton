@@ -51,6 +51,7 @@ exports.getOneById = async (req, res) => {
         //res.send(data);
         res.render("course-lesson/course-lesson", data);
     } catch (err) {
+        console.log(err);
         return res.status(500).json(err.message);
     }
 };
@@ -117,6 +118,7 @@ exports.createOrEditGet = async (req, res) => {
         //res.send(data);
         res.render("course-lesson/course-lesson-create-or-edit", data);
     } catch (err) {
+        console.log(err);
         return res.status(500).json(err.message);
     }
 };
@@ -257,17 +259,39 @@ const getSectionsObj = (exercisesRef, exercisesFromDb, clear) => {
     exercisesRef.sort((exerciseA, exerciseB) => exerciseA.sectionId - exerciseB.sectionId || exerciseA.levelId - exerciseB.levelId);
 
     const exercises = exercisesRef.map((x, idx) => {
-        const exercise = exercisesFromDb.find((y) => y._id.toString() === x.id);
+        let exercise = exercisesFromDb.find((y) => y._id.toString() === x.id);
         // add preview
         //const statementNumber = `**[R.${++idx}](/exercitii/${exercise._id})**`;
         // const statementNumber = x.sectionId == 1 ? `**R${++idx}.**&nbsp;` : `**P${++idx}.**&nbsp;`;
+
         const statementNumber = `**Problema ${++idx}.**`;
+        if (!exercise) {
+            exercise = { _id: x.id, question: { statement: { text: "Exercitiul a fost șters din DB!" } } };
+        }
         exerciseHelper.addPreview(exercise, statementNumber, clear);
         return exercise;
     });
 
     exercisesRef.forEach((e) => {
         const exercise = exercises.find((x) => x._id.toString() === e.id);
+
+        // row1 = authorAndSource1 = "<Author>, <ContestName>"
+        // row2 = source2 = "<SourceName>"
+        // If <ContestName> is not present, we will put "<SourceName>" on row1
+        if (exercise.author) {
+            exercise.authorAndSource1 = exercise.author;
+            if (exercise.contestName) {
+                exercise.authorAndSource1 = `${exercise.authorAndSource1}, ${exercise.contestName}`;
+                exercise.source2 = exercise.sourceName;
+            } else if (exercise.sourceName) {
+                exercise.authorAndSource1 = `${exercise.authorAndSource1}, ${exercise.sourceName}`;
+            }
+        } else if (exercise.contestName) {
+            exercise.authorAndSource1 = exercise.contestName;
+            exercise.source2 = exercise.sourceName;
+        } else {
+            exercise.authorAndSource1 = exercise.sourceName;
+        }
 
         const section = sectionsObj.sections.find((s) => s.id == e.sectionId);
 
