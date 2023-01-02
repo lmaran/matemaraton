@@ -1,5 +1,5 @@
 const mongoHelper = require("../helpers/mongo.helper");
-const { ObjectID } = require("mongodb");
+const { ObjectId } = require("mongodb");
 
 const collection = "exercises";
 
@@ -42,7 +42,7 @@ exports.getNumberOfSessionForClass = async (classId) => {
 
 exports.getOneById = async (id) => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).findOne({ _id: new ObjectID(id) });
+    return db.collection(collection).findOne({ _id: new ObjectId(id) });
 };
 
 exports.getOneByCode = async (code) => {
@@ -52,7 +52,7 @@ exports.getOneByCode = async (code) => {
 
 exports.updateOne = async (item) => {
     const db = await mongoHelper.getDb();
-    item._id = new ObjectID(item._id);
+    item._id = new ObjectId(item._id);
     return db.collection(collection).updateOne({ _id: item._id }, { $set: item });
 };
 
@@ -62,18 +62,18 @@ exports.insertOne = async (item) => {
     return db.collection(collection).insertOne(item);
 };
 
-exports.getObjectId = () => new ObjectID();
+exports.getObjectId = () => new ObjectId();
 
 exports.deleteOneById = async (id) => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).deleteOne({ _id: new ObjectID(id) });
+    return db.collection(collection).deleteOne({ _id: new ObjectId(id) });
 };
 
 exports.getAllByIds = async (ids) => {
     const db = await mongoHelper.getDb();
     return db
         .collection(collection)
-        .find({ _id: { $in: ids.map((x) => new ObjectID(x)) } })
+        .find({ _id: { $in: ids.map((x) => new ObjectId(x)) } })
         .toArray();
 };
 

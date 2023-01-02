@@ -1,4 +1,4 @@
-// const { ObjectID } = require("mongodb");
+// const { ObjectId } = require("mongodb");
 // const studentService = require("../services/student.service");
 // const personService = require("../services/person.service");
 // const classService = require("../services/class.service");
@@ -31,7 +31,7 @@ exports.upgradeOperation = async (req, res) => {
 
 //         mongoOps.push({
 //             updateOne: {
-//                 filter: { _id: new ObjectID(x._id) },
+//                 filter: { _id: new ObjectId(x._id) },
 //                 // update: { $set: { studentIds }, $unset: { students: "" } }
 //                 update: { $set: x }
 //             }
@@ -55,7 +55,7 @@ exports.upgradeOperation = async (req, res) => {
 
 //             mongoOps.push({
 //                 updateOne: {
-//                     filter: { _id: new ObjectID(person._id) },
+//                     filter: { _id: new ObjectId(person._id) },
 //                     update: { $set: { studentIds }, $unset: { students: "" } }
 //                 }
 //             });
@@ -67,7 +67,7 @@ exports.upgradeOperation = async (req, res) => {
 
 //             mongoOps.push({
 //                 updateOne: {
-//                     filter: { _id: new ObjectID(person._id) },
+//                     filter: { _id: new ObjectId(person._id) },
 //                     update: { $set: { parentIds }, $unset: { parents: "" } }
 //                 }
 //             });
@@ -130,7 +130,7 @@ exports.upgradeOperation = async (req, res) => {
 
 //             mongoOps.push({
 //                 updateOne: {
-//                     filter: { _id: new ObjectID(person._id) },
+//                     filter: { _id: new ObjectId(person._id) },
 //                     update: { $set: { academicYearRelatedInfo: academicYearRelatedInfo } }
 //                 }
 //             });
@@ -186,7 +186,7 @@ exports.upgradeOperation = async (req, res) => {
 
 //         mongoOps.push({
 //             updateOne: {
-//                 filter: { _id: new ObjectID(course._id) },
+//                 filter: { _id: new ObjectId(course._id) },
 //                 update: { $set: { attendeesIds: attendeesIds } }
 //             }
 //         });

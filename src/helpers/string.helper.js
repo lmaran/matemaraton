@@ -1,5 +1,5 @@
 const path = require("path");
-const { ObjectID } = require("mongodb");
+const { ObjectId } = require("mongodb");
 
 exports.endsWithValueFromList = (str, endValues) => {
     return endValues.some((v) => str.endsWith(v));
@@ -34,6 +34,6 @@ exports.getUniqueFileName = (fileName) => {
     // const fileNameWithoutExtension = parsedFile.name; // Cuş Cuş
     const fileExtensionWithDot = parsedFile.ext; // .jpg
 
-    //const uniqueIdentifier = new ObjectID();
-    return new ObjectID() + fileExtensionWithDot;
+    //const uniqueIdentifier = new ObjectId();
+    return new ObjectId() + fileExtensionWithDot;
 };

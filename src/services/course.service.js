@@ -1,5 +1,5 @@
 const mongoHelper = require("../helpers/mongo.helper");
-const { ObjectID } = require("mongodb");
+const { ObjectId } = require("mongodb");
 
 const collection = "courses";
 
@@ -10,7 +10,7 @@ exports.getAll = async () => {
 
 exports.getOneById = async (id) => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).findOne({ _id: new ObjectID(id) });
+    return db.collection(collection).findOne({ _id: new ObjectId(id) });
 };
 
 exports.getCourseSummaryByCode = async (code) => {
@@ -20,7 +20,7 @@ exports.getCourseSummaryByCode = async (code) => {
 
 exports.updateOne = async (item) => {
     const db = await mongoHelper.getDb();
-    item._id = new ObjectID(item._id);
+    item._id = new ObjectId(item._id);
     return db.collection(collection).updateOne({ _id: item._id }, { $set: item });
 };
 
@@ -32,7 +32,20 @@ exports.insertOne = async (item) => {
 
 exports.deleteOneById = async (id) => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).deleteOne({ _id: new ObjectID(id) });
+    return db.collection(collection).deleteOne({ _id: new ObjectId(id) });
 };
 
-exports.getObjectId = () => new ObjectID();
+exports.getCoursesNames = async () => {
+    const db = await mongoHelper.getDb();
+    return (
+        db
+            .collection(collection)
+            .find()
+            .sort({ code: 1 })
+            //.collation({ locale: "ro", numericOrdering: true }) // compare strings as numbers
+            .project({ code: 1, name: 1 })
+            .toArray()
+    );
+};
+
+exports.getObjectId = () => new ObjectId();

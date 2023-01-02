@@ -31,7 +31,7 @@
             <select name="exerciseType" class="form-select" id="exerciseTypeSelect">
                 {{#select exercise.exerciseType}}
                 <option value=""></option>
-                {{#each exerciseTypeAvailableOptions}}
+                {{#each availableExerciseTypes}}
                 <option value="{{value}}">{{text}}</option>
                 {{/each}}
                 {{/select}}
@@ -202,18 +202,29 @@
             <input type="text" name="contestName" class="form-control" id="contestNameInput" placeholder=""
                 value="{{exercise.contestName}}">
         </div>
+
+        <div class="col-md-6">
+            <label for="positionSelect" class="fw-bold">Poziția în listă:</label>
+            <select name="position" class="form-select" id="positionSelect">
+                {{#select selectedPosition}}
+                {{#each availablePositions}}
+                <option value="{{index}}">{{name}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+            {{!-- <small>
+                <p class="text-muted mb-0">Poziția în cadrul listei</p>
+            </small> --}}
+        </div>
+
     </div>
 
-    <input type="hidden" name="id" value="{{exercise._id}}" />
-
-    {{#if exerciseInLesson}}
     <input type="hidden" name="courseId" value="{{courseId}}" />
     <input type="hidden" name="chapterId" value="{{chapterId}}" />
     <input type="hidden" name="lessonId" value="{{lessonId}}" />
     <input type="hidden" name="sectionId" value="{{sectionId}}" />
     <input type="hidden" name="levelId" value="{{levelId}}" />
-    {{/if}}
-
+    <input type="hidden" name="exerciseId" value="{{exercise._id}}" />
 
     <div class="row mt-3 mb-3">
         <div class="col-md-7s offset-md-3s">

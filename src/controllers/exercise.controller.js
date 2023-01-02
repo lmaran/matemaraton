@@ -3,6 +3,8 @@ const idGeneratorMongoService = require("../services/id-generator-mongo.service"
 const autz = require("../services/autz.service");
 const markdownService = require("../services/markdown.service");
 
+const { availableExerciseTypes } = require("../constants/constants");
+
 exports.getOneById = async (req, res) => {
     const exercise = await exerciseService.getOneById(req.params.id);
 
@@ -54,15 +56,9 @@ exports.createOrEditGet = async (req, res) => {
 
     const isEditMode = !!req.params.id;
 
-    const exerciseTypeAvailableOptions = [
-        { text: "Cu răspuns deschis", value: "1" },
-        { text: "Cu răspuns tip grilă (selecție unică)", value: "2" },
-        { text: "Cu răspuns exact (tip numeric)", value: "3" },
-    ];
-
     const data = {
         isEditMode,
-        exerciseTypeAvailableOptions,
+        availableExerciseTypes,
     };
 
     if (isEditMode) {

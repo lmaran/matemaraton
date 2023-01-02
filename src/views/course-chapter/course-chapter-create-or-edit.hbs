@@ -37,7 +37,7 @@
             <label for="positionSelect" class="fw-bold">Poziție:</label>
             <select name="position" class="form-select" id="positionSelect">
                 {{#select selectedPosition}}
-                {{#each positionOptions}}
+                {{#each availablePositions}}
                 <option value="{{index}}">{{name}}</option>
                 {{/each}}
                 {{/select}}

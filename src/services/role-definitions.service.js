@@ -1,5 +1,5 @@
 const mongoHelper = require("../helpers/mongo.helper");
-// const { ObjectID } = require("mongodb");
+// const { ObjectId } = require("mongodb");
 const collection = "roleDefinitions";
 
 exports.getRoleDefinitionsByRoleNames = async (roleNames) => {

@@ -7,13 +7,13 @@
                 Cap.{{inc chapterIndex}}</a></li>
         
         {{#if isEditMode}}
-        <li class="breadcrumb-item active">L.{{inc lesson.index}}</li>
-        <li title="Vizualizează" class="ms-auto"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lesson.id}}"><i class="bi bi-eye me-1"></i></a></li>
+        <li class="breadcrumb-item active">L.{{inc lessonIndex}}</li>
+        <li title="Vizualizează" class="ms-auto"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}"><i class="bi bi-eye me-1"></i></a></li>
         {{/if}}
     </ol>
 </nav>
 
-<h1>{{#if isEditMode}}Lecția {{inc lesson.index}}: {{lesson.name}}{{else}}Lecție nouă{{/if}}</h1>
+<h1>{{#if isEditMode}}Lecția {{inc lessonIndex}}: {{lesson.name}}{{else}}Lecție nouă{{/if}}</h1>
 
 <form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
@@ -22,9 +22,9 @@
             <label for="nameInput" class="fw-bold">Titlul lecției:</label>
             <input type="text" name="name" class="form-control" id="nameInput" placeholder=""
                 value="{{lesson.name}}">
-            <small>
+            {{!-- <small>
                 <p class="text-muted mb-0">Ex: Numere raționale</p>
-            </small>
+            </small> --}}
         </div>
     </div>
 
@@ -33,6 +33,7 @@
             <label for="descriptionInput" class="fw-bold">Descriere:</label>
             <textarea type="text" name="description" class="form-control" id="descriptionInput"
                 placeholder="">{{lesson.description}}</textarea>
+            <small><p class="text-muted mb-0">Doar tu (proprietarul) poți vedea această descriere</p></small>
         </div>
     </div>
 
@@ -60,19 +61,19 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="row mb-3">
         <div class="col-md-6">
-            <label for="positionSelect" class="fw-bold">Poziție:</label>
+            <label for="positionSelect" class="fw-bold">Poziția în listă:</label>
             <select name="position" class="form-select" id="positionSelect">
                 {{#select selectedPosition}}
-                {{#each positionOptions}}
+                {{#each availablePositions}}
                 <option value="{{index}}">{{name}}</option>
                 {{/each}}
                 {{/select}}
             </select>
-            <small>
+            {{!-- <small>
                 <p class="text-muted mb-0">Poziția în cadrul listei</p>
-            </small>
+            </small> --}}
         </div>
     </div>
 
@@ -108,7 +109,11 @@
                     {{else}} ({{exercises.length}} exerciții):
                     {{/if}} 
                 </span>
-                {{!-- <a class="add-exercise-btn me-2" title="Adaugă exercițiu" href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lesson.id}}/sectiuni/{{../id}}/niveluri/{{id}}/exercitii/adauga"><i class="bi bi-plus-square"></i></a> --}}
+
+                <a class="add-exercise-btn me-2" title="Adaugă exercițiu" 
+                    href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lessonId}}/sectiuni/{{../id}}/niveluri/{{id}}/exercitii/adauga">
+                    <i class="bi bi-plus-square"></i></a>
+                
                 {{#if exercises.length}}
                 <a class="toggle-level-btn me-2" href="#">{{#if isActive}}Ascunde exercițiile{{else}}Afișează{{/if}}</a>
                 {{!-- <span class="text-muted ms-2 me-2"></span> --}}
@@ -144,21 +149,22 @@
 
                     {{!-- Exercise menu --}}
                     <div class="float-end">
-                        <a id="view-exercise-btn" title="Vizualizează exercițiul" 
-                            href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lesson.id}}/sectiuni/{{../../id}}/niveluri/{{../id}}/exercitii/{{_id}}">
+                        <a title="Vizualizează exercițiul" 
+                            href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lessonId}}/sectiuni/{{../../id}}/niveluri/{{../id}}/exercitii/{{_id}}">
                             <i class="bi bi-eye me-1"></i></a>
                         
-                        <a id="edit-exercise-btn" title="Editează exercițiul" 
-                            href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lesson.id}}/sectiuni/{{../../id}}/niveluri/{{../id}}/exercitii/{{_id}}/modifica">
+                        <a title="Editează exercițiul" 
+                            href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lessonId}}/sectiuni/{{../../id}}/niveluri/{{../id}}/exercitii/{{_id}}/modifica">
                             <i class="bi bi-pencil me-1"></i></a>
 
-                        <form method="post" onsubmit="deleteBtn.disabled = true; return true;" style="display:inline">
-                            <button title = "Șterge exercițiul" type="submit" 
-                                formaction="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lesson.id}}/exercitii/{{_id}}/sterge" title="Șterge"
-                                name="deleteBtn" class="btn btn-link btn-outline-primary2 p-0 border-0 me-1 align-top"
-                                onclick="return confirm('Ești sigur că vrei să ștergi acest exercițiu?');"><i
-                                    class="bi bi-trash"></i></button>
-                        </form>
+                        <button title="Șterge exercițiul" type="submit"
+                            formaction="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lessonId}}/exercitii/{{_id}}/sterge"
+                            name="deleteBtn" class="btn btn-link p-0 border-0 me-1 align-top"
+                            onclick="return confirm('Ești sigur că vrei să ștergi acest exercițiu?');"><i class="bi bi-trash"></i></button>
+
+                        <a title="Mută exercițiul" 
+                            href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lessonId}}/sectiuni/{{../../id}}/niveluri/{{../id}}/exercitii/{{_id}}/muta">
+                            <i class="bi bi-arrows-move me-1"></i></a>
                     </div>
                 </div>
 
@@ -205,9 +211,10 @@
             </div>
             {{/each}}
             
-            <a class="btn btn-outline-primary btn-sm mt-3" href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lesson.id}}/sectiuni/{{../id}}/niveluri/{{id}}/exercitii/adauga"><i class="bi bi-plus-lg"></i> Adaugă exercițiu</a> 
-            {{!-- <a class="add-exercise-btn me-2" title="Adaugă exercițiu" href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lesson.id}}/sectiuni/{{../id}}/niveluri/{{id}}/exercitii/adauga"><i class="bi bi-plus-square"></i></a>
-             --}}
+            {{!-- <a class="btn btn-outline-primary btn-sm mt-3" 
+                href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lessonId}}/sectiuni/{{../id}}/niveluri/{{id}}/exercitii/adauga">
+                <i class="bi bi-plus-lg"></i> Adaugă exercițiu</a>  --}}
+
             </div>
         {{/each}}
         {{/each}}
@@ -218,7 +225,8 @@
     </div>
     {{/if}}
 
-    <input type="hidden" name="id" value="{{courseId}}" />
+    <input type="hidden" name="courseId" value="{{courseId}}" />
+    <input type="hidden" name="chapterId" value="{{chapterId}}" />
 
     <div class="mt-4">
         <div class="col-md-7s offset-md-3s">
@@ -226,11 +234,11 @@
                 Salveaza</button>
 
             {{#if isEditMode}}
-            {{!-- <a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lesson.id}}"
+            {{!-- <a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}"
                 class="btn btn-light"><i class="bi bi-eye"></i>
                 Vizualizează</a> --}}
             <button type="submit"
-                formaction="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lesson.id}}/sterge"
+                formaction="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/sterge"
                 name="deleteBtn" class="btn btn-link"
                 onclick="return confirm('Ești sigur că vrei să ștergi această lecție?');"><i
                     class="bi bi-trash-fill"></i>

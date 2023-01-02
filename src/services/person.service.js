@@ -1,11 +1,11 @@
 const mongoHelper = require("../helpers/mongo.helper");
-const { ObjectID } = require("mongodb");
+const { ObjectId } = require("mongodb");
 
 const collection = "persons";
 
 exports.getOneById = async (id) => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).findOne({ _id: new ObjectID(id) });
+    return db.collection(collection).findOne({ _id: new ObjectId(id) });
 };
 
 exports.getOneByEmail = async (email) => {
@@ -25,7 +25,7 @@ exports.getAllByIds = async (ids) => {
     const db = await mongoHelper.getDb();
     return db
         .collection(collection)
-        .find({ _id: { $in: ids.map((x) => new ObjectID(x)) } })
+        .find({ _id: { $in: ids.map((x) => new ObjectId(x)) } })
         .toArray();
 };
 
@@ -35,7 +35,7 @@ exports.bulkWritePersons = async (mongoOps) => {
 };
 
 exports.getStudentsAndTheirParentsByIds = async (studentsIds) => {
-    const studentsIdsAsObjectID = studentsIds.map((x) => new ObjectID(x));
+    const studentsIdsAsObjectID = studentsIds.map((x) => new ObjectId(x));
     const db = await mongoHelper.getDb();
     return db
         .collection(collection)
@@ -46,7 +46,7 @@ exports.getStudentsAndTheirParentsByIds = async (studentsIds) => {
 };
 
 exports.getStudentAndTheirParentsById = async (studentId) => {
-    const studentIdAsObjectID = new ObjectID(studentId);
+    const studentIdAsObjectID = new ObjectId(studentId);
     const db = await mongoHelper.getDb();
     return db
         .collection(collection)
@@ -57,7 +57,7 @@ exports.getStudentAndTheirParentsById = async (studentId) => {
 };
 
 // exports.getParentAndTheirStudentsById = async parentId => {
-//     const parentIdAsObjectID = new ObjectID(parentId);
+//     const parentIdAsObjectID = new ObjectId(parentId);
 //     const db = await mongoHelper.getDb();
 //     return db
 //         .collection(personsCollection)
