@@ -114,6 +114,16 @@ router.get(
 
 // course-exercise
 router.get(
+    "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/sectiuni/:sectionId/niveluri/:levelId/exercitii/adauga",
+    isAuthenticated,
+    courseExerciseController.createOrEditGet
+);
+router.post(
+    "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/sectiuni/:sectionId/niveluri/:levelId/exercitii/adauga",
+    isAuthenticated,
+    courseExerciseController.createOrEditPost
+);
+router.get(
     "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/sectiuni/:sectionId/niveluri/:levelId/exercitii/:exerciseId",
     isAuthenticated,
     courseExerciseController.getOneById
@@ -129,14 +139,14 @@ router.post(
     courseExerciseController.createOrEditPost
 );
 router.get(
-    "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/sectiuni/:sectionId/niveluri/:levelId/exercitii/adauga",
+    "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/sectiuni/:sectionId/niveluri/:levelId/exercitii/:exerciseId/muta",
     isAuthenticated,
-    courseExerciseController.createOrEditGet
+    courseExerciseController.moveGet
 );
 router.post(
-    "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/sectiuni/:sectionId/niveluri/:levelId/exercitii/adauga",
+    "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/sectiuni/:sectionId/niveluri/:levelId/exercitii/:exerciseId/muta",
     isAuthenticated,
-    courseExerciseController.createOrEditPost
+    courseExerciseController.movePost
 );
 router.post(
     "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/exercitii/:exerciseId/sterge",
@@ -149,6 +159,12 @@ router.get(
     courseExerciseController.jsonGet
 );
 //router.post("/cursuri/:courseId/capitole/:chapterId/lectii/adauga", isAuthenticated, courseLessonController.createOrEditPost);
+router.get("/cursuri/:courseId/available-lessons", isAuthenticated, courseExerciseController.getAvailableLessons);
+router.get(
+    "/cursuri/:courseId/lectii/:lessonId/sectiuni/:sectionId/niveluri/:levelId/exercise/:exerciseId/available-positions",
+    isAuthenticated,
+    courseExerciseController.getAvailablePositions
+);
 
 // lessons
 router.get("/lectii", lessonController.getAll);

@@ -1,11 +1,11 @@
 const mongoHelper = require("../helpers/mongo.helper");
-const { ObjectID } = require("mongodb");
+const { ObjectId } = require("mongodb");
 
 const collection = "classes";
 
 exports.getOneById = async (id) => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).findOne({ _id: new ObjectID(id) });
+    return db.collection(collection).findOne({ _id: new ObjectId(id) });
 };
 
 exports.getAll = async () => {
@@ -26,14 +26,14 @@ exports.getOpenEnrollments = async () => {
 
 exports.deleteOneById = async (id) => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).deleteOne({ _id: new ObjectID(id) });
+    return db.collection(collection).deleteOne({ _id: new ObjectId(id) });
 };
 
 exports.getAllByIds = async (ids) => {
     const db = await mongoHelper.getDb();
     return db
         .collection(collection)
-        .find({ _id: { $in: ids.map((x) => new ObjectID(x)) } })
+        .find({ _id: { $in: ids.map((x) => new ObjectId(x)) } })
         .toArray();
 };
 
@@ -45,7 +45,7 @@ exports.insertOne = async (item) => {
 
 // exports.updateOne = async (item) => {
 //     const db = await mongoHelper.getDb();
-//     item._id = new ObjectID(item._id);
+//     item._id = new ObjectId(item._id);
 //     return db.collection(collection).updateOne({ _id: item._id }, { $set: item });
 // };
 
@@ -56,5 +56,5 @@ exports.updateOne = async (idAsString, modifiedFields, removedFields) => {
     if (modifiedFields && Object.keys(modifiedFields).length > 0) operations.$set = modifiedFields;
     if (removedFields && Object.keys(removedFields).length > 0) operations.$unset = removedFields;
 
-    return db.collection(collection).updateOne({ _id: new ObjectID(idAsString) }, operations);
+    return db.collection(collection).updateOne({ _id: new ObjectId(idAsString) }, operations);
 };

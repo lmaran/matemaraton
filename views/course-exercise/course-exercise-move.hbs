@@ -1,0 +1,108 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/modifica">Cursuri</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/modifica">{{courseCode}}</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/modifica">
+                Cap.{{inc chapterIndex}}</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/modifica?sectionId={{sectionId}}&levelId={{levelId}}#section{{sectionId}}-level{{levelId}}">L.{{inc lesson.index}}</a></li>
+        <li class="breadcrumb-item active">E.{{exerciseCode}}</li>
+    </ol>
+</nav>
+
+<h1 id="exercise-id-container" data-exercise-id="{{exercise._id}}">
+    {{#if isEditMode}}Exercițiul {{exercise.code}}{{else}} Mută exercițiul:{{/if}}
+</h1>
+
+{{!-- {{toJSON exercise}} --}}
+
+<form method="post" action="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/sectiuni/{{sectionId}}/niveluri/{{levelId}}/exercitii/{{exerciseId}}/muta" novalidate onsubmit="saveBtn.disabled = true; return true;">
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <label class="fw-bold">Curs:</label>
+            <select id="courseSelect" name="course" class="form-select">
+                {{#select courseId}}
+                {{#each availableCourses}}
+                <option value="{{_id}}">{{name}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <label class="fw-bold">Lecție:</label>
+            <select id="lessonSelect" name="lesson" class="form-select">
+                {{#select lessonId}}
+                {{#each availableLessons}}
+                <option value="{{id}}">{{name}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <label class="fw-bold">Secțiune:</label>
+            <select id="sectionSelect" name="section" class="form-select">
+                {{#select sectionId}}
+                {{#each availableSections}}
+                <option value="{{id}}">{{name}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <label class="fw-bold">Nivel:</label>
+            <select id="levelSelect" name="level" class="form-select">
+                {{#select levelId}}
+                {{#each availableLevels}}
+                <option value="{{id}}">{{name}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <label class="fw-bold">Poziția în listă:</label>
+            <select id="positionSelect" name="position" class="form-select">
+                {{#select selectedPosition}}
+                {{#each availablePositions}}
+                <option value="{{index}}">{{name}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+    </div>
+
+    <input type="hidden" name="courseId" value="{{courseId}}" />
+    <input type="hidden" name="chapterId" value="{{chapterId}}" />
+    <input type="hidden" name="lessonId" value="{{lessonId}}" />
+    <input type="hidden" name="sectionId" value="{{sectionId}}" />
+    <input type="hidden" name="levelId" value="{{levelId}}" />
+    <input type="hidden" name="positionId" value="{{selectedPosition}}" />
+    <input type="hidden" name="exerciseId" value="{{exerciseId}}" id="exerciseId" />
+
+    <div class="row mt-5 mb-3">
+        <div class="col-md-7s offset-md-3s">
+            <button type="submit" name="saveBtn" class="btn btn-primary"><i class="bi bi-save"></i>Salveaza</button>
+
+            <a title="Json" class="btn btn-light" 
+            href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/modifica?sectionId={{sectionId}}&levelId={{levelId}}#section{{sectionId}}-level{{levelId}}" >
+            <i class="bi bi-x"></i>Renunță</a>
+        </div>
+    </div>
+
+</form>
+
+{{#section 'script'}}
+<script type="module" src="/js/eventBinders/course-exercise-move.js"></script>
+{{/section}}

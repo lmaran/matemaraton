@@ -1,11 +1,11 @@
 const mongoHelper = require("../helpers/mongo.helper");
-const { ObjectID } = require("mongodb");
+const { ObjectId } = require("mongodb");
 
 const collection = "lessons";
 
 exports.getOneById = async (id) => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).findOne({ _id: new ObjectID(id) });
+    return db.collection(collection).findOne({ _id: new ObjectId(id) });
 };
 
 exports.getAll = async () => {
@@ -14,7 +14,7 @@ exports.getAll = async () => {
 };
 
 exports.getLessonTitlesByIds = async (ids) => {
-    const idsAsObjectID = ids.map((x) => new ObjectID(x));
+    const idsAsObjectID = ids.map((x) => new ObjectId(x));
     const db = await mongoHelper.getDb();
     return db
         .collection(collection)
@@ -31,12 +31,12 @@ exports.insertOne = async (item) => {
 
 exports.updateOne = async (item) => {
     const db = await mongoHelper.getDb();
-    item._id = new ObjectID(item._id);
+    item._id = new ObjectId(item._id);
     //problem.modifiedOn = new Date();
     return db.collection(collection).updateOne({ _id: item._id }, { $set: item });
 };
 
 exports.deleteOneById = async (id) => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).deleteOne({ _id: new ObjectID(id) });
+    return db.collection(collection).deleteOne({ _id: new ObjectId(id) });
 };

@@ -18,7 +18,7 @@ exports.createOrEditGet = async (req, res) => {
 
     const data = {
         isEditMode,
-        positionOptions: [],
+        availablePositions: [],
     };
 
     let positionPrefix = "(înainte de)";
@@ -55,7 +55,7 @@ exports.createOrEditGet = async (req, res) => {
                 } else {
                     positionName = `${incIndex}: ${positionPrefix} "${x.name}"`;
                 }
-                data.positionOptions.push({ index, name: positionName });
+                data.availablePositions.push({ index, name: positionName });
             });
         }
     }

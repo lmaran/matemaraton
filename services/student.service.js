@@ -1,11 +1,11 @@
 const mongoHelper = require("../helpers/mongo.helper");
-const { ObjectID } = require("mongodb");
+const { ObjectId } = require("mongodb");
 
 const collection = "students";
 
 exports.getOneById = async (id) => {
     const db = await mongoHelper.getDb();
-    return db.collection("students").findOne({ _id: new ObjectID(id) });
+    return db.collection("students").findOne({ _id: new ObjectId(id) });
 };
 
 exports.getAll = async () => {

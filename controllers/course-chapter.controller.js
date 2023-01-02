@@ -16,10 +16,11 @@ exports.createOrEditGet = async (req, res) => {
 
     const data = {
         isEditMode,
-        positionOptions: [],
+        availablePositions: [],
         //selectedPosition: "first-position",
     };
 
+    // TODO: to set the position use the generic method we have created for lesson
     let positionPrefix = "(înainte de)";
     let positionName;
     const chapters = course.chapters || [];
@@ -34,25 +35,25 @@ exports.createOrEditGet = async (req, res) => {
         chapters.forEach((x, index) => {
             const incIndex = index + 1;
             if (x.id === chapterId) {
-                data.selectedPosition = index; // select the index of the ccurrent element
+                data.selectedPosition = index; // select the index of the current element
                 positionPrefix = "(după)";
                 positionName = `${incIndex}: "${x.name}"`;
             } else {
                 positionName = `${incIndex}: ${positionPrefix} "${x.name}"`;
             }
-            data.positionOptions.push({ index, name: positionName });
+            data.availablePositions.push({ index, name: positionName });
         });
     } else {
         chapters.forEach((x, index) => {
             const incIndex = index + 1;
             positionName = `${incIndex}: ${positionPrefix} "${x.name}"`;
-            data.positionOptions.push({ index, name: positionName });
+            data.availablePositions.push({ index, name: positionName });
         });
-        data.positionOptions.push({
+        data.availablePositions.push({
             index: chapters.length, // last position + 1
-            name: `${++data.positionOptions.length}: (ultima poziție)`,
+            name: `${++data.availablePositions.length}: (ultima poziție)`,
         });
-        data.selectedPosition = data.positionOptions[data.positionOptions.length - 1].index; // select the id of the last element
+        data.selectedPosition = data.availablePositions[data.availablePositions.length - 1].index; // select the id of the last element
     }
 
     data.course = course;
@@ -166,7 +167,11 @@ exports.deleteOneById = async (req, res) => {
         }
 
         chapters.splice(chapterIndex, 1); // remove from array
-        courseService.updateOne(course);
+
+        const updateResult = await courseService.updateOne(course);
+
+        // delete also the exercise content
+        if (updateResult.modifiedCount != 1) return res.status(403).send("Șterge întâi lecțiile!");
     }
 
     res.redirect(`/cursuri/${courseId}/modifica`);
