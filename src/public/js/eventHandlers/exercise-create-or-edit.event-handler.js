@@ -1,21 +1,9 @@
-import { markdownService } from "../markdown/markdown.service.js";
-//import { domHelper } from "../helpers/dom.helper.js";
+import { markdownService } from "../services/markdown.service.js";
 
-/**
- * DOM elements
- */
-//const exerciseStatementTxt = document.getElementById("statement-editor-txt");
-// const exerciseIdContainer = document.getElementById("exercise-id-container");
 const statementPreviewDiv = document.getElementById("statement-preview-div");
 const answerPreviewDiv = document.getElementById("answer-preview-div");
-//const saveStatementStatusIcon = document.getElementById("save-statement-status-icon");
-
-//const exerciseSolutionTxt = document.getElementById("solution-editor-txt");
 const solutionPreviewDiv = document.getElementById("solution-preview-div");
 
-/**
- * event handlers (alias 'controller')
- */
 export const eventHandlers = {
     getStatementPreview: async (event) => {
         const data = { markdown: event.target.value };
@@ -47,10 +35,7 @@ export const eventHandlers = {
     },
 
     setDefaultAnswerType: async (event) => {
-        //alert(event.target.value);
         const selectedExerciseType = event.target.value;
-        //const selectedContestName = event.target.options[event.target.selectedIndex].text;
-        //const contestNameInput = document.getElementById("contestNameInput");
 
         const answerMainRow = document.getElementById("answer-main-row");
         const answerOptionMainRow = document.getElementById("answer-option-main-row");

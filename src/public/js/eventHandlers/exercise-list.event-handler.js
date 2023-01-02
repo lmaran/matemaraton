@@ -1,13 +1,3 @@
-// import { exerciseService } from "./exercise.service.js";
-// import { domHelper } from "../helpers/dom.helper.js";
-
-/**
- * DOM elements
- */
-
-/**
- * event handlers (alias 'controller')
- */
 export const eventHandlers = {
     setPageSize: async (event) => {
         const selectedPageSize = event.target.value;

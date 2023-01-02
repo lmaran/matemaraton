@@ -1,14 +1,7 @@
-import { markdownService } from "../markdown/markdown.service.js";
-//import { domHelper } from "../helpers/dom.helper.js";
+import { markdownService } from "../services/markdown.service.js";
 
-/**
- * DOM elements
- */
 const contentPreviewDiv = document.getElementById("content-preview-div");
 
-/**
- * event handlers (alias 'controller')
- */
 export const eventHandlers = {
     getContentPreview: async (event) => {
         const data = { markdown: event.target.value };

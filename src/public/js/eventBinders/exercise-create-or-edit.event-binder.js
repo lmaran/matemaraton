@@ -1,9 +1,5 @@
-import { eventHandlers } from "./exercise-create-or-edit.event-handler.js";
+import { eventHandlers } from "../eventHandlers/exercise-create-or-edit.event-handler.js";
 import { dateTimeHelper } from "../helpers/date-time.helper.js";
-
-/**
- * event binders (alias 'router')
- */
 
 document.getElementById("statement-editor-txt").addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.getStatementPreview, 500)); // with debouncer (500 ms)
 
@@ -29,8 +25,3 @@ if (answerOptionMainDiv) {
     answerOptionMainDiv.addEventListener("click", eventHandlers.handleClickForAllAnswerOptions);
     answerOptionMainDiv.addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.handleKeyupForAllAnswerOptions, 500));
 }
-
-// const deleteHintButtons = document.getElementsByClassName("delete-hint-btn");
-// for (const deleteHintBtn of deleteHintButtons) {
-//     deleteHintBtn.addEventListener("click", eventHandlers.deleteHint);
-// }

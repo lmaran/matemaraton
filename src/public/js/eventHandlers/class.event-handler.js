@@ -1,15 +1,12 @@
-import { markdownService } from "../markdown/markdown.service.js";
-import { classService } from "./class.service.js";
-import { toastService } from "../toast/toast.service.js";
+import { markdownService } from "../services/markdown.service.js";
+import { classService } from "..services/class.service.js";
+import { toastService } from "../services/toast.service.js";
 
 /**
  * DOM elements
  */
 const descriptionPreviewDiv = document.getElementById("description-preview-div");
 
-/**
- * event handlers (alias 'controller')
- */
 export const eventHandlers = {
     getDescriptionPreview: async (event) => {
         const data = { markdown: event.target.value };

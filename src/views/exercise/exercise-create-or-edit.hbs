@@ -1,15 +1,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
-
-        {{#if contest}}
-        <li class="breadcrumb-item"><a href="/concursuri">Concursuri</a></li>
-        <li class="breadcrumb-item"><a href="/concursuri/{{contest._id}}">{{contest.newCode}}</a></li>
-        <li class="breadcrumb-item"><a href="/concursuri/{{contest._id}}/exercitii">Exerciții</a></li>
-        {{else}}
-
         <li class="breadcrumb-item"><a href="/exercitii">Exerciții</a></li>
-        {{/if}}
 
         <li class="breadcrumb-item active">
             {{#if isEditMode}}E.{{exercise.code}}{{else}}Adaugă{{/if}}</li>
@@ -205,10 +197,6 @@
     </div>
 
     <input type="hidden" name="id" value="{{exercise._id}}" />
-    {{#if contest}}
-    <input type="hidden" name="contestId" value="{{contest._id}}" />
-    {{/if}}
-
 
     <div class="row mt-3 mb-3">
         <div class="col-md-7s offset-md-3s">
@@ -216,7 +204,7 @@
                 Salveaza</button>
 
             {{#if isEditMode}}
-            <a href="{{#if contest}}/concursuri/{{contest._id}}{{/if}}/exercitii/{{exercise._id}}"
+            <a href="/exercitii/{{exercise._id}}"
                 class="btn btn-light"><i class="bi bi-eye"></i> Vizualizează</a>
             {{/if}}
 
@@ -233,5 +221,5 @@
 </form>
 
 {{#section 'script'}}
-<script type="module" src="/js/exercise/exercise-create-or-edit.main.js"></script>
+<script type="module" src="/js/eventBinders/exercise-create-or-edit.event-binder.js"></script>
 {{/section}}

@@ -6,12 +6,6 @@ export const commonEventHandler = {
         event.preventDefault();
         const target = event.target; // shortcut
 
-        //const parentDiv = target.parentElement;
-        //const levelDiv = parentDiv.nextElementSibling;
-
-        // const parentDiv = target.closest(".exercise-div");
-        // const levelDiv = parentDiv.querySelector(".level-div");
-
         const parentDiv = target.closest(".level-menu-div");
         const levelContentDiv = parentDiv.nextElementSibling;
 
@@ -24,9 +18,6 @@ export const commonEventHandler = {
     toggleHints: async (event) => {
         event.preventDefault();
         const target = event.target; // shortcut
-
-        // const parentDiv = target.parentElement;
-        // const hintsDiv = parentDiv.nextElementSibling;
 
         const parentDiv = target.closest(".exercise-div");
         const hintsDiv = parentDiv.querySelector(".hints-div");
@@ -41,10 +32,6 @@ export const commonEventHandler = {
     showNextHint: async (event) => {
         event.preventDefault();
         const target = event.target; // shortcut
-
-        // const parentDiv = target.parentElement;
-        // const nextDiv = parentDiv.querySelector(".d-none");
-        // nextDiv.classList.remove("d-none");
 
         const parentDiv = target.closest(".exercise-div");
         const hintsDiv = parentDiv.querySelector(".hints-div");

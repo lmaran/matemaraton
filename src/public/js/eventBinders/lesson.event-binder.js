@@ -1,9 +1,5 @@
-import { eventHandlers } from "./lesson.event-handler.js";
+import { eventHandlers } from "../eventHandlers/lesson.event-handler.js";
 import { dateTimeHelper } from "../helpers/date-time.helper.js";
-
-/**
- * event binders (alias 'router')
- */
 
 document.getElementById("content-editor-txt").addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.getContentPreview, 500)); // with debouncer (500 ms)
 
