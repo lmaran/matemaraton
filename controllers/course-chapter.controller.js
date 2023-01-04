@@ -6,120 +6,96 @@ exports.createOrEditGet = async (req, res) => {
     const courseId = req.params.courseId;
     const chapterId = req.params.chapterId;
 
-    const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
-    if (!canCreateOrEditCourse) {
-        return res.status(403).send("Lipsă permisiuni!"); // forbidden
-    }
     const isEditMode = !!chapterId;
 
-    const course = await courseService.getOneById(courseId);
+    let courseCode, chapterRef, chapterIndex, availablePositions, selectedPosition;
 
-    const data = {
-        isEditMode,
-        availablePositions: [],
-        //selectedPosition: "first-position",
-    };
-
-    // TODO: to set the position use the generic method we have created for lesson
-    let positionPrefix = "(înainte de)";
-    let positionName;
-    const chapters = course.chapters || [];
-
-    if (isEditMode) {
-        const selectedChapterIndex = chapters.findIndex((x) => x.id === chapterId);
-        if (selectedChapterIndex > -1) {
-            course.selectedChapter = chapters[selectedChapterIndex];
-            course.selectedChapter.index = selectedChapterIndex;
-        }
-
-        chapters.forEach((x, index) => {
-            const incIndex = index + 1;
-            if (x.id === chapterId) {
-                data.selectedPosition = index; // select the index of the current element
-                positionPrefix = "(după)";
-                positionName = `${incIndex}: "${x.name}"`;
-            } else {
-                positionName = `${incIndex}: ${positionPrefix} "${x.name}"`;
-            }
-            data.availablePositions.push({ index, name: positionName });
-        });
-    } else {
-        chapters.forEach((x, index) => {
-            const incIndex = index + 1;
-            positionName = `${incIndex}: ${positionPrefix} "${x.name}"`;
-            data.availablePositions.push({ index, name: positionName });
-        });
-        data.availablePositions.push({
-            index: chapters.length, // last position + 1
-            name: `${++data.availablePositions.length}: (ultima poziție)`,
-        });
-        data.selectedPosition = data.availablePositions[data.availablePositions.length - 1].index; // select the id of the last element
-    }
-
-    data.course = course;
-
-    //res.send(data);
-    res.render("course-chapter/course-chapter-create-or-edit", data);
-};
-
-exports.createOrEditPost = async (req, res) => {
-    const courseId = req.params.courseId;
-    const chapterId = req.params.chapterId;
     try {
         const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
         if (!canCreateOrEditCourse) {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
-        const isEditMode = !!chapterId;
-
-        const { name, description, isHidden, position } = req.body;
-
-        const chapter = {
-            name,
-            description,
-            isHidden,
-        };
 
         const course = await courseService.getOneById(courseId);
+        if (!course) return res.status(500).send("Curs negăsit!");
+        courseCode = course.code;
+
+        if (isEditMode) {
+            chapterRef = (course.chapters || []).find((x) => x.id === chapterId);
+            if (!chapterRef) return res.status(500).send("Capitol negăsit!");
+            chapterIndex = course.chapters.findIndex((x) => x.id === chapterId);
+        }
+
+        // in editMode, chapterId will be undefined (falsy)
+        // The parentheses ( ... ) around the assignment statement are required when using object literal destructuring assignment without a declaration.
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
+        ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(course.chapters, chapterId));
+
+        const data = {
+            isEditMode,
+            courseId,
+            courseCode,
+
+            chapterId,
+            chapterIndex,
+            chapter: chapterRef,
+
+            availablePositions,
+            selectedPosition,
+        };
+
+        //res.send(data);
+        res.render("course-chapter/course-chapter-create-or-edit", data);
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json(err.message);
+    }
+};
+
+exports.createOrEditPost = async (req, res) => {
+    const { courseId, name, description, isHidden, position } = req.body;
+    let { chapterId } = req.params;
+    let chapter;
+
+    const isEditMode = !!chapterId;
+
+    try {
+        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+        if (!canCreateOrEditCourse) {
+            return res.status(403).send("Lipsă permisiuni!"); // forbidden
+        }
+
+        const course = await courseService.getOneById(courseId);
+        if (!course) return res.status(500).send("Curs negăsit!");
+
+        if (isEditMode) {
+            chapter = (course.chapters || []).find((x) => x.id === chapterId);
+            if (!chapter) return res.status(500).send("Capitol negăsit!");
+        } else {
+            // new lesson
+            chapterId = courseService.getObjectId().toString();
+            chapter = {
+                id: chapterId,
+            };
+        }
+
+        // update chapter fields
+        chapter.name = name;
+        chapter.description = description;
+
+        if (isHidden === "on") {
+            // If the 'value' attribute was omitted, the default value for the checkbox is 'on' (mozilla.org)
+            chapter.isHidden = true;
+        } else delete chapter.isHidden;
 
         course.chapters = course.chapters || [];
-        if (isEditMode) {
-            const chapterIndex = course.chapters.findIndex((x) => x.id === chapterId);
-            if (chapterIndex > -1) {
-                const existingChapter = course.chapters[chapterIndex];
-                existingChapter.name = chapter.name;
-                existingChapter.description = chapter.description;
 
-                if (chapter.isHidden === "on") {
-                    // If the 'value' attribute was omitted, the default value for the checkbox is 'on' (mozilla.org)
-                    existingChapter.isHidden = true;
-                } else {
-                    delete existingChapter.isHidden;
-                }
+        arrayHelper.moveOrInsertAtIndex(course.chapters, chapter, "id", position);
 
-                // move the chapter from one position (index) to another
-                if (position != chapterIndex && position > -1 && position < course.chapters.length) {
-                    arrayHelper.move(course.chapters, chapterIndex, position);
-                }
-            }
-        } else {
-            chapter.id = courseService.getObjectId().toString();
-
-            if (chapter.isHidden === "on") {
-                // If the 'value' attribute was omitted, the default value for the checkbox is 'on' (mozilla.org)
-                chapter.isHidden = true;
-            }
-
-            if (position > -1 && position < course.chapters.length) {
-                course.chapters.splice(position, 0, chapter); // insert at the specified index
-            } else {
-                course.chapters.push(chapter);
-            }
-        }
         courseService.updateOne(course);
 
         //res.send(course);
-        res.redirect(`/cursuri/${course._id}/modifica`);
+        res.redirect(`/cursuri/${courseId}/capitole/${chapterId}/modifica`);
     } catch (err) {
         return res.status(500).json(err.message);
     }

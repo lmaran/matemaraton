@@ -100,6 +100,7 @@ exports.moveOrInsertAtIndex = (array, newElement, keyName, newIdx) => {
 // }
 exports.getAvailablePositions = (items, itemId, onlyValues) => {
     // Omit "itemId" in "createMode".
+    items = items || [];
     const result = {
         availablePositions: [],
         selectedPosition: -1,
