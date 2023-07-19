@@ -42,7 +42,7 @@
 
     {{#each lessons}}
         <div class="ps-3">
-            {{inc ../index}}.{{inc @index}}. 
+            {{inc @../index}}.{{inc @index}}. 
             <a class="pl-1" href="/cursuri/{{@root.course._id}}/capitole/{{../id}}/lectii/{{id}}">{{name}}</a>
         </div>
     {{/each}}
