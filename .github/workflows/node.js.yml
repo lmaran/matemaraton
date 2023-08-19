@@ -41,8 +41,8 @@ jobs:
         rm -rf *
         ls -a
         pwd
-        cp -rf  ../dist/* .
-        cp ../package.json .
+        cp -rf  ../matemaraton/dist/* .
+        cp ../matemaraton/package.json .
         npm install --omit=dev
         rm -f package.json package-lock.json
         git add -A
