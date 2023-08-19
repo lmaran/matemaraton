@@ -59,7 +59,7 @@ jobs:
           
         echo `git commit -m "."` # Without 'echo', git commit breaks the build, if there aren't any changes at all.
         git config --global push.default simple # remove warning in 'git push' command
-        # git push origin
+        git push origin
 
     # - run: |
     #     date > generated.txt
