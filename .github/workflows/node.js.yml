@@ -40,8 +40,9 @@ jobs:
     - run: cd tmpFolder && npm install --omit=dev
     - run: rm -f tmpFolder/package.json tmpFolder/package-lock.json
     - run: cd tmpFolder && git add -A
+    - run: git config --global user.name "${github.repository_owner}" # we need to set an author for commit
     - run: cd tmpFolder && git commit -m "."
-    - run: git config --global user.name "${github.repository_owner}"
+    
     - run: git config --global push.default simple
     - run: cd tmpFolder && git push origin
     
