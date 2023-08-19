@@ -37,7 +37,10 @@ jobs:
 
         # Run all commands below from tmpFolder
         cd ../tmpFolder
-        rm -rf tmpFolder/*
+        ls -a
+        rm -rf *
+        ls -a
+        pwd
         cp -rf  ../dist/* .
         cp ../package.json .
         npm install --omit=dev
