@@ -1,5 +1,6 @@
 import { eventHandlers } from "../eventHandlers/exercise-create-or-edit.event-handler.js";
 import { dateTimeHelper } from "../helpers/date-time.helper.js";
+import { uploadFilesHelper } from "../helpers/upload-files.helper.js";
 
 document.getElementById("statement-editor-txt").addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.getStatementPreview, 500)); // with debouncer (500 ms)
 
@@ -25,3 +26,22 @@ if (answerOptionMainDiv) {
     answerOptionMainDiv.addEventListener("click", eventHandlers.handleClickForAllAnswerOptions);
     answerOptionMainDiv.addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.handleKeyupForAllAnswerOptions, 500));
 }
+
+/**
+ * upload files
+ * smashingmagazine.com/2018/01/drag-drop-file-uploader-vanilla-js/
+ * https://developer.mozilla.org/en-US/docs/Web/API/File/Using_files_from_web_applications
+ */
+
+// ! all the code below is ok - commented out temporary.
+
+const uploadFileSelectInput = document.getElementById("upload-file-select-input");
+
+const options = {
+    uploadFileSelectInput,
+    url: "/uploadfile",
+    maxFiles: 3,
+    maxFileSizeInMB: 5,
+};
+
+uploadFilesHelper.uploadFiles(options);

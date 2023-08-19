@@ -1,5 +1,5 @@
 //const datasourceService = require("../services/datasource.service");
-const Busboy = require("busboy");
+const busboy = require("busboy");
 // const path = require("path");
 // const fs = require("fs");
 const fileSizeLimit = 100 * 1024 * 1024; // 100 MB
@@ -160,7 +160,7 @@ exports.upload_Old = async (req, res) => {
     return req.pipe(busboy);
 };
 
-exports.upload = async (req, res) => {
+exports.upload_Old2 = async (req, res) => {
     // https://stackoverflow.com/a/59295385
     // https://stackoverflow.com/a/29996871/2726725
 
@@ -170,7 +170,7 @@ exports.upload = async (req, res) => {
         finished = false;
 
     // I abort upload if file is over 10 MB limit
-    const busboy = new Busboy({
+    const busboy = Busboy({
         headers: req.headers,
         limits: { fileSize: fileSizeLimit },
     });
@@ -236,4 +236,63 @@ exports.upload = async (req, res) => {
     });
 
     return req.pipe(busboy);
+};
+
+exports.upload = async (req, res) => {
+    // https://stackoverflow.com/a/29996871/2726725
+
+    const result = [];
+    let files = 0,
+        finished = false;
+    try {
+        // I abort upload if file is over 10 MB limit
+        const bb = busboy({ headers: req.headers, limits: { fileSize: fileSizeLimit } });
+
+        bb.on("file", async (name, inputFileStream, info) => {
+            const { filename, encoding, mimeType } = info;
+            console.log(`File [${name}]: filename: %j, encoding: %j, mimeType: %j`, filename, encoding, mimeType);
+            result.push({ filename });
+            ++files;
+            // validate against empty file name
+            // if (filename.length == 0) {
+            //     console.log("empty file name");
+            //     inputFileStream.resume();
+            // } else {
+            // inputFileStream.on("limit", () => {
+            //     console.log(`file size over ${fileSizeLimit / (1024 * 1024)} MB.`);
+            // });
+            const blobServiceClient = BlobServiceClient.fromConnectionString(config.azureBlobStorageConnectionString);
+            const containerClient = blobServiceClient.getContainerClient("exercises");
+            // "Cuş Cuş.jpg" --> "5f4bfb45d8278706d442058c.jpg"
+            const blobName = stringHelper.getUniqueFileName(filename);
+            const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+            await blockBlobClient.uploadStream(inputFileStream, uploadOptions.bufferSize, uploadOptions.maxBuffers, {
+                blobHTTPHeaders: { blobContentType: mimeType },
+            });
+            //res.render("success", { message: "File uploaded to Azure Blob storage." });
+            //console.log(fileName + ": done!");
+            const fileInResult = result.find((x) => x.filename === filename);
+            fileInResult.url = "https://" + blobServiceClient.accountName + ".blob.core.windows.net/exercises/" + blobName;
+            //console.log(fileInResult);
+            //result.push(fileInResult);
+            //console.log(fileName + " aaa");
+            if (--files === 0 && finished) {
+                //res.writeHead(200, { Connection: "close" });
+                console.log("Upload completed and saved to Blob!");
+                console.log(JSON.stringify(result));
+                //res.end(JSON.stringify(result));
+                res.json(result);
+                //res.end("");
+            }
+        });
+        bb.on("close", () => {
+            console.log("Upload completed!");
+            finished = true;
+        });
+        return req.pipe(bb);
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json(err.message);
+    }
 };

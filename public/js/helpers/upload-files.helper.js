@@ -137,12 +137,15 @@ export const uploadFilesHelper = {
                 const fileParts = file.url.split(".");
                 if (fileParts.length > 0) {
                     const fileExtension = fileParts[fileParts.length - 1];
-                    if (["jpg", "jpeg", "png"].includes(fileExtension.toLowerCase())) {
+                    if (["jpg", "jpeg", "png", "svg"].includes(fileExtension.toLowerCase())) {
                         const img = document.createElement("img");
                         img.src = file.url;
+                        //img.style.height = "100px";
+                        //img.width = "100";
+                        img.height = "100";
                         fileContainerSpan.appendChild(img);
                     } else if (fileExtension.toLowerCase() === "pdf") {
-                        // maybe add a ppf thumbnail/icon
+                        // maybe add a pdf thumbnail/icon
                         const a = document.createElement("a");
                         const linkText = document.createTextNode(file.url);
                         a.appendChild(linkText);
