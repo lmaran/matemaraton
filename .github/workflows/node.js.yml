@@ -27,8 +27,17 @@ jobs:
     - run: npm run build-prod
 
     - run: git clone -b "${GITHUB_REF##*/}"-dist --single-branch https://github.com/${GITHUB_REPOSITORY}.git tmpFolder
+    - run: pwd
+    - run: ls
+    
     - run: cd tmpFolder
+    - run: pwd
+    - run: ls
+    
     - run: rm -rf *
+    - run: pwd
+    - run: ls
+    
     - run: cp -rf  ~/work/matemaraton/matemaraton/dist/* .
     - run: cp  ~/work/matemaraton/matemaraton/package.json package.json
     - run: npm install --omit=dev
