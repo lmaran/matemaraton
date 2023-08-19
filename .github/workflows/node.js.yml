@@ -33,10 +33,8 @@ jobs:
         pwd # display current folder
         cd .
         git clone -b "${GITHUB_REF##*/}"-dist --single-branch https://github.com/${GITHUB_REPOSITORY}.git ../tmpFolder
-        git config --global user.name "${GITHUB_REPOSITORY_OWNER}" # we need to set an author for commit
-        git config --global user.email "lucian.maran@outlook.com"
-        git config --global push.default simple # remove warning in 'git push' command
-        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+
+        
         
         # Existing structure:
         #  ~/work/matemaraton/matemaraton (contains "master" branch)
@@ -45,9 +43,6 @@ jobs:
         # Run all commands below from tmpFolder
         cd ../tmpFolder
         rm -rf *
-        echo "ls in tmp folder after delete:"
-        ls -a
-        pwd
         cp -rf  ../matemaraton/dist/* .
         cp ../matemaraton/package.json .
         echo "Waiting fo npm install:"
@@ -55,6 +50,12 @@ jobs:
         rm -f package.json package-lock.json
         date > timestamp.txt # add a timestamp to a file 
         git add -A
+
+        git config --global user.name "${GITHUB_REPOSITORY_OWNER}" # we need to set an author for commit
+        git config --global user.email "lucian.maran@outlook.com"
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+        git config --global push.default simple # remove warning in 'git push' command
+        
         git commit -m "."
         git push origin
 
