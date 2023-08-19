@@ -41,11 +41,10 @@ jobs:
     - run: rm -f tmpFolder/package.json tmpFolder/package-lock.json
     - run: cd tmpFolder && git add -A
     - run: git config --global user.name "${GITHUB_REPOSITORY_OWNER}" # we need to set an author for commit
-    - run: cd tmpFolder && git commit -m "."
+    - run: cd tmpFolder && echo `git commit -m "."` # Without 'echo', git commit breaks the build, if there aren't any changes at all.
     
-    - run: git config --global push.default simple
+    - run: git config --global push.default simple # remove warning in 'git push' command
     - run: cd tmpFolder && git push origin
     
     # - name: Setup upterm session
     #   uses: lhotari/action-upterm@v1
-    
