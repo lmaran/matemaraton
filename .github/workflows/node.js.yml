@@ -29,60 +29,35 @@ jobs:
     - run: npm ci
     - run: npm run build-prod
 
-    # - name: Setup credentials to access private repositories
-    #   run: git config --global url.https://${{ secrets.PAT }}@github.com/.insteadOf https://github.com/
-
     - run: |
         pwd # display current folder
         cd .
         git clone -b "${GITHUB_REF##*/}"-dist --single-branch https://github.com/${GITHUB_REPOSITORY}.git ../tmpFolder
-
+        git config --global user.name "${GITHUB_REPOSITORY_OWNER}" # we need to set an author for commit
+        git config --global user.email "lucian.maran@outlook.com"
+        git config --global push.default simple # remove warning in 'git push' command
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+        
         # Existing structure:
         #  ~/work/matemaraton/matemaraton (contains "master" branch)
         #  ~/work/matemaraton/tmpFolder (contains "dist" branch)
 
         # Run all commands below from tmpFolder
         cd ../tmpFolder
-        echo "ls in tmp folder before delete:"
-        ls -a
         rm -rf *
         echo "ls in tmp folder after delete:"
         ls -a
         pwd
         cp -rf  ../matemaraton/dist/* .
         cp ../matemaraton/package.json .
+        echo "Waiting fo npm install:"
         npm install --omit=dev
         rm -f package.json package-lock.json
-        date > generated.txt # add a timestamp to a file 
+        date > timestamp.txt # add a timestamp to a file 
         git add -A
-        git config --global user.name "${GITHUB_REPOSITORY_OWNER}" # we need to set an author for commit
-        git config --global user.email "lucian.maran@outlook.com"
-        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
-          
-        echo `git commit -m "generated"` # Without 'echo', git commit breaks the build, if there aren't any changes at all.
-        git config --global push.default simple # remove warning in 'git push' command
+        git commit -m "."
         git push origin
 
-    # - run: |
-    #     date > generated.txt
-    #     git config user.name github-actions
-    #     git config user.email github-actions@github.com
-    #     git add .
-    #     git commit -m "generated"
-    #     git push
-
-    # - run: git clone -b "${GITHUB_REF##*/}"-dist --single-branch https://github.com/${GITHUB_REPOSITORY}.git tmpFolder
-    # - run: rm -rf tmpFolder/*
-    # - run: cp -rf  dist/* tmpFolder
-    # - run: cp ./package.json tmpFolder
-    # - run: cd tmpFolder && npm install --omit=dev
-    # - run: rm -f tmpFolder/package.json tmpFolder/package-lock.json
-    # - run: cd tmpFolder && git add -A
-    # - run: git config --global user.name "${GITHUB_REPOSITORY_OWNER}" # we need to set an author for commit
-    # - run: cd tmpFolder && echo `git commit -m "."` # Without 'echo', git commit breaks the build, if there aren't any changes at all.
-    
-    # - run: git config --global push.default simple # remove warning in 'git push' command
-    # - run: cd tmpFolder && git push origin
-    
+    # Uncoment the two lines below for remote debug (just use in a terminal the provided url for ssh)
     # - name: Setup upterm session
     #   uses: lhotari/action-upterm@v1
