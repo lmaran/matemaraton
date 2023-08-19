@@ -37,10 +37,10 @@ jobs:
 
         # Run all commands below from tmpFolder
         cd ../tmpFolder
-        echo `ls in tmp folder before delete:`
+        echo "ls in tmp folder before delete:"
         ls -a
         rm -rf *
-        echo `ls in tmp folder after delete:`
+        echo "ls in tmp folder after delete:"
         ls -a
         pwd
         cp -rf  ../matemaraton/dist/* .
@@ -51,7 +51,7 @@ jobs:
         git config --global user.name "${GITHUB_REPOSITORY_OWNER}" # we need to set an author for commit
         echo `git commit -m "."` # Without 'echo', git commit breaks the build, if there aren't any changes at all.
         git config --global push.default simple # remove warning in 'git push' command
-        git push origin
+        # git push origin
 
     # - run: |
     #     date > generated.txt
@@ -74,5 +74,5 @@ jobs:
     # - run: git config --global push.default simple # remove warning in 'git push' command
     # - run: cd tmpFolder && git push origin
     
-    # - name: Setup upterm session
-    #   uses: lhotari/action-upterm@v1
+    - name: Setup upterm session
+      uses: lhotari/action-upterm@v1
