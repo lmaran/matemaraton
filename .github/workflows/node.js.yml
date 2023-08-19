@@ -36,14 +36,14 @@ jobs:
     # - run: cp -rf  home/runner/work/matemaraton/matemaraton/dist/* home/runner/work/matemaraton/matemaraton/tmpFolder
     - run: cp -rf  dist/* tmpFolder
     
-    - run: cd tmpFolder && cp  ./package.json package.json
+    - run: cp ./package.json tmpFolder
     - run: cd tmpFolder && npm install --omit=dev
-    - run: cd tmpFolder && rm -f package.json package-lock.json
+    - run: rm -f tmpFolder/package.json tmpFolder/package-lock.json
     - run: cd tmpFolder && git add -A
     - run: cd tmpFolder && git commit -m "."
     - run: git config --global user.name "${github.repository_owner}"
     - run: git config --global push.default simple
-    - run: cd tmpFolder &&git push origin
+    - run: cd tmpFolder && git push origin
     
     # - name: Setup upterm session
     #   uses: lhotari/action-upterm@v1
