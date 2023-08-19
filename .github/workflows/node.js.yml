@@ -30,10 +30,10 @@ jobs:
     - run: npm run build-prod
 
     - run: |
-        pwd # display current folder
-        cd .
-        git clone -b "${GITHUB_REF##*/}"-dist --single-branch https://github.com/${GITHUB_REPOSITORY}.git ../tmpFolder
 
+        git clone -b "${GITHUB_REF##*/}"-dist --single-branch https://github.com/${GITHUB_REPOSITORY}.git ../tmpFolder
+        git config --global user.name "${GITHUB_REPOSITORY_OWNER}" # we need to set an author for commit
+        git config --global user.email "lucian.maran@outlook.com"
         
         
         # Existing structure:
@@ -45,16 +45,15 @@ jobs:
         rm -rf *
         cp -rf  ../matemaraton/dist/* .
         cp ../matemaraton/package.json .
-        echo "Waiting fo npm install:"
+        echo "Waiting for npm install..."
         npm install --omit=dev
         rm -f package.json package-lock.json
         date > timestamp.txt # add a timestamp to a file 
         git add -A
 
-        git config --global user.name "${GITHUB_REPOSITORY_OWNER}" # we need to set an author for commit
-        git config --global user.email "lucian.maran@outlook.com"
+
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
-        git config --global push.default simple # remove warning in 'git push' command
+        # git config --global push.default simple # remove warning in 'git push' command
         
         git commit -m "."
         git push origin
