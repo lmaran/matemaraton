@@ -53,12 +53,13 @@ jobs:
         cp ../matemaraton/package.json .
         npm install --omit=dev
         rm -f package.json package-lock.json
+        date > generated.txt # add a timestamp to a file 
         git add -A
         git config --global user.name "${GITHUB_REPOSITORY_OWNER}" # we need to set an author for commit
         git config --global user.email "lucian.maran@outlook.com"
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
           
-        echo `git commit -m "."` # Without 'echo', git commit breaks the build, if there aren't any changes at all.
+        echo `git commit -m "generated"` # Without 'echo', git commit breaks the build, if there aren't any changes at all.
         git config --global push.default simple # remove warning in 'git push' command
         git push origin
 
