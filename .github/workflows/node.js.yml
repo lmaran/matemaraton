@@ -26,9 +26,28 @@ jobs:
     - run: npm ci
     - run: npm run build-prod
 
-    - uses: actions/checkout@v3
-      with:
-        ref: master-dist
+    - run: |
+        pwd # 
+        cd .
+        git clone -b "${GITHUB_REF##*/}"-dist --single-branch https://github.com/${GITHUB_REPOSITORY}.git ../tmpFolder
+
+        # Existing structure:
+        #  ~/work/matemaraton/matemaraton (contains "master" branch)
+        #  ~/work/matemaraton/tmpFolder (contains "dist" branch)
+
+        # Run all commands below from tmpFolder
+        cd ../tmpFolder
+        rm -rf tmpFolder/*
+        cp -rf  ../dist/* .
+        cp ../package.json .
+        npm install --omit=dev
+        rm -f package.json package-lock.json
+        git add -A
+        git config --global user.name "${GITHUB_REPOSITORY_OWNER}" # we need to set an author for commit
+        echo `git commit -m "."` # Without 'echo', git commit breaks the build, if there aren't any changes at all.
+        git config --global push.default simple # remove warning in 'git push' command
+        git push origin
+
     # - run: |
     #     date > generated.txt
     #     git config user.name github-actions
@@ -50,5 +69,5 @@ jobs:
     # - run: git config --global push.default simple # remove warning in 'git push' command
     # - run: cd tmpFolder && git push origin
     
-    - name: Setup upterm session
-      uses: lhotari/action-upterm@v1
+    # - name: Setup upterm session
+    #   uses: lhotari/action-upterm@v1
