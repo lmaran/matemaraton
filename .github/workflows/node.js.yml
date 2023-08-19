@@ -27,7 +27,7 @@ jobs:
     - run: npm run build-prod
 
     - run: |
-        pwd # 
+        pwd # display current folder
         cd .
         git clone -b "${GITHUB_REF##*/}"-dist --single-branch https://github.com/${GITHUB_REPOSITORY}.git ../tmpFolder
 
@@ -37,8 +37,10 @@ jobs:
 
         # Run all commands below from tmpFolder
         cd ../tmpFolder
+        echo `ls in tmp folder before delete:`
         ls -a
         rm -rf *
+        echo `ls in tmp folder after delete:`
         ls -a
         pwd
         cp -rf  ../matemaraton/dist/* .
