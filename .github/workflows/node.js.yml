@@ -51,11 +51,8 @@ jobs:
         npm install --omit=dev
         rm -f package.json package-lock.json
         git add -A
-        # git config --global user.name "${GITHUB_REPOSITORY_OWNER}" # we need to set an author for commit
-        # git config --global user.email "$CI_COMMITTER_EMAIL"
-        
-        git config user.name github-actions
-        git config user.email github-actions@github.com
+        git config --global user.name "${GITHUB_REPOSITORY_OWNER}" # we need to set an author for commit
+        git config --global user.email "lucian.maran@outlook.com"
           
         echo `git commit -m "."` # Without 'echo', git commit breaks the build, if there aren't any changes at all.
         git config --global push.default simple # remove warning in 'git push' command
