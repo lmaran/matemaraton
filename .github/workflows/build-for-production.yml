@@ -3,7 +3,7 @@ name: Build for production
 on:
     # workflow_dispatch: # use this option to run the workflow manually
     push:
-        branches: [main]
+        branches: [master]
 permissions:
     contents: write
 jobs:
