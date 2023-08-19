@@ -28,13 +28,13 @@ jobs:
 
     - run: git clone -b "${GITHUB_REF##*/}"-dist --single-branch https://github.com/${GITHUB_REPOSITORY}.git tmpFolder
     
-    - run: cd tmpFolder && pwd && ls
-    - run: cd ./tmpFolder && pwd && ls
+    # - run: cd tmpFolder && pwd && ls
+    # - run: cd ./tmpFolder && pwd && ls
 
     - run: rm -rf tmpFolder/*
     
     # - run: cp -rf  home/runner/work/matemaraton/matemaraton/dist/* home/runner/work/matemaraton/matemaraton/tmpFolder
-    - run: cd tmpFolder && cp -rf  dist/* .
+    - run: cp -rf  dist/* tmpFolder
     
     - run: cd tmpFolder && cp  ./package.json package.json
     - run: cd tmpFolder && npm install --omit=dev
