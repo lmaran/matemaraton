@@ -5,7 +5,8 @@ name: Node.js CI
 
 on:
   workflow_dispatch:
-
+permissions:
+  contents: write
 jobs:
   build:
 
@@ -18,6 +19,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+            token: ${{ secrets.PAT }}
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
@@ -49,6 +52,7 @@ jobs:
         rm -f package.json package-lock.json
         git add -A
         git config --global user.name "${GITHUB_REPOSITORY_OWNER}" # we need to set an author for commit
+        git config --global user.email "$CI_COMMITTER_EMAIL"
         echo `git commit -m "."` # Without 'echo', git commit breaks the build, if there aren't any changes at all.
         git config --global push.default simple # remove warning in 'git push' command
         # git push origin
@@ -74,5 +78,5 @@ jobs:
     # - run: git config --global push.default simple # remove warning in 'git push' command
     # - run: cd tmpFolder && git push origin
     
-    - name: Setup upterm session
-      uses: lhotari/action-upterm@v1
+    # - name: Setup upterm session
+    #   uses: lhotari/action-upterm@v1
