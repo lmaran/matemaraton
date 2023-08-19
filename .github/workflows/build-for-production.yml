@@ -1,0 +1,61 @@
+name: Build for production
+
+on:
+    # workflow_dispatch: # use this option to run the workflow manually
+    push:
+        branches: [main]
+permissions:
+    contents: write
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                node-version: [18.x]
+                # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+        steps:
+            - uses: actions/checkout@v3
+              # with:
+              #       token: ${{ secrets.PAT }}
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: "npm"
+            - run: npm ci
+            - run: npm run build-prod
+
+            - run: |
+
+                  git clone -b "${GITHUB_REF##*/}"-dist --single-branch https://github.com/${GITHUB_REPOSITORY}.git ../tmpFolder
+                  git config --global user.name "${GITHUB_REPOSITORY_OWNER}" # we need to set an author for commit
+                  git config --global user.email "lucian.maran@outlook.com"
+
+
+                  # Existing structure:
+                  #  ~/work/matemaraton/matemaraton (contains "master" branch)
+                  #  ~/work/matemaraton/tmpFolder (contains "dist" branch)
+
+                  # Run all commands below from tmpFolder
+                  cd ../tmpFolder
+                  rm -rf *
+                  cp -rf  ../matemaraton/dist/* .
+                  cp ../matemaraton/package.json .
+                  echo "Waiting for npm install..."
+                  npm install --omit=dev
+                  rm -f package.json package-lock.json
+                  date > timestamp.txt # add a timestamp to a file 
+                  git add -A
+
+
+                  git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+                  # git config --global push.default simple # remove warning in 'git push' command
+
+                  git commit -m "."
+                  git push origin
+
+        # Uncoment the two lines below for remote debug (just use in a terminal the provided url for ssh)
+        # - name: Setup upterm session
+        #   uses: lhotari/action-upterm@v1
