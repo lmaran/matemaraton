@@ -26,3 +26,5 @@ jobs:
     - run: npm ci
     - run: npm run build-prod --if-present
     - run: echo "Hello MateMaraton"
+    - name: Setup upterm session
+      uses: lhotari/action-upterm@v1
