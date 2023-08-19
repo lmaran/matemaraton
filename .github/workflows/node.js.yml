@@ -26,25 +26,29 @@ jobs:
     - run: npm ci
     - run: npm run build-prod
 
-    - run: git clone -b "${GITHUB_REF##*/}"-dist --single-branch https://github.com/${GITHUB_REPOSITORY}.git tmpFolder
-    
-    # - run: cd tmpFolder && pwd && ls
-    # - run: cd ./tmpFolder && pwd && ls
+    - uses: actions/checkout@v3
+      with:
+        ref: master-dist
+    # - run: |
+    #     date > generated.txt
+    #     git config user.name github-actions
+    #     git config user.email github-actions@github.com
+    #     git add .
+    #     git commit -m "generated"
+    #     git push
 
-    - run: rm -rf tmpFolder/*
+    # - run: git clone -b "${GITHUB_REF##*/}"-dist --single-branch https://github.com/${GITHUB_REPOSITORY}.git tmpFolder
+    # - run: rm -rf tmpFolder/*
+    # - run: cp -rf  dist/* tmpFolder
+    # - run: cp ./package.json tmpFolder
+    # - run: cd tmpFolder && npm install --omit=dev
+    # - run: rm -f tmpFolder/package.json tmpFolder/package-lock.json
+    # - run: cd tmpFolder && git add -A
+    # - run: git config --global user.name "${GITHUB_REPOSITORY_OWNER}" # we need to set an author for commit
+    # - run: cd tmpFolder && echo `git commit -m "."` # Without 'echo', git commit breaks the build, if there aren't any changes at all.
     
-    # - run: cp -rf  home/runner/work/matemaraton/matemaraton/dist/* home/runner/work/matemaraton/matemaraton/tmpFolder
-    - run: cp -rf  dist/* tmpFolder
+    # - run: git config --global push.default simple # remove warning in 'git push' command
+    # - run: cd tmpFolder && git push origin
     
-    - run: cp ./package.json tmpFolder
-    - run: cd tmpFolder && npm install --omit=dev
-    - run: rm -f tmpFolder/package.json tmpFolder/package-lock.json
-    - run: cd tmpFolder && git add -A
-    - run: git config --global user.name "${GITHUB_REPOSITORY_OWNER}" # we need to set an author for commit
-    - run: cd tmpFolder && echo `git commit -m "."` # Without 'echo', git commit breaks the build, if there aren't any changes at all.
-    
-    - run: git config --global push.default simple # remove warning in 'git push' command
-    - run: cd tmpFolder && git push origin
-    
-    # - name: Setup upterm session
-    #   uses: lhotari/action-upterm@v1
+    - name: Setup upterm session
+      uses: lhotari/action-upterm@v1
