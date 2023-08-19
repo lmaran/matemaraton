@@ -29,6 +29,9 @@ jobs:
     - run: npm ci
     - run: npm run build-prod
 
+    # - name: Setup credentials to access private repositories
+    #   run: git config --global url.https://${{ secrets.PAT }}@github.com/.insteadOf https://github.com/
+
     - run: |
         pwd # display current folder
         cd .
@@ -53,6 +56,7 @@ jobs:
         git add -A
         git config --global user.name "${GITHUB_REPOSITORY_OWNER}" # we need to set an author for commit
         git config --global user.email "lucian.maran@outlook.com"
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
           
         echo `git commit -m "."` # Without 'echo', git commit breaks the build, if there aren't any changes at all.
         git config --global push.default simple # remove warning in 'git push' command
