@@ -24,7 +24,21 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm run build-prod --if-present
-    - run: echo "Hello MateMaraton"
-    - name: Setup upterm session
-      uses: lhotari/action-upterm@v1
+    - run: npm run build-prod
+
+    - run: git clone -b "${GITHUB_REF##*/}"-dist --single-branch https://github.com/${GITHUB_REPOSITORY}.git tmpFolder
+    - run: cd tmpFolder
+    - run: rm -rf *
+    - run: cp -rf  ~/work/matemaraton/matemaraton/dist/* .
+    - run: cp  ~/work/matemaraton/matemaraton/package.json package.json
+    - run: npm install --omit=dev
+    - run: rm -f package.json package-lock.json
+    - run: git add -A
+    - run: git commit -m "."
+    - run: git config --global user.name "${github.repository_owner}"
+    - run: git config --global push.default simple
+    - run: git push origin
+    
+    # - name: Setup upterm session
+    #   uses: lhotari/action-upterm@v1
+    
