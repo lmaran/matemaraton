@@ -46,7 +46,7 @@ jobs:
                   echo "Waiting for npm install..."
                   npm install --omit=dev
                   rm -f package.json package-lock.json
-                  date > timestamp.txt # add a timestamp to a file 
+                  date > public/version.txt # add a timestamp to a file 
                   git add -A
 
 
