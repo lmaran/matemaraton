@@ -27,7 +27,6 @@ const courseArticleController = require("./controllers/course-article.controller
 const courseTheoryController = require("./controllers/course-theory.controller");
 const courseExerciseController = require("./controllers/course-exercise.controller");
 const homeworkController = require("./controllers/homework.controller");
-const lessonController = require("./controllers/lesson.controller");
 const markdownController = require("./controllers/markdown.controller");
 const fileController = require("./controllers/file.controller");
 const enrollmentController = require("./controllers/enrollment.controller");
@@ -165,16 +164,6 @@ router.get(
     isAuthenticated,
     courseExerciseController.getAvailablePositions
 );
-
-// lessons
-router.get("/lectii", lessonController.getAll);
-router.get("/lectii/edit/:id", isAuthenticated, lessonController.createOrEditGet);
-router.post("/lectii/edit/:id", isAuthenticated, lessonController.createOrEditPost);
-router.get("/lectii/adauga", isAuthenticated, lessonController.createOrEditGet);
-router.post("/lectii/adauga", isAuthenticated, lessonController.createOrEditPost);
-router.get("/lectii/:id", lessonController.getOneById);
-router.get("/cursuri/:courseId/lectii/:id", lessonController.getOneById);
-router.post("/lectii/sterge", isAuthenticated, lessonController.deleteLesson);
 
 // exercises
 router.get("/exercitii", isAuthenticated, exerciseController.getAll);
