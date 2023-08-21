@@ -127,7 +127,7 @@ exports.getAll = async (req, res) => {
     const localOlympiadCourses = [];
     const countyOlympiadCourses = [];
     courses
-        .filter((x) => x.isActive && !x.isHidden)
+        .filter((x) => !x.isHidden)
         .sort((a, b) => (a.code > b.code ? 1 : -1))
         .forEach((course) => {
             if (course.category === "Evaluare Națională") {
