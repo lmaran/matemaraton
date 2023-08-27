@@ -1,0 +1,27 @@
+{{#if question.answer.textPreview}}
+    <div class="answer-div d-none">
+        <div class="mt-2">{{{question.answer.textPreview}}}</div>
+    </div>
+{{/if}}
+
+{{#if question.hints}}
+    <div class="hints-div d-none" data-total-hints="{{question.hints.length}}">
+        <div class="mt-2">
+            {{#each question.hints}}
+                <div {{#if (ne @index 0)}} class="d-none" {{/if}} data-hint-nr="{{inc @index}}">{{{textPreview}}}</div>
+            {{/each}}
+            {{#if (gt question.hints.length 1)}}
+                <button type="button" class="show-next-hint-btn btn btn-link p-0">Vezi următoarea indicație</button>
+            {{/if}}
+        </div>
+    </div>
+{{/if}}
+
+{{#if question.solution.textPreview}}
+    <div class="solution-div d-none">
+        <div class="fw-bold mt-2">Soluție:</div>
+        <div style2"border: 1px solid lightgray; padding: 6px 12px; background-color: min-height:58px">
+            {{{question.solution.textPreview}}}
+        </div>
+    </div>
+{{/if}}

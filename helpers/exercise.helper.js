@@ -20,7 +20,7 @@ exports.addPreview = (exercise, statementNumber, clear) => {
             });
         }
 
-        if (exercise.question.answer) {
+        if (exercise.question.answer && exercise.question.answer.text) {
             exercise.question.answer.textPreview = markdownService.render(`**Răspuns:** ${exercise.question.answer.text}`);
             if (clear) delete exercise.question.answer.text;
         }
@@ -37,4 +37,31 @@ exports.addPreview = (exercise, statementNumber, clear) => {
             });
         }
     }
+};
+
+exports.getAuthorAndSource = (exercise) => {
+    // row1 = authorAndSource1 = "<Author>, <ContestName>"
+    // row2 = source2 = "<SourceName>"
+    // If <ContestName> is not present, we will put "<SourceName>" on row1
+
+    let authorAndSource1, source2;
+
+    if (exercise.author) {
+        authorAndSource1 = exercise.author;
+        if (exercise.contestName) {
+            authorAndSource1 = `${authorAndSource1}, ${exercise.contestName}`;
+            source2 = exercise.sourceName;
+        } else if (exercise.sourceName) {
+            authorAndSource1 = `${authorAndSource1}, ${exercise.sourceName}`;
+        }
+    } else if (exercise.contestName) {
+        authorAndSource1 = exercise.contestName;
+        source2 = exercise.sourceName;
+    } else {
+        authorAndSource1 = exercise.sourceName;
+    }
+    return {
+        authorAndSource1,
+        source2,
+    };
 };

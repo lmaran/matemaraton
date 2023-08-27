@@ -2,7 +2,10 @@
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item active">Cursuri</li>
+
+        {{#if canCreateOrEditCourse}}
         <li title="Editează" class="ms-auto"><a href="/cursuri/modifica"><i class="bi bi-pencil me-1"></i></a></li>
+        {{/if}}
     </ol>
 </nav>
 

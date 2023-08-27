@@ -77,7 +77,7 @@ router.post("/cursuri/:id/sterge", isAuthenticated, courseController.deleteOneBy
 // course-chapters
 router.get("/cursuri/:courseId/capitole/adauga", isAuthenticated, courseChapterController.createOrEditGet);
 router.post("/cursuri/:courseId/capitole/adauga", isAuthenticated, courseChapterController.createOrEditPost);
-router.get("/cursuri/:courseId/capitole/:chapterId", isAuthenticated, courseChapterController.getOneById);
+router.get("/cursuri/:courseId/capitole/:chapterId", courseChapterController.getOneById);
 router.get("/cursuri/:courseId/capitole/:chapterId/modifica", isAuthenticated, courseChapterController.createOrEditGet);
 router.post("/cursuri/:courseId/capitole/:chapterId/modifica", isAuthenticated, courseChapterController.createOrEditPost);
 router.post("/cursuri/:courseId/capitole/:chapterId/sterge", isAuthenticated, courseChapterController.deleteOneById);
@@ -85,7 +85,7 @@ router.post("/cursuri/:courseId/capitole/:chapterId/sterge", isAuthenticated, co
 // course-lessons
 router.get("/cursuri/:courseId/capitole/:chapterId/lectii/adauga", isAuthenticated, courseLessonController.createOrEditGet);
 router.post("/cursuri/:courseId/capitole/:chapterId/lectii/adauga", isAuthenticated, courseLessonController.createOrEditPost);
-router.get("/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId", isAuthenticated, courseLessonController.getOneById);
+router.get("/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId", courseLessonController.getOneById);
 router.get("/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/modifica", isAuthenticated, courseLessonController.createOrEditGet);
 router.post("/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/modifica", isAuthenticated, courseLessonController.createOrEditPost);
 router.post("/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/sterge", isAuthenticated, courseLessonController.deleteOneById);
@@ -124,7 +124,6 @@ router.post(
 );
 router.get(
     "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/sectiuni/:sectionId/niveluri/:levelId/exercitii/:exerciseId",
-    isAuthenticated,
     courseExerciseController.getOneById
 );
 router.get(

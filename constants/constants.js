@@ -9,12 +9,10 @@ module.exports = {
         {
             id: 1,
             name: "Exerciții rezolvate",
-            displayNumber: 2,
         },
         {
             id: 2,
             name: "Exerciții propuse",
-            displayNumber: 3,
         },
     ],
 
