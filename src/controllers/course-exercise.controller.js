@@ -4,6 +4,7 @@ const autz = require("../services/autz.service");
 const markdownService = require("../services/markdown.service");
 const idGeneratorMongoService = require("../services/id-generator-mongo.service");
 const arrayHelper = require("../helpers/array.helper");
+const exerciseHelper = require("../helpers/exercise.helper");
 
 const { availableExerciseTypes, availableSections, availableLevels } = require("../constants/constants");
 
@@ -19,10 +20,10 @@ exports.getOneById = async (req, res) => {
     let lessonRef, courseCode, chapterIndex, availablePositions, selectedPosition, exercise;
 
     try {
-        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
-        if (!canCreateOrEditCourse) {
-            return res.status(403).send("Lipsă permisiuni!"); // forbidden
-        }
+        // const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+        // if (!canCreateOrEditCourse) {
+        //     return res.status(403).send("Lipsă permisiuni!"); // forbidden
+        // }
 
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
@@ -69,6 +70,10 @@ exports.getOneById = async (req, res) => {
                 });
             }
         }
+
+        const { authorAndSource1, source2 } = exerciseHelper.getAuthorAndSource(exercise);
+        exercise.authorAndSource1 = authorAndSource1;
+        exercise.source2 = source2;
 
         exercise.exerciseType = availableExerciseTypes.find((x) => x.value == exercise.exerciseType);
 

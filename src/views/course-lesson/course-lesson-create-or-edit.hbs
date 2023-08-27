@@ -22,9 +22,6 @@
             <label for="nameInput" class="fw-bold">Titlul lecției:</label>
             <input type="text" name="name" class="form-control" id="nameInput" placeholder=""
                 value="{{lesson.name}}">
-            {{!-- <small>
-                <p class="text-muted mb-0">Ex: Numere raționale</p>
-            </small> --}}
         </div>
     </div>
 
@@ -56,8 +53,6 @@
             <span class="ms-end">
                 <a id="toggle-theory-editor-btn" href="">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</a>
             </span>
-
-
         </div>
     </div>
 
@@ -71,9 +66,6 @@
                 {{/each}}
                 {{/select}}
             </select>
-            {{!-- <small>
-                <p class="text-muted mb-0">Poziția în cadrul listei</p>
-            </small> --}}
         </div>
     </div>
 
@@ -87,21 +79,9 @@
     </div>
 
     {{#if isEditMode}}
-    {{!-- <h4 class="mt-4">2. Exerciții rezolvate</h4>
-    <a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/adauga-exercițiu-rezolvat"
-    class="btn btn-primary btn-sm">
-    <i class="bi bi-plus-lg"></i> Adaugă exercițiu rezolvat</a>
-
-    <h4 class="mt-3">3. Exerciții propuse</h4>
-
-    <a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/adauga-exercițiu-propus"
-    class="btn btn-primary btn-sm">
-    <i class="bi bi-plus-lg"></i> Adaugă exercițiu propus</a> --}}
-
         {{#each lesson.sectionsObj.sections}}
-        <h4 class="mt-5">{{displayNumber}}. {{name}}<span class="fw-light text-muted ms-1">({{total}})</span></h4>
+        <h4 class="mt-5">{{name}}<span class="fw-light text-muted ms-1">({{total}})</span></h4>
         {{#each levels}}
-            {{!-- {{#if exercises.length}} --}}
             <div id="section{{../id}}-level{{id}}"  class="level-menu-div">
                 <strong>{{name}}</strong>
                 <span class="text-muted">
@@ -116,102 +96,17 @@
                 
                 {{#if exercises.length}}
                 <a class="toggle-level-btn me-2" href="#">{{#if isActive}}Ascunde exercițiile{{else}}Afișează{{/if}}</a>
-                {{!-- <span class="text-muted ms-2 me-2"></span> --}}
                 {{/if}}
                 
             </div>
             <div class="level-content-div mb-3 ms-4 {{#unless isActive}}d-none{{/unless}}">
             {{#each exercises}}
-            <div class="exercise-div">
-                <div class="statement-div mt-3" style="border: 1px solid #b99888; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
-                    {{{question.statement.textPreview}}}
-                    {{#if question.answerOptions}}
-                        <div class="row">
-                        {{#each question.answerOptions}}
-                        <div class="col text-nowrap">{{{textPreview}}}</div>
-                        {{/each}}
-                        </div>
-                    {{/if}}
-
-
-                    <div class="exercise-details-div clearfix">
-                        <div class="float-start"></div>
-                        <div class="float-end">
-                            {{#if authorAndSource1}}<span class="text-muted fw-light fst-italic"><small>{{authorAndSource1}}</small></span>{{/if}}
-                        </div>
-
-                    </div>
-
-                    <div class="exercise-details-div clearfix">
-                        <div class="float-start"></div>
-                        <div class="float-end">
-                            {{#if source2}}<span class="text-muted fw-light fst-italic"><small>{{source2}}</small></span>{{/if}}
-                        </div>
-                    </div>
-
+                <div class="exercise-div">
+                    {{> exercise-statement @this}}
+                    {{> exercise-menu @this sectionId = ../../id levelId = ../id allowView=true allowEdit=true allowDelete=true allowMove=true }}
+                    {{> exercise-panels @this }}
                 </div>
-
-                <div class="exercise-menu-div clearfix">
-                    <div class="float-start">
-                        {{#if question.hints}}
-                            <a class="toggle-hints-btn" href="">Indicații</a>
-                            <span class="text-muted">({{question.hints.length}})</span>
-                            <span class="text-muted ms-2 me-2">|</span>
-                        {{/if}}
-
-                        {{#if question.solution.textPreview}}
-                            <a class="toggle-solution-btn" href="">Soluție</a>
-                        {{/if}}
-                    </div>
-
-                    {{!-- Exercise menu --}}
-                    <div class="float-end">
-                        <a title="Vizualizează exercițiul" 
-                            href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lessonId}}/sectiuni/{{../../id}}/niveluri/{{../id}}/exercitii/{{_id}}">
-                            <i class="bi bi-eye me-1"></i></a>
-                        
-                        <a title="Editează exercițiul" 
-                            href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lessonId}}/sectiuni/{{../../id}}/niveluri/{{../id}}/exercitii/{{_id}}/modifica">
-                            <i class="bi bi-pencil me-1"></i></a>
-
-                        <button title="Șterge exercițiul" type="submit"
-                            formaction="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lessonId}}/exercitii/{{_id}}/sterge"
-                            name="deleteBtn" class="btn btn-link p-0 border-0 me-1 align-top"
-                            onclick="return confirm('Ești sigur că vrei să ștergi acest exercițiu?');"><i class="bi bi-trash"></i></button>
-
-                        <a title="Mută exercițiul" 
-                            href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lessonId}}/sectiuni/{{../../id}}/niveluri/{{../id}}/exercitii/{{_id}}/muta">
-                            <i class="bi bi-arrows-move me-1"></i></a>
-                    </div>
-                </div>
-
-                {{#if question.hints}}
-                    <div class="hints-div d-none mb-4" data-total-hints="{{question.hints.length}}"
-                        style="border: 1px solid #007bff; padding: 6px 12px; background-color: #f5faff; min-height:58px">
-                        {{#each question.hints}}
-                            <div {{#if (ne @index 0)}} class="d-none" {{/if}} data-hint-nr="{{inc @index}}">{{{textPreview}}}</div>
-                        {{/each}}
-                        {{#if (gt question.hints.length 1)}}
-                            <button type="button" class="show-next-hint-btn btn btn-link p-0">Vezi următoarea indicație</button>
-                        {{/if}}
-                    </div>
-                {{/if}}
-
-                {{#if question.solution.textPreview}}
-                    <div class="solution-div d-none">
-                        <div class="fw-bold mt-2">Soluție:</div>
-                        <div style2"border: 1px solid lightgray; padding: 6px 12px; background-color: min-height:58px">
-                            {{{question.solution.textPreview}}}
-                        </div>
-                    </div>
-                {{/if}}
-            </div>
             {{/each}}
-            
-            {{!-- <a class="btn btn-outline-primary btn-sm mt-3" 
-                href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lessonId}}/sectiuni/{{../id}}/niveluri/{{id}}/exercitii/adauga">
-                <i class="bi bi-plus-lg"></i> Adaugă exercițiu</a>  --}}
-
             </div>
         {{/each}}
         {{/each}}

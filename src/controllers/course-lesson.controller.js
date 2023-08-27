@@ -9,6 +9,7 @@ const { availableSections, availableLevels } = require("../constants/constants")
 
 exports.getOneById = async (req, res) => {
     const { courseId, chapterId, lessonId } = req.params;
+    const { sectionId, levelId } = req.query;
 
     try {
         // validate parameters
@@ -32,6 +33,8 @@ exports.getOneById = async (req, res) => {
         const exercisesFromDb = await getAllExercisesInLesson(lessonRef);
 
         lessonRef.sectionsObj = getSectionsObj(lessonRef.exercises, exercisesFromDb, true);
+
+        setActivelLevel(lessonRef.sectionsObj, sectionId, levelId);
 
         // remove unnecessary fields
         if (lessonRef.theory) delete lessonRef.theory.text;
@@ -275,23 +278,27 @@ const getSectionsObj = (exercisesRef, exercisesFromDb, clear) => {
     exercisesRef.forEach((e) => {
         const exercise = exercises.find((x) => x._id.toString() === e.id);
 
-        // row1 = authorAndSource1 = "<Author>, <ContestName>"
-        // row2 = source2 = "<SourceName>"
-        // If <ContestName> is not present, we will put "<SourceName>" on row1
-        if (exercise.author) {
-            exercise.authorAndSource1 = exercise.author;
-            if (exercise.contestName) {
-                exercise.authorAndSource1 = `${exercise.authorAndSource1}, ${exercise.contestName}`;
-                exercise.source2 = exercise.sourceName;
-            } else if (exercise.sourceName) {
-                exercise.authorAndSource1 = `${exercise.authorAndSource1}, ${exercise.sourceName}`;
-            }
-        } else if (exercise.contestName) {
-            exercise.authorAndSource1 = exercise.contestName;
-            exercise.source2 = exercise.sourceName;
-        } else {
-            exercise.authorAndSource1 = exercise.sourceName;
-        }
+        const { authorAndSource1, source2 } = exerciseHelper.getAuthorAndSource(exercise);
+        exercise.authorAndSource1 = authorAndSource1;
+        exercise.source2 = source2;
+
+        // // row1 = authorAndSource1 = "<Author>, <ContestName>"
+        // // row2 = source2 = "<SourceName>"
+        // // If <ContestName> is not present, we will put "<SourceName>" on row1
+        // if (exercise.author) {
+        //     exercise.authorAndSource1 = exercise.author;
+        //     if (exercise.contestName) {
+        //         exercise.authorAndSource1 = `${exercise.authorAndSource1}, ${exercise.contestName}`;
+        //         exercise.source2 = exercise.sourceName;
+        //     } else if (exercise.sourceName) {
+        //         exercise.authorAndSource1 = `${exercise.authorAndSource1}, ${exercise.sourceName}`;
+        //     }
+        // } else if (exercise.contestName) {
+        //     exercise.authorAndSource1 = exercise.contestName;
+        //     exercise.source2 = exercise.sourceName;
+        // } else {
+        //     exercise.authorAndSource1 = exercise.sourceName;
+        // }
 
         const section = sectionsObj.sections.find((s) => s.id == e.sectionId);
 
