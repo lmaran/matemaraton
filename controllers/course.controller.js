@@ -89,7 +89,7 @@ exports.createOrEditPost = async (req, res) => {
             course._id = result.insertedId;
         }
         //res.send(course);
-        res.redirect(`/cursuri/${course._id}/modifica`);
+        res.redirect("/cursuri/modifica");
     } catch (err) {
         return res.status(500).json(err.message);
     }
