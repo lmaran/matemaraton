@@ -2,7 +2,7 @@ const exerciseService = require("../services/exercise.service");
 const idGeneratorMongoService = require("../services/id-generator-mongo.service");
 const autz = require("../services/autz.service");
 const markdownService = require("../services/markdown.service");
-
+const exerciseHelper = require("../helpers/exercise.helper");
 const { availableExerciseTypes } = require("../constants/constants");
 
 exports.getOneById = async (req, res) => {
@@ -214,13 +214,8 @@ exports.getAll = async (req, res) => {
     if (endIndex > totalExercises) endIndex = totalExercises; // fix endIndex for the last page
 
     exercises.forEach((exercise) => {
-        let statement = `**[E.${exercise.code}.](/exercitii/${exercise._id})** ${exercise.question.statement?.text}`;
+        const statement = `**[E.${exercise.code}.](/exercitii/${exercise._id})** ${exercise.question.statement?.text}`;
 
-        if (exercise.question.answerOptions) {
-            exercise.question.answerOptions.forEach((answerOption) => {
-                statement = statement + "\n" + "* " + answerOption.text;
-            });
-        }
         const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
 
         if (exercise.question.answerOptions) {
@@ -244,6 +239,10 @@ exports.getAll = async (req, res) => {
                 hint.textPreview = markdownService.render(`**Hint ${idx + 1}:** ${hint.text}`);
             });
         }
+
+        const { authorAndSource1, source2 } = exerciseHelper.getAuthorAndSource(exercise);
+        exercise.authorAndSource1 = authorAndSource1;
+        exercise.source2 = source2;
     });
 
     const totalPages = Math.ceil(totalExercises / limit);

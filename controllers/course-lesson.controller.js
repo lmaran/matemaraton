@@ -8,7 +8,7 @@ const exerciseHelper = require("../helpers/exercise.helper");
 const { availableSections, availableLevels } = require("../constants/constants");
 
 exports.getOneById = async (req, res) => {
-    const { courseId, chapterId, lessonId } = req.params;
+    const { courseId, lessonId } = req.params;
     const { sectionId, levelId } = req.query;
 
     try {
@@ -16,32 +16,59 @@ exports.getOneById = async (req, res) => {
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const chapterRef = (course.chapters || []).find((x) => x.id === chapterId);
-        if (!chapterRef) return res.status(500).send("Capitol negăsit!");
+        let chapterId;
+        let chapterIndex;
+        let lesson;
+        let lessonIndex;
 
-        const lessonRef = (chapterRef.lessons || []).find((x) => x.id === lessonId);
-        if (!lessonRef) return res.status(500).send("Lecție negăsită!");
+        const chapters = course.chapters || [];
+        for (let i = 0; i < chapters.length; i++) {
+            const chapter = chapters[i];
 
-        const courseCode = course.code;
-        const chapterIndex = (course.chapters || []).findIndex((x) => x.id === chapterId);
-        const lessonIndex = chapterRef.lessons.findIndex((x) => x.id === lessonId);
+            const lessons = chapter.lessons || [];
+            for (let j = 0; j < lessons.length; j++) {
+                if (lessons[j].id == lessonId) {
+                    lesson = lessons[j];
+                    lessonIndex = j;
+                    break;
+                }
+            }
 
-        if (lessonRef.theory) {
-            lessonRef.theory.textPreview = markdownService.render(lessonRef.theory.text);
+            if (lesson) {
+                chapterIndex = i;
+                chapterId = chapter.id;
+                break;
+            }
         }
 
-        const exercisesFromDb = await getAllExercisesInLesson(lessonRef);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
 
-        lessonRef.sectionsObj = getSectionsObj(lessonRef.exercises, exercisesFromDb, true);
+        // const chapterRef = (course.chapters || []).find((x) => x.id === chapterId);
+        // if (!chapterRef) return res.status(500).send("Capitol negăsit!");
 
-        setActivelLevel(lessonRef.sectionsObj, sectionId, levelId);
+        // const lessonRef = (chapterRef.lessons || []).find((x) => x.id === lessonId);
+        // if (!lessonRef) return res.status(500).send("Lecție negăsită!");
+
+        const courseCode = course.code;
+        // const chapterIndex = (course.chapters || []).findIndex((x) => x.id === chapterId);
+        // const lessonIndex = chapterRef.lessons.findIndex((x) => x.id === lessonId);
+
+        if (lesson.theory) {
+            lesson.theory.textPreview = markdownService.render(lesson.theory.text);
+        }
+
+        const exercisesFromDb = await getAllExercisesInLesson(lesson);
+
+        lesson.sectionsObj = getSectionsObj(lesson.exercises, exercisesFromDb, true);
+
+        setActivelLevel(lesson.sectionsObj, sectionId, levelId);
 
         // remove unnecessary fields
-        if (lessonRef.theory) delete lessonRef.theory.text;
-        delete lessonRef.exercises;
+        if (lesson.theory) delete lesson.theory.text;
+        delete lesson.exercises;
 
         const data = {
-            lesson: lessonRef,
+            lesson,
             courseId,
             courseCode,
             chapterId,
@@ -261,13 +288,11 @@ const getSectionsObj = (exercisesRef, exercisesFromDb, clear) => {
     // sort exercises by sectionId, then by levelId
     exercisesRef.sort((exerciseA, exerciseB) => exerciseA.sectionId - exerciseB.sectionId || exerciseA.levelId - exerciseB.levelId);
 
-    const exercises = exercisesRef.map((x, idx) => {
+    const exercises = exercisesRef.map((x) => {
         let exercise = exercisesFromDb.find((y) => y._id.toString() === x.id);
         // add preview
-        //const statementNumber = `**[R.${++idx}](/exercitii/${exercise._id})**`;
-        // const statementNumber = x.sectionId == 1 ? `**R${++idx}.**&nbsp;` : `**P${++idx}.**&nbsp;`;
+        const statementNumber = `**E.${exercise.code}.**`;
 
-        const statementNumber = `**Problema ${++idx}.**`;
         if (!exercise) {
             exercise = { _id: x.id, question: { statement: { text: "Exercitiul a fost șters din DB!" } } };
         }
@@ -281,24 +306,6 @@ const getSectionsObj = (exercisesRef, exercisesFromDb, clear) => {
         const { authorAndSource1, source2 } = exerciseHelper.getAuthorAndSource(exercise);
         exercise.authorAndSource1 = authorAndSource1;
         exercise.source2 = source2;
-
-        // // row1 = authorAndSource1 = "<Author>, <ContestName>"
-        // // row2 = source2 = "<SourceName>"
-        // // If <ContestName> is not present, we will put "<SourceName>" on row1
-        // if (exercise.author) {
-        //     exercise.authorAndSource1 = exercise.author;
-        //     if (exercise.contestName) {
-        //         exercise.authorAndSource1 = `${exercise.authorAndSource1}, ${exercise.contestName}`;
-        //         exercise.source2 = exercise.sourceName;
-        //     } else if (exercise.sourceName) {
-        //         exercise.authorAndSource1 = `${exercise.authorAndSource1}, ${exercise.sourceName}`;
-        //     }
-        // } else if (exercise.contestName) {
-        //     exercise.authorAndSource1 = exercise.contestName;
-        //     exercise.source2 = exercise.sourceName;
-        // } else {
-        //     exercise.authorAndSource1 = exercise.sourceName;
-        // }
 
         const section = sectionsObj.sections.find((s) => s.id == e.sectionId);
 
