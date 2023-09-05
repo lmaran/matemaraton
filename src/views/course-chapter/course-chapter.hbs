@@ -22,7 +22,7 @@
 <ol id="table-of-contents" class="pl-0">
     {{#each course.selectedChapter.lessons}}
         <li>
-            <a href="/cursuri/{{@root.course._id}}/capitole/{{@root.course.selectedChapter.id}}/lectii/{{id}}">{{name}}</a>
+            <a href="/cursuri/{{@root.course._id}}/lectii/{{id}}">{{name}}</a>
             {{#if isHidden}}
                 <a href="/cursuri/{{@root.course._id}}/capitole/{{@root.course.selectedChapter.id}}/lectii/{{id}}/modifica">
                     <i class="bi bi-eye-slash text-danger"></i></a>

@@ -118,51 +118,12 @@
 
 
 {{#each exercises}}
-
-<div style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
-    {{{question.statement.textPreview}}}
-    {{#if question.answerOptions}}
-    <div class="row">
-        {{#each question.answerOptions}}
-        <div class="col text-nowrap">{{{textPreview}}}</div>
-        {{/each}}
+    <div class="exercise-div mb-4">
+        {{> exercise-statement @this}}
+        {{> exercise-menu @this sectionId = ../../id levelId = ../id allowView=false allowEdit=false allowDelete=false allowMove=false}}
+        {{> exercise-panels @this }}
     </div>
-    {{/if}}
-</div>
-
-
-{{!-- <div class="font-italic small text-right text-muted">Cls.{{grade}}, {{branch}}</div> --}}
-{{#if exerciseType}}
-<div class="float-end font-italic small text-muted">, tip: {{exerciseType}}</div>
-{{/if}}
-
-{{#if grade}}
-<div class="float-end font-italic small text-muted">, clasa a {{grade}}-a</div>
-{{/if}}
-
-<div class="float-end font-italic small text-muted">{{contestName}}</div>
-<div class="float-end font-italic small text-muted me-2">{{author}}</div>
-</br>
-<div class="float-end font-italic small text-muted">{{sourceName}}</div>
-
-
-{{#if question.hints}}
-{{#each question.hints}}
-<div>{{{textPreview}}}</div>
 {{/each}}
-{{/if}}
-
-<div class="fw-bold">Soluție:</div>
-<div>{{{question.solution.textPreview}}}</div>
-
-</br>
-</br>
-{{/each}}
-
-{{!--
-<hr> --}}
-
-
 
 {{#section 'script'}}
 <script type="module" src="/js/eventBinders/exercise-list.event-binder.js"></script>
