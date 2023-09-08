@@ -5,7 +5,7 @@
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/modifica">{{courseCode}}</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/modifica">
                 Cap.{{inc chapterIndex}}</a></li>
-        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/modifica?sectionId={{sectionId}}&levelId={{levelId}}#section{{sectionId}}-level{{levelId}}">L.{{inc lesson.index}}</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}/modifica?sectionId={{sectionId}}&levelId={{levelId}}#section{{sectionId}}-level{{levelId}}">L.{{inc lessonIndex}}</a></li>
         <li class="breadcrumb-item active">E.{{exerciseCode}}</li>
     </ol>
 </nav>
@@ -16,7 +16,7 @@
 
 {{!-- {{toJSON exercise}} --}}
 
-<form method="post" action="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/sectiuni/{{sectionId}}/niveluri/{{levelId}}/exercitii/{{exerciseId}}/muta" novalidate onsubmit="saveBtn.disabled = true; return true;">
+<form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
     <div class="row mt-3">
         <div class="col-md-6">
