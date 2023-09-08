@@ -39,7 +39,6 @@ export const fetchHelpers = {
             body: JSON.stringify(data), // data can be `string` or {object}!
         };
         const response = await fetch(url, config);
-        console.log(response);
         if (response.ok) {
             // console.log(response);
             if (response.status === 200) {

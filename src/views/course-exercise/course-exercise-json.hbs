@@ -9,18 +9,19 @@
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/modifica">{{courseCode}}</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/modifica">
                 Cap.{{inc chapterIndex}}</a></li>
-        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/modifica?sectionId={{sectionId}}&levelId={{levelId}}#section{{sectionId}}-level{{levelId}}">L.{{inc lessonIndex}}</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}/modifica?sectionId={{sectionId}}&levelId={{levelId}}#section{{sectionId}}-level{{levelId}}">L.{{inc lessonIndex}}</a></li>
 
-        <li class="breadcrumb-item active">E.{{exercise.code}}</li>
-        <li title="Vizualizează" class="ms-auto"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/sectiuni/{{sectionId}}/niveluri/{{levelId}}/exercitii/{{exercise._id}}"><i class="bi bi-eye me-1"></i></a></li>
-        <li title="Modifică" class="ms-auto2"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/sectiuni/{{sectionId}}/niveluri/{{levelId}}/exercitii/{{exercise._id}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
+        <li class="breadcrumb-item active">E.{{exerciseCode}}</li>
+        <li title="Vizualizează" class="ms-auto"><a href="/cursuri/{{courseId}}/exercitii/{{exerciseId}}"><i class="bi bi-eye me-1"></i></a></li>
+
+        {{#if canCreateOrEditCourse}}
+        <li title="Modifică"><a href="/cursuri/{{courseId}}/exercitii/{{exerciseId}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
+        {{/if}}
     </ol>
 </nav>
 
-<h1 id="exercise-id-container" data-exercise-id="{{exercise._id}}">Exercițiul {{exercise.code}}</h1>
+<h1 id="exercise-id-container" data-exercise-id="{{exerciseId}}">Exercițiul {{exerciseCode}}</h1>
 
-{{!-- <pre><code>{{formattedExercise}}</code></pre> --}}
-
-<pre><code>{{{prettyExercise}}}</code></pre>
+<pre><code>{{{exerciseAsPrettyJson}}}</code></pre>
 
 

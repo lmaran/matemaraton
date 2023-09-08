@@ -47,7 +47,6 @@ exports.createOrEditGet = async (req, res) => {
         //res.send(data);
         res.render("course-chapter/course-chapter-create-or-edit", data);
     } catch (err) {
-        console.log(err);
         return res.status(500).json(err.message);
     }
 };

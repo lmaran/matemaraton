@@ -41,7 +41,7 @@ exports.upload_Old = async (req, res) => {
         files = files + 1;
         //validate against empty file name
         if (fileName.length > 0) {
-            console.log("File [" + fieldname + "]: filename: " + fileName + ", encoding: " + encoding + ", mimetype: " + mimeType);
+            //console.log("File [" + fieldname + "]: filename: " + fileName + ", encoding: " + encoding + ", mimetype: " + mimeType);
             // uploadFileStream.on("data", function(data) {
             //     console.log("File [" + fieldname + "] got " + data.length + " bytes");
             // });
@@ -51,8 +51,7 @@ exports.upload_Old = async (req, res) => {
 
             // const filePath = path.join(__dirname, "uploads/" + filename);
             uploadFileStream.on("limit", function () {
-                console.log(`file size over ${fileSizeLimit / (1024 * 1024)} MB.`);
-
+                //console.log(`file size over ${fileSizeLimit / (1024 * 1024)} MB.`);
                 // //delete the file that is large in size
                 // fs.unlink(filePath, () => {
                 //     console.log("The large file has been deleted.");
@@ -133,7 +132,7 @@ exports.upload_Old = async (req, res) => {
                 fileInResult.url = "https://" + blobServiceClient.accountName + ".blob.core.windows.net/files/5f4bfb45d8278706d442058c-lg.jpg";
                 console.log(fileInResult);
                 result2.push(fileInResult);
-                console.log(fileName + " aaa");
+                //console.log(fileName + " aaa");
 
                 // if (--files === 0 && finished) {
                 //     res.writeHead(200, { Connection: "close" });
@@ -143,14 +142,14 @@ exports.upload_Old = async (req, res) => {
                 //res.render("error", { message: err.message });
             }
         } else {
-            console.log("empty file name");
+            //console.log("empty file name");
             uploadFileStream.resume();
         }
     });
 
     busboy.on("finish", function () {
-        console.log("Upload completed!");
-        console.log(result2);
+        //console.log("Upload completed!");
+        //console.log(result2);
         res.writeHead(200, { Connection: "close" });
         //res.end("That's all folks!");
         res.end(JSON.stringify(result2));
@@ -189,7 +188,7 @@ exports.upload_Old2 = async (req, res) => {
 
             // const filePath = path.join(__dirname, "uploads/" + filename);
             uploadFileStream.on("limit", function () {
-                console.log(`file size over ${fileSizeLimit / (1024 * 1024)} MB.`);
+                //console.log(`file size over ${fileSizeLimit / (1024 * 1024)} MB.`);
             });
 
             const blobServiceClient = BlobServiceClient.fromConnectionString(config.azureBlobStorageConnectionString);
@@ -215,8 +214,8 @@ exports.upload_Old2 = async (req, res) => {
 
                 if (--files === 0 && finished) {
                     //res.writeHead(200, { Connection: "close" });
-                    console.log("Upload completed and saved to Blob!");
-                    console.log(result);
+                    // console.log("Upload completed and saved to Blob!");
+                    // console.log(result);
                     //res.end(JSON.stringify(result));
                     res.json(result);
                     //res.end("");
@@ -225,13 +224,13 @@ exports.upload_Old2 = async (req, res) => {
                 //res.render("error", { message: err.message });
             }
         } else {
-            console.log("empty file name");
+            //console.log("empty file name");
             uploadFileStream.resume();
         }
     });
 
     busboy.on("finish", function () {
-        console.log("Upload completed!");
+        //console.log("Upload completed!");
         finished = true;
     });
 
@@ -250,7 +249,7 @@ exports.upload = async (req, res) => {
 
         bb.on("file", async (name, inputFileStream, info) => {
             const { filename, encoding, mimeType } = info;
-            console.log(`File [${name}]: filename: %j, encoding: %j, mimeType: %j`, filename, encoding, mimeType);
+            //console.log(`File [${name}]: filename: %j, encoding: %j, mimeType: %j`, filename, encoding, mimeType);
             result.push({ filename });
             ++files;
             // validate against empty file name
@@ -279,20 +278,20 @@ exports.upload = async (req, res) => {
             //console.log(fileName + " aaa");
             if (--files === 0 && finished) {
                 //res.writeHead(200, { Connection: "close" });
-                console.log("Upload completed and saved to Blob!");
-                console.log(JSON.stringify(result));
+                // console.log("Upload completed and saved to Blob!");
+                // console.log(JSON.stringify(result));
                 //res.end(JSON.stringify(result));
                 res.json(result);
                 //res.end("");
             }
         });
         bb.on("close", () => {
-            console.log("Upload completed!");
+            //console.log("Upload completed!");
             finished = true;
         });
         return req.pipe(bb);
     } catch (err) {
-        console.log(err);
+        //console.log(err);
         return res.status(500).json(err.message);
     }
 };

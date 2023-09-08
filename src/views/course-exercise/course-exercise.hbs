@@ -5,12 +5,12 @@
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}">{{courseCode}}</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}">
                 Cap.{{inc chapterIndex}}</a></li>
-        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}?sectionId={{sectionId}}&levelId={{levelId}}#section{{sectionId}}-level{{levelId}}">L.{{inc lesson.index}}</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}?sectionId={{sectionId}}&levelId={{levelId}}#section{{sectionId}}-level{{levelId}}">L.{{inc lessonIndex}}</a></li>
 
         <li class="breadcrumb-item active">E.{{exercise.code}}</li>
 
         {{#if canCreateOrEditCourse}}
-        <li title="Modifică" class="ms-auto"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/sectiuni/{{sectionId}}/niveluri/{{levelId}}/exercitii/{{exercise._id}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
+        <li title="Modifică" class="ms-auto"><a href="/cursuri/{{courseId}}/exercitii/{{exercise._id}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
         {{/if}}
     </ol>
 </nav>
@@ -44,7 +44,7 @@
 
         {{#if canCreateOrEditCourse}}
         <a title="Json" class="btn btn-sm btn-light btn-outline-primary" 
-            href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/sectiuni/{{sectionId}}/niveluri/{{levelId}}/exercitii/{{exercise._id}}/json" >
+            href="/cursuri/{{courseId}}/exercitii/{{exercise._id}}/json" >
             <i class="bi bi-braces"></i></a>
         {{/if}}
     </div>

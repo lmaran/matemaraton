@@ -37,11 +37,13 @@ if (answerOptionMainDiv) {
 
 const uploadFileSelectInput = document.getElementById("upload-file-select-input");
 
-const options = {
-    uploadFileSelectInput,
-    url: "/uploadfile",
-    maxFiles: 3,
-    maxFileSizeInMB: 5,
-};
+if (uploadFileSelectInput) {
+    const options = {
+        uploadFileSelectInput,
+        url: "/uploadfile",
+        maxFiles: 3,
+        maxFileSizeInMB: 5,
+    };
 
-uploadFilesHelper.uploadFiles(options);
+    uploadFilesHelper.uploadFiles(options);
+}

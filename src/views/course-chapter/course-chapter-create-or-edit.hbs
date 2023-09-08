@@ -84,9 +84,9 @@
 <ol id="table-of-contents" class="pl-0">
     {{#each chapter.lessons}}
     <li>
-        <a href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapter.id}}/lectii/{{id}}/modifica">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
+        <a href="/cursuri/{{@root.courseId}}/lectii/{{id}}/modifica">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
         {{#if isHidden}}
-        <a href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapter.id}}/lectii/{{id}}/modifica">
+        <a href="/cursuri/{{@root.courseId}}/lectii/{{id}}/modifica">
             <i class="bi bi-eye-slash text-danger"></i></a>
         {{/if}}
     </li>

@@ -5,12 +5,12 @@
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/modifica">{{courseCode}}</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/modifica">
                 Cap.{{inc chapterIndex}}</a></li>
-        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/modifica?sectionId={{sectionId}}&levelId={{levelId}}#section{{sectionId}}-level{{levelId}}">L.{{inc lesson.index}}</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}/modifica?sectionId={{sectionId}}&levelId={{levelId}}#section{{sectionId}}-level{{levelId}}">L.{{inc lessonIndex}}</a></li>
 
         {{#if isEditMode}}
         <li class="breadcrumb-item active">E.{{exercise.code}}</li>
-        <li title="Json" class="ms-auto me-2"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/sectiuni/{{sectionId}}/niveluri/{{levelId}}/exercitii/{{exercise._id}}/json"><i class="bi bi-braces me-1"></i></a></li>
-        <li title="Vizualizează" class="ms-auto2"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/sectiuni/{{sectionId}}/niveluri/{{levelId}}/exercitii/{{exercise._id}}"><i class="bi bi-eye me-1"></i></a></li>
+        <li title="Json" class="ms-auto me-2"><a href="/cursuri/{{courseId}}/exercitii/{{exercise._id}}/json"><i class="bi bi-braces me-1"></i></a></li>
+        <li title="Vizualizează" class="ms-auto2"><a href="/cursuri/{{courseId}}/exercitii/{{exercise._id}}"><i class="bi bi-eye me-1"></i></a></li>
         
         {{/if}}
     </ol>
@@ -22,7 +22,7 @@
 
 {{!-- {{toJSON exercise}} --}}
 
-<form method="post" action="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}/sectiuni/{{sectionId}}/niveluri/{{levelId}}/exercitii/adauga" novalidate onsubmit="saveBtn.disabled = true; return true;">
+<form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
     {{!-- Exercise type --}}
     <div class="row mt-3 mb-3">
@@ -218,7 +218,7 @@
         </div>
     </div>
 
-    <div class="row mt-4">
+    {{!-- <div class="row mt-4">
         <div class="col-md-12">
             <label for="contestNameInput" class="fw-bold">Rezolvarea mea:</label>
             <div class="drop-area">
@@ -237,7 +237,7 @@
                         <div class="gallery mt-3"></div>
                     </div>
 
-                    {{!-- <div class="mt-2">
+                    <div class="mt-2">
                         <textarea rows="2" name="comment-textarea" placeholder="Comentariu (opțional)..."
                             style="border-radius:0; border-color:#ccc"
                             class="comment-textarea form-control {{#if errors.lastName}}is-invalid {{/if}}"></textarea>
@@ -249,12 +249,12 @@
                             <i class="bi bi-cursor-fill"></i>
                             Trimite rezolvarea
                         </button>
-                    </div> --}}
+                    </div>
 
                 </form>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <input type="hidden" name="courseId" value="{{courseId}}" />
     <input type="hidden" name="chapterId" value="{{chapterId}}" />
@@ -274,10 +274,10 @@
             {{/if}} --}}
 
             <label class="col-md-3s col-form-label float-end"> Ajutor:
-                <a href="https://markdown-it.github.io/" target="_blank">markdon</a>
+                <a href="https://markdown-it.github.io/">markdon</a>
                 <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small>
                 +
-                <a href="https://katex.org/docs/supported.html" target="_blank">latex </a>
+                <a href="https://katex.org/docs/supported.html">latex </a>
                 <small><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></small></label>
         </div>
 
