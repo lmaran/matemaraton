@@ -1,9 +1,9 @@
 <div class="statement-div mt-3" style="border: 1px solid #b99888; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
     {{!-- {{toJSON @this}} --}}
-    {{{question.statement.textPreview}}}
-    {{#if question.answerOptions}}
+    {{{statementPreview}}}
+    {{#if answerOptions}}
         <div class="row">
-        {{#each question.answerOptions}}
+        {{#each answerOptions}}
         <div class="col text-nowrap">{{{textPreview}}}</div>
         {{/each}}
         </div>
