@@ -47,10 +47,10 @@
 {{#each practiceTest.exercises}}
     <div class="mb-4">
         <div style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
-            {{{question.statement.textPreview}}}
-            {{#if question.answerOptions}}
+            {{{statementPreview}}}
+            {{#if answerOptions}}
                 <div class="row">
-                    {{#each question.answerOptions}}
+                    {{#each answerOptions}}
                         <div class="col text-nowrap">{{{textPreview}}}</div>
                     {{/each}}
                 </div>
@@ -59,20 +59,20 @@
         {{!-- <div class="font-italic small text-right text-muted">{{contestName}}</div>
     <div class="font-italic small text-right text-muted">{{sourceName}}</div> --}}
 
-        {{#if question.solution}}
+        {{#if solution}}
             <div class="fw-bold mt-2">Soluție:</div>
             <div style2="border: 1px solid lightgray; padding: 6px 12px; background-color: min-height:58px">
-                {{{question.solution.textPreview}}}</div>
+                {{{solutionPreview}}}</div>
         {{/if}}
 
         <hr class="mb-1" />
 
         <div class="row">
             <div class="col text-nowrap">
-                {{#if question.answerOptions}}
-                    {{{question.correctAnswerPreview}}}
+                {{#if answerOptions}}
+                    {{{correctAnswerPreview}}}
                 {{else}}
-                    {{{question.answer.textPreview}}}
+                    {{{answerPreview}}}
                 {{/if}}
             </div>
             <div class="col text-nowrap font-italic font-weight-light small text-right text-muted">Rezolvare: L. Măran

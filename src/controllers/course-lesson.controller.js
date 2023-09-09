@@ -320,7 +320,7 @@ const getSectionsObj = (exercisesRef, exercisesFromDb, clear) => {
         const statementNumber = `**E.${exercise.code}.**`;
 
         if (!exercise) {
-            exercise = { _id: x.id, question: { statement: { text: "Exercitiul a fost șters din DB!" } } };
+            exercise = { _id: x.id, statement: "Exercitiul a fost șters din DB!" };
         }
         exerciseHelper.addPreview(exercise, statementNumber, clear);
         return exercise;

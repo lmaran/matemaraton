@@ -38,13 +38,13 @@
 
             <textarea id="statement-editor-txt" rows="8" name="statement"
                 style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
-                class="form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.question.statement.text}}}</textarea>
+                class="form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.statement}}}</textarea>
             <div class="invalid-feedback">{{errors.statement.msg}}</div>
 
 
             <div id="statement-preview-div"
                 style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
-                {{{exercise.question.statement.textPreview}}}
+                {{{exercise.statementPreview}}}
             </div>
 
             <div class="float-end">
@@ -63,13 +63,13 @@
 
             <textarea id="answer-editor-txt" rows="2" name="answer"
                 style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
-                class="form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.question.answer.text}}}</textarea>
+                class="form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.answer}}}</textarea>
             <div class="invalid-feedback">{{errors.answer.msg}}</div>
 
 
             <div id="answer-preview-div"
                 style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
-                {{{exercise.question.answer.textPreview}}}
+                {{{exercise.answerPreview}}}
             </div>
 
             <div class="float-end">
@@ -81,7 +81,7 @@
     {{!-- answerOptions with correct answer (type 2)--}}
     <div id="answer-option-main-row" class="row {{#unless (eq2 exercise.exerciseType 2)}}d-none{{/unless}}">
          <div id="answer-option-main-div" class="col-md-12">
-            {{#each exercise.question.answerOptions}}
+            {{#each exercise.answerOptions}}
             <div class="answer-option-parent-div mb-4">
 
                 <label class="col-form-label fw-bold"> Variantă de răspuns {{inc @index}}: </label>
@@ -121,7 +121,7 @@
     {{!-- hints --}}
     <div class="row mt-3">
         <div class="col-md-12" id="hint-main-div">
-            {{#each exercise.question.hints}}
+            {{#each exercise.hints}}
             <div class="hint-parent-div mb-4">
 
                 <label class="col-form-label fw-bold"> Indicația {{inc @index}}: </label>
@@ -160,12 +160,12 @@
 
             <textarea id="solution-editor-txt" rows="8" name="solution"
                 style="border-radius:0; border-bottom-width:0; border-color:#008000"
-                class="form-control {{#if errors.solution}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.question.solution.text}}}</textarea>
+                class="form-control {{#if errors.solution}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.solution}}}</textarea>
             <div class="invalid-feedback">{{errors.solution.msg}}</div>
 
             <div id="solution-preview-div"
                 style="border: 1px solid #008000; padding: 6px 12px; background-color: #f5fff5; min-height:58px">
-                {{{exercise.question.solution.textPreview}}}
+                {{{exercise.solutionPreview}}}
             </div>
 
             <div class="float-end">

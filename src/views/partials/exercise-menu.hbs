@@ -1,20 +1,20 @@
 {{!-- Exercise menu --}}
 <div class="exercise-menu-div hide-on-print clearfix">
     <div class="float-start">
-        {{#if question.answer.textPreview}}
+        {{#if answerPreview}}
             <a class="toggle-answer-btn" href="">Răspuns</a>
         {{/if}}
 
-        {{#if question.hints}}
-            {{#if question.answer.textPreview}}
+        {{#if hints}}
+            {{#if answerPreview}}
                 <span class="text-muted ms-2 me-2">|</span>
             {{/if}}
             <a class="toggle-hints-btn" href="">Indicații</a>
-            <span class="text-muted">({{question.hints.length}})</span>
+            <span class="text-muted">({{hints.length}})</span>
         {{/if}}
 
-        {{#if question.solution.textPreview}}
-            {{#if (or question.answer.textPreview question.hints)}}
+        {{#if solutionPreview}}
+            {{#if (or answerPreview hints)}}
                 <span class="text-muted ms-2 me-2">|</span>
             {{/if}}
             <a class="toggle-solution-btn" href="">Soluție</a>

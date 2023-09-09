@@ -23,33 +23,33 @@ exports.getOneById = async (req, res) => {
 
         exercise = await exerciseService.getOneById(exerciseId);
 
-        if (exercise && exercise.question) {
-            const statement = `**E.${exercise.code}.** ${exercise.question.statement?.text}`;
-            // const statement = `**[Problema ${++i}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
+        if (exercise) {
+            const statement = `**E.${exercise.code}.** ${exercise.statement}`;
+            // const statement = `**[Problema ${++i}.](/exercitii/${exercise._id})** ${exercise.statement}`;
 
-            exercise.question.statement.textPreview = markdownService.render(statement);
+            exercise.statementPreview = markdownService.render(statement);
 
-            if (exercise.question.answer && exercise.question.answer.text) {
-                exercise.question.answer.textPreview = markdownService.render(exercise.question.answer.text);
+            if (exercise.answer) {
+                exercise.answerPreview = markdownService.render(exercise.answer);
             }
 
-            if (exercise.question.solution && exercise.question.solution.text) {
-                exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
+            if (exercise.solution) {
+                exercise.solutionPreview = markdownService.render(exercise.solution);
             }
 
-            if (exercise.question.hints) {
-                exercise.question.hints.forEach((hint, idx) => {
+            if (exercise.hints) {
+                exercise.hints.forEach((hint, idx) => {
                     hint.textPreview = markdownService.render(`**Indicația ${idx + 1}:** ${hint.text}`);
                 });
             }
 
             const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
-            if (exercise.question.answerOptions) {
-                exercise.question.answerOptions.forEach((answerOption, idx) => {
+            if (exercise.answerOptions) {
+                exercise.answerOptions.forEach((answerOption, idx) => {
                     // insert a label (letter) in front of each option: "a" for the 1st option, "b" for the 2nd a.s.o.
                     answerOption.textPreview = markdownService.render(`${alphabet[idx]}) ${answerOption.text}`);
                     if (answerOption.isCorrect) {
-                        exercise.question.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
+                        exercise.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
                     }
                 });
             }
@@ -198,18 +198,16 @@ exports.createPost = async (req, res) => {
             code: await idGeneratorMongoService.getNextId("exercises"),
         };
 
-        exercise.question = {
-            statement: { text: statement },
-            solution: { text: solution },
-            answer: { text: answer },
-        };
+        exercise.statement = statement;
+        exercise.solution = solution;
+        exercise.answer = answer;
         exercise.exerciseType = exerciseType;
         exercise.contestName = contestName;
         exercise.sourceName = sourceName;
         exercise.author = author;
 
-        if (hints) exercise.question.hints = getHintsAsArray(hints);
-        if (answerOptions) exercise.question.answerOptions = getAnswerOptionsAsArray(answerOptions, isCorrectAnswerChecks);
+        if (hints) exercise.hints = getHintsAsArray(hints);
+        if (answerOptions) exercise.answerOptions = getAnswerOptionsAsArray(answerOptions, isCorrectAnswerChecks);
 
         await exerciseService.insertOne(exercise);
 
@@ -272,27 +270,26 @@ exports.editGet = async (req, res) => {
 
         exercise = await exerciseService.getOneById(exerciseId);
 
-        if (exercise && exercise.question) {
-            if (exercise.question.statement && exercise.question.statement.text) {
-                exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
+        if (exercise) {
+            if (exercise.statement) {
+                exercise.statementPreview = markdownService.render(exercise.statement);
             }
 
-            if (exercise.question.answer && exercise.question.answer.text) {
-                exercise.question.answer.textPreview = markdownService.render(exercise.question.answer.text);
+            if (exercise.answer) {
+                exercise.answerPreview = markdownService.render(exercise.answer);
             }
 
-            if (exercise.question.solution && exercise.question.solution.text) {
-                exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
+            if (exercise.solution) {
+                exercise.solutionPreview = markdownService.render(exercise.solution);
             }
-
-            if (exercise.question.hints) {
-                exercise.question.hints.forEach((hint) => {
+            if (exercise.hints) {
+                exercise.hints.forEach((hint) => {
                     hint.textPreview = markdownService.render(hint.text);
                 });
             }
 
-            if (exercise.question.answerOptions) {
-                exercise.question.answerOptions.forEach((answerOption) => {
+            if (exercise.answerOptions) {
+                exercise.answerOptions.forEach((answerOption) => {
                     answerOption.textPreview = markdownService.render(answerOption.text);
                 });
             }
@@ -364,8 +361,6 @@ exports.editPost = async (req, res) => {
 
     const { exerciseId } = req.body;
 
-    console.log(req.body);
-
     let exercise;
 
     if (!["1", "2"].includes(sectionId)) return res.status(500).send("Secțiune invalidă!");
@@ -385,18 +380,17 @@ exports.editPost = async (req, res) => {
         exercise = await exerciseService.getOneById(exerciseId);
         if (!exercise) return res.status(500).send("Exercițiu negăsit!");
 
-        exercise.question = {
-            statement: { text: statement },
-            solution: { text: solution },
-            answer: { text: answer },
-        };
+        exercise.statement = statement;
+        exercise.solution = solution;
+        exercise.answer = answer;
+
         exercise.exerciseType = exerciseType;
         exercise.contestName = contestName;
         exercise.sourceName = sourceName;
         exercise.author = author;
 
-        if (hints) exercise.question.hints = getHintsAsArray(hints);
-        if (answerOptions) exercise.question.answerOptions = getAnswerOptionsAsArray(answerOptions, isCorrectAnswerChecks);
+        if (hints) exercise.hints = getHintsAsArray(hints);
+        if (answerOptions) exercise.answerOptions = getAnswerOptionsAsArray(answerOptions, isCorrectAnswerChecks);
 
         await exerciseService.updateOne(exercise);
 

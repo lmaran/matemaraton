@@ -23,28 +23,28 @@ exports.getOneById = async (req, res) => {
         practiceTest.exercises = await exerciseService.getAllByIds(ids);
 
         practiceTest.exercises.forEach((exercise, i) => {
-            // const statement = `**[E.${exercise.code}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
-            const statement = `**[Problema ${++i}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
+            // const statement = `**[E.${exercise.code}.](/exercitii/${exercise._id})** ${exercise.statement}`;
+            const statement = `**[Problema ${++i}.](/exercitii/${exercise._id})** ${exercise.statement}`;
             const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
 
-            if (exercise.question.answerOptions) {
-                exercise.question.answerOptions.forEach((answerOption, idx) => {
+            if (exercise.answerOptions) {
+                exercise.answerOptions.forEach((answerOption, idx) => {
                     // insert a label (letter) in front of each option: "a" for the 1st option, "b" for the 2nd a.s.o.
                     answerOption.textPreview = markdownService.render(`${alphabet[idx]}) ${answerOption.text}`);
                     if (answerOption.isCorrect) {
-                        exercise.question.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
+                        exercise.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
                     }
                 });
             }
 
-            exercise.question.statement.textPreview = markdownService.render(statement);
+            exercise.statementPreview = markdownService.render(statement);
 
-            if (exercise.question.solution) {
-                //exercise.question.solution.textPreview = markdownService.render(`**Soluție:** ${exercise.question.solution.text}`);
-                exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
+            if (exercise.solution) {
+                //exercise.solutionPreview = markdownService.render(`**Soluție:** ${exercise.solution}`);
+                exercise.solutionPreview = markdownService.render(exercise.solution);
             }
-            if (exercise.question.hints) {
-                exercise.question.hints.forEach((hint, idx) => {
+            if (exercise.hints) {
+                exercise.hints.forEach((hint, idx) => {
                     hint.textPreview = markdownService.render(`**Hint ${idx + 1}:** ${hint.text}`);
                 });
             }

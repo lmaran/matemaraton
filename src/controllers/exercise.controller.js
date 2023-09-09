@@ -8,31 +8,31 @@ const { availableExerciseTypes } = require("../constants/constants");
 exports.getOneById = async (req, res) => {
     const exercise = await exerciseService.getOneById(req.params.id);
 
-    if (exercise && exercise.question) {
-        if (exercise.question.statement) {
-            const statement = `**E.${exercise.code}.** ${exercise.question.statement.text}`;
-            // const statement = `**[Problema ${++i}.](/exercitii/${exercise._id})** ${exercise.question.statement.text}`;
+    if (exercise) {
+        if (exercise.statement) {
+            const statement = `**E.${exercise.code}.** ${exercise.statement}`;
+            // const statement = `**[Problema ${++i}.](/exercitii/${exercise._id})** ${exercise.statement}`;
             const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
 
-            if (exercise.question.answerOptions) {
-                exercise.question.answerOptions.forEach((answerOption, idx) => {
+            if (exercise.answerOptions) {
+                exercise.answerOptions.forEach((answerOption, idx) => {
                     // insert a label (letter) in front of each option: "a" for the 1st option, "b" for the 2nd a.s.o.
                     answerOption.textPreview = markdownService.render(`${alphabet[idx]}) ${answerOption.text}`);
                     if (answerOption.isCorrect) {
-                        exercise.question.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
+                        exercise.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
                     }
                 });
             }
 
-            exercise.question.statement.textPreview = markdownService.render(statement);
+            exercise.statementPreview = markdownService.render(statement);
         }
 
-        if (exercise.question.answer) exercise.question.answer.textPreview = markdownService.render(`**Răspuns:** ${exercise.question.answer.text}`);
+        if (exercise.answer) exercise.answerPreview = markdownService.render(`**Răspuns:** ${exercise.answer}`);
 
-        if (exercise.question.solution?.text) exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
+        if (exercise.solution) exercise.solutionPreview = markdownService.render(exercise.solution);
 
-        if (exercise.question.hints) {
-            exercise.question.hints.forEach((hint, idx) => {
+        if (exercise.hints) {
+            exercise.hints.forEach((hint, idx) => {
                 hint.textPreview = markdownService.render(`**Indicația ${idx + 1}:** ${hint.text}`);
             });
         }
@@ -64,23 +64,23 @@ exports.createOrEditGet = async (req, res) => {
     if (isEditMode) {
         const exercise = await exerciseService.getOneById(req.params.id);
 
-        exercise.question.statement.textPreview = markdownService.render(exercise.question.statement.text);
-        if (exercise.question.answer && exercise.question.answer.text) {
-            exercise.question.answer.textPreview = markdownService.render(exercise.question.answer.text);
+        exercise.statementPreview = markdownService.render(exercise.statement);
+        if (exercise.answer) {
+            exercise.answerPreview = markdownService.render(exercise.answer);
         }
 
-        if (exercise.question.solution && exercise.question.solution.text) {
-            exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
+        if (exercise.solution) {
+            exercise.solutionPreview = markdownService.render(exercise.solution);
         }
 
-        if (exercise.question.hints) {
-            exercise.question.hints.forEach((hint) => {
+        if (exercise.hints) {
+            exercise.hints.forEach((hint) => {
                 hint.textPreview = markdownService.render(hint.text);
             });
         }
 
-        if (exercise.question.answerOptions) {
-            exercise.question.answerOptions.forEach((answerOption) => {
+        if (exercise.answerOptions) {
+            exercise.answerOptions.forEach((answerOption) => {
                 answerOption.textPreview = markdownService.render(answerOption.text);
             });
         }
@@ -104,11 +104,9 @@ exports.createOrEditPost = async (req, res) => {
         const isEditMode = !!id;
 
         const exercise = {
-            question: {
-                statement: { text: statement },
-                solution: { text: solution },
-                answer: { text: answer },
-            },
+            statement,
+            solution,
+            answer,
             grade,
             exerciseType,
             contestName,
@@ -118,24 +116,24 @@ exports.createOrEditPost = async (req, res) => {
 
         const hints = req.body.hints;
         if (hints) {
-            exercise.question.hints = [];
+            exercise.hints = [];
             if (Array.isArray(hints)) {
                 hints.forEach((hint) => {
                     if (hint.trim()) {
-                        exercise.question.hints.push({ text: hint.trim() });
+                        exercise.hints.push({ text: hint.trim() });
                     }
                 });
             } else {
                 // an object with a single option
                 if (hints.trim()) {
-                    exercise.question.hints.push({ text: hints.trim() });
+                    exercise.hints.push({ text: hints.trim() });
                 }
             }
         }
 
         const answerOptions = req.body.answerOptions;
         if (answerOptions) {
-            exercise.question.answerOptions = [];
+            exercise.answerOptions = [];
             if (Array.isArray(answerOptions)) {
                 answerOptions.forEach((answerOption, idx) => {
                     if (answerOption.trim()) {
@@ -155,7 +153,7 @@ exports.createOrEditPost = async (req, res) => {
                             }
                         }
 
-                        exercise.question.answerOptions.push(newAnswerOption);
+                        exercise.answerOptions.push(newAnswerOption);
                     }
                 });
             } else {
@@ -168,7 +166,7 @@ exports.createOrEditPost = async (req, res) => {
                     if (isCorrectAnswerChecks && isCorrectAnswerChecks === "1") {
                         newAnswerOption.isCorrect = true;
                     }
-                    exercise.question.answerOptions.push(newAnswerOption);
+                    exercise.answerOptions.push(newAnswerOption);
                 }
             }
         }
@@ -214,28 +212,28 @@ exports.getAll = async (req, res) => {
     if (endIndex > totalExercises) endIndex = totalExercises; // fix endIndex for the last page
 
     exercises.forEach((exercise) => {
-        const statement = `**[E.${exercise.code}.](/exercitii/${exercise._id})** ${exercise.question.statement?.text}`;
+        const statement = `**[E.${exercise.code}.](/exercitii/${exercise._id})** ${exercise.statement}`;
 
         const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
 
-        if (exercise.question.answerOptions) {
-            exercise.question.answerOptions.forEach((answerOption, idx) => {
+        if (exercise.answerOptions) {
+            exercise.answerOptions.forEach((answerOption, idx) => {
                 // insert a label (letter) in front of each option: "a" for the 1st option, "b" for the 2nd a.s.o.
                 answerOption.textPreview = markdownService.render(`${alphabet[idx]}) ${answerOption.text}`);
                 if (answerOption.isCorrect) {
-                    exercise.question.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
+                    exercise.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
                 }
             });
         }
-        if (exercise.question.statement) {
-            exercise.question.statement.textPreview = markdownService.render(statement);
+        if (exercise.statement) {
+            exercise.statementPreview = markdownService.render(statement);
         }
 
-        if (exercise.question.solution?.text) {
-            exercise.question.solution.textPreview = markdownService.render(exercise.question.solution.text);
+        if (exercise.solution) {
+            exercise.solutionPreview = markdownService.render(exercise.solution);
         }
-        if (exercise.question.hints) {
-            exercise.question.hints.forEach((hint, idx) => {
+        if (exercise.hints) {
+            exercise.hints.forEach((hint, idx) => {
                 hint.textPreview = markdownService.render(`**Hint ${idx + 1}:** ${hint.text}`);
             });
         }
