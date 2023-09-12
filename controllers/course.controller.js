@@ -156,6 +156,7 @@ exports.getOneById = async (req, res) => {
     const data = {
         course,
         canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
+        pageTitle: `${course.name}`,
     };
     //res.send(data);
     res.render("course/course", data);

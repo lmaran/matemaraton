@@ -28,7 +28,7 @@ export const commonEventHandler = {
         target.textContent = answerDivIsHide ? "Răspuns" : "Ascunde răspunsul";
 
         // hide the other panels
-        hideHints(parentDiv);
+        // hideHints(parentDiv);
         hideSolution(parentDiv);
     },
 
@@ -46,7 +46,7 @@ export const commonEventHandler = {
         target.nextElementSibling.classList.toggle("d-none"); // hide the number of hints
 
         // hide the other panels
-        hideAnswer(parentDiv);
+        // hideAnswer(parentDiv);
         hideSolution(parentDiv);
     },
 
@@ -90,7 +90,10 @@ const hideHints = (parentDiv) => {
     if (hintsDiv) hintsDiv.classList.add("d-none");
 
     const toggleHintsBtn = parentDiv.querySelector(".toggle-hints-btn");
-    if (toggleHintsBtn) toggleHintsBtn.textContent = "Indicații";
+    if (toggleHintsBtn) {
+        toggleHintsBtn.textContent = "Indicații";
+        toggleHintsBtn.nextElementSibling.classList.remove("d-none"); // show the number of hints
+    }
 };
 
 const hideAnswer = (parentDiv) => {

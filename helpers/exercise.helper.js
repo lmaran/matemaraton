@@ -32,7 +32,13 @@ exports.addPreview = (exercise, statementNumber, clear) => {
 
         if (exercise.hints) {
             exercise.hints.forEach((hint, idx) => {
-                hint.textPreview = markdownService.render(`**Indicația ${idx + 1}:** ${hint.text}`);
+                let hintPrefix = `**Indicația ${idx + 1}:**`;
+
+                if (exercise.hints.length == 1) {
+                    hintPrefix = `**Indicații:**`;
+                }
+
+                hint.textPreview = markdownService.render(`${hintPrefix} ${hint.text}`);
                 if (clear) delete hint.text;
             });
         }

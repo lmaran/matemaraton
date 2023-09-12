@@ -8,7 +8,7 @@ const md = require("markdown-it")()
         engine: katex,
         delimiters: "dollars",
         katexOptions: {
-            macros: { "\\RR": "\\mathbb{R}" },
+            macros: { "\\RR": "\\mathbb{R}", "\\Q": "\\mathbb{Q}" },
             minRuleThickness: 0.05,
             fleqn: true,
             throwOnError: false,
