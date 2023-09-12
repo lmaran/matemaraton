@@ -56,28 +56,6 @@
         </div>
     </div>
 
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="positionSelect" class="fw-bold">Poziția în listă:</label>
-            <select name="position" class="form-select" id="positionSelect">
-                {{#select selectedPosition}}
-                {{#each availablePositions}}
-                <option value="{{index}}">{{name}}</option>
-                {{/each}}
-                {{/select}}
-            </select>
-        </div>
-    </div>
-
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" id="isHiddenCheck" name="isHidden" {{#if
-            lesson.isHidden}}checked{{/if}}>
-        <label class="form-check-label" for="isHiddenCheck">Ascunde</label>
-        <small>
-            <p class="text-muted mb-0">Doar tu (proprietarul) poți vedea resursele ascunse</p>
-        </small>
-    </div>
-
     {{#if isEditMode}}
         {{#each lesson.sectionsObj.sections}}
         <h4 class="mt-5">{{name}}<span class="fw-light text-muted ms-1">({{total}})</span></h4>
@@ -116,6 +94,28 @@
             Salvează lecția pentru a putea adăuga exerciții!
         </div>
     {{/if}}
+
+    <div class="row mb-3 mt-5">
+        <div class="col-md-6">
+            <label for="positionSelect" class="fw-bold">Poziția în listă:</label>
+            <select name="position" class="form-select" id="positionSelect">
+                {{#select selectedPosition}}
+                {{#each availablePositions}}
+                <option value="{{index}}">{{name}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="isHiddenCheck" name="isHidden" {{#if
+            lesson.isHidden}}checked{{/if}}>
+        <label class="form-check-label" for="isHiddenCheck">Ascunde</label>
+        <small>
+            <p class="text-muted mb-0">Doar tu (proprietarul) poți vedea resursele ascunse</p>
+        </small>
+    </div>
 
     <input type="hidden" name="courseId" value="{{courseId}}" />
     <input type="hidden" name="chapterId" value="{{chapterId}}" />

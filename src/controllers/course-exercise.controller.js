@@ -19,41 +19,13 @@ exports.getOneById = async (req, res) => {
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
+        exercise = await exerciseService.getOneById(exerciseId);
+        if (!exercise) return res.status(500).send("Exercițiu negăsit!");
+
         const { chapter, chapterIndex, lesson, lessonIndex, exerciseMeta } = getExerciseAndParentsFromCourse(course, exerciseId);
 
-        exercise = await exerciseService.getOneById(exerciseId);
-
-        if (exercise) {
-            const statement = `**E.${exercise.code}.** ${exercise.statement}`;
-            // const statement = `**[Problema ${++i}.](/exercitii/${exercise._id})** ${exercise.statement}`;
-
-            exercise.statementPreview = markdownService.render(statement);
-
-            if (exercise.answer) {
-                exercise.answerPreview = markdownService.render(exercise.answer);
-            }
-
-            if (exercise.solution) {
-                exercise.solutionPreview = markdownService.render(exercise.solution);
-            }
-
-            if (exercise.hints) {
-                exercise.hints.forEach((hint, idx) => {
-                    hint.textPreview = markdownService.render(`**Indicația ${idx + 1}:** ${hint.text}`);
-                });
-            }
-
-            const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
-            if (exercise.answerOptions) {
-                exercise.answerOptions.forEach((answerOption, idx) => {
-                    // insert a label (letter) in front of each option: "a" for the 1st option, "b" for the 2nd a.s.o.
-                    answerOption.textPreview = markdownService.render(`${alphabet[idx]}) ${answerOption.text}`);
-                    if (answerOption.isCorrect) {
-                        exercise.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
-                    }
-                });
-            }
-        }
+        const statementNumber = `**E.${exercise.code}.**`;
+        exerciseHelper.addPreview(exercise, statementNumber, true);
 
         const { authorAndSource1, source2 } = exerciseHelper.getAuthorAndSource(exercise);
         exercise.authorAndSource1 = authorAndSource1;
@@ -81,6 +53,7 @@ exports.getOneById = async (req, res) => {
             availableExerciseTypes,
 
             canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
+            pageTitle: `Exercițiul ${exercise.code}`,
         };
 
         //res.send(data);

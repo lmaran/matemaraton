@@ -1,5 +1,5 @@
-// NOTE: this service works the same as id-generator-mongo.service but not used anymore du to:
-// 1. the mongo based solution is much simpler (nu retry needed)
+// NOTE: this service works the same as id-generator-mongo.service but not used anymore due to:
+// 1. the mongo based solution is much simpler (no retry needed)
 // 2. probably the access to mongo is faster. At least in dev. env.
 // 3. the counter is easier to access in mongo (Studio3T vs. Storage Explorer).
 // With SE you have to download the file in order to view/edit the content (ST use a hook to re-upload a modified blob)
