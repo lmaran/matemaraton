@@ -1,6 +1,4 @@
-﻿[![Codeship Status for lmaran/matemaraton](https://app.codeship.com/projects/42434900-9840-0137-ec8c-6a75a8ae90f8/status?branch=master)](https://app.codeship.com/projects/357740)
-
-# MateMaraton
+﻿# MateMaraton
 
 ## Development
 

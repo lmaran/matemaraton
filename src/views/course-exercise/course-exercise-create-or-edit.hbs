@@ -256,6 +256,45 @@
         </div>
     </div> --}}
 
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <label for="contestNameInput" class="fw-bold">Rezolvarea mea:</label>
+            <div class="drop-area">
+                <form class="my-form" enctype="multipart/form-data">
+
+                    <div class="form-group">
+                        <input type="file" name="filefield" id="upload-file-select-input" multiple accept="image/*" class="d-none">
+                        <label class="upload-file-select-label" for="upload-file-select-input">
+                            <i class="bi bi-paperclip"></i>
+                            Adaugă poza
+                        </label>
+
+                        <span class="drag-message-span text-muted font-weight-light">sau trage poza aici</span>
+                        <div class="upload-file-error-div invalid-feedback">Mesaj de eroare</div>
+                        <progress class="progress-bar d-none w-100" max=100 value=0></progress>
+                        <div class="gallery mt-3"></div>
+                    </div>
+
+                    <div class="mt-2">
+                        <textarea rows="2" name="comment-textarea" placeholder="Comentariu (opțional)..."
+                            style="border-radius:0; border-color:#ccc"
+                            class="comment-textarea form-control {{#if errors.lastName}}is-invalid {{/if}}"></textarea>
+                        <div class="invalid-feedback">{{errors.answer.msg}}</div>
+                    </div>
+
+                    <div class="mb-0 mt-2">
+                        <button type="button" id="my-solution-submit-btn" class="btn btn-primary btn-sm">
+                            <i class="bi bi-cursor-fill"></i>
+                            Trimite rezolvarea
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+
     <input type="hidden" name="courseId" value="{{courseId}}" />
     <input type="hidden" name="chapterId" value="{{chapterId}}" />
     <input type="hidden" name="lessonId" value="{{lessonId}}" />

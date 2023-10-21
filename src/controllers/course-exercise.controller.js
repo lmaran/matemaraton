@@ -53,7 +53,7 @@ exports.getOneById = async (req, res) => {
             availableExerciseTypes,
 
             canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
-            pageTitle: `Exercițiul ${exercise.code}`,
+            pageTitle: `E.${exercise.code}`,
         };
 
         //res.send(data);
