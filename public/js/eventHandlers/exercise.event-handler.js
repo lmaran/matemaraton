@@ -1,4 +1,4 @@
-import { exerciseService } from "..services/exercise.service.js";
+import { exerciseService } from "../services/exercise.service.js";
 
 export const eventHandlers = {
     toggleAnswer: async (event) => {

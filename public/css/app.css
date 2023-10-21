@@ -49,7 +49,7 @@ https://github.com/twbs/bootstrap/issues/20643#issuecomment-325579156 */
 }
 
 .gallery img {
-    width: 300px;
+    _width: 300px;
     margin-bottom: 10px;
     margin-right: 10px;
     vertical-align: middle;

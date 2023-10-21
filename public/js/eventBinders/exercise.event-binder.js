@@ -1,5 +1,5 @@
 import { eventHandlers } from "../eventHandlers/exercise.event-handler.js";
-//import { uploadFilesHelper } from "../helpers/upload-files.helper.js";
+import { uploadFilesHelper } from "../helpers/upload-files.helper.js";
 
 const toggleAnswerBtn = document.getElementById("toggle-answer-btn");
 if (toggleAnswerBtn) toggleAnswerBtn.addEventListener("click", eventHandlers.toggleAnswer);
@@ -21,16 +21,16 @@ if (showNextHintBtn) showNextHintBtn.addEventListener("click", eventHandlers.sho
 
 // ! all the code below is ok - commented out temporary.
 
-// const uploadFileSelectInput = document.getElementById("upload-file-select-input");
+const uploadFileSelectInput = document.getElementById("upload-file-select-input");
 
-// const options = {
-//     uploadFileSelectInput,
-//     url: "/uploadfile",
-//     maxFiles: 3,
-//     maxFileSizeInMB: 5,
-// };
+const options = {
+    uploadFileSelectInput,
+    url: "/uploadfile",
+    maxFiles: 3,
+    maxFileSizeInMB: 5,
+};
 
-// uploadFilesHelper.uploadFiles(options);
+uploadFilesHelper.uploadFiles(options);
 
 const mySolutionSubmitBtn = document.getElementById("my-solution-submit-btn");
 if (mySolutionSubmitBtn) mySolutionSubmitBtn.addEventListener("click", eventHandlers.submitMySolution);
