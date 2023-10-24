@@ -2,31 +2,39 @@
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
-        <li class="breadcrumb-item"><a href="/cursuri/{{course._id}}">{{course.code}}</a></li>
-        <li class="breadcrumb-item active">Cap.{{inc course.selectedChapter.index}}</li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}">{{courseCode}}</a></li>
+        <li class="breadcrumb-item active">Cap.{{inc chapterIndex}}</li>
 
         {{#if canCreateOrEditCourse}}
-        <li title="Editează" class="ms-auto"><a href="/cursuri/{{course._id}}/capitole/{{course.selectedChapter.id}}/modifica">
+        <li title="Editează" class="ms-auto"><a href="/cursuri/{{courseId}}/capitole/{{chapter.id}}/modifica">
             <i class="bi bi-pencil me-1"></i></a></li>
         {{/if}}
     </ol>
 </nav>
 
-<h1>Cap.{{inc course.selectedChapter.index}}: {{course.selectedChapter.name}}</h1>
+<h1>Cap.{{inc chapterIndex}}: {{chapter.name}}</h1>
 
 <div class="text-muted">
-    {{course.selectedChapter.description}}
+    {{chapter.description}}
 </div>
 
 <h3 class="mt-3">Lecții:</h3>
 <ol id="table-of-contents" class="pl-0">
-    {{#each course.selectedChapter.lessons}}
+    {{#each chapter.lessons}}
         <li>
-            <a href="/cursuri/{{@root.course._id}}/lectii/{{id}}">{{name}}</a>
+            {{#if isActive}}
+                <a href="/cursuri/{{@root.courseId}}/lectii/{{id}}">{{name}}</a>
+                <span class="text-muted">({{ exercises.length }}{{#unless exercises.length}}0{{/unless}})</span>
+                {{!-- (<a href="/cursuri/{{@root.course._id}}/capitole/{{id}}">{{ exercises.length }}{{#unless exercises.length}}0{{/unless}}</a>) --}}
+            {{else}}
+                <span class="text-muted">{{name}}</span>
+            {{/if}}
+
             {{#if isHidden}}
-                <a href="/cursuri/{{@root.course._id}}/capitole/{{@root.course.selectedChapter.id}}/lectii/{{id}}/modifica">
+                <a href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapter.id}}/lectii/{{id}}/modifica">
                     <i class="bi bi-eye-slash text-danger"></i></a>
             {{/if}}
+
         </li>
     {{/each}}
 </ol>
