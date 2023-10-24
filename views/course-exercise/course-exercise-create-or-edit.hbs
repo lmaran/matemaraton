@@ -22,7 +22,7 @@
 
 {{!-- {{toJSON exercise}} --}}
 
-<form method="post" novalidate onsubmit="alert(123); saveBtn.disabled = true; return true;">
+<form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
     {{!-- Exercise type --}}
     <div class="row mt-3 mb-3">
@@ -42,7 +42,7 @@
     {{!-- statement --}}
     <div class="row">
         <div class="col-md-12 statement-div">
-            <label class="required fw-bold"> Enunț: </label>
+            <label class="fw-bold"> Enunț: </label>
 
             <textarea id="statement-editor-txt" rows="8" name="statement"
                 style="border-radius:0; border-bottom-width:0; border-color:#bb815d"

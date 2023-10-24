@@ -106,14 +106,35 @@ exports.getOneById = async (req, res) => {
     const course = await courseService.getOneById(courseId);
     const chapters = course.chapters || [];
 
-    const selectedChapterIndex = chapters.findIndex((x) => x.id === chapterId);
-    if (selectedChapterIndex > -1) {
-        course.selectedChapter = chapters[selectedChapterIndex];
-        course.selectedChapter.index = selectedChapterIndex;
+    const chapterIndex = chapters.findIndex((x) => x.id === chapterId);
+    let chapter = {};
+    if (chapterIndex > -1) {
+        chapter = chapters[chapterIndex];
+    }
+
+    // if (course && course.chapters) {
+    //     course.chapters.forEach((chapter) => {
+    //         chapter.numberOfActiveLessons = 0;
+    //         if (chapter.lessons) {
+    //             chapter.lessons.forEach((lesson) => {
+    //                 lesson.isActive = !!(lesson.exercises?.length || lesson.theory?.text);
+    //                 if (lesson.isActive) chapter.numberOfActiveLessons++;
+    //             });
+    //         }
+    //     });
+    // }
+
+    if (chapter.lessons) {
+        chapter.lessons.forEach((lesson) => {
+            lesson.isActive = !!(lesson.exercises?.length || lesson.theory?.text);
+        });
     }
 
     const data = {
-        course,
+        courseId,
+        courseCode: course.code,
+        chapter,
+        chapterIndex,
         canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
     };
 

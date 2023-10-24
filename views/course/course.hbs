@@ -40,17 +40,19 @@
 
 {{#each course.chapters}}
 <div>
-    <strong>{{inc @index}}. {{name}}{{#unless name}}Fără nume{{/unless}}</strong>
-    {{#if exercises.length }}
-        (<a href="/cursuri/{{@root.course._id}}/capitole/{{id}}">{{ lessons.length }}{{#unless lessons.length}}0{{/unless}}</a>)
+    <strong>{{inc @index}}. {{name}}{{#unless name}}Fără nume{{/unless}}</strong> 
+    
+    {{#if numberOfActiveLessons }}
+        (<a href="/cursuri/{{@root.course._id}}/capitole/{{id}}">{{ numberOfActiveLessons }}</a>)
     {{/if}}
 
     {{#each lessons}}
         <div class="ps-3">
             {{inc @../index}}.{{inc @index}}. 
-            {{#if exercises.length }}
+            {{#if isActive}}
                 <a class="pl-1" href="/cursuri/{{@root.course._id}}/lectii/{{id}}">{{name}}</a>
-                (<a href="/cursuri/{{@root.course._id}}/capitole/{{id}}">{{ exercises.length }}{{#unless exercises.length}}0{{/unless}}</a>)
+                <span class="text-muted">({{ exercises.length }}{{#unless exercises.length}}0{{/unless}})</span>
+                {{!-- (<a href="/cursuri/{{@root.course._id}}/capitole/{{id}}">{{ exercises.length }}{{#unless exercises.length}}0{{/unless}}</a>) --}}
             {{else}}
                 <span class="text-muted">{{name}}</span>
             {{/if}}

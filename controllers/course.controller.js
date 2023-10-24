@@ -153,11 +153,24 @@ exports.getOneById = async (req, res) => {
     const courseId = req.params.id;
     const course = await courseService.getOneById(courseId);
 
+    if (course && course.chapters) {
+        course.chapters.forEach((chapter) => {
+            chapter.numberOfActiveLessons = 0;
+            if (chapter.lessons) {
+                chapter.lessons.forEach((lesson) => {
+                    lesson.isActive = !!(lesson.exercises?.length || lesson.theory?.text);
+                    if (lesson.isActive) chapter.numberOfActiveLessons++;
+                });
+            }
+        });
+    }
+
     const data = {
         course,
         canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
         pageTitle: `${course.name}`,
     };
+
     //res.send(data);
     res.render("course/course", data);
 };
