@@ -64,11 +64,13 @@ router.post("/clase/:id/sterge", isAuthenticated, classController.deleteOneById)
 
 // courses
 router.get("/cursuri", courseController.getAll);
+router.get("/cursuri/:id/json", isAuthenticated, courseController.jsonGetOneById);
 router.get("/cursuri/:id/modifica", isAuthenticated, courseController.createOrEditGet);
 router.post("/cursuri/:id/modifica", isAuthenticated, courseController.createOrEditPost);
 router.get("/cursuri/adauga", isAuthenticated, courseController.createOrEditGet);
 router.post("/cursuri/adauga", isAuthenticated, courseController.createOrEditPost);
 router.get("/cursuri/modifica", isAuthenticated, courseController.createOrEditListGet);
+router.get("/cursuri/json", isAuthenticated, courseController.jsonGetAll);
 //router.post("/cursuri/modifica", isAuthenticated, courseController.createOrEditListPost);
 router.get("/cursuri/:id", courseController.getOneById);
 router.get("/cursuri/:id/capitole", isAuthenticated, courseController.getOneById); // only for url access
@@ -78,6 +80,7 @@ router.post("/cursuri/:id/sterge", isAuthenticated, courseController.deleteOneBy
 router.get("/cursuri/:courseId/capitole/adauga", isAuthenticated, courseChapterController.createOrEditGet);
 router.post("/cursuri/:courseId/capitole/adauga", isAuthenticated, courseChapterController.createOrEditPost);
 router.get("/cursuri/:courseId/capitole/:chapterId", courseChapterController.getOneById);
+router.get("/cursuri/:courseId/capitole/:chapterId/json", isAuthenticated, courseChapterController.jsonGetOneById);
 router.get("/cursuri/:courseId/capitole/:chapterId/modifica", isAuthenticated, courseChapterController.createOrEditGet);
 router.post("/cursuri/:courseId/capitole/:chapterId/modifica", isAuthenticated, courseChapterController.createOrEditPost);
 router.post("/cursuri/:courseId/capitole/:chapterId/sterge", isAuthenticated, courseChapterController.deleteOneById);
@@ -86,6 +89,7 @@ router.post("/cursuri/:courseId/capitole/:chapterId/sterge", isAuthenticated, co
 router.get("/cursuri/:courseId/capitole/:chapterId/lectii/adauga", isAuthenticated, courseLessonController.createGet);
 router.post("/cursuri/:courseId/capitole/:chapterId/lectii/adauga", isAuthenticated, courseLessonController.createPost);
 router.get("/cursuri/:courseId/lectii/:lessonId", courseLessonController.getOneById);
+router.get("/cursuri/:courseId/lectii/:lessonId/json", isAuthenticated, courseLessonController.jsonGetOneById);
 router.get("/cursuri/:courseId/lectii/:lessonId/modifica", isAuthenticated, courseLessonController.editGet);
 router.post("/cursuri/:courseId/lectii/:lessonId/modifica", isAuthenticated, courseLessonController.editPost);
 router.post("/cursuri/:courseId/lectii/:lessonId/sterge", isAuthenticated, courseLessonController.deleteOneById);
@@ -105,11 +109,7 @@ router.post(
 );
 
 // course-theory
-router.get(
-    "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/teorie/:theoryId/modifica",
-    isAuthenticated,
-    courseTheoryController.createOrEditGet
-);
+router.get("/cursuri/:courseId/lectii/:lessonId/teorie", courseTheoryController.getOneById);
 
 // course-exercise
 router.get(

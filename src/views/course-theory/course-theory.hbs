@@ -1,0 +1,40 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}">{{courseCode}}</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}">
+                Cap.{{inc chapterIndex}}</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}">
+                L.{{inc lessonIndex}}</a></li>
+        <li class="breadcrumb-item active">Teorie</li>
+
+        <li title="Tipărește" class="ms-auto">
+            <i role='button' class="bi bi-printer me-2" onclick="window.print()"></i>
+        </li>
+
+        {{#if canCreateOrEditCourse}}
+        <li title="Editează"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
+        {{/if}}
+    </ol>
+</nav>
+
+
+{{!-- <div class="fs-2 text-center mt-4">MateMaraton, clasa a 7-a, lecția {{inc lessonIndex}}</div>
+<div class="fs-4 text-center">{{lesson.name}}</div>
+<div class="fs-5 text-center text-muted fw-light mb-5"> Lucian Măran, 02.11.2023</div> --}}
+
+<div class="fs-2 text-center mt-4">{{lesson.name}}</div>
+<div class="fs-5 text-center text-muted fw-light">{{courseName}}, lecția {{inc chapterIndex}}.{{inc lessonIndex}}</div>
+<div class="fs-5 text-center text-muted fw-light mb-5"> Lucian Măran, <a href = https://matemaraton.ro>matemaraton.ro</a></div>
+
+{{!-- <div class="fs-4 mb-4">1. Noțiuni teoretice</div> --}}
+<h4 class="mb-4">Noțiuni teoretice</h4>
+
+{{#if lesson.theory.textPreview}}
+    <div id="content-preview-div">
+        {{{lesson.theory.textPreview}}}
+    </div>
+{{/if}}
+
+

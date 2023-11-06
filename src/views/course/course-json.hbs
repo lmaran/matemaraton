@@ -1,0 +1,38 @@
+<style>
+    OL {
+        counter-reset: item;
+    }
+
+    LI {
+        display: block;
+    }
+
+    #agenda LI:before {
+        /* only <li>s in agenda section */
+        content: counters(item, ".") ". ";
+        counter-increment: item
+    }
+
+    #table-of-contents LI:before {
+        /* only <li>s in agenda section */
+        content: counters(item, ".") ". ";
+        counter-increment: item
+    }
+</style>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
+        <li class="breadcrumb-item active">{{courseCode}}</li>
+        <li title="Vizualizează" class="ms-auto me-2"><a href="/cursuri/{{course._id}}"><i class="bi bi-eye me-1"></i></a></li>
+
+        {{#if canCreateOrEditCourse}}
+        <li title="Editează"><a href="/cursuri/{{courseId}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
+        {{/if}}
+    </ol>
+</nav>
+
+<h1>Curs {{courseCode}}</h1>
+
+<pre><code>{{{courseAsPrettyJson}}}</code></pre>

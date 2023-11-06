@@ -2,6 +2,9 @@ const courseService = require("../services/course.service");
 const autz = require("../services/autz.service");
 const arrayHelper = require("../helpers/array.helper");
 
+const hljs = require("highlight.js/lib/core");
+hljs.registerLanguage("json", require("highlight.js/lib/languages/json"));
+
 exports.createOrEditGet = async (req, res) => {
     const courseId = req.params.courseId;
     const chapterId = req.params.chapterId;
@@ -140,6 +143,42 @@ exports.getOneById = async (req, res) => {
 
     //res.send(data);
     res.render("course-chapter/course-chapter", data);
+};
+
+exports.jsonGetOneById = async (req, res) => {
+    const courseId = req.params.courseId;
+    const chapterId = req.params.chapterId;
+    const course = await courseService.getOneById(courseId);
+    const chapters = course.chapters || [];
+
+    const chapterIndex = chapters.findIndex((x) => x.id === chapterId);
+    let chapter = {};
+    if (chapterIndex > -1) {
+        chapter = chapters[chapterIndex];
+    }
+
+    // keep only the current chapter and current lesson
+    course.chapters = course.chapters.filter((x) => x.id == chapter.id);
+
+    // 1. format (indent, new lines)
+    // it requires <pre>, <code> and 2 curly braces: "<pre><code>{{formattedExercise}}</code></pre>""
+    const courseChapterAsJson = JSON.stringify(course, null, 4);
+
+    // 2. highlight (inject html tags in order to support colors, borders etc)
+    // it requires <pre>, <code> and 3 curly braces: "<pre><code>{{prettyExercise}}</code></pre>""
+    const courseChapterAsPrettyJson = hljs.highlight(courseChapterAsJson, { language: "json" }).value;
+
+    const data = {
+        courseId,
+        courseCode: course.code,
+        courseChapterAsPrettyJson,
+        chapterIndex,
+        chapterId: chapter.id,
+        canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
+    };
+
+    //res.send(data);
+    res.render("course-chapter/course-chapter-json", data);
 };
 
 exports.deleteOneById = async (req, res) => {

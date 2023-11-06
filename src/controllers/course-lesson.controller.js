@@ -5,6 +5,9 @@ const arrayHelper = require("../helpers/array.helper");
 const markdownService = require("../services/markdown.service");
 const exerciseHelper = require("../helpers/exercise.helper");
 
+const hljs = require("highlight.js/lib/core");
+hljs.registerLanguage("json", require("highlight.js/lib/languages/json"));
+
 const { availableSections, availableLevels } = require("../constants/constants");
 
 exports.getOneById = async (req, res) => {
@@ -50,6 +53,53 @@ exports.getOneById = async (req, res) => {
 
         //res.send(data);
         res.render("course-lesson/course-lesson", data);
+    } catch (err) {
+        //console.log(err);
+        return res.status(500).json(err.message);
+    }
+};
+
+exports.jsonGetOneById = async (req, res) => {
+    const { courseId, lessonId } = req.params;
+
+    try {
+        // validate parameters
+        const course = await courseService.getOneById(courseId);
+        if (!course) return res.status(500).send("Curs negăsit!");
+
+        const { chapter, chapterIndex, lesson, lessonIndex } = getLessonAndParentsFromCourse(course, lessonId);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+        // keep only the current chapter and current lesson
+        chapter.lessons = chapter.lessons.filter((x) => x.id == lesson.id);
+        course.chapters = course.chapters.filter((x) => x.id == chapter.id);
+
+        // 1. format (indent, new lines)
+        // it requires <pre>, <code> and 2 curly braces: "<pre><code>{{formattedExercise}}</code></pre>""
+        const courseLessonAsJson = JSON.stringify(course, null, 4);
+
+        // 2. highlight (inject html tags in order to support colors, borders etc)
+        // it requires <pre>, <code> and 3 curly braces: "<pre><code>{{prettyExercise}}</code></pre>""
+        const courseLessonAsPrettyJson = hljs.highlight(courseLessonAsJson, { language: "json" }).value;
+
+        const data = {
+            courseId,
+            courseCode: course.code,
+
+            chapterId: chapter.id,
+            chapterIndex,
+
+            lessonId,
+            lessonIndex,
+
+            courseLessonAsPrettyJson,
+
+            canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
+            pageTitle: `${lesson.name}`,
+        };
+
+        //res.send(data);
+        res.render("course-lesson/course-lesson-json", data);
     } catch (err) {
         //console.log(err);
         return res.status(500).json(err.message);

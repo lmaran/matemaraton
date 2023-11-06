@@ -3,12 +3,12 @@
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/modifica">Cursuri</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/modifica">{{courseCode}}</a></li>
-        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/modifica">
-                Cap.{{inc chapterIndex}}</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/modifica">Cap.{{inc chapterIndex}}</a></li>
+        <li class="breadcrumb-item active">L.{{inc lessonIndex}}</li>
         
         {{#if isEditMode}}
-        <li class="breadcrumb-item active">L.{{inc lessonIndex}}</li>
-        <li title="Vizualizează" class="ms-auto"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}"><i class="bi bi-eye me-1"></i></a></li>
+        <li title="Json" class="ms-auto me-2"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}/json"><i class="bi bi-braces me-1"></i></a></li>
+        <li title="Vizualizează"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}"><i class="bi bi-eye me-1"></i></a></li>
         {{/if}}
     </ol>
 </nav>
@@ -77,7 +77,7 @@
                 {{/if}}
                 
             </div>
-            <div class="level-content-div mb-3 ms-4 {{#unless isActive}}d-none{{/unless}}">
+            <div class="level-content-div mb-3 {{#unless isActive}}d-none{{/unless}}">
             {{#each exercises}}
                 <div class="exercise-div">
                     {{> exercise-statement @this}}
