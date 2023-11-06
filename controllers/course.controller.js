@@ -1,8 +1,8 @@
 const courseService = require("../services/course.service");
-// const lessonService = require("../services/lesson.service");
 const autz = require("../services/autz.service");
-// const dateTimeHelper = require("../helpers/date-time.helper");
-// const arrayHelper = require("../helpers/array.helper");
+
+const hljs = require("highlight.js/lib/core");
+hljs.registerLanguage("json", require("highlight.js/lib/languages/json"));
 
 exports.createOrEditGet = async (req, res) => {
     const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
@@ -149,6 +149,25 @@ exports.getAll = async (req, res) => {
     res.render("course/courses", data);
 };
 
+exports.jsonGetAll = async (req, res) => {
+    const courses = await courseService.getAll();
+
+    // 1. format (indent, new lines)
+    // it requires <pre>, <code> and 2 curly braces: "<pre><code>{{formattedExercise}}</code></pre>""
+    const coursesAsJson = JSON.stringify(courses, null, 4);
+
+    // 2. highlight (inject html tags in order to support colors, borders etc)
+    // it requires <pre>, <code> and 3 curly braces: "<pre><code>{{prettyExercise}}</code></pre>""
+    const coursesAsPrettyJson = hljs.highlight(coursesAsJson, { language: "json" }).value;
+
+    const data = {
+        canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
+        coursesAsPrettyJson,
+    };
+    //res.send(data);
+    res.render("course/courses-json", data);
+};
+
 exports.getOneById = async (req, res) => {
     const courseId = req.params.id;
     const course = await courseService.getOneById(courseId);
@@ -173,6 +192,29 @@ exports.getOneById = async (req, res) => {
 
     //res.send(data);
     res.render("course/course", data);
+};
+
+exports.jsonGetOneById = async (req, res) => {
+    const courseId = req.params.id;
+    const course = await courseService.getOneById(courseId);
+
+    // 1. format (indent, new lines)
+    // it requires <pre>, <code> and 2 curly braces: "<pre><code>{{formattedExercise}}</code></pre>""
+    const courseAsJson = JSON.stringify(course, null, 4);
+
+    // 2. highlight (inject html tags in order to support colors, borders etc)
+    // it requires <pre>, <code> and 3 curly braces: "<pre><code>{{prettyExercise}}</code></pre>""
+    const courseAsPrettyJson = hljs.highlight(courseAsJson, { language: "json" }).value;
+
+    const data = {
+        courseId: course._id,
+        courseCode: course.code,
+        courseAsPrettyJson,
+        canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
+    };
+
+    //res.send(data);
+    res.render("course/course-json", data);
 };
 
 exports.deleteOneById = async (req, res) => {

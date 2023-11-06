@@ -29,9 +29,5 @@ module.exports = {
             id: 3,
             name: "Nivel avansat",
         },
-        {
-            id: 4,
-            name: "Nivel nespecificat",
-        },
     ],
 };
