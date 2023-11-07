@@ -1,9 +1,7 @@
 const courseService = require("../services/course.service");
 const autz = require("../services/autz.service");
 const arrayHelper = require("../helpers/array.helper");
-
-const hljs = require("highlight.js/lib/core");
-hljs.registerLanguage("json", require("highlight.js/lib/languages/json"));
+const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
 exports.createOrEditGet = async (req, res) => {
     const courseId = req.params.courseId;
@@ -160,13 +158,7 @@ exports.jsonGetOneById = async (req, res) => {
     // keep only the current chapter and current lesson
     course.chapters = course.chapters.filter((x) => x.id == chapter.id);
 
-    // 1. format (indent, new lines)
-    // it requires <pre>, <code> and 2 curly braces: "<pre><code>{{formattedExercise}}</code></pre>""
-    const courseChapterAsJson = JSON.stringify(course, null, 4);
-
-    // 2. highlight (inject html tags in order to support colors, borders etc)
-    // it requires <pre>, <code> and 3 curly braces: "<pre><code>{{prettyExercise}}</code></pre>""
-    const courseChapterAsPrettyJson = hljs.highlight(courseChapterAsJson, { language: "json" }).value;
+    const courseChapterAsPrettyJson = prettyJsonHelper.getPrettyJson(course);
 
     const data = {
         courseId,

@@ -8,8 +8,7 @@ const exerciseHelper = require("../helpers/exercise.helper");
 
 const { availableExerciseTypes, availableSections, availableLevels } = require("../constants/constants");
 
-const hljs = require("highlight.js/lib/core");
-hljs.registerLanguage("json", require("highlight.js/lib/languages/json"));
+const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
 exports.getOneById = async (req, res) => {
     const { courseId, exerciseId } = req.params;
@@ -511,7 +510,7 @@ exports.movePost = async (req, res) => {
         position: positionIdNew,
     } = req.body;
 
-    const redirectUri = `/cursuri/${courseIdNew}/lectii/${lessonIdNew}/modifica?sectionId=${sectionIdNew}&levelId=${levelIdNew}#section${sectionIdNew}-level${levelIdNew}`;
+    const redirectUri = `/cursuri/${courseIdNew}/lectii/${lessonIdNew}/modifica?sectionId=${sectionIdNew}#section${sectionIdNew}`;
 
     // let lessonRef, courseCode, chapterIndex, availablePositions, selectedPosition;
 
@@ -634,13 +633,7 @@ exports.jsonGet = async (req, res) => {
 
         const exercise = await exerciseService.getOneById(exerciseId);
 
-        // 1. format (indent, new lines)
-        // it requires <pre>, <code> and 2 curly braces: "<pre><code>{{formattedExercise}}</code></pre>""
-        const exerciseAsJson = JSON.stringify(exercise, null, 4);
-
-        // 2. highlight (inject html tags in order to support colors, borders etc)
-        // it requires <pre>, <code> and 3 curly braces: "<pre><code>{{prettyExercise}}</code></pre>""
-        const exerciseAsPrettyJson = hljs.highlight(exerciseAsJson, { language: "json" }).value;
+        const exerciseAsPrettyJson = prettyJsonHelper.getPrettyJson(exercise);
 
         const data = {
             courseId,
@@ -693,10 +686,8 @@ exports.deleteOneById = async (req, res) => {
             if (result.modifiedCount == 1) exerciseService.deleteOneById(exerciseId);
         }
 
-        const { sectionId, levelId } = exerciseMeta;
-        res.redirect(
-            `/cursuri/${courseId}/lectii/${lesson.id}/modifica?sectionId=${sectionId}&levelId=${levelId}#section${sectionId}-level${levelId}`
-        );
+        const { sectionId } = exerciseMeta;
+        res.redirect(`/cursuri/${courseId}/lectii/${lesson.id}/modifica?sectionId=${sectionId}#section${sectionId}`);
     } catch (err) {
         return res.status(500).json(err.message);
     }

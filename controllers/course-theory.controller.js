@@ -8,7 +8,6 @@ const { availableSections, availableLevels } = require("../constants/constants")
 
 exports.getOneById = async (req, res) => {
     const { courseId, lessonId } = req.params;
-    const { sectionId, levelId } = req.query;
 
     try {
         // validate parameters
@@ -25,8 +24,6 @@ exports.getOneById = async (req, res) => {
         const exercisesFromDb = await getAllExercisesInLesson(lesson);
 
         lesson.sectionsObj = getSectionsObj(lesson.exercises, exercisesFromDb, true);
-
-        setActivelLevel(lesson.sectionsObj, sectionId, levelId);
 
         // remove unnecessary fields
         if (lesson.theory) delete lesson.theory.text;
@@ -137,16 +134,6 @@ const getSectionsObj = (exercisesRef, exercisesFromDb, clear) => {
     });
 
     return sectionsObj;
-};
-
-const setActivelLevel = (sectionsObj, activeSectionId, activeLevelId) => {
-    sectionsObj.sections.forEach((section) => {
-        if (section.id == activeSectionId) {
-            section.levels.forEach((level) => {
-                if (level.id == activeLevelId) level.isActive = true;
-            });
-        }
-    });
 };
 
 const getLessonAndParentsFromCourse = (course, lessonId) => {

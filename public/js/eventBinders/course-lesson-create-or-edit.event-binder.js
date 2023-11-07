@@ -6,7 +6,7 @@ document.getElementById("toggle-theory-editor-btn").addEventListener("click", ev
 document.getElementById("theory-editor-txt").addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.getTheoryPreview, 500)); // with debouncer (500 ms)
 
 // common
-document.querySelectorAll(".toggle-level-btn").forEach((item) => item.addEventListener("click", commonEventHandler.toggleLevel));
+document.querySelectorAll(".toggle-section-btn").forEach((item) => item.addEventListener("click", commonEventHandler.toggleSection));
 
 document.querySelectorAll(".toggle-answer-btn").forEach((item) => item.addEventListener("click", commonEventHandler.toggleAnswer));
 document.querySelectorAll(".toggle-hints-btn").forEach((item) => item.addEventListener("click", commonEventHandler.toggleHints));
