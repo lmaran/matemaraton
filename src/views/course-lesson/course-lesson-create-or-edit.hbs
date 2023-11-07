@@ -58,35 +58,43 @@
 
     {{#if isEditMode}}
         {{#each lesson.sectionsObj.sections}}
-        <h4 class="mt-5">{{name}}</h4>
-        {{#each levels}}
-            <div id="section{{../id}}-level{{id}}"  class="level-menu-div">
-                <strong>{{name}}</strong>
-                <span class="text-muted">
-                    {{#if (eq exercises.length 1)}} (1 exercițiu):
-                    {{else}} ({{exercises.length}} exerciții):
-                    {{/if}} 
-                </span>
+        <section id="section{{id}}">
+            <div class="section-menu-div mt-5 mb-4 border-bottom border-secondary">
+                <h2>{{name}}
+                    <span class="text-muted fw-light">({{total}})</span>
 
-                <a class="add-exercise-btn me-2" title="Adaugă exercițiu" 
-                    href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lessonId}}/sectiuni/{{../id}}/niveluri/{{id}}/exercitii/adauga">
-                    <i class="bi bi-plus-square"></i></a>
-                
-                {{#if exercises.length}}
-                <a class="toggle-level-btn me-2" href="#">{{#if isActive}}Ascunde exercițiile{{else}}Afișează{{/if}}</a>
-                {{/if}}
-                
+                    {{#if total}}
+                        <a class="toggle-section-btn h6 fw-normal" href="#">{{#if isActive}}Ascunde exercițiile{{else}}Afișează{{/if}}</a>
+                    {{/if}}
+                </h2>
             </div>
-            <div class="level-content-div mb-3 {{#unless isActive}}d-none{{/unless}}">
-            {{#each exercises}}
-                <div class="exercise-div">
-                    {{> exercise-statement @this}}
-                    {{> exercise-menu @this sectionId = ../../id levelId = ../id allowView=true allowEdit=true allowDelete=true allowMove=true }}
-                    {{> exercise-panels @this }}
-                </div>
+
+            <div class="section-content-div mb-3 {{#unless isActive}}d-none{{/unless}}">
+            {{#each levels}}
+                <section>
+                    <div class="level-menu-div">
+                        <h3 class="fs-4">{{name}}
+
+                            <a class="fs-6 add-exercise-btn me-2" title="Adaugă exercițiu" 
+                                href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lessonId}}/sectiuni/{{../id}}/niveluri/{{id}}/exercitii/adauga">
+                                <i class="bi bi-plus-square"></i>
+                            </a>
+                        </h3>
+                    </div>
+
+                    <div class="level-content-div mb-3">
+                    {{#each exercises}}
+                        <div class="exercise-div">
+                            {{> exercise-statement @this}}
+                            {{> exercise-menu @this sectionId = ../../id levelId = ../id allowView=true allowEdit=true allowDelete=true allowMove=true }}
+                            {{> exercise-panels @this }}
+                        </div>
+                    {{/each}}
+                    </div>
+                </section>
             {{/each}}
             </div>
-        {{/each}}
+        </section>
         {{/each}}
     {{else}}
         <div class="alert alert-info mt-4" role="alert">

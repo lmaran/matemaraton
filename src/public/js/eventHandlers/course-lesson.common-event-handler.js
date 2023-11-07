@@ -2,17 +2,17 @@
  * event handlers (alias 'controller')
  */
 export const commonEventHandler = {
-    toggleLevel: async (event) => {
+    toggleSection: async (event) => {
         event.preventDefault();
         const target = event.target; // shortcut
 
-        const parentDiv = target.closest(".level-menu-div");
-        const levelContentDiv = parentDiv.nextElementSibling;
+        const parentDiv = target.closest("section");
+        const sectionContentDiv = parentDiv.querySelector(".section-content-div");
 
-        levelContentDiv.classList.toggle("d-none");
+        sectionContentDiv.classList.toggle("d-none");
 
-        const levelDivIsHide = levelContentDiv.classList.contains("d-none");
-        target.textContent = levelDivIsHide ? "Afișează" : "Ascunde exercițiile";
+        const sectionDivIsHide = sectionContentDiv.classList.contains("d-none");
+        target.textContent = sectionDivIsHide ? "Afișează" : "Ascunde exercițiile";
     },
 
     toggleAnswer: async (event) => {

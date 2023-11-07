@@ -8,8 +8,7 @@
         <li class="breadcrumb-item active">L.{{inc lessonIndex}}</li>
         
         {{#if canCreateOrEditCourse}}
-        <li title="Json" class="ms-auto me-2"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}/json"><i class="bi bi-braces me-1"></i></a></li>
-        <li title="Editează"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
+        <li title="Editează" class="ms-auto"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
         {{/if}}
     </ol>
 </nav>
@@ -38,52 +37,39 @@
 
 {{#each lesson.sectionsObj.sections}}
     {{#if total}}
-    <div id="section{{id}}"  class="section-menu-div">
-    <h2 class="mt-5 mb-4 border-bottom border-secondary">{{name}}
-        <span class="fs-6 text-muted fw-normal">
-            {{#if (eq total 1)}} (1 exercițiu):
-            {{else}} ({{total}} exerciții):
-            {{/if}} 
-        </span>
+    <section id="section{{id}}">
+        <div class="section-menu-div mt-5 mb-4 border-bottom border-secondary">
+            <h2>{{name}}
+                <span class="text-muted fw-light">({{total}})</span>
 
-        {{#if total}}
-            <a class="toggle-section-btn h6 fw-normal" href="#">{{#if isActive}}Ascunde exercițiile{{else}}Afișează{{/if}}</a>
-        {{/if}}
-    </h2>
-    </div>
-
-    <div class="section-content-div mb-3 {{#unless isActive}}d-none2{{/unless}}">
-    {{#each levels}}
-        {{#if exercises.length}}
-        <div id="section{{../id}}-level{{id}}"  class="level-menu-div">
-            <div>
-                <h3 class="fs-4 text-muted2 fw-light2">{{name}}
-                    <span class2="text-muted fw-light">
-                        {{!-- {{#if (eq exercises.length 1)}} (1 exercițiu):
-                        {{else}} ({{exercises.length}} exerciții):
-                        {{/if}}  --}}
-                        {{!-- ({{exercises.length}}): --}}
-                    </span>
-                </h3>
-            </div>
-
-            {{!-- {{#if exercises.length}}
-                <a class="toggle-level-btn me-2" href="#">{{#if isActive}}Ascunde exercițiile{{else}}Afișează{{/if}}</a>
-            {{/if}} --}}
+                {{#if total}}
+                    <a class="toggle-section-btn h6 fw-normal" href="#">{{#if isActive}}Ascunde exercițiile{{else}}Afișează{{/if}}</a>
+                {{/if}}
+            </h2>
         </div>
 
-        <div class="level-content-div mb-3 {{#unless isActive}}d-none2{{/unless}}">
-            {{#each exercises}}
-            <div class="exercise-div">
-                {{> exercise-statement @this}}
-                {{> exercise-menu @this sectionId = ../../id levelId = ../id allowView=true allowEdit=false allowDelete=false allowMove=false}}
-                {{> exercise-panels @this }}
-            </div>
-            {{/each}}
+        <div class="section-content-div mb-3 {{#unless isActive}}d-none{{/unless}}">
+        {{#each levels}}
+            {{#if exercises.length}}
+            <section>
+                <div class="level-menu-div">
+                    <h3 class="fs-4">{{name}}</h3>
+                </div>
+
+                <div class="level-content-div mb-3">
+                    {{#each exercises}}
+                    <div class="exercise-div">
+                        {{> exercise-statement @this}}
+                        {{> exercise-menu @this sectionId = ../../id levelId = ../id allowView=true allowEdit=false allowDelete=false allowMove=false}}
+                        {{> exercise-panels @this }}
+                    </div>
+                    {{/each}}
+                </div>
+            </section>
+            {{/if}}
+        {{/each}}
         </div>
-        {{/if}}
-    {{/each}}
-    </div>
+    </section>
     {{/if}} 
 {{/each}}
 

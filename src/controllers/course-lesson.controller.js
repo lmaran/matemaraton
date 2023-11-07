@@ -5,14 +5,13 @@ const arrayHelper = require("../helpers/array.helper");
 const markdownService = require("../services/markdown.service");
 const exerciseHelper = require("../helpers/exercise.helper");
 
-const hljs = require("highlight.js/lib/core");
-hljs.registerLanguage("json", require("highlight.js/lib/languages/json"));
+const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
 const { availableSections, availableLevels } = require("../constants/constants");
 
 exports.getOneById = async (req, res) => {
     const { courseId, lessonId } = req.params;
-    const { sectionId, levelId } = req.query;
+    const { sectionId } = req.query;
 
     try {
         // validate parameters
@@ -30,7 +29,7 @@ exports.getOneById = async (req, res) => {
 
         lesson.sectionsObj = getSectionsObj(lesson.exercises, exercisesFromDb, true);
 
-        setActivelLevel(lesson.sectionsObj, sectionId, levelId);
+        setActiveSection(lesson.sectionsObj, sectionId);
 
         // remove unnecessary fields
         if (lesson.theory) delete lesson.theory.text;
@@ -74,13 +73,7 @@ exports.jsonGetOneById = async (req, res) => {
         chapter.lessons = chapter.lessons.filter((x) => x.id == lesson.id);
         course.chapters = course.chapters.filter((x) => x.id == chapter.id);
 
-        // 1. format (indent, new lines)
-        // it requires <pre>, <code> and 2 curly braces: "<pre><code>{{formattedExercise}}</code></pre>""
-        const courseLessonAsJson = JSON.stringify(course, null, 4);
-
-        // 2. highlight (inject html tags in order to support colors, borders etc)
-        // it requires <pre>, <code> and 3 curly braces: "<pre><code>{{prettyExercise}}</code></pre>""
-        const courseLessonAsPrettyJson = hljs.highlight(courseLessonAsJson, { language: "json" }).value;
+        const courseLessonAsPrettyJson = prettyJsonHelper.getPrettyJson(course);
 
         const data = {
             courseId,
@@ -194,7 +187,7 @@ exports.createPost = async (req, res) => {
 
 exports.editGet = async (req, res) => {
     const { courseId, lessonId } = req.params;
-    const { sectionId, levelId } = req.query;
+    const { sectionId } = req.query;
 
     let availablePositions, selectedPosition;
 
@@ -218,7 +211,7 @@ exports.editGet = async (req, res) => {
 
         lesson.sectionsObj = getSectionsObj(lesson.exercises, exercisesFromDb, true);
 
-        setActivelLevel(lesson.sectionsObj, sectionId, levelId);
+        setActiveSection(lesson.sectionsObj, sectionId);
 
         // remove unnecessary fields
         delete lesson.exercises;
@@ -400,12 +393,10 @@ const getSectionsObj = (exercisesRef, exercisesFromDb, clear) => {
     return sectionsObj;
 };
 
-const setActivelLevel = (sectionsObj, activeSectionId, activeLevelId) => {
+const setActiveSection = (sectionsObj, activeSectionId) => {
     sectionsObj.sections.forEach((section) => {
         if (section.id == activeSectionId) {
-            section.levels.forEach((level) => {
-                if (level.id == activeLevelId) level.isActive = true;
-            });
+            section.isActive = true;
         }
     });
 };
