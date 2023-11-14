@@ -31,6 +31,7 @@ const markdownController = require("./controllers/markdown.controller");
 const fileController = require("./controllers/file.controller");
 const enrollmentController = require("./controllers/enrollment.controller");
 const resourcesController = require("./controllers/resources.controller");
+const sheetController = require("./controllers/sheet.controller");
 
 // home
 router.get("/", homeController.getHomePage);
@@ -61,6 +62,15 @@ router.get("/clase/adauga", isAuthenticated, classController.createOrEditGet);
 router.post("/clase/adauga", isAuthenticated, classController.createOrEditPost);
 router.get("/clase/:classId", classController.getOneById);
 router.post("/clase/:id/sterge", isAuthenticated, classController.deleteOneById);
+
+// fișe cu exerciții
+router.get("/fise", sheetController.getAll);
+router.get("/fise/adauga", isAuthenticated, sheetController.createGet);
+router.post("/fise/adauga", isAuthenticated, sheetController.createPost);
+router.get("/fise/:sheetId", sheetController.getOneById);
+router.get("/fise/:sheetId/modifica", sheetController.updateGet);
+router.post("/fise/:sheetId/modifica", sheetController.updatePost);
+router.post("/fise/:sheetId/sterge", isAuthenticated, sheetController.deleteOneById);
 
 // courses
 router.get("/cursuri", courseController.getAll);

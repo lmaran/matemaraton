@@ -7,3 +7,7 @@ document.querySelectorAll(".toggle-answer-btn").forEach((item) => item.addEventL
 document.querySelectorAll(".toggle-hints-btn").forEach((item) => item.addEventListener("click", commonEventHandler.toggleHints));
 document.querySelectorAll(".show-next-hint-btn").forEach((item) => item.addEventListener("click", commonEventHandler.showNextHint));
 document.querySelectorAll(".toggle-solution-btn").forEach((item) => item.addEventListener("click", commonEventHandler.toggleSolution));
+
+document.querySelectorAll(".add-to-cart-btn").forEach((item) => item.addEventListener("click", commonEventHandler.addToCart));
+document.querySelectorAll(".remove-from-cart-btn").forEach((item) => item.addEventListener("click", commonEventHandler.removeFromCart));
+document.addEventListener("DOMContentLoaded", commonEventHandler.updateCartButtons);

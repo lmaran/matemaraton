@@ -1,0 +1,50 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item active">Fișe</li>
+
+        {{#if canCreateOrEditCourse}}
+        <li title="Editează" class="ms-auto"><a href="/fise/modifica"><i class="bi bi-pencil me-1"></i></a></li>
+        {{/if}}
+    </ol>
+</nav>
+
+<h1>Fișe</h1>
+
+<a href="/fise/adauga" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Adaugă fișă</a>
+
+<form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;"></form>
+<table class="table thead-light table-bordered table-hover mt-5">
+    <thead>
+        <tr>
+            <th>Nume</th>
+            <th>Descriere</th>
+            {{!-- <th>Clasa</th>
+            <th>Ascuns</th>
+            <th>Activ</th> --}}
+        </tr>
+    </thead>
+    <tbody>
+        {{#each sheets}}
+        <tr>
+            <td>
+                <a href="/fise/{{_id}}/modifica">{{name}}{{#unless name}}Fără nume{{/unless}}
+            </td>
+            <td>{{description}}</td>
+            {{!-- <td>
+                {{grade}}
+            </td>
+            <td>
+                {{#if isHidden}}
+                <i class="bi bi-check-lg" style="font-size2: 24px;color: green;"></i>
+                {{/if}}
+            </td>
+            <td class="text-center">
+                {{#if isActive}}
+                <i class="bi bi-check-lg" style="font-size2: 24px;color: green;"></i>
+                {{/if}}
+            </td> --}}
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

@@ -1,7 +1,7 @@
 const mongoHelper = require("../helpers/mongo.helper");
 const { ObjectId } = require("mongodb");
 
-const collection = "practiceTests";
+const collection = "sheets";
 
 exports.getAll = async () => {
     const db = await mongoHelper.getDb();
@@ -29,3 +29,5 @@ exports.updateOne = async (item) => {
     item._id = new ObjectId(item._id);
     return db.collection(collection).updateOne({ _id: item._id }, { $set: item });
 };
+
+exports.getObjectId = () => new ObjectId();
