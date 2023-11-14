@@ -15,10 +15,6 @@ exports.can = async (user, rp) => {
         return up.includes("*:*") || up.includes(rp);
     } else if (rp === "delete:exercise") {
         return up.includes("*:*") || up.includes(rp);
-    } else if (rp === "create-or-edit:practice-test") {
-        return up.includes("*:*") || up.includes(rp);
-    } else if (rp === "delete:practice-test") {
-        return up.includes("*:*") || up.includes(rp);
     } else if (rp === "create-or-edit:course-session") {
         return up.includes("*:*") || up.includes(rp);
     } else if (rp === "delete:course-session") {
@@ -38,6 +34,10 @@ exports.can = async (user, rp) => {
     } else if (rp === "create-or-edit:class") {
         return up.includes("*:*") || up.includes(rp);
     } else if (rp === "delete:class") {
+        return up.includes("*:*") || up.includes(rp);
+    } else if (rp === "create-or-update:sheet") {
+        return up.includes("*:*") || up.includes(rp);
+    } else if (rp === "delete:sheet") {
         return up.includes("*:*") || up.includes(rp);
     }
 };

@@ -2,6 +2,60 @@
  * event handlers (alias 'controller')
  */
 export const commonEventHandler = {
+    updateCartButtons: async () => {
+        const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+        if (cartItems) {
+            document.querySelectorAll(".add-to-cart-btn").forEach((target) => {
+                const exerciseId = target.dataset.exerciseId;
+
+                const find = cartItems.find((x) => x == exerciseId);
+                if (find) {
+                    target.classList.add("d-none");
+
+                    const parentDiv = target.closest(".exercise-menu-div");
+                    const removeFromCartBtn = parentDiv.querySelector(".remove-from-cart-btn");
+                    if (removeFromCartBtn) removeFromCartBtn.classList.remove("d-none");
+                }
+            });
+        }
+    },
+
+    addToCart: async (event) => {
+        const target = event.target; // shortcut
+        const exerciseId = target.dataset.exerciseId;
+
+        const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+        cartItems.push(exerciseId);
+        localStorage.setItem("cart", JSON.stringify(cartItems));
+
+        target.classList.add("d-none");
+
+        const parentDiv = target.closest(".exercise-menu-div");
+        const removeFromCartBtn = parentDiv.querySelector(".remove-from-cart-btn");
+        if (removeFromCartBtn) removeFromCartBtn.classList.remove("d-none");
+
+        // in main.event-handler.js we have a listener that updates the chart icon: https://stackoverflow.com/a/65348883
+        window.dispatchEvent(new Event("storage"));
+    },
+
+    removeFromCart: async (event) => {
+        const target = event.target; // shortcut
+        const exerciseId = target.dataset.exerciseId;
+
+        let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+        cartItems = cartItems.filter((x) => x !== exerciseId);
+        localStorage.setItem("cart", JSON.stringify(cartItems));
+
+        target.classList.add("d-none");
+
+        const parentDiv = target.closest(".exercise-menu-div");
+        const addToCartBtn = parentDiv.querySelector(".add-to-cart-btn");
+        if (addToCartBtn) addToCartBtn.classList.remove("d-none");
+
+        // in main.event-handler.js we have a listener that updates the chart icon: https://stackoverflow.com/a/65348883
+        window.dispatchEvent(new Event("storage"));
+    },
+
     toggleSection: async (event) => {
         event.preventDefault();
         const target = event.target; // shortcut
