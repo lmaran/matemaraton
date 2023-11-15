@@ -7,3 +7,5 @@ document.addEventListener("DOMContentLoaded", eventHandler.updateCartIcon);
 // Note: By default, this won't work in the current tab (source: https://developer.mozilla.org/en-US/docs/Web/API/Window/storage_event)
 // To work in the current tab, dispatch a storage event after each update (source: https://stackoverflow.com/a/65348883)
 window.addEventListener("storage", eventHandler.updateCartIcon);
+
+document.getElementById("clear-cart").addEventListener("click", eventHandler.clearCart);
