@@ -10,4 +10,3 @@ document.querySelectorAll(".toggle-solution-btn").forEach((item) => item.addEven
 
 document.querySelectorAll(".add-to-cart-btn").forEach((item) => item.addEventListener("click", commonEventHandler.addToCart));
 document.querySelectorAll(".remove-from-cart-btn").forEach((item) => item.addEventListener("click", commonEventHandler.removeFromCart));
-document.addEventListener("DOMContentLoaded", commonEventHandler.updateCartButtons);
