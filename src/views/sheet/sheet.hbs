@@ -23,19 +23,33 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
-        <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
-        <li class="breadcrumb-item active">{{course.code}}</li>
+        <li class="breadcrumb-item"><a href="/fise/">Fișe</a></li>
+        {{!-- <li class="breadcrumb-item active">{{course.code}}</li> --}}
 
-        {{#if canCreateOrEditCourse}}
-        <li title="Editează" class="ms-auto"><a href="/cursuri/{{course._id}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
-        {{/if}}
+        <li title="Tipărește" class="ms-auto">
+            <i role='button' class="bi bi-printer me-2" onclick="window.print()"></i>
+        </li>
+
+        {{!-- {{#if canCreateOrEditCourse}} --}}
+        <li title="Editează" class2="ms-auto"><a href="/fise/{{sheet._id}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
+        {{!-- {{/if}} --}}
     </ol>
 </nav>
 
 <h1>{{sheet.name}}</h1>
 
-{{!-- <h3 class=" font-weight-light">{{sheet.name}}</h3> --}}
+<h3 class=" font-weight-light">{{sheet.description}}</h3>
 
-<div class="h4 font-weight-light">{{sheet.description}}</div>
+{{#each sheet.exercises}}
+<div class="exercise-div">
+    {{> exercise-statement @this}}
+    {{> exercise-menu @this sectionId = ../../id levelId = ../id allowView=false allowEdit=false allowDelete=false allowMove=false allowUpdateCart=false}}
+    {{> exercise-panels @this }}
+    <input type="hidden" name="exerciseIdsInput" value="{{_id}}"/>
+</div>
+{{/each}}
 
+{{#section 'script'}}
+<script type="module" src="/js/eventBinders/sheet.event-binder.js"></script>
+{{/section}}
 

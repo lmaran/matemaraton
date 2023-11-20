@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="row mb-5">
         <div class="col-md-12">
             <label for="descriptionInput" class="fw-bold">Descriere:</label>
             <textarea type="text" name="description" class="form-control" id="descriptionInput"
@@ -38,7 +38,7 @@
         </div>
     </div>
 
-    <div class="row">
+    {{!-- <div class="row">
         <div class="col-md-6">
             <label for="positionSelect" class="fw-bold">Poziție:</label>
             <select name="position" class="form-select" id="positionSelect">
@@ -52,60 +52,47 @@
                 <p class="text-muted mb-0">Poziția în cadrul listei</p>
             </small>
         </div>
-    </div>
+    </div> --}}
 
-    <div class="form-check">
+    {{!-- <div class="form-check">
         <input type="checkbox" class="form-check-input" id="isHiddenCheck" name="isHidden" {{#if
             chapter.isHidden}}checked{{/if}}>
         <label class="form-check-label" for="isHiddenCheck">Ascunde</label>
         <small>
             <p class="text-muted mb-0">Doar tu (proprietarul) poți vedea resursele ascunse</p>
         </small>
-    </div>
+    </div> --}}
 
     <input type="hidden" name="courseId" value="{{courseId}}" />
+
+    {{#each exercises}}
+    <div class="exercise-div">
+        {{> exercise-statement @this}}
+        {{> exercise-menu @this sectionId = ../../id levelId = ../id allowView=false allowEdit=false allowDelete=false allowMove=false allowUpdateCart=false}}
+        {{> exercise-panels @this }}
+        <input type="hidden" name="exerciseIdsInput" value="{{_id}}"/>
+    </div>
+    {{/each}}
 
     <div class="mt-4">
         <div class="col-md-7s offset-md-3s">
             <button type="submit" name="saveBtn" class="btn btn-primary"><i class="bi bi-save"></i>
                 Salveaza</button>
-
-            {{#if isEditMode}}
-            <button type="submit" formaction="/cursuri/{{courseId}}/capitole/{{chapter.id}}/sterge"
-                name="deleteBtn" class="btn btn-link"
-                onclick="return confirm('Ești sigur că vrei să ștergi acest capitol?');"><i
-                    class="bi bi-trash-fill"></i>
-                Șterge</button>
-            {{/if}}
         </div>
+    </div>
+
+    <div class="alert alert-info mt-4" role="alert">
+        <i class="bi bi-info-circle me-2"></i>
+        Salvează fișa pentru a putea tipări sau pentru a face alte modificări!
     </div>
 
 </form>
 
-{{#if isEditMode}}
-<h4 class="mt-5">Lecții</h4>
-<ol id="table-of-contents" class="pl-0">
-    {{#each chapter.lessons}}
-    <li>
-        <a href="/cursuri/{{@root.courseId}}/lectii/{{id}}/modifica">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
-        {{#if isHidden}}
-        <a href="/cursuri/{{@root.courseId}}/lectii/{{id}}/modifica">
-            <i class="bi bi-eye-slash text-danger"></i></a>
-        {{/if}}
-    </li>
-    {{/each}}
-</ol>
 
-<a href="/cursuri/{{courseId}}/capitole/{{chapter.id}}/lectii/adauga" class="btn btn-primary btn-sm">
-<i class="bi bi-plus-lg"></i> Adaugă lecție</a>
-
-{{else}}
-    <div class="alert alert-info mt-4" role="alert">
-        <i class="bi bi-info-circle me-2"></i>
-        Salvează capitolul pentru a putea adăuga lecții!
-    </div>
-{{/if}}
 
 
 <div class="mt-5"></div>
 
+{{#section 'script'}}
+<script type="module" src="/js/eventBinders/sheet-create-or-edit.event-binder.js"></script>
+{{/section}}

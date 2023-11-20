@@ -1,12 +1,3 @@
-<style>
-{{!-- https://stackoverflow.com/a/50931961 --}}
-.btn-group-xs > .btn, .btn-xs {
-padding: 0px 5px;
-font-size: 14px;
-border-radius: 3px;
-}
-</style>
-
 {{!-- Exercise menu --}}
 <div class="exercise-menu-div hide-on-print clearfix">
     <div class="float-start">
@@ -55,7 +46,10 @@ border-radius: 3px;
             href="/cursuri/{{@root.courseId}}/exercitii/{{_id}}/muta">
             <i class="bi bi-arrows-move me-1"></i></a>
         {{/if}}
-        <button type="button" data-exercise-id="{{_id}}" class="remove-from-cart-btn d-none btn btn-light border border-primary btn-xs">Scoate din coș</button>
-        <button type="button" data-exercise-id="{{_id}}" data-exercise-code="{{code}}" data-course-id="{{@root.courseId}}" class="add-to-cart-btn btn btn-primary btn-xs">Adaugă în coș</button>
+
+        {{#if allowUpdateCart}}
+            <button type="button" data-exercise-id="{{_id}}" class="remove-from-cart-btn d-none btn btn-light border border-primary btn-xs">Scoate din coș</button>
+            <button type="button" data-exercise-id="{{_id}}" data-exercise-code="{{code}}" data-course-id="{{@root.courseId}}" class="add-to-cart-btn btn btn-primary btn-xs">Adaugă în coș</button>
+        {{/if}}
     </div>
 </div>
