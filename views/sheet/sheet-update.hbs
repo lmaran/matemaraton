@@ -11,6 +11,7 @@
         <li title="Json" class="ms-auto me-2"><a href="/cursuri/{{courseId}}/capitole/{{chapter.id}}/json"><i class="bi bi-braces me-1"></i></a></li>
         <li title="Vizualizează"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}"><i class="bi bi-eye me-1"></i></a></li>
         {{/if}} --}}
+        <li title="Editează" class="ms-auto"><a href="/fise/{{sheet._id}}"><i class="bi bi-eye me-1"></i></a></li>
 
     </ol>
 </nav>
@@ -38,7 +39,7 @@
         </div>
     </div>
 
-    <div class="row">
+    {{!-- <div class="row">
         <div class="col-md-6">
             <label for="positionSelect" class="fw-bold">Poziție:</label>
             <select name="position" class="form-select" id="positionSelect">
@@ -52,16 +53,25 @@
                 <p class="text-muted mb-0">Poziția în cadrul listei</p>
             </small>
         </div>
-    </div>
+    </div> --}}
 
-    <div class="form-check">
+    {{!-- <div class="form-check">
         <input type="checkbox" class="form-check-input" id="isHiddenCheck" name="isHidden" {{#if
             chapter.isHidden}}checked{{/if}}>
         <label class="form-check-label" for="isHiddenCheck">Ascunde</label>
         <small>
             <p class="text-muted mb-0">Doar tu (proprietarul) poți vedea resursele ascunse</p>
         </small>
+    </div> --}}
+
+    {{#each sheet.exercises}}
+    <div class="exercise-div">
+        {{> exercise-statement @this}}
+        {{> exercise-menu @this sectionId = ../../id levelId = ../id allowView=false allowEdit=false allowDelete=false allowMove=false allowUpdateCart=false}}
+        {{> exercise-panels @this }}
+        <input type="hidden" name="exerciseIdsInput" value="{{_id}}"/>
     </div>
+    {{/each}}
 
     {{!-- <input type2="hidden" name="courseId" value="{{courseId}}" /> --}}
 

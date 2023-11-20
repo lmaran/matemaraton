@@ -1,9 +1,10 @@
 //const courseService = require("../services/course.service");
 const sheetService = require("../services/sheet.service");
 const autz = require("../services/autz.service");
+const exerciseService = require("../services/exercise.service");
 //const arrayHelper = require("../helpers/array.helper");
 //const markdownService = require("../services/markdown.service");
-//const exerciseHelper = require("../helpers/exercise.helper");
+const exerciseHelper = require("../helpers/exercise.helper");
 
 //const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
@@ -16,6 +17,29 @@ exports.getOneById = async (req, res) => {
         // validate parameters
         const sheet = await sheetService.getOneById(sheetId);
         if (!sheet) return res.status(500).send("Fișă negăsită!");
+
+        // get exercises from DB
+        let exercises = [];
+        if (sheet.exerciseIds && sheet.exerciseIds.length > 0) {
+            exercises = await exerciseService.getAllByIds(sheet.exerciseIds);
+        }
+
+        // add preview
+        exercises.forEach((exercise) => {
+            const statementNumber = `**E.${exercise.code}.**`;
+
+            // if (!exercise) {
+            //     exercise = { _id: x.id, statement: "Exercitiul a fost șters din DB!" };
+            // }
+
+            exerciseHelper.addPreview(exercise, statementNumber, true);
+
+            const { authorAndSource1, source2 } = exerciseHelper.getAuthorAndSource(exercise);
+            exercise.authorAndSource1 = authorAndSource1;
+            exercise.source2 = source2;
+        });
+
+        sheet.exercises = exercises;
 
         // const { chapter, chapterIndex, lesson, lessonIndex } = getLessonAndParentsFromCourse(course, lessonId);
         // if (!lesson) return res.status(500).send("Lecție negăsită!");
@@ -79,7 +103,9 @@ exports.getAll = async (req, res) => {
 };
 
 exports.createGet = async (req, res) => {
-    // const { courseId, chapterId } = req.params;
+    const { cart } = req.query;
+
+    const cartItems = cart ? JSON.parse(cart) : [];
 
     // let chapterIndex, availablePositions, selectedPosition;
 
@@ -89,16 +115,36 @@ exports.createGet = async (req, res) => {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
 
-        // const course = await courseService.getOneById(courseId);
-        // if (!course) return res.status(500).send("Curs negăsit!");
+        let exercises = [];
+        if (cartItems) {
+            const allExercisesIds = (cartItems || []).map((x) => x.e);
 
-        // const chapter = (course.chapters || []).find((x) => x.id === chapterId);
-        // if (!chapter) return res.status(500).send("Capitol negăsit!");
-        // chapterIndex = course.chapters.findIndex((x) => x.id === chapterId);
+            // // deduplicate exercisesIds
+            // const allUniqueExercisesIds = [...new Set(allExercisesIds)];
 
-        // ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(chapter.lessons, undefined));
+            // get exercises from DB
+            if (allExercisesIds.length > 0) {
+                exercises = await exerciseService.getAllByIds(allExercisesIds);
+            }
+
+            // add preview
+            exercises.forEach((exercise) => {
+                const statementNumber = `**E.${exercise.code}.**`;
+
+                // if (!exercise) {
+                //     exercise = { _id: x.id, statement: "Exercitiul a fost șters din DB!" };
+                // }
+
+                exerciseHelper.addPreview(exercise, statementNumber, true);
+
+                const { authorAndSource1, source2 } = exerciseHelper.getAuthorAndSource(exercise);
+                exercise.authorAndSource1 = authorAndSource1;
+                exercise.source2 = source2;
+            });
+        }
 
         const data = {
+            exercises,
             // courseId,
             // courseCode: course.code,
             // chapterId,
@@ -115,8 +161,8 @@ exports.createGet = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
-    const { courseId, chapterId, name, description, isHidden, position, theory } = req.body;
-    // let { sheetId } = req.params;
+    const { name, description, exerciseIdsInput } = req.body;
+    let exerciseIds = [];
 
     // let lesson;
 
@@ -125,14 +171,13 @@ exports.createPost = async (req, res) => {
         if (!canCreateOrEditCourse) {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
-        // const course = await courseService.getOneById(courseId);
-        // if (!course) return res.status(500).send("Curs negăsit!");
-        // const chapterRef = (course.chapters || []).find((x) => x.id === chapterId);
-        // if (!chapterRef) return res.status(500).send("Capitol negăsit!");
+
+        if (exerciseIdsInput) exerciseIds = Array.isArray(exerciseIdsInput) ? exerciseIdsInput : [exerciseIdsInput];
 
         const sheet = {
             name,
             description,
+            exerciseIds,
         };
 
         // sheet.theory = {
@@ -162,13 +207,30 @@ exports.updateGet = async (req, res) => {
         }
 
         const sheet = await sheetService.getOneById(sheetId);
-        // if (!course) return res.status(500).send("Curs negăsit!");
+        if (!sheet) return res.status(500).send("Fișă negăsită!");
 
-        // const chapter = (course.chapters || []).find((x) => x.id === chapterId);
-        // if (!chapter) return res.status(500).send("Capitol negăsit!");
-        // chapterIndex = course.chapters.findIndex((x) => x.id === chapterId);
+        // get exercises from DB
+        let exercises = [];
+        if (sheet.exerciseIds && sheet.exerciseIds.length > 0) {
+            exercises = await exerciseService.getAllByIds(sheet.exerciseIds);
+        }
 
-        // ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(chapter.lessons, undefined));
+        // add preview
+        exercises.forEach((exercise) => {
+            const statementNumber = `**E.${exercise.code}.**`;
+
+            // if (!exercise) {
+            //     exercise = { _id: x.id, statement: "Exercitiul a fost șters din DB!" };
+            // }
+
+            exerciseHelper.addPreview(exercise, statementNumber, true);
+
+            const { authorAndSource1, source2 } = exerciseHelper.getAuthorAndSource(exercise);
+            exercise.authorAndSource1 = authorAndSource1;
+            exercise.source2 = source2;
+        });
+
+        sheet.exercises = exercises;
 
         const data = {
             sheet,
@@ -221,7 +283,7 @@ exports.updatePost = async (req, res) => {
         sheetService.updateOne(sheet);
 
         //res.send(course);
-        res.redirect("/fise");
+        res.redirect(`/fise/${sheetId}`);
     } catch (err) {
         return res.status(500).json(err.message);
     }
