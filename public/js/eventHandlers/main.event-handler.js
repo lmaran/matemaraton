@@ -92,7 +92,13 @@ export const eventHandler = {
             const exercisesParam = [];
             cartItems.forEach((x) => exercisesParam.push({ e: x.exerciseId, c: x.courseId }));
             const createNewSheetAnchor = document.getElementById("create-new-sheet");
-            createNewSheetAnchor.setAttribute("href", "/fise/adauga/?cart=" + JSON.stringify(exercisesParam));
+            createNewSheetAnchor.setAttribute("href", "/fise/adauga?cart=" + JSON.stringify(exercisesParam));
+
+            const createNewSheetInLessonAnchor = document.getElementById("create-sheet-in-lesson");
+            if (createNewSheetInLessonAnchor) {
+                const oldHref = createNewSheetInLessonAnchor.getAttribute("href");
+                createNewSheetInLessonAnchor.setAttribute("href", `${oldHref}?cart=${JSON.stringify(exercisesParam)}`);
+            }
         }
 
         // If the cart is empty, hide the red badge and also some dropdown menu items

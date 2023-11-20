@@ -1,5 +1,5 @@
 import { commonEventHandler } from "../eventHandlers/course-lesson.common-event-handler.js";
-// import { eventHandlers } from "../eventHandlers/course-lesson-create-or-edit.event-handler.js";
+import { eventHandler } from "../eventHandlers/sheet-create-or-edit.event-handler.js";
 // import { dateTimeHelper } from "../helpers/date-time.helper.js";
 
 // document.getElementById("toggle-theory-editor-btn").addEventListener("click", eventHandlers.toggleTheoryEditor);
@@ -12,3 +12,6 @@ document.querySelectorAll(".toggle-answer-btn").forEach((item) => item.addEventL
 document.querySelectorAll(".toggle-hints-btn").forEach((item) => item.addEventListener("click", commonEventHandler.toggleHints));
 document.querySelectorAll(".show-next-hint-btn").forEach((item) => item.addEventListener("click", commonEventHandler.showNextHint));
 document.querySelectorAll(".toggle-solution-btn").forEach((item) => item.addEventListener("click", commonEventHandler.toggleSolution));
+
+// fires on page load
+document.addEventListener("DOMContentLoaded", eventHandler.onDOMContentLoaded);

@@ -19,9 +19,8 @@
         <tr>
             <th>Nume</th>
             <th>Descriere</th>
-            {{!-- <th>Clasa</th>
-            <th>Ascuns</th>
-            <th>Activ</th> --}}
+            <th>Lecția</th>
+            <th>CreatLa</th>
         </tr>
     </thead>
     <tbody>
@@ -31,19 +30,12 @@
                 <a href="/fise/{{_id}}">{{name}}{{#unless name}}Fără nume{{/unless}}
             </td>
             <td>{{description}}</td>
-            {{!-- <td>
-                {{grade}}
-            </td>
             <td>
-                {{#if isHidden}}
-                <i class="bi bi-check-lg" style="font-size2: 24px;color: green;"></i>
+                {{#if lessonId}}
+                <a href="/cursuri/{{courseId}}/lectii/{{lessonId}}">Lecție</a>
                 {{/if}}
             </td>
-            <td class="text-center">
-                {{#if isActive}}
-                <i class="bi bi-check-lg" style="font-size2: 24px;color: green;"></i>
-                {{/if}}
-            </td> --}}
+            <td>{{createdOn}}</td>
         </tr>
         {{/each}}
     </tbody>
