@@ -73,6 +73,59 @@
     {{/if}} 
 {{/each}}
 
+<section class="mt-5">
+    <div class="sheets-header-div mt-5 mb-4 border-bottom border-secondary">
+        <h2>Fișe de lucru
+            <span class="text-muted fw-light">({{lesson.sheets.length}})</span>
+
+            {{!-- {{#if true}}
+                <a class="toggle-sheets-btn h6 fw-normal" href="#">{{#if isActive}}Ascunde fișele{{else}}Afișează{{/if}}</a>
+            {{/if}} --}}
+        </h2>
+    </div>
+    <div id="sheets-menu-div">
+        <a id="create-sheet-in-lesson" href="/cursuri/{{courseId}}/lectii/{{lessonId}}/fise/adauga" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg"></i> Crează o fișă</a> cu exercițiile din cos.
+    </div>
+    <div id="sheets-content-div">
+        <table class="table thead-light table-bordered table-hover mt-3">
+            <thead>
+                <tr>
+                    <th>Nume</th>
+                    <th>Descriere</th>
+                    {{!-- <th>Clasa</th>
+                    <th>Ascuns</th>
+                    <th>Activ</th> --}}
+                </tr>
+            </thead>
+            <tbody>
+                {{#each lesson.sheets}}
+                <tr>
+                    <td>
+                        <a href="cursuri/{{@root.courseId}}/lectii/{{@root.lessonId}}/fise/{{_id}}">{{name}}{{#unless name}}Fără nume{{/unless}}
+                    </td>
+                    <td>{{description}}</td>
+                    {{!-- <td>
+                        {{grade}}
+                    </td>
+                    <td>
+                        {{#if isHidden}}
+                        <i class="bi bi-check-lg" style="font-size2: 24px;color: green;"></i>
+                        {{/if}}
+                    </td>
+                    <td class="text-center">
+                        {{#if isActive}}
+                        <i class="bi bi-check-lg" style="font-size2: 24px;color: green;"></i>
+                        {{/if}}
+                    </td> --}}
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+
+</section>
+
 
 <div class="mt-5 mb-5"></div>
 

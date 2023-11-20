@@ -3,6 +3,7 @@ const exerciseService = require("../services/exercise.service");
 const autz = require("../services/autz.service");
 const markdownService = require("../services/markdown.service");
 const exerciseHelper = require("../helpers/exercise.helper");
+const lessonHelper = require("../helpers/lesson.helper");
 
 const { availableSections, availableLevels } = require("../constants/constants");
 
@@ -14,7 +15,7 @@ exports.getOneById = async (req, res) => {
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, chapterIndex, lesson, lessonIndex } = getLessonAndParentsFromCourse(course, lessonId);
+        const { chapter, chapterIndex, lesson, lessonIndex } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
         if (!lesson) return res.status(500).send("Lecție negăsită!");
 
         if (lesson.theory) {
@@ -134,37 +135,4 @@ const getSectionsObj = (exercisesRef, exercisesFromDb, clear) => {
     });
 
     return sectionsObj;
-};
-
-const getLessonAndParentsFromCourse = (course, lessonId) => {
-    let chapter;
-    let chapterIndex = -1;
-    let lesson;
-    let lessonIndex = -1;
-
-    const chapters = course.chapters || [];
-    for (let i = 0; i < chapters.length; i++) {
-        const lessons = chapters[i].lessons || [];
-
-        for (let j = 0; j < lessons.length; j++) {
-            if (lessons[j].id == lessonId) {
-                lesson = lessons[j];
-                lessonIndex = j;
-                break;
-            }
-        }
-
-        if (lesson) {
-            chapter = chapters[i];
-            chapterIndex = i;
-            break;
-        }
-    }
-
-    return {
-        chapter,
-        chapterIndex,
-        lesson,
-        lessonIndex,
-    };
 };

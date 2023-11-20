@@ -8,6 +8,14 @@ exports.getAll = async () => {
     return db.collection(collection).find().toArray();
 };
 
+exports.getAllByIds = async (ids) => {
+    const db = await mongoHelper.getDb();
+    return db
+        .collection(collection)
+        .find({ _id: { $in: ids.map((x) => new ObjectId(x)) } })
+        .toArray();
+};
+
 exports.getOneById = async (id) => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).findOne({ _id: new ObjectId(id) });

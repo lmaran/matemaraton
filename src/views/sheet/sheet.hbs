@@ -23,8 +23,14 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
-        <li class="breadcrumb-item"><a href="/fise/">Fișe</a></li>
-        {{!-- <li class="breadcrumb-item active">{{course.code}}</li> --}}
+        {{#if lessonId}}
+            <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
+            <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}">{{courseCode}}</a></li>
+            <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}">Cap.{{inc chapterIndex}}</a></li>
+            <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}">L.{{inc lessonIndex}}</a></li>
+        {{else}}
+            <li class="breadcrumb-item"><a href="/fise/">Fișe</a></li>
+        {{/if}}
 
         <li title="Tipărește" class="ms-auto">
             <i role='button' class="bi bi-printer me-2" onclick="window.print()"></i>

@@ -11,7 +11,6 @@
         <li title="Json" class="ms-auto me-2"><a href="/cursuri/{{courseId}}/capitole/{{chapter.id}}/json"><i class="bi bi-braces me-1"></i></a></li>
         <li title="Vizualizează"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}"><i class="bi bi-eye me-1"></i></a></li>
         {{/if}} --}}
-
     </ol>
 </nav>
 
@@ -25,7 +24,7 @@
             <input type="text" name="name" class="form-control" id="nameInput" placeholder=""
                 value="{{sheet.name}}">
             <small>
-                <p class="text-muted mb-0">Ex: Numere raționale</p>
+                <p class="text-muted mb-0">Ex: Tema 3 - numere raționale</p>
             </small>
         </div>
     </div>
@@ -64,6 +63,7 @@
     </div> --}}
 
     <input type="hidden" name="courseId" value="{{courseId}}" />
+    <input type="hidden" name="lessonId" value="{{lessonId}}"/>
 
     {{#each exercises}}
     <div class="exercise-div">

@@ -1,12 +1,13 @@
-//const courseService = require("../services/course.service");
+const courseService = require("../services/course.service");
 const sheetService = require("../services/sheet.service");
 const autz = require("../services/autz.service");
 const exerciseService = require("../services/exercise.service");
 //const arrayHelper = require("../helpers/array.helper");
 //const markdownService = require("../services/markdown.service");
 const exerciseHelper = require("../helpers/exercise.helper");
+const lessonHelper = require("../helpers/lesson.helper");
 
-//const prettyJsonHelper = require("../helpers/pretty-json.helper");
+const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
 //const { availableSections, availableLevels } = require("../constants/constants");
 
@@ -41,38 +42,29 @@ exports.getOneById = async (req, res) => {
 
         sheet.exercises = exercises;
 
-        // const { chapter, chapterIndex, lesson, lessonIndex } = getLessonAndParentsFromCourse(course, lessonId);
-        // if (!lesson) return res.status(500).send("Lecție negăsită!");
-
-        // if (lesson.theory) {
-        //     lesson.theory.textPreview = markdownService.render(lesson.theory.text);
-        // }
-
-        // const exercisesFromDb = await getAllExercisesInLesson(lesson);
-
-        // lesson.sectionsObj = getSectionsObj(lesson.exercises, exercisesFromDb, true);
-
-        // setActiveSection(lesson.sectionsObj, sectionId);
-
-        // // remove unnecessary fields
-        // if (lesson.theory) delete lesson.theory.text;
-        // delete lesson.exercises;
-
         const data = {
             sheet,
-            // courseId,
-            // courseCode: course.code,
-
-            // chapterId: chapter.id,
-            // chapterIndex,
-
-            // lesson,
-            // lessonId,
-            // lessonIndex,
-
-            // canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
-            // pageTitle: `${lesson.name}`,
         };
+
+        const { courseId, lessonId } = sheet;
+
+        if (courseId && lessonId) {
+            const course = await courseService.getOneById(courseId);
+            if (!course) return res.status(500).send("Curs negăsit!");
+
+            const { chapter, chapterIndex, lesson, lessonIndex } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
+            if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+            data.courseId = courseId;
+            data.courseCode = course.code;
+            data.chapterId = chapter.id;
+            data.chapterIndex = chapterIndex;
+            data.lessonId = lessonId;
+            data.lessonIndex = lessonIndex;
+        }
+
+        // TODO: fix it
+        data.canCreateOrEditSheet = true;
 
         //res.send(data);
         res.render("sheet/sheet", data);
@@ -103,6 +95,7 @@ exports.getAll = async (req, res) => {
 };
 
 exports.createGet = async (req, res) => {
+    const { courseId, lessonId } = req.params;
     const { cart } = req.query;
 
     const cartItems = cart ? JSON.parse(cart) : [];
@@ -144,8 +137,9 @@ exports.createGet = async (req, res) => {
         }
 
         const data = {
+            courseId,
+            lessonId,
             exercises,
-            // courseId,
             // courseCode: course.code,
             // chapterId,
             // chapterIndex,
@@ -161,7 +155,7 @@ exports.createGet = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
-    const { name, description, exerciseIdsInput } = req.body;
+    const { courseId, lessonId, name, description, exerciseIdsInput } = req.body;
     let exerciseIds = [];
 
     // let lesson;
@@ -180,6 +174,11 @@ exports.createPost = async (req, res) => {
             exerciseIds,
         };
 
+        if (courseId && lessonId) {
+            sheet.courseId = courseId;
+            sheet.lessonId = lessonId;
+        }
+
         // sheet.theory = {
         //     text: theory.trim(),
         // };
@@ -191,8 +190,23 @@ exports.createPost = async (req, res) => {
         // arrayHelper.moveOrInsertAtIndex(chapterRef.lessons, lesson, "id", position);
 
         const result = await sheetService.insertOne(sheet);
+        const sheetId = result.insertedId.toString();
 
-        res.redirect(`/fise/${result.insertedId}`);
+        // Attach the sheet to the lesson (if the lesson exists)
+        if (courseId && lessonId) {
+            const course = await courseService.getOneById(courseId);
+            if (!course) return res.status(500).send("Curs negăsit!");
+
+            const { lesson } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
+            if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+            lesson.sheetIds = lesson.sheetIds || [];
+            lesson.sheetIds.push(sheetId);
+
+            courseService.updateOne(course);
+        }
+
+        res.redirect(`/fise/${sheetId}`);
     } catch (err) {
         return res.status(500).json(err.message);
     }
@@ -235,6 +249,26 @@ exports.updateGet = async (req, res) => {
         const data = {
             sheet,
         };
+
+        const { courseId, lessonId } = sheet;
+
+        if (courseId && lessonId) {
+            const course = await courseService.getOneById(courseId);
+            if (!course) return res.status(500).send("Curs negăsit!");
+
+            const { chapter, chapterIndex, lesson, lessonIndex } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
+            if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+            data.courseId = courseId;
+            data.courseCode = course.code;
+            data.chapterId = chapter.id;
+            data.chapterIndex = chapterIndex;
+            data.lessonId = lessonId;
+            data.lessonIndex = lessonIndex;
+        }
+
+        // TODO: fix it
+        data.canCreateOrEditSheet = true;
 
         //res.send(data);
         res.render("sheet/sheet-update", data);
@@ -297,11 +331,71 @@ exports.deleteOneById = async (req, res) => {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
 
-    // const sheet = await courseService.getOneById(courseId);
-    // if (course.chapters && course.chapters.length > 0) {
-    //     return res.status(403).send("Șterge întâi capitolele!");
-    // }
+    // Delete from lesson (if exists)
+    const sheet = await sheetService.getOneById(sheetId);
+    if (!sheet) return res.status(500).send("Fișă negăsită!");
 
+    const { courseId, lessonId } = sheet;
+
+    if (courseId && lessonId) {
+        const course = await courseService.getOneById(courseId);
+        if (!course) return res.status(500).send("Curs negăsit!");
+
+        const { lesson } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+        if (lesson.sheetIds) lesson.sheetIds = lesson.sheetIds.filter((x) => x !== sheetId);
+
+        courseService.updateOne(course);
+    }
+
+    // Delete from sheets
     sheetService.deleteOneById(sheetId);
-    res.redirect(`/fise`);
+
+    if (courseId && lessonId) res.redirect(`/cursuri/${courseId}/lectii/${lessonId}`);
+    else res.redirect(`/fise`);
+};
+
+exports.jsonGetOneById = async (req, res) => {
+    const { sheetId } = req.params;
+    try {
+        // validate parameters
+        const sheet = await sheetService.getOneById(sheetId);
+        if (!sheet) return res.status(500).send("Fișă negăsită!");
+
+        const prettyJson = prettyJsonHelper.getPrettyJson(sheet);
+
+        const data = {
+            sheetId,
+            prettyJson,
+        };
+
+        const { courseId, lessonId } = sheet;
+
+        if (courseId && lessonId) {
+            const course = await courseService.getOneById(courseId);
+            if (!course) return res.status(500).send("Curs negăsit!");
+
+            const { chapter, chapterIndex, lesson, lessonIndex } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
+            if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+            // lesson.sheetIds = lesson.sheets || [];
+            // lesson.sheetIds.push(sheetId);
+
+            data.courseId = courseId;
+            data.courseCode = course.code;
+            data.chapterId = chapter.id;
+            data.chapterIndex = chapterIndex;
+            data.lessonId = lessonId;
+            data.lessonIndex = lessonIndex;
+        }
+
+        // TODO: fix it
+        data.canCreateOrEditSheet = true;
+
+        //res.send(data);
+        res.render("sheet/sheet-json", data);
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
 };

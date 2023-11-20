@@ -4,6 +4,8 @@ const autz = require("../services/autz.service");
 const arrayHelper = require("../helpers/array.helper");
 const markdownService = require("../services/markdown.service");
 const exerciseHelper = require("../helpers/exercise.helper");
+const lessonHelper = require("../helpers/lesson.helper");
+const sheetService = require("../services/sheet.service");
 
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
@@ -18,7 +20,7 @@ exports.getOneById = async (req, res) => {
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, chapterIndex, lesson, lessonIndex } = getLessonAndParentsFromCourse(course, lessonId);
+        const { chapter, chapterIndex, lesson, lessonIndex } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
         if (!lesson) return res.status(500).send("Lecție negăsită!");
 
         if (lesson.theory) {
@@ -34,6 +36,8 @@ exports.getOneById = async (req, res) => {
         // remove unnecessary fields
         if (lesson.theory) delete lesson.theory.text;
         delete lesson.exercises;
+
+        lesson.sheets = lesson.sheetIds ? await sheetService.getAllByIds(lesson.sheetIds) : [];
 
         const data = {
             courseId,
@@ -66,7 +70,7 @@ exports.jsonGetOneById = async (req, res) => {
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, chapterIndex, lesson, lessonIndex } = getLessonAndParentsFromCourse(course, lessonId);
+        const { chapter, chapterIndex, lesson, lessonIndex } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
         if (!lesson) return res.status(500).send("Lecție negăsită!");
 
         // keep only the current chapter and current lesson
@@ -200,7 +204,7 @@ exports.editGet = async (req, res) => {
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, chapterIndex, lesson, lessonIndex } = getLessonAndParentsFromCourse(course, lessonId);
+        const { chapter, chapterIndex, lesson, lessonIndex } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
         if (!lesson) return res.status(500).send("Lecție negăsită!");
 
         if (lesson.theory) {
@@ -252,7 +256,7 @@ exports.editPost = async (req, res) => {
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, lesson } = getLessonAndParentsFromCourse(course, lessonId);
+        const { chapter, lesson } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
         if (!lesson) return res.status(500).send("Lecție negăsită!");
 
         // update lesson fields
@@ -291,7 +295,7 @@ exports.deleteOneById = async (req, res) => {
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, lessonIndex } = getLessonAndParentsFromCourse(course, lessonId);
+        const { chapter, lessonIndex } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
 
         if (lessonIndex > -1) {
             //const lesson = lessons[lessonIndex];
@@ -399,37 +403,4 @@ const setActiveSection = (sectionsObj, activeSectionId) => {
             section.isActive = true;
         }
     });
-};
-
-const getLessonAndParentsFromCourse = (course, lessonId) => {
-    let chapter;
-    let chapterIndex = -1;
-    let lesson;
-    let lessonIndex = -1;
-
-    const chapters = course.chapters || [];
-    for (let i = 0; i < chapters.length; i++) {
-        const lessons = chapters[i].lessons || [];
-
-        for (let j = 0; j < lessons.length; j++) {
-            if (lessons[j].id == lessonId) {
-                lesson = lessons[j];
-                lessonIndex = j;
-                break;
-            }
-        }
-
-        if (lesson) {
-            chapter = chapters[i];
-            chapterIndex = i;
-            break;
-        }
-    }
-
-    return {
-        chapter,
-        chapterIndex,
-        lesson,
-        lessonIndex,
-    };
 };

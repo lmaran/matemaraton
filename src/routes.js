@@ -71,6 +71,7 @@ router.get("/fise/:sheetId", sheetController.getOneById);
 router.get("/fise/:sheetId/modifica", sheetController.updateGet);
 router.post("/fise/:sheetId/modifica", sheetController.updatePost);
 router.post("/fise/:sheetId/sterge", isAuthenticated, sheetController.deleteOneById);
+router.get("/fise/:sheetId/json", sheetController.jsonGetOneById);
 
 // courses
 router.get("/cursuri", courseController.getAll);
@@ -103,6 +104,11 @@ router.get("/cursuri/:courseId/lectii/:lessonId/json", isAuthenticated, courseLe
 router.get("/cursuri/:courseId/lectii/:lessonId/modifica", isAuthenticated, courseLessonController.editGet);
 router.post("/cursuri/:courseId/lectii/:lessonId/modifica", isAuthenticated, courseLessonController.editPost);
 router.post("/cursuri/:courseId/lectii/:lessonId/sterge", isAuthenticated, courseLessonController.deleteOneById);
+
+// course-sheet
+router.get("/cursuri/:courseId/lectii/:lessonId/fise/adauga", isAuthenticated, sheetController.createGet);
+router.post("/cursuri/:courseId/lectii/:lessonId/fise/adauga", isAuthenticated, sheetController.createPost);
+router.get("/cursuri/:courseId/lectii/:lessonId/fise/:sheetId", isAuthenticated, sheetController.getOneById);
 
 // course-articles
 router.get("/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/articole/adauga", isAuthenticated, courseArticleController.createOrEditGet);
