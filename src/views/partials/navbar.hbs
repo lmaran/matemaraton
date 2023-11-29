@@ -58,8 +58,9 @@ if 2 similar sections are used, the last one will override the first one --}}
                     <ul id="cart-menu-ul" class="dropdown-menu">
                         {{!-- insert items here with javascript --}}
                         <li class="hide-on-empty-cart"><hr class="dropdown-divider"></li>
-                        <li class="hide-on-empty-cart"><a id="create-new-sheet" class="dropdown-item" href="#">Adaugă la o fișă nouă</a></li>
-                        <li class="hide-on-empty-cart"><span id="create-new-sheet" class="dropdown-item" type="button" onclick="alert('Mergi la fișa dorită, apoi folosește butonul <Adaugă din coș>.')">Adaugă la o fișă existentă</span></li>
+                        {{!-- <li class="hide-on-empty-cart"><a id="create-new-sheet" class="dropdown-item" href="#">Adaugă la o fișă nouă</a></li> --}}
+                        <li class="hide-on-empty-cart"><span id="create-new-sheet" class="dropdown-item" type="button" onclick="alert('Mergi la lecția dorită, apoi folosește butonul <Crează o fișă>.')">Adaugă la o fișă nouă</span></li>
+                        <li class="hide-on-empty-cart"><span class="dropdown-item" type="button" onclick="alert('Mergi la fișa dorită, apoi folosește butonul <Adaugă din coș>.')">Adaugă la o fișă existentă</span></li>
                         <li class="hide-on-empty-cart"><hr class="dropdown-divider"></li>
                         <li><span id="clear-cart" type="button" class="dropdown-item">Golește coșul</span></li> 
                     </ul>

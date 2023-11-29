@@ -6,6 +6,7 @@ const markdownService = require("../services/markdown.service");
 const exerciseHelper = require("../helpers/exercise.helper");
 const lessonHelper = require("../helpers/lesson.helper");
 const sheetService = require("../services/sheet.service");
+const dateTimeHelper = require("../helpers/date-time.helper");
 
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
@@ -38,6 +39,8 @@ exports.getOneById = async (req, res) => {
         delete lesson.exercises;
 
         lesson.sheets = lesson.sheetIds ? await sheetService.getAllByIds(lesson.sheetIds) : [];
+
+        lesson.sheets.forEach((sheet) => (sheet.createdOn = dateTimeHelper.getShortDateAndTimeDateRo(sheet.createdOn))); // ex: 22.11.2023
 
         const data = {
             courseId,

@@ -84,7 +84,7 @@ exports.createGet = async (req, res) => {
         if (!lesson) return res.status(500).send("Lecție negăsită!");
         lesson.index = chapterRef.lessons.findIndex((x) => x.id === lessonId);
 
-        exercise = { exerciseType: 1 }; // Set 'open answer' as a default exercise type
+        exercise = { exerciseType: 1 }; // Set 'open answer' as the default exercise type
 
         // sort exercises by sectionId, then by levelId
         const newExercises = (lesson.exercises || [])

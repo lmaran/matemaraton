@@ -78,10 +78,21 @@ exports.getShortDate = (date) => {
     return `${dateParts.yyyy}-${dateParts.mm}-${dateParts.dd}`;
 };
 
+exports.getShortDateRo = (date) => {
+    const dateParts = getDateParts(date);
+    return `${dateParts.dd}-${dateParts.mm}-${dateParts.yyyy}`;
+};
+
 exports.getShortDateAndTimeDate = (date) => {
     const dateParts = getDateParts(date);
     const timeParts = getTimeParts(date);
     return `${dateParts.yyyy}-${dateParts.mm}-${dateParts.dd} ${timeParts.hours}:${timeParts.minutes}`;
+};
+
+exports.getShortDateAndTimeDateRo = (date) => {
+    const dateParts = getDateParts(date);
+    const timeParts = getTimeParts(date);
+    return `${dateParts.dd}-${dateParts.mm}-${dateParts.yyyy} ${timeParts.hours}:${timeParts.minutes}`;
 };
 
 exports.getFriendlyDateOld = (date) => {

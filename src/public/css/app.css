@@ -100,6 +100,10 @@ https://github.com/twbs/bootstrap/issues/20643#issuecomment-325579156 */
     body {
         font-size: 0.8rem;
     }
+
+    .solution-div img {
+        max-height: 140px;
+    }
 }
 
 .show {
@@ -170,4 +174,16 @@ https://github.com/twbs/bootstrap/issues/20643#issuecomment-325579156 */
     padding: 0px 5px;
     font-size: 14px;
     border-radius: 3px;
+}
+
+.hints-div p {
+    margin-bottom: 0;
+}
+
+.answer-div p {
+    margin-bottom: 0;
+}
+
+.solution-div img {
+    max-height: 150px;
 }

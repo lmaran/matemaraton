@@ -20,55 +20,52 @@
 
 <form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
-    <div class="row">
-        <div class="col-md-12">
-            <label for="nameInput" class="fw-bold">Nume:</label>
-            <input type="text" name="name" class="form-control" id="nameInput" placeholder=""
-                value="{{sheet.name}}">
-            <small>
-                <p class="text-muted mb-0">Ex: Numere raționale</p>
-            </small>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12">
-            <label for="descriptionInput" class="fw-bold">Descriere:</label>
-            <textarea type="text" name="description" class="form-control" id="descriptionInput"
-                placeholder="">{{sheet.description}}</textarea>
-        </div>
-    </div>
-
-    {{!-- <div class="row">
+    {{!-- Sheet type --}}
+    <div class="row mt-3 mb-3">
         <div class="col-md-6">
-            <label for="positionSelect" class="fw-bold">Poziție:</label>
-            <select name="position" class="form-select" id="positionSelect">
-                {{#select selectedPosition}}
-                {{#each availablePositions}}
-                <option value="{{index}}">{{name}}</option>
+            <label class="fw-bold">Tipul fișei:</label>
+            <select name="sheetType" class="form-select" id="sheetTypeSelect">
+                {{#select sheet.sheetType}}
+                <option value=""></option>
+                {{#each availableSheetTypes}}
+                <option value="{{value}}">{{text}}</option>
                 {{/each}}
                 {{/select}}
             </select>
-            <small>
-                <p class="text-muted mb-0">Poziția în cadrul listei</p>
-            </small>
         </div>
-    </div> --}}
+    </div>
 
-    {{!-- <div class="form-check">
-        <input type="checkbox" class="form-check-input" id="isHiddenCheck" name="isHidden" {{#if
-            chapter.isHidden}}checked{{/if}}>
-        <label class="form-check-label" for="isHiddenCheck">Ascunde</label>
-        <small>
-            <p class="text-muted mb-0">Doar tu (proprietarul) poți vedea resursele ascunse</p>
-        </small>
-    </div> --}}
+    <div class="row mt-3 mb-3">
+        <div class="col-md-12">
+            <label for="nameInput" class="fw-bold">Numele fișei:</label>
+            <input type="text" name="name" class="form-control" id="nameInput" placeholder=""
+                value="{{sheet.name}}">
+        </div>
+    </div>
+
+    {{!-- title --}}
+    <div class="row mb-5">
+        <div class="col-md-12 title-div">
+            <label class="fw-bold"> Titlu: </label>
+
+            <textarea id="title-editor-txt" rows="4" name="title"
+                style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
+                class="form-control text-center {{#if errors.title}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{sheet.title}}}</textarea>
+            <div class="invalid-feedback">{{errors.title.msg}}</div>
+
+
+            <div id="title-preview-div" class="text-center"
+                style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px; _text-align: center;">
+                {{{sheet.titlePreview}}}
+            </div>
+        </div>
+    </div>
 
     {{#each sheet.exercises}}
     <div class="exercise-div">
         {{> exercise-statement @this}}
-        {{> exercise-menu @this sectionId = ../../id levelId = ../id allowView=false allowEdit=false allowDelete=false allowMove=false allowUpdateCart=false}}
-        {{> exercise-panels @this }}
+        {{!-- {{> exercise-menu @this sectionId = ../../id levelId = ../id allowView=false allowEdit=false allowDelete=false allowMove=false allowUpdateCart=false}}
+        {{> exercise-panels @this }} --}}
         <input type="hidden" name="exerciseIdsInput" value="{{_id}}"/>
     </div>
     {{/each}}
@@ -83,8 +80,7 @@
             <button type="submit" formaction="/fise/{{sheet._id}}/sterge"
                 name="deleteBtn" class="btn btn-link"
                 onclick="return confirm('Ești sigur că vrei să ștergi această fișă?');"><i
-                    class="bi bi-trash-fill"></i>
-                Șterge</button>
+                    class="bi bi-trash-fill"></i>Șterge</button>
         </div>
     </div>
 
