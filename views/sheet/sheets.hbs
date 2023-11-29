@@ -18,9 +18,8 @@
     <thead>
         <tr>
             <th>Nume</th>
-            <th>Descriere</th>
+            <th>CreatLa (UTC)</th>
             <th>Lecția</th>
-            <th>CreatLa</th>
         </tr>
     </thead>
     <tbody>
@@ -29,13 +28,12 @@
             <td>
                 <a href="/fise/{{_id}}">{{name}}{{#unless name}}Fără nume{{/unless}}
             </td>
-            <td>{{description}}</td>
+            <td>{{createdOn}}</td>
             <td>
                 {{#if lessonId}}
                 <a href="/cursuri/{{courseId}}/lectii/{{lessonId}}">Lecție</a>
                 {{/if}}
             </td>
-            <td>{{createdOn}}</td>
         </tr>
         {{/each}}
     </tbody>

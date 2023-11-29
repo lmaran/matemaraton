@@ -3,17 +3,22 @@ const sheetService = require("../services/sheet.service");
 const autz = require("../services/autz.service");
 const exerciseService = require("../services/exercise.service");
 //const arrayHelper = require("../helpers/array.helper");
-//const markdownService = require("../services/markdown.service");
+const markdownService = require("../services/markdown.service");
 const exerciseHelper = require("../helpers/exercise.helper");
 const lessonHelper = require("../helpers/lesson.helper");
+const dateTimeHelper = require("../helpers/date-time.helper");
 
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
-//const { availableSections, availableLevels } = require("../constants/constants");
+const { availableSheetTypes } = require("../constants/constants");
 
 exports.getOneById = async (req, res) => {
     const { sheetId } = req.params;
-    //const { sectionId } = req.query;
+    let { type } = req.query;
+
+    const availableTypes = ["statements", "hints", "answers", "solutions"];
+    if (!availableTypes.includes(type)) type = "statements"; // default value
+
     try {
         // validate parameters
         const sheet = await sheetService.getOneById(sheetId);
@@ -25,18 +30,29 @@ exports.getOneById = async (req, res) => {
             exercises = await exerciseService.getAllByIds(sheet.exerciseIds);
         }
 
-        // add preview
-        exercises.forEach((exercise) => {
-            const statementNumber = `**E.${exercise.code}.**`;
+        sheet.sheetType = sheet.sheetType || 1;
+        let pageTitle = availableSheetTypes[sheet.sheetType - 1].text;
+        if (sheet.sheetType == 3 && type == "solutions") {
+            pageTitle = "Soluții temă individuală";
+        }
 
-            // if (!exercise) {
-            //     exercise = { _id: x.id, statement: "Exercitiul a fost șters din DB!" };
-            // }
+        if (sheet.title) {
+            if (sheet.sheetType == 3 && type == "solutions") {
+                sheet.title = sheet.title.replace("Temă individuală", "Soluții temă individuală");
+            }
+            sheet.titlePreview = markdownService.render(sheet.title);
+        }
+
+        // add preview
+        exercises.forEach((exercise, idx) => {
+            const statementNumber = `**Problema ${++idx}.**`;
 
             exerciseHelper.addPreview(exercise, statementNumber, true);
 
             const { authorAndSource1, source2 } = exerciseHelper.getAuthorAndSource(exercise);
-            exercise.authorAndSource1 = authorAndSource1;
+
+            const comma = authorAndSource1 != "" ? ", " : "";
+            exercise.authorAndSource1 = `${authorAndSource1}${comma}E.${exercise.code}`;
             exercise.source2 = source2;
         });
 
@@ -44,6 +60,8 @@ exports.getOneById = async (req, res) => {
 
         const data = {
             sheet,
+            type,
+            pageTitle,
         };
 
         const { courseId, lessonId } = sheet;
@@ -76,6 +94,8 @@ exports.getOneById = async (req, res) => {
 exports.getAll = async (req, res) => {
     try {
         const sheets = await sheetService.getAll();
+
+        sheets.forEach((sheet) => (sheet.createdOn = dateTimeHelper.getShortDateAndTimeDateRo(sheet.createdOn))); // ex: 22.11.2023
 
         const data = {
             sheets,
@@ -121,31 +141,56 @@ exports.createGet = async (req, res) => {
             }
 
             // add preview
-            exercises.forEach((exercise) => {
-                const statementNumber = `**E.${exercise.code}.**`;
-
-                // if (!exercise) {
-                //     exercise = { _id: x.id, statement: "Exercitiul a fost șters din DB!" };
-                // }
+            exercises.forEach((exercise, idx) => {
+                const statementNumber = `**Problema ${++idx}.**`;
 
                 exerciseHelper.addPreview(exercise, statementNumber, true);
 
                 const { authorAndSource1, source2 } = exerciseHelper.getAuthorAndSource(exercise);
-                exercise.authorAndSource1 = authorAndSource1;
+
+                const comma = authorAndSource1 != "" ? ", " : "";
+                exercise.authorAndSource1 = `${authorAndSource1}${comma}E.${exercise.code}`;
                 exercise.source2 = source2;
             });
         }
 
-        const data = {
-            courseId,
-            lessonId,
-            exercises,
-            // courseCode: course.code,
-            // chapterId,
-            // chapterIndex,
-            // availablePositions,
-            // selectedPosition,
+        const fullUserName = `${req.user.firstName} ${req.user.lastName}`.trim();
+        const fullUserNameText = fullUserName ? `${fullUserName}, ` : "";
+        const currentDateStr = dateTimeHelper.getShortDateRo(new Date()); // ex: 22.11.2023
+
+        // Default options
+        const sheet = {
+            sheetType: 3,
+            name: availableSheetTypes[2].text,
+            title: `#### Titlu\r\n##### Subtitlu\r\n ${fullUserNameText}[matemaraton.ro](https://matemaraton.ro), ${currentDateStr}`,
         };
+
+        const data = {
+            exercises,
+            sheet,
+            availableSheetTypes,
+        };
+
+        if (courseId && lessonId) {
+            const course = await courseService.getOneById(courseId);
+            if (!course) return res.status(500).send("Curs negăsit!");
+
+            const { chapter, chapterIndex, lesson, lessonIndex } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
+            if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+            data.courseId = courseId;
+            data.courseCode = course.code;
+            data.chapterId = chapter.id;
+            data.chapterIndex = chapterIndex;
+            data.lessonId = lessonId;
+            data.lessonIndex = lessonIndex;
+
+            data.sheet.title = `#### ${lesson.name}\r\n##### ${availableSheetTypes[2].text}\r\n ${fullUserNameText}[matemaraton.ro](https://matemaraton.ro), ${currentDateStr}`;
+        }
+
+        (data.sheet.titlePreview = markdownService.render(data.sheet.title)),
+            // TODO: fix it
+            (data.canCreateOrEditSheet = true);
 
         //res.send(data);
         res.render("sheet/sheet-create", data);
@@ -155,7 +200,7 @@ exports.createGet = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
-    const { courseId, lessonId, name, description, exerciseIdsInput } = req.body;
+    const { courseId, lessonId, sheetType, name, title, exerciseIdsInput } = req.body;
     let exerciseIds = [];
 
     // let lesson;
@@ -169,8 +214,9 @@ exports.createPost = async (req, res) => {
         if (exerciseIdsInput) exerciseIds = Array.isArray(exerciseIdsInput) ? exerciseIdsInput : [exerciseIdsInput];
 
         const sheet = {
+            sheetType,
             name,
-            description,
+            title,
             exerciseIds,
         };
 
@@ -230,24 +276,25 @@ exports.updateGet = async (req, res) => {
         }
 
         // add preview
-        exercises.forEach((exercise) => {
-            const statementNumber = `**E.${exercise.code}.**`;
-
-            // if (!exercise) {
-            //     exercise = { _id: x.id, statement: "Exercitiul a fost șters din DB!" };
-            // }
+        exercises.forEach((exercise, idx) => {
+            const statementNumber = `**Problema ${++idx}.**`;
 
             exerciseHelper.addPreview(exercise, statementNumber, true);
 
             const { authorAndSource1, source2 } = exerciseHelper.getAuthorAndSource(exercise);
-            exercise.authorAndSource1 = authorAndSource1;
+
+            const comma = authorAndSource1 != "" ? ", " : "";
+            exercise.authorAndSource1 = `${authorAndSource1}${comma}E.${exercise.code}`;
             exercise.source2 = source2;
         });
+
+        if (sheet.title) sheet.titlePreview = markdownService.render(sheet.title);
 
         sheet.exercises = exercises;
 
         const data = {
             sheet,
+            availableSheetTypes,
         };
 
         const { courseId, lessonId } = sheet;
@@ -286,12 +333,12 @@ exports.updatePost = async (req, res) => {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
 
-        const { name, description, grade, category, isHidden, isActive } = req.body;
+        const { name, title, grade, category, isHidden, isActive } = req.body;
 
         const sheet = {
             _id: sheetId,
             name,
-            description,
+            title,
             grade,
             category,
             isHidden,

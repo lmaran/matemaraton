@@ -37,21 +37,56 @@
         </li>
 
         {{!-- {{#if canCreateOrEditCourse}} --}}
-        <li title="Editează" class2="ms-auto"><a href="/fise/{{sheet._id}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
+        <li title="Editează" class2="ms-auto"><a href="/fise/{{sheet._id}}/modifica?type={{type}}"><i class="bi bi-pencil me-1"></i></a></li>
         {{!-- {{/if}} --}}
     </ol>
 </nav>
 
-<h1>{{sheet.name}}</h1>
+<ul class="nav nav-underline hide-on-print">
+    <li class="nav-item">
+        <a class="nav-link {{#if (eq type "statements")}}active{{/if}}" aria-current="page" href="/fise/{{sheet._id}}">Enunțuri</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{#if (eq type "answers")}}active{{/if}}" href="/fise/{{sheet._id}}?type=answers">Răspunsuri</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{#if (eq type "hints")}}active{{/if}}" href="/fise/{{sheet._id}}?type=hints">Indicații</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{#if (eq type "solutions")}}active{{/if}}" href="/fise/{{sheet._id}}?type=solutions">Soluții</a>
+    </li>
+</ul>
 
-<h3 class=" font-weight-light">{{sheet.description}}</h3>
+<div id="title-preview-div" class="text-center mt-4 mb-5">
+    {{{sheet.titlePreview}}}
+</div>
 
 {{#each sheet.exercises}}
-<div class="exercise-div">
+<div class="exercise-div _mb-5">
     {{> exercise-statement @this}}
-    {{> exercise-menu @this sectionId = ../../id levelId = ../id allowView=false allowEdit=false allowDelete=false allowMove=false allowUpdateCart=false}}
-    {{> exercise-panels @this }}
-    <input type="hidden" name="exerciseIdsInput" value="{{_id}}"/>
+
+    {{#if (eq @root.type "hints")}}
+    <div class="hints-div mt-2">
+        {{#each hints}}
+            <div>{{{textPreview}}}</div>
+        {{/each}}
+        {{{answerPreview}}}
+    </div>
+    {{/if}}
+
+    {{#if (eq @root.type "answers")}}
+    <div class="answer-div mt-2">
+        {{{answerPreview}}}
+    </div>
+    {{/if}}
+
+    {{#if (eq @root.type "solutions")}}
+    <div class="fw-bold mt-2">Soluție:</div>
+    <div class="solution-div _mt-2">
+        {{{solutionPreview}}}
+    </div>
+    {{/if}}
+
 </div>
 {{/each}}
 

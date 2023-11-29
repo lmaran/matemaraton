@@ -92,10 +92,7 @@
             <thead>
                 <tr>
                     <th>Nume</th>
-                    <th>Descriere</th>
-                    {{!-- <th>Clasa</th>
-                    <th>Ascuns</th>
-                    <th>Activ</th> --}}
+                    <th>CreatLa (UTC)</th>
                 </tr>
             </thead>
             <tbody>
@@ -104,20 +101,9 @@
                     <td>
                         <a href="cursuri/{{@root.courseId}}/lectii/{{@root.lessonId}}/fise/{{_id}}">{{name}}{{#unless name}}Fără nume{{/unless}}
                     </td>
-                    <td>{{description}}</td>
-                    {{!-- <td>
-                        {{grade}}
-                    </td>
                     <td>
-                        {{#if isHidden}}
-                        <i class="bi bi-check-lg" style="font-size2: 24px;color: green;"></i>
-                        {{/if}}
+                        {{createdOn}}
                     </td>
-                    <td class="text-center">
-                        {{#if isActive}}
-                        <i class="bi bi-check-lg" style="font-size2: 24px;color: green;"></i>
-                        {{/if}}
-                    </td> --}}
                 </tr>
                 {{/each}}
             </tbody>

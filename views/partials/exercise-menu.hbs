@@ -1,16 +1,16 @@
 {{!-- Exercise menu --}}
 <div class="exercise-menu-div hide-on-print clearfix">
     <div class="float-start">
-        {{#if answerPreview}}
-            <a class="toggle-answer-btn" href="">Răspuns</a>
-        {{/if}}
-
         {{#if hints}}
-            {{#if answerPreview}}
-                <span class="text-muted ms-2 me-2">|</span>
-            {{/if}}
             <a class="toggle-hints-btn" href="">Indicații</a>
             <span class="text-muted">({{hints.length}})</span>
+        {{/if}}
+
+        {{#if answerPreview}}
+            {{#if hints}}
+                <span class="text-muted ms-2 me-2">|</span>
+            {{/if}}
+            <a class="toggle-answer-btn" href="">Răspuns</a>
         {{/if}}
 
         {{#if solutionPreview}}

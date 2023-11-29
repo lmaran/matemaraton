@@ -30,4 +30,10 @@ module.exports = {
             name: "Nivel avansat",
         },
     ],
+
+    availableSheetTypes: [
+        { text: "Material teoretic", value: "1" },
+        { text: "Exerciții rezolvate", value: "2" },
+        { text: "Temă individuală", value: "3" },
+    ],
 };
