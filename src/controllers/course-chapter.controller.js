@@ -95,7 +95,8 @@ exports.createOrEditPost = async (req, res) => {
         courseService.updateOne(course);
 
         //res.send(course);
-        res.redirect(`/cursuri/${courseId}/capitole/${chapterId}/modifica`);
+        if (isEditMode) res.redirect(`/cursuri/${courseId}/capitole/${chapterId}/modifica`);
+        else res.redirect(`/cursuri/${courseId}/modifica`);
     } catch (err) {
         return res.status(500).json(err.message);
     }
