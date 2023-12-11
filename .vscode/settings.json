@@ -4,7 +4,7 @@
     "workbench.tree.indent": 15,
     "editor.minimap.enabled": false,
     "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": true
+        "source.fixAll.eslint": "explicit"
     },
     "cSpell.words": ["autz", "grecaptcha", "katex", "matemaraton", "recaptcha", "signup"],
     "cSpell.diagnosticLevel": "Hint",
