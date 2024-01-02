@@ -1,4 +1,6 @@
 import { markdownService } from "../services/markdown.service.js";
+import { urlHelper } from "../helpers/url.helper.js";
+import { fetchHelpers } from "../helpers/fetch.helper.js";
 
 const statementPreviewDiv = document.getElementById("statement-preview-div");
 const answerPreviewDiv = document.getElementById("answer-preview-div");
@@ -177,6 +179,54 @@ export const eventHandlers = {
         mainDiv.insertAdjacentHTML("beforeend", markup); // much faster that innerHTML
     },
 
+    handleClickInGallery: async (event) => {
+        // handle 'delete' events
+        const target = event.target; // shortcut
+        if (target) {
+            // if (target.tagName != "INPUT") event.preventDefault();
+
+            if (target.classList.contains("delete-file-btn")) {
+                const answer = confirm("Ești sigur că vrei să ștergi acest fișier?");
+                if (!answer) return;
+                // const parentDiv = target.closest(".answer-option-parent-div"); // find the closest ancestor which matches the selectors
+                // const editorTxt = parentDiv.querySelector(".answer-option-editor-txt");
+                // editorTxt.classList.toggle("d-none");
+                // const editorIsHide = editorTxt.classList.contains("d-none");
+                // target.textContent = editorIsHide ? "Editează" : "Ascunde";
+
+                const fileUrl = target.dataset.url;
+                const extension = target.dataset.extension;
+                const fileId = urlHelper.getFilenameWithoutExtensionFromUrl(fileUrl);
+                //alert(fileId);
+
+                // const { isSuccess } = await deleteRequest(`/fisiere/${fileId}`);
+                // if (isSuccess) {
+                //     alert("ok");
+                // } else {
+                //     alert("err");
+                // }
+
+                const exerciseId = document.getElementsByName("exerciseId")[0].value;
+
+                const [error, response] = await fetchHelpers.delete(`/fisiere/${fileId}?exerciseId=${exerciseId}&extension=${extension}`);
+                if (error) {
+                    console.log(response);
+                    alert(response.message);
+                    return;
+                }
+
+                const parentDiv = target.closest("tr"); // find the closest ancestor which matches the selectors
+                parentDiv.remove(); // remove element from DOM (ES6 way)
+            }
+            // else if (target.classList.contains("delete-answer-option-btn")) {
+            //     const parentDiv = target.closest(".answer-option-parent-div"); // find the closest ancestor which matches the selectors
+            //     parentDiv.remove(); // remove element from DOM (ES6 way)
+
+            //     updateAnswerOptionLabels(); // update label for remaining elements
+            // }
+        }
+    },
+
     addAnswerOptionHtmlNode: async (event) => {
         event.preventDefault();
         const mainDiv = document.getElementById("answer-option-main-div");
@@ -215,6 +265,58 @@ export const eventHandlers = {
         `;
 
         mainDiv.insertAdjacentHTML("beforeend", markup); // much faster that innerHTML
+    },
+
+    submitMySolution: async (data) => {
+        return fetchHelpers.post(`/exercitii/${data.exerciseId}/rezolvari`, data);
+    },
+
+    deleteFile_old: async (event) => {
+        // event.preventDefault();
+        // if (target.tagName != "INPUT") event.preventDefault();
+
+        // handle 'toggle edit' and 'delete' events
+        const target = event.target; // shortcut
+        if (target) {
+            const fileUrl = target.dataset.url;
+            const fileId = urlHelper.getFilenameWithoutExtensionFromUrl(fileUrl);
+            //alert(fileId);
+
+            // const { isSuccess } = await deleteRequest(`/fisiere/${fileId}`);
+            // if (isSuccess) {
+            //     alert("ok");
+            // } else {
+            //     alert("err");
+            // }
+
+            const exerciseId = document.getElementsByName("exerciseId")[0].value;
+
+            const [error, response] = await fetchHelpers.delete(`/fisiere/${fileId}?exerciseId=${exerciseId}`);
+            if (error) {
+                console.log(response);
+                alert(error);
+                return;
+            }
+
+            //alert("ok");
+            const parentDiv = target.closest("tr"); // find the closest ancestor which matches the selectors
+            parentDiv.remove(); // remove element from DOM (ES6 way)
+
+            // if (target.classList.contains("toggle-hint-editor-btn")) {
+            //     const parentDiv = target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
+            //     const editorTxt = parentDiv.querySelector(".hint-editor-txt");
+
+            //     editorTxt.classList.toggle("d-none");
+
+            //     const editorIsHide = editorTxt.classList.contains("d-none");
+            //     target.textContent = editorIsHide ? "Editează" : "Ascunde";
+            // } else if (target.classList.contains("delete-hint-btn")) {
+            //     const parentDiv = target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
+            //     parentDiv.remove(); // remove element from DOM (ES6 way)
+
+            //     updateHintLabels(); // update label for remaining elements
+            // }
+        }
     },
 };
 

@@ -25,9 +25,9 @@ const uploadFileSelectInput = document.getElementById("upload-file-select-input"
 
 const options = {
     uploadFileSelectInput,
-    url: "/uploadfile",
+    url: "/fisiere/upload-many",
     maxFiles: 3,
-    maxFileSizeInMB: 5,
+    maxFileSizeInMB: 1,
 };
 
 uploadFilesHelper.uploadFiles(options);

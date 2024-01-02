@@ -21,7 +21,7 @@ exports.getOneById = async (req, res) => {
         exercise = await exerciseService.getOneById(exerciseId);
         if (!exercise) return res.status(500).send("Exercițiu negăsit!");
 
-        const { chapter, chapterIndex, lesson, lessonIndex, exerciseMeta } = getExerciseAndParentsFromCourse(course, exerciseId);
+        const { chapter, chapterIndex, lesson, lessonIndex, exerciseMeta } = exerciseHelper.getExerciseAndParentsFromCourse(course, exerciseId);
 
         const statementNumber = `**E.${exercise.code}.**`;
         exerciseHelper.addPreview(exercise, statementNumber, true);
@@ -148,6 +148,7 @@ exports.createPost = async (req, res) => {
         isCorrectAnswerChecks,
         solution,
         hints,
+        files,
         position,
     } = req.body;
 
@@ -179,6 +180,7 @@ exports.createPost = async (req, res) => {
         exercise.author = author;
 
         if (hints) exercise.hints = getHintsAsArray(hints);
+        if (files) exercise.files = getFilesAsArray(files);
         if (answerOptions) exercise.answerOptions = getAnswerOptionsAsArray(answerOptions, isCorrectAnswerChecks);
 
         await exerciseService.insertOne(exercise);
@@ -238,7 +240,7 @@ exports.editGet = async (req, res) => {
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, chapterIndex, lesson, lessonIndex, exerciseMeta } = getExerciseAndParentsFromCourse(course, exerciseId);
+        const { chapter, chapterIndex, lesson, lessonIndex, exerciseMeta } = exerciseHelper.getExerciseAndParentsFromCourse(course, exerciseId);
 
         exercise = await exerciseService.getOneById(exerciseId);
 
@@ -328,6 +330,7 @@ exports.editPost = async (req, res) => {
         isCorrectAnswerChecks,
         solution,
         hints,
+        files,
         position,
     } = req.body;
 
@@ -347,7 +350,7 @@ exports.editPost = async (req, res) => {
         // const course = await courseService.getOneById(courseId);
         // if (!course) return res.status(500).send("Curs negăsit!");
 
-        //const { chapter, chapterIndex, lesson, lessonIndex, exerciseMeta } = getExerciseAndParentsFromCourse(course, exerciseId);
+        //const { chapter, chapterIndex, lesson, lessonIndex, exerciseMeta } = exerciseHelper.getExerciseAndParentsFromCourse(course, exerciseId);
 
         exercise = await exerciseService.getOneById(exerciseId);
         if (!exercise) return res.status(500).send("Exercițiu negăsit!");
@@ -362,6 +365,7 @@ exports.editPost = async (req, res) => {
         exercise.author = author;
 
         if (hints) exercise.hints = getHintsAsArray(hints);
+        if (files) exercise.files = getFilesAsArray(files);
         if (answerOptions) exercise.answerOptions = getAnswerOptionsAsArray(answerOptions, isCorrectAnswerChecks);
 
         await exerciseService.updateOne(exercise);
@@ -422,7 +426,7 @@ exports.moveGet = async (req, res) => {
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, chapterIndex, lesson, lessonIndex, exerciseMeta } = getExerciseAndParentsFromCourse(course, exerciseId);
+        const { chapter, chapterIndex, lesson, lessonIndex, exerciseMeta } = exerciseHelper.getExerciseAndParentsFromCourse(course, exerciseId);
         const { sectionId, levelId } = exerciseMeta;
 
         const exercise = await exerciseService.getOneById(exerciseId);
@@ -629,7 +633,7 @@ exports.jsonGet = async (req, res) => {
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, chapterIndex, lesson, lessonIndex, exerciseMeta } = getExerciseAndParentsFromCourse(course, exerciseId);
+        const { chapter, chapterIndex, lesson, lessonIndex, exerciseMeta } = exerciseHelper.getExerciseAndParentsFromCourse(course, exerciseId);
 
         const exercise = await exerciseService.getOneById(exerciseId);
 
@@ -675,7 +679,7 @@ exports.deleteOneById = async (req, res) => {
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { lesson, exerciseMeta, exerciseIndex } = getExerciseAndParentsFromCourse(course, exerciseId);
+        const { lesson, exerciseMeta, exerciseIndex } = exerciseHelper.getExerciseAndParentsFromCourse(course, exerciseId);
 
         if (exerciseIndex > -1) {
             lesson.exercises.splice(exerciseIndex, 1); // remove from array
@@ -694,18 +698,33 @@ exports.deleteOneById = async (req, res) => {
 };
 
 const getHintsAsArray = (hints) => {
-    const hintsAsArray = [];
+    const array = [];
     if (Array.isArray(hints)) {
         hints.forEach((hint) => {
             hint = hint.trim();
-            if (hint) hintsAsArray.push({ text: hint });
+            if (hint) array.push({ text: hint });
         });
     } else {
         // an object with a single option
         const hint = hints.trim();
-        if (hint) hintsAsArray.push({ text: hint });
+        if (hint) array.push({ text: hint });
     }
-    return hintsAsArray;
+    return array;
+};
+
+const getFilesAsArray = (files) => {
+    const array = [];
+    if (Array.isArray(files)) {
+        files.forEach((file) => {
+            file = file.trim();
+            if (file) array.push({ url: file });
+        });
+    } else {
+        // an object with a single option
+        const file = files.trim();
+        if (file) array.push({ url: file });
+    }
+    return array;
 };
 
 const getAnswerOptionsAsArray = (answerOptions, isCorrectAnswerChecks) => {
@@ -820,49 +839,4 @@ const addExerciseToLocation = async (courseId, lessonId, sectionId, levelId, pos
     if (updateResult.modifiedCount != 1) return { isValid: false, message: "Eroare la salvarea în DB!" };
 
     return { isValid: true };
-};
-
-const getExerciseAndParentsFromCourse = (course, exerciseId) => {
-    let chapter;
-    let chapterIndex = -1;
-    let lesson;
-    let lessonIndex = -1;
-    let exercise;
-    let exerciseIndex = -1;
-
-    const chapters = course.chapters || [];
-    for (let i = 0; i < chapters.length; i++) {
-        const lessons = chapters[i].lessons || [];
-        for (let j = 0; j < lessons.length; j++) {
-            const exercises = lessons[j].exercises || [];
-            for (let k = 0; k < exercises.length; k++) {
-                if (exercises[k].id == exerciseId) {
-                    exercise = exercises[k];
-                    exerciseIndex = k;
-                    break;
-                }
-            }
-
-            if (exercise) {
-                lesson = lessons[j];
-                lessonIndex = j;
-                break;
-            }
-        }
-
-        if (lesson) {
-            chapter = chapters[i];
-            chapterIndex = i;
-            break;
-        }
-    }
-
-    return {
-        chapter,
-        chapterIndex,
-        lesson,
-        lessonIndex,
-        exerciseMeta: exercise,
-        exerciseIndex,
-    };
 };

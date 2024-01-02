@@ -54,14 +54,15 @@ https://github.com/twbs/bootstrap/issues/20643#issuecomment-325579156 */
 
 /* upload files - start*/
 .drop-area {
-    border: 2px dashed #ccc;
+    /* border: 2px dashed #ccc;
     background: #f8f8f8;
     width: 100%;
-    padding: 15px;
+    padding: 15px; */
 }
 
 .drop-area.highlight {
-    border-color: #007bff;
+    /* border-color: #007bff; */
+    background: #f8f8f8;
 }
 
 .gallery img {
@@ -186,4 +187,10 @@ https://github.com/twbs/bootstrap/issues/20643#issuecomment-325579156 */
 
 .solution-div img {
     max-height: 150px;
+}
+
+.statement-input {
+    border-radius:0; 
+    border-bottom-width:0; 
+    border-color:#bb815d;
 }

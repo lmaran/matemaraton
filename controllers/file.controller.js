@@ -1,297 +1,332 @@
-//const datasourceService = require("../services/datasource.service");
 const busboy = require("busboy");
-// const path = require("path");
-// const fs = require("fs");
-const fileSizeLimit = 100 * 1024 * 1024; // 100 MB
-
-const config = require("../config");
-//const streamHelper = require("../helpers/stream.helper");
 const stringHelper = require("../helpers/string.helper");
-const { BlobServiceClient } = require("@azure/storage-blob");
-const ONE_MEGABYTE = 1024 * 1024;
-const uploadOptions = { bufferSize: 4 * ONE_MEGABYTE, maxBuffers: 20 };
+const autz = require("../services/autz.service");
+const exerciseService = require("../services/exercise.service");
+const fileService = require("../services/file.service");
+const blobService = require("../services/blob.service");
 
-// // run only one time
-// const blobServiceClient = BlobServiceClient.fromConnectionString(config.azureBlobStorageConnectionString);
-// const containerClient = blobServiceClient.getContainerClient("counters");
+const containerName = "exercises";
 
-exports.upload_Old = async (req, res) => {
-    // https://stackoverflow.com/a/59295385
+// Output
+// HTTP/1.1  200
+// Content-Type: application/json
+// {
+//     "statusCode":"too-many-files", // fișierele care depășesc limita nu apar în listă
+//     "statusMessage": "Sunt permise maxim 3 fișiere",
+//     "files": [{
+//          "name": "matemaraton-logo-square.png",
+//          "mimeType": "image/png",
+//          "isSuccess": true,
+//          "size": 5228,
+//          "id": "6592dab4864b7d67daa4f021",
+//          "url": "https://matemaratondev.blob.core.windows.net/exercises/6592dab4864b7d67daa4f021.png"
+//      }, {
+//          "name": "image2.png",
+//          "mimeType": "application/octet-stream",
+//          "isSuccess": false,
+//          "statusCode": "unknown-mime-type",
+//          "statusMessage": "Sunt permise doar fișiere de tip image/png, image/svg+xml"
+//      }, {
+//          "name": "image3.png",
+//          "mimeType": "image/png",
+//          "isSuccess": false,
+//          "statusCode": "size-too-large",
+//          "statusMessage": "Sunt permise doar fișiere mai mici de xMB"
+//      }]
+// }
+
+// HTTP/1.1  403
+// Content-Type: application/json
+// {
+//      code: "forbidden",
+//      message: "Lipsă permisiuni."
+// }
+
+exports.uploadMany = async (req, res) => {
+    // Called once, no matter haw many files there are
     // https://stackoverflow.com/a/29996871/2726725
 
-    // res.send("bbb");
+    const canCreateOrEditExercise = await autz.can(req.user, "create-or-edit:exercise");
+    if (!canCreateOrEditExercise) {
+        return res.status(403).json({ code: "forbidden", message: "Lipsă permisiuni." });
+    }
 
-    //const startTime = Date.now();
-    //const batchItems = [];
-    //const batchSize = 1000; // this is also default batchSize in Mongodb la BulkWrite (internally used by InsertMany)
+    const maxFileSize = 1 * 1024 * 1024; // 1 MB
+    const maxFiles = 3;
+    const allowedMimeType = ["image/png", "image/svg+xml", "image/jpeg"];
+    const result = { files: [] };
+    let finished = false;
 
-    //const inputFileNames = [];
-    const result = [];
-    const result2 = [];
-    let files = 0;
-    //const finished = false;
-
-    // I abort upload if file is over 10 MB limit
-    const busboy = new Busboy({
-        headers: req.headers,
-        limits: { fileSize: fileSizeLimit },
-    });
-    busboy.on("file", async function (fieldname, uploadFileStream, fileName, encoding, mimeType) {
-        result.push({ fileName });
-        files = files + 1;
-        //validate against empty file name
-        if (fileName.length > 0) {
-            //console.log("File [" + fieldname + "]: filename: " + fileName + ", encoding: " + encoding + ", mimetype: " + mimeType);
-            // uploadFileStream.on("data", function(data) {
-            //     console.log("File [" + fieldname + "] got " + data.length + " bytes");
-            // });
-            // uploadFileStream.on("end", function() {
-            //     console.log("File [" + fieldname + "] Finished");
-            // });
-
-            // const filePath = path.join(__dirname, "uploads/" + filename);
-            uploadFileStream.on("limit", function () {
-                //console.log(`file size over ${fileSizeLimit / (1024 * 1024)} MB.`);
-                // //delete the file that is large in size
-                // fs.unlink(filePath, () => {
-                //     console.log("The large file has been deleted.");
-                //     // res.writeHead(200, { Connection: "close" });
-                //     // res.end("File too large!");
-                // });
-            });
-
-            // let fstream = fs.createWriteStream(filePath);
-            // file.pipe(fstream);
-
-            // fstream.on("close", function() {
-            //     console.log("file saved on disk.");
-            // });
-
-            // ========================== csv
-            //file.pipe(csv()) // csv-parser
-            //let rowIdx = 0;
-            //file.pipe(csv2.parse({ headers: true, ignoreEmpty: true })) //fast-csv; Any rows consisting of nothing but empty strings and/or commas will be skipped
-
-            // const mongoStream = fastCsv.parseStream(uploadFileStream, { headers: true, ignoreEmpty: true });
-
-            // mongoStream
-            //     .on("error", error => console.error(error))
-            //     .on("headers", row => {
-            //         // console.log(row);
-            //     })
-            //     .on("data", async row => {
-            //         rowIdx++;
-            //         //console.log(`${i} ${row._id}`);
-
-            //         // optional, convert
-            //         var filtered = {};
-            //         Object.keys(row).forEach(function(key) {
-            //             if (row[key] === "true" || row[key] === "false") {
-            //                 row[key] = row[key] === "true"; // convert to boolean
-            //             }
-            //             if (row[key] !== "") {
-            //                 filtered[key] = row[key]; // remove empty entries
-            //             }
-            //         });
-
-            //         batchItems.push(filtered);
-            //         //insert and reset batch records
-            //         if (batchItems.length >= batchSize) {
-            //             // https://ninio.ninarski.com/2018/12/10/node-js-streams-and-why-sometimes-they-dont-pause/
-            //             mongoStream.pause();
-            //             await datasourceService.insertMany(batchItems);
-            //             //console.log("saved: " + batchItems.length);
-            //             batchItems = []; // reset batch container
-            //             mongoStream.resume();
-            //         }
-
-            //         //await datasourceService.insertOne(filtered);
-            //     })
-            //     .on("end", async () => {
-            //         if (batchItems.length > 0) await datasourceService.insertMany(batchItems); // left over data
-            //         const timeTaken = Date.now() - startTime;
-            //         console.log(`Successfully processed ${rowIdx} rows in ${timeTaken / 1000} seconds.`);
-            //     });
-
-            const blobServiceClient = BlobServiceClient.fromConnectionString(config.azureBlobStorageConnectionString);
-            const containerClient = blobServiceClient.getContainerClient("homework-submissions");
-
-            // "Cuş Cuş.jpg" --> "5f4bfb45d8278706d442058c.jpg"
-            const blobName = stringHelper.getUniqueFileName(fileName);
-
-            const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-
-            try {
-                await blockBlobClient.uploadStream(uploadFileStream, uploadOptions.bufferSize, uploadOptions.maxBuffers, {
-                    blobHTTPHeaders: { blobContentType: mimeType },
-                });
-                //res.render("success", { message: "File uploaded to Azure Blob storage." });
-                //console.log(fileName + ": done!");
-                const fileInResult = result.find((x) => x.fileName === fileName);
-
-                fileInResult.url = "https://" + blobServiceClient.accountName + ".blob.core.windows.net/files/5f4bfb45d8278706d442058c-lg.jpg";
-                console.log(fileInResult);
-                result2.push(fileInResult);
-                //console.log(fileName + " aaa");
-
-                // if (--files === 0 && finished) {
-                //     res.writeHead(200, { Connection: "close" });
-                //     res.end("");
-                // }
-            } catch (err) {
-                //res.render("error", { message: err.message });
-            }
-        } else {
-            //console.log("empty file name");
-            uploadFileStream.resume();
-        }
-    });
-
-    busboy.on("finish", function () {
-        //console.log("Upload completed!");
-        //console.log(result2);
-        res.writeHead(200, { Connection: "close" });
-        //res.end("That's all folks!");
-        res.end(JSON.stringify(result2));
-        //finished = true;
-    });
-
-    return req.pipe(busboy);
-};
-
-exports.upload_Old2 = async (req, res) => {
-    // https://stackoverflow.com/a/59295385
-    // https://stackoverflow.com/a/29996871/2726725
-
-    const result = [];
-    //const result2 = [];
-    let files = 0,
-        finished = false;
-
-    // I abort upload if file is over 10 MB limit
-    const busboy = Busboy({
-        headers: req.headers,
-        limits: { fileSize: fileSizeLimit },
-    });
-    busboy.on("file", async function (fieldname, uploadFileStream, fileName, encoding, mimeType) {
-        result.push({ fileName });
-        ++files;
-        //validate against empty file name
-        if (fileName.length > 0) {
-            console.log("File [" + fieldname + "]: filename: " + fileName + ", encoding: " + encoding + ", mimetype: " + mimeType);
-            // uploadFileStream.on("data", function(data) {
-            //     console.log("File [" + fieldname + "] got " + data.length + " bytes");
-            // });
-            // uploadFileStream.on("end", function() {
-            //     console.log("File [" + fieldname + "] Finished");
-            // });
-
-            // const filePath = path.join(__dirname, "uploads/" + filename);
-            uploadFileStream.on("limit", function () {
-                //console.log(`file size over ${fileSizeLimit / (1024 * 1024)} MB.`);
-            });
-
-            const blobServiceClient = BlobServiceClient.fromConnectionString(config.azureBlobStorageConnectionString);
-            const containerClient = blobServiceClient.getContainerClient("files");
-
-            // "Cuş Cuş.jpg" --> "5f4bfb45d8278706d442058c.jpg"
-            const blobName = stringHelper.getUniqueFileName(fileName);
-
-            const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-
-            try {
-                await blockBlobClient.uploadStream(uploadFileStream, uploadOptions.bufferSize, uploadOptions.maxBuffers, {
-                    blobHTTPHeaders: { blobContentType: mimeType },
-                });
-                //res.render("success", { message: "File uploaded to Azure Blob storage." });
-                //console.log(fileName + ": done!");
-                const fileInResult = result.find((x) => x.fileName === fileName);
-
-                fileInResult.url = "https://" + blobServiceClient.accountName + ".blob.core.windows.net/files/" + blobName;
-                //console.log(fileInResult);
-                //result.push(fileInResult);
-                //console.log(fileName + " aaa");
-
-                if (--files === 0 && finished) {
-                    //res.writeHead(200, { Connection: "close" });
-                    // console.log("Upload completed and saved to Blob!");
-                    // console.log(result);
-                    //res.end(JSON.stringify(result));
-                    res.json(result);
-                    //res.end("");
-                }
-            } catch (err) {
-                //res.render("error", { message: err.message });
-            }
-        } else {
-            //console.log("empty file name");
-            uploadFileStream.resume();
-        }
-    });
-
-    busboy.on("finish", function () {
-        //console.log("Upload completed!");
-        finished = true;
-    });
-
-    return req.pipe(busboy);
-};
-
-exports.upload = async (req, res) => {
-    // https://stackoverflow.com/a/29996871/2726725
-
-    const result = [];
-    let files = 0,
-        finished = false;
     try {
-        // I abort upload if file is over 10 MB limit
-        const bb = busboy({ headers: req.headers, limits: { fileSize: fileSizeLimit } });
+        const bb = busboy({ headers: req.headers, limits: { fileSize: maxFileSize, files: maxFiles } });
 
-        bb.on("file", async (name, inputFileStream, info) => {
-            const { filename, encoding, mimeType } = info;
-            //console.log(`File [${name}]: filename: %j, encoding: %j, mimeType: %j`, filename, encoding, mimeType);
-            result.push({ filename });
-            ++files;
-            // validate against empty file name
-            // if (filename.length == 0) {
-            //     console.log("empty file name");
-            //     inputFileStream.resume();
-            // } else {
-            // inputFileStream.on("limit", () => {
-            //     console.log(`file size over ${fileSizeLimit / (1024 * 1024)} MB.`);
-            // });
-            const blobServiceClient = BlobServiceClient.fromConnectionString(config.azureBlobStorageConnectionString);
-            const containerClient = blobServiceClient.getContainerClient("exercises");
-            // "Cuş Cuş.jpg" --> "5f4bfb45d8278706d442058c.jpg"
-            const blobName = stringHelper.getUniqueFileName(filename);
-            const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+        bb.on("file", async (fieldName, fileStream, info) => {
+            // Called multiple times, one for each file
+            const { filename, mimeType } = info;
 
-            await blockBlobClient.uploadStream(inputFileStream, uploadOptions.bufferSize, uploadOptions.maxBuffers, {
-                blobHTTPHeaders: { blobContentType: mimeType },
-            });
-            //res.render("success", { message: "File uploaded to Azure Blob storage." });
-            //console.log(fileName + ": done!");
-            const fileInResult = result.find((x) => x.filename === filename);
-            fileInResult.url = "https://" + blobServiceClient.accountName + ".blob.core.windows.net/exercises/" + blobName;
-            //console.log(fileInResult);
-            //result.push(fileInResult);
-            //console.log(fileName + " aaa");
-            if (--files === 0 && finished) {
-                //res.writeHead(200, { Connection: "close" });
-                // console.log("Upload completed and saved to Blob!");
-                // console.log(JSON.stringify(result));
-                //res.end(JSON.stringify(result));
-                res.json(result);
-                //res.end("");
+            const file = { name: filename, mimeType, statusCode: "inProgress" };
+            result.files.push(file);
+
+            if (!allowedMimeType.includes(mimeType)) {
+                file.isSuccess = false;
+                file.statusCode = "unknown-mime-type";
+                file.statusMessage = `Sunt permise doar fișiere de tip ${allowedMimeType.toString()}.`;
+
+                fileStream.resume(); // we should always consume the stream whether we care about its contents or not, otherwise the 'finish'/'close' event will never fire
+
+                return; // exit the loop and go to the next file
+            }
+
+            const fileObjectId = fileService.getObjectId();
+            const fileId = fileObjectId.toString(); // "5f4bfb45d8278706d442058c"
+            const fileExtension = stringHelper.getFileExtension(filename); // "jpg"
+            const blobName = `${fileId}.${fileExtension}`; // "5f4bfb45d8278706d442058c.jpg"
+
+            const [blobUploadResponse, blobUrl] = await blobService.uploadStream(containerName, fileStream, blobName, mimeType);
+
+            const blobProperties = await blobService.getBlobProperties(containerName, blobName); // get file size
+
+            if (blobUploadResponse.errorCode) {
+                file.isSuccess = false;
+                file.statusCode = "error-on-save-to-blob";
+                file.statusMessage = `A apărut o eroare la salvarea fișierului în blob. Cod eroare: ${blobUploadResponse.errorCode}.`;
+            } else {
+                if (fileStream.truncated) {
+                    file.isSuccess = false;
+                    file.statusCode = "size-too-large";
+                    file.statusMessage = `Sunt permise doar fișiere mai mici de ${maxFileSize / (1024 * 1024)}MB.`;
+
+                    // Remove truncated files from blobs (fire and forget)
+                    blobService.deleteBlob(containerName, blobName);
+                } else {
+                    file.isSuccess = true;
+                    file.url = blobUrl;
+                    file.id = fileId;
+                    file.size = blobProperties.contentLength;
+
+                    delete file.statusCode;
+
+                    // Save to DB.
+                    const fileToDb = {
+                        _id: fileObjectId,
+                        name: file.name,
+                        mimeType: file.mimeType,
+                        extension: fileExtension,
+                        url: file.url,
+                        size: file.size,
+                        accountName: blobService.getAccountName(),
+                        containerName: containerName,
+                        createdOn: new Date(),
+                        createdBy: { id: req.user._id.toString(), name: `${req.user.firstName} ${req.user.lastName}` },
+                    };
+                    await fileService.insertOne(fileToDb); // TODO: maybe we can save all files at once with 'insertMany'
+                }
+            }
+
+            // The last file has been saved and we don't expect other files to come.
+            if (result.files.filter((x) => x.statusCode === "inProgress").length === 0 && finished) {
+                return res.json(result);
             }
         });
-        bb.on("close", () => {
-            //console.log("Upload completed!");
-            finished = true;
+
+        bb.on("filesLimit", () => {
+            // If maxFiles = 3 and we try to upload 5 files, the first 3 files will be uploaded, but not the others. Fired before 'close'.
+            result.statusCode = "too-many-files";
+            result.statusMessage = `Sunt permise maxim ${maxFiles} fișiere.`;
         });
-        return req.pipe(bb);
+
+        bb.on("close", () => {
+            // Fired once the entire request has been fully processed, including files, but before the files are uploaded
+            finished = true;
+
+            if (result.files.filter((x) => x.statusCode === "inProgress").length === 0) {
+                // Usually this code is reached if we don't have anything to save (we have only files with "unknown-mime-type").
+                // Much less often, but it can also happen if the previous files were already saved to blobs.
+                return res.json(result);
+            }
+        });
+
+        // Redirect the incoming HTTP request stream to the busboy library
+        req.pipe(bb);
+        return;
     } catch (err) {
-        //console.log(err);
-        return res.status(500).json(err.message);
+        return res.status(500).json({ code: "exception", message: err.message });
+    }
+};
+
+// Output
+// HTTP/1.1  200
+// Content-Type: application/json
+// {
+//     "statusCode":"too-many-files", // fișierele care depășesc limita nu apar în listă
+//     "statusMessage": "Sunt permise maxim 3 fișiere",
+//     "file": {
+//          "name": "matemaraton-logo-square.png",
+//          "mimeType": "image/png",
+//          "isSuccess": true,
+//          "size": 5228,
+//          "id": "6592dab4864b7d67daa4f021",
+//          "url": "https://matemaratondev.blob.core.windows.net/exercises/6592dab4864b7d67daa4f021.png"
+//      }
+// }
+//
+//  Other status for a file:
+//      {
+//          "name": "image2.png",
+//          "mimeType": "application/octet-stream",
+//          "isSuccess": false,
+//          "statusCode": "unknown-mime-type",
+//          "statusMessage": "Sunt permise doar fișiere de tip image/png, image/svg+xml"
+//      }, {
+//          "name": "image3.png",
+//          "mimeType": "image/png",
+//          "isSuccess": false,
+//          "statusCode": "size-too-large",
+//          "statusMessage": "Sunt permise doar fișiere mai mici de xMB"
+//      }
+
+// HTTP/1.1  403
+// Content-Type: application/json
+// {
+//      code: "forbidden",
+//      message: "Lipsă permisiuni."
+// }
+
+// A simplified version of uploadMany
+exports.uploadOne = async (req, res) => {
+    const canCreateOrEditExercise = await autz.can(req.user, "create-or-edit:exercise");
+    if (!canCreateOrEditExercise) {
+        return res.status(403).json({ code: "forbidden", message: "Lipsă permisiuni." });
+    }
+
+    const maxFileSize = 1 * 1024 * 1024; // 1 MB
+    const maxFiles = 1;
+    const allowedMimeType = ["image/png", "image/svg+xml", "image/jpeg"];
+    const result = { file: {} };
+
+    try {
+        const bb = busboy({ headers: req.headers, limits: { fileSize: maxFileSize, files: maxFiles } });
+
+        bb.on("file", async (fieldName, fileStream, info) => {
+            const { filename, mimeType } = info;
+
+            const file = { name: filename, mimeType };
+            result.file = file;
+
+            if (!allowedMimeType.includes(mimeType)) {
+                file.isSuccess = false;
+                file.statusCode = "unknown-mime-type";
+                file.statusMessage = `Sunt permise doar fișiere de tip ${allowedMimeType.toString()}.`;
+
+                return res.json(result);
+            }
+
+            const fileObjectId = fileService.getObjectId();
+            const fileId = fileObjectId.toString(); // "5f4bfb45d8278706d442058c"
+            const fileExtension = stringHelper.getFileExtension(filename); // "jpg"
+            const blobName = `${fileId}.${fileExtension}`; // "5f4bfb45d8278706d442058c.jpg"
+
+            const [blobUploadResponse, blobUrl] = await blobService.uploadStream(containerName, fileStream, blobName, mimeType);
+
+            const blobProperties = await blobService.getBlobProperties(containerName, blobName); // get file size
+
+            if (blobUploadResponse.errorCode) {
+                file.isSuccess = false;
+                file.statusCode = "error-on-save-to-blob";
+                file.statusMessage = `A apărut o eroare la salvarea fișierului în blob. Cod eroare: ${blobUploadResponse.errorCode}.`;
+            } else {
+                if (fileStream.truncated) {
+                    file.isSuccess = false;
+                    file.statusCode = "size-too-large";
+                    file.statusMessage = `Sunt permise doar fișiere mai mici de ${maxFileSize / (1024 * 1024)}MB.`;
+
+                    // Remove truncated files from blobs (fire and forget)
+                    blobService.deleteBlob(containerName, blobName);
+                } else {
+                    file.isSuccess = true;
+                    file.url = blobUrl;
+                    file.id = fileId;
+                    file.size = blobProperties.contentLength;
+
+                    // Save to DB.
+                    const fileToDb = {
+                        _id: fileObjectId,
+                        name: file.name,
+                        mimeType: file.mimeType,
+                        extension: fileExtension,
+                        url: file.url,
+                        size: file.size,
+                        accountName: blobService.getAccountName(),
+                        containerName: containerName,
+                        createdOn: new Date(),
+                        createdBy: { id: req.user._id.toString(), name: `${req.user.firstName} ${req.user.lastName}` },
+                    };
+                    await fileService.insertOne(fileToDb); // TODO: maybe we can save all files at once with 'insertMany'
+                }
+            }
+
+            return res.json(result);
+        });
+
+        bb.on("filesLimit", () => {
+            // If maxFiles = 3 and we try to upload 5 files, the first 3 files will be uploaded, but not the others. Fired before 'close'.
+            result.statusCode = "too-many-files";
+            result.statusMessage = `Sunt permise maxim ${maxFiles} fișiere.`;
+        });
+
+        // Redirect the incoming HTTP request stream to the busboy library
+        req.pipe(bb);
+        return;
+    } catch (err) {
+        return res.status(500).json({ code: "exception", message: err.message });
+    }
+};
+
+exports.deleteOneById = async (req, res) => {
+    const { fileId } = req.params;
+    const { exerciseId, extension } = req.query;
+
+    try {
+        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+        if (!canCreateOrEditCourse) {
+            return res.status(403).json({ code: "forbidden", message: "Lipsă permisiuni." });
+        }
+
+        // const course = await courseService.getOneById(courseId);
+        // if (!course) return res.status(500).send("Curs negăsit!");
+
+        // const { exerciseMeta: exercise } = exerciseHelper.getExerciseAndParentsFromCourse(course, exerciseId);
+        // if (!exercise) return res.status(500).send("Exercițiu negăsit!");
+
+        const exercise = await exerciseService.getOneById(exerciseId);
+        if (!exercise) return res.status(404).send("Exercițiu negăsit.");
+
+        // const blobServiceClient = BlobServiceClient.fromConnectionString(config.azureBlobStorageConnectionString);
+        // const url = "https://" + blobServiceClient.accountName + ".blob.core.windows.net/exercises/" + fileId;
+        const fileIndex = (exercise.files || []).findIndex((x) => x.url.includes(fileId));
+
+        if (fileIndex > -1) {
+            exercise.files.splice(fileIndex, 1); // remove from array
+
+            // Delete from Azure blobs
+            const blobName = `${fileId}.${extension || "png"}`;
+            const blobDeleteResponse = await blobService.deleteBlob(containerName, blobName);
+
+            if (blobDeleteResponse.errorCode && blobDeleteResponse.errorCode !== "BlobNotFound") {
+                return res.status(500).json("Eroare la ștergerea blob-ului.");
+            }
+
+            // Delete from exercise
+            exerciseService.updateOne(exercise);
+
+            // Delete from files
+            fileService.deleteOneById(fileId);
+        }
+
+        // res.redirect(`/cursuri/${courseId}/capitole/${chapter.id}/modifica`);
+        // res.sendStatus(204); // no content
+        return res.json(exercise.files);
+    } catch (err) {
+        return res.status(500).json({ code: "exception", message: err.message });
     }
 };

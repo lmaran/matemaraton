@@ -44,8 +44,7 @@
             <label class="fw-bold"> Enunț: </label>
 
             <textarea id="statement-editor-txt" rows="8" name="statement"
-                style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
-                class="form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.statement}}}</textarea>
+                class="statement-input drop-area form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.statement}}}</textarea>
             <div class="invalid-feedback">{{errors.statement.msg}}</div>
 
 
@@ -54,9 +53,50 @@
                 {{{exercise.statementPreview}}}
             </div>
 
-            <div class="float-end">
-                <a id="toggle-statement-editor-btn" href="">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</a>
+
+            {{!-- <progress class="progress-bar d-none2 w-100" max=100 value=0></progress> --}}
+
+            <div class="progress d-none" role="progressbar" aria-label="Basic example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="height: 2px">
+                <div class="progress-bar w-100"></div>
             </div>
+
+
+            {{!-- Statement menu --}}
+            <div class="exercise-menu-div hide-on-print clearfix">
+                {{!-- <div class="float-start">
+                    {{#if hints}}
+                        <a class="toggle-hints-btn" href="">Indicații</a>
+                        <span class="text-muted">({{hints.length}})</span>
+                    {{/if}}
+                </div> --}}
+                
+
+                <div class="float-end">
+
+                    {{!-- <form enctype="multipart/form-data">
+
+
+                        <input type="file" name="filefield" id="upload-file-select-input" multiple accept="image/*" class="d-none">
+                        <span class="upload-file-error-div invalid-feedback">Mesaj de eroare</span>
+                        <label class="upload-file-label d-none2 btn btn-light border border-primary btn-xs" for="upload-file-select-input">
+                            <i class="bi bi-card-image"></i>
+                            Adaugă poza
+                        </label>
+
+                    </form> --}}
+
+                    <span class="upload-file-error-div invalid-feedback">Mesaj de eroare</span>
+                    <label class="upload-file-label d-none2 btn btn-light border border-primary btn-xs" for="upload-file-select-input">
+                        <i class="bi bi-card-image"></i>
+                        Adaugă poza
+                    </label>
+
+
+                    <a id="toggle-statement-editor-btn" href="">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</a>
+
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -255,43 +295,62 @@
         </div>
     </div> --}}
 
-    {{!-- <div class="row mt-4">
-        <div class="col-md-12">
-            <label for="contestNameInput" class="fw-bold">Rezolvarea mea:</label>
-            <div class="drop-area">
-                <form class="my-form" enctype="multipart/form-data">
-
-                    <div class="form-group">
-                        <input type="file" name="filefield" id="upload-file-select-input" multiple accept="image/*" class="d-none">
-                        <label class="upload-file-select-label" for="upload-file-select-input">
-                            <i class="bi bi-paperclip"></i>
-                            Adaugă poza
-                        </label>
-
-                        <span class="drag-message-span text-muted font-weight-light">sau trage poza aici</span>
-                        <div class="upload-file-error-div invalid-feedback">Mesaj de eroare</div>
-                        <progress class="progress-bar d-none w-100" max=100 value=0></progress>
-                        <div class="gallery mt-3"></div>
-                    </div>
-
-                    <div class="mt-2">
-                        <textarea rows="2" name="comment-textarea" placeholder="Comentariu (opțional)..."
-                            style="border-radius:0; border-color:#ccc"
-                            class="comment-textarea form-control {{#if errors.lastName}}is-invalid {{/if}}"></textarea>
-                        <div class="invalid-feedback">{{errors.answer.msg}}</div>
-                    </div>
-
-                    <div class="mb-0 mt-2">
-                        <button type="button" id="my-solution-submit-btn" class="btn btn-primary btn-sm">
-                            <i class="bi bi-cursor-fill"></i>
-                            Trimite rezolvarea
-                        </button>
-                    </div>
-
-                </form>
-            </div>
+    {{!-- Exercise type --}}
+    {{!-- <div class="row mt-3 mb-3">
+        <div class="col-md-6">
+            <label class="fw-bold">Tipul exercițiului:</label>
+            <select name="exerciseType" class="form-select" id="exerciseTypeSelect">
+                {{#select exercise.exerciseType}}
+                <option value=""></option>
+                {{#each availableExerciseTypes}}
+                <option value="{{value}}">{{text}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
         </div>
     </div> --}}
+
+    {{!-- Files --}}
+    <div class="row mt-3">
+        <div class="col-md-12 statement-div">
+            <label class="fw-bold"> Fișiere: </label>
+            {{!-- <div class="gallery _mt-3">
+                {{#each exercise.files}}
+                <div class="file-container-span" data-url="{{url}}">
+                    <img src="{{url}}" height="100"/>
+                    <input name="files" value="{{url}}"/>
+                </div>
+                {{/each}}
+            </div> --}}
+
+            <table id="gallery-tbl" class="table thead-light table-bordered table-hover">
+                {{!-- <thead>
+                    <tr>
+                        <th>Nume</th>
+                        <th>CreatLa (UTC)</th>
+                    </tr>
+                </thead> --}}
+                <tbody>
+                    {{#each exercise.files}}
+                    <tr>
+                        <td>
+                            <img src="{{url}}" height="50"/>
+                        </td>
+                        <td>
+                            <input name="files" value="{{url}}"/>
+                            {{!-- <input name="files" value="{{extension}}"/> --}}
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-link delete-file-btn" data-url="{{url}}" data-extension="{{extension}}">Șterge</button>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+
+
+        </div>
+    </div>
 
 
     <input type="hidden" name="courseId" value="{{courseId}}" />
@@ -320,6 +379,16 @@
         </div>
 
     </div>
+
+</form>
+
+{{!-- We cannot nest html form tags --}}
+<form enctype="multipart/form-data">
+    {{!-- TODO: CourseId and exerciseId are duplicated. We only need a fileId to delete a file (create a 'files' table) --}}
+    {{!-- <input type2="hidden" name="courseId2" value="{{courseId}}" />
+    <input type2="hidden" name="exerciseId2" value="{{exercise._id}}" /> --}}
+
+    <input type="file" name="filefield" id="upload-file-select-input" multiple accept="image/*" class="d-none">
 
 </form>
 

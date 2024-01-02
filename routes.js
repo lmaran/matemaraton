@@ -234,6 +234,8 @@ router.get("/reset-password/confirm-success", userResetPasswordController.getRes
 
 router.get("/editia-[1|2|3|4|5]", editionController.getEdition);
 
-router.post("/uploadfile", fileController.upload);
+// file
+router.post("/fisiere/upload-many", fileController.uploadMany);
+router.delete("/fisiere/:fileId", fileController.deleteOneById);
 
 module.exports = router;

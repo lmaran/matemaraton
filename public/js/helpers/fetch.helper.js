@@ -65,15 +65,58 @@ export const fetchHelpers = {
         // if an errors, anything but 200 then reject with the actual response
         return Promise.reject(response);
     },
+
     delete: async (url) => {
         const config = {
             method: "DELETE",
         };
-        const response = await fetch(url, config);
-        if (response.ok && response.status === 204) {
-            return null; // OK, but no content
+        try {
+            const httpResponse = await fetch(url, config);
+
+            if (!httpResponse.ok) {
+                if (httpResponse.status === 404) {
+                    return [
+                        {
+                            error: "NotFound",
+                            message: "Înregistrare negăsită",
+                            statusCode: httpResponse.status,
+                        },
+                        null,
+                    ];
+                }
+
+                // Other not 2xx responses
+                return [
+                    {
+                        error: "ClientOrServerError",
+                        message: "A apărut o eroare la ștergere",
+                        statusCode: httpResponse.status || 500,
+                    },
+                    null,
+                ];
+            }
+
+            if (httpResponse.status === 204) {
+                // No content
+                return [null, null];
+            }
+
+            // We also accept "200" with a JSON response (not text)
+            try {
+                const response = await httpResponse.json();
+                return [null, response];
+            } catch (e) {
+                return [
+                    {
+                        error: "BadResponse",
+                        message: "Răspunsul nu este în format JSON",
+                        statusCode: httpResponse.status,
+                    },
+                    null,
+                ];
+            }
+        } catch (err) {
+            return [err, null];
         }
-        // if an errors, then reject with the actual response
-        return Promise.reject(response);
     },
 };
