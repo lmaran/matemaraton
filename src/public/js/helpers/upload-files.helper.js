@@ -2,10 +2,10 @@ export const uploadFilesHelper = {
     uploadFiles: (options) => {
         const { uploadFileSelectInput, url, maxFiles, maxFileSizeInMB } = options;
 
-        const dropArea = uploadFileSelectInput.closest(".drop-area"); // find the closest ancestor which matches the selectors
-        const progressBar = dropArea.querySelector(".progress-bar");
-        const uploadFileErrorDiv = dropArea.querySelector(".upload-file-error-div");
-        const gallery = dropArea.querySelector(".gallery");
+        const dropArea = document.querySelector(".drop-area"); // find the closest ancestor which matches the selectors
+        const progressBar = document.querySelector(".progress");
+        const uploadFileErrorDiv = document.querySelector(".upload-file-error-div");
+        const galleryTbl = document.getElementById("gallery-tbl");
 
         uploadFileSelectInput.addEventListener("change", handleInputFiles, false);
 
@@ -53,6 +53,7 @@ export const uploadFilesHelper = {
 
             const validationFilesMessage = getValidationFilesMessage(files, maxFiles, maxFileSizeInMB);
             if (validationFilesMessage) {
+                alert(validationFilesMessage);
                 uploadFileSelectInput.classList.add("is-invalid");
                 uploadFileErrorDiv.innerHTML = validationFilesMessage;
                 return false;
@@ -127,12 +128,20 @@ export const uploadFilesHelper = {
             progressBar.classList.add("d-none");
         }
 
-        function previewFiles(files) {
+        function previewFiles(result) {
+            const files = result.files;
+            const statementEditorTxt = document.getElementById("statement-editor-txt");
             files.forEach((file) => {
+                // Add image preview in markdown
+                if (statementEditorTxt.value) statementEditorTxt.value += "\\\n"; // add the image on a new line
+                statementEditorTxt.value += `![](${file.url})`;
+                statementEditorTxt.dispatchEvent(new Event("change"));
+
                 // we use a file container to add data-attributes on it
-                const fileContainerSpan = document.createElement("span");
-                fileContainerSpan.classList.add("file-container-span");
-                fileContainerSpan.setAttribute("data-url", file.url);
+
+                const row = galleryTbl.insertRow(-1); // We are adding at the end
+
+                const c1 = row.insertCell(0);
 
                 const fileParts = file.url.split(".");
                 if (fileParts.length > 0) {
@@ -140,29 +149,88 @@ export const uploadFilesHelper = {
                     if (["jpg", "jpeg", "png", "svg"].includes(fileExtension.toLowerCase())) {
                         const img = document.createElement("img");
                         img.src = file.url;
-                        //img.style.height = "100px";
-                        //img.width = "100";
                         img.height = "100";
-                        fileContainerSpan.appendChild(img);
-                    } else if (fileExtension.toLowerCase() === "pdf") {
-                        // maybe add a pdf thumbnail/icon
-                        const a = document.createElement("a");
-                        const linkText = document.createTextNode(file.url);
-                        a.appendChild(linkText);
-                        a.title = "my title text";
-                        a.href = file.url;
-                        fileContainerSpan.appendChild(a);
+
+                        c1.appendChild(img);
                     } else {
+                        // maybe add a pdf thumbnail/icon
+
+                        // if (fileExtension.toLowerCase() === "pdf")
+
                         const a = document.createElement("a");
                         const linkText = document.createTextNode(file.url);
                         a.appendChild(linkText);
                         a.title = "my title text";
                         a.href = file.url;
-                        fileContainerSpan.appendChild(a);
+                        c1.appendChild(a);
                     }
                 }
 
-                gallery.appendChild(fileContainerSpan);
+                const c2 = row.insertCell(1);
+
+                const fileUrlInput = document.createElement("input");
+                fileUrlInput.name = "files";
+                fileUrlInput.classList.add("d-none2");
+                fileUrlInput.value = file.url;
+                c2.appendChild(fileUrlInput);
+
+                // const fileExtensionInput = document.createElement("input");
+                // fileExtensionInput.name = "files";
+                // fileExtensionInput.classList.add("d-none2");
+                // fileExtensionInput.value = file.extension;
+                // c2.appendChild(fileExtensionInput);
+
+                const c3 = row.insertCell(2);
+
+                const deleteFileBtn = document.createElement("button");
+                deleteFileBtn.textContent = "Șterge";
+                deleteFileBtn.type = "button";
+                deleteFileBtn.classList.add("btn", "btn-link", "delete-file-btn");
+                deleteFileBtn.dataset.url = file.url; // same as deleteFileBtn.setAttribute("data-url", file.url);
+                deleteFileBtn.dataset.extension = file.extension;
+
+                c3.appendChild(deleteFileBtn);
+
+                // const fileContainerSpan = document.createElement("span");
+                // fileContainerSpan.classList.add("file-container-span");
+                // fileContainerSpan.setAttribute("data-url", file.url);
+
+                // const fileParts = file.url.split(".");
+                // if (fileParts.length > 0) {
+                //     const fileExtension = fileParts[fileParts.length - 1];
+                //     if (["jpg", "jpeg", "png", "svg"].includes(fileExtension.toLowerCase())) {
+                //         const img = document.createElement("img");
+                //         img.src = file.url;
+                //         //img.style.height = "100px";
+                //         //img.width = "100";
+                //         img.height = "100";
+                //         fileContainerSpan.appendChild(img);
+                //     } else if (fileExtension.toLowerCase() === "pdf") {
+                //         // maybe add a pdf thumbnail/icon
+                //         const a = document.createElement("a");
+                //         const linkText = document.createTextNode(file.url);
+                //         a.appendChild(linkText);
+                //         a.title = "my title text";
+                //         a.href = file.url;
+                //         fileContainerSpan.appendChild(a);
+                //     } else {
+                //         const a = document.createElement("a");
+                //         const linkText = document.createTextNode(file.url);
+                //         a.appendChild(linkText);
+                //         a.title = "my title text";
+                //         a.href = file.url;
+                //         fileContainerSpan.appendChild(a);
+                //     }
+                // }
+
+                // gallery.appendChild(fileContainerSpan);
+
+                // const fileContainerInput = document.createElement("input");
+                // fileContainerInput.name = "files";
+                // fileContainerInput.classList.add("d-none2");
+                // fileContainerInput.value = file.url;
+
+                // gallery.appendChild(fileContainerInput);
             });
         }
     },

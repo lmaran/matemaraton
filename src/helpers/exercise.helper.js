@@ -71,3 +71,48 @@ exports.getAuthorAndSource = (exercise) => {
         source2,
     };
 };
+
+exports.getExerciseAndParentsFromCourse = (course, exerciseId) => {
+    let chapter;
+    let chapterIndex = -1;
+    let lesson;
+    let lessonIndex = -1;
+    let exercise;
+    let exerciseIndex = -1;
+
+    const chapters = course.chapters || [];
+    for (let i = 0; i < chapters.length; i++) {
+        const lessons = chapters[i].lessons || [];
+        for (let j = 0; j < lessons.length; j++) {
+            const exercises = lessons[j].exercises || [];
+            for (let k = 0; k < exercises.length; k++) {
+                if (exercises[k].id == exerciseId) {
+                    exercise = exercises[k];
+                    exerciseIndex = k;
+                    break;
+                }
+            }
+
+            if (exercise) {
+                lesson = lessons[j];
+                lessonIndex = j;
+                break;
+            }
+        }
+
+        if (lesson) {
+            chapter = chapters[i];
+            chapterIndex = i;
+            break;
+        }
+    }
+
+    return {
+        chapter,
+        chapterIndex,
+        lesson,
+        lessonIndex,
+        exerciseMeta: exercise,
+        exerciseIndex,
+    };
+};

@@ -2,7 +2,9 @@ import { eventHandlers } from "../eventHandlers/exercise-create-or-edit.event-ha
 import { dateTimeHelper } from "../helpers/date-time.helper.js";
 import { uploadFilesHelper } from "../helpers/upload-files.helper.js";
 
-document.getElementById("statement-editor-txt").addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.getStatementPreview, 500)); // with debouncer (500 ms)
+const statementEditorTxt = document.getElementById("statement-editor-txt");
+statementEditorTxt.addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.getStatementPreview, 500)); // with debouncer (500 ms)
+statementEditorTxt.addEventListener("change", dateTimeHelper.debounce(eventHandlers.getStatementPreview, 500)); // for image preview
 
 document.getElementById("answer-editor-txt").addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.getAnswerPreview, 500)); // with debouncer (500 ms)
 
@@ -27,6 +29,9 @@ if (answerOptionMainDiv) {
     answerOptionMainDiv.addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.handleKeyupForAllAnswerOptions, 500));
 }
 
+document.getElementById("gallery-tbl").addEventListener("click", eventHandlers.handleClickInGallery);
+// document.querySelectorAll(".delete-file-btn").forEach((item) => item.addEventListener("click", eventHandlers.deleteFile));
+
 /**
  * upload files
  * smashingmagazine.com/2018/01/drag-drop-file-uploader-vanilla-js/
@@ -40,9 +45,9 @@ const uploadFileSelectInput = document.getElementById("upload-file-select-input"
 if (uploadFileSelectInput) {
     const options = {
         uploadFileSelectInput,
-        url: "/uploadfile",
+        url: "/fisiere/upload-many",
         maxFiles: 3,
-        maxFileSizeInMB: 5,
+        maxFileSizeInMB: 1,
     };
 
     uploadFilesHelper.uploadFiles(options);

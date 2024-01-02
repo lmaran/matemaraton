@@ -1,6 +1,3 @@
-const path = require("path");
-const { ObjectId } = require("mongodb");
-
 exports.endsWithValueFromList = (str, endValues) => {
     return endValues.some((v) => str.endsWith(v));
 };
@@ -25,15 +22,15 @@ exports.getAcademicYearFromInterval = (interval) => {
 };
 
 /**
- * input: "Cuş Cuş.jpg"
- * output: "5f4bfb45d8278706d442058c.jpg"
+ * input: "my-file.jpg"
+ * output: "jpg"
  * @param {string} fileName
+ * https://stackoverflow.com/a/1203361
  */
-exports.getUniqueFileName = (fileName) => {
-    const parsedFile = path.parse(fileName); // Cuş Cuş.jpg
-    // const fileNameWithoutExtension = parsedFile.name; // Cuş Cuş
-    const fileExtensionWithDot = parsedFile.ext; // .jpg
-
-    //const uniqueIdentifier = new ObjectId();
-    return new ObjectId() + fileExtensionWithDot;
+exports.getFileExtension = (fileName) => {
+    const a = fileName.split(".");
+    if (a.length === 1 || (a[0] === "" && a.length === 2)) {
+        return "";
+    }
+    return a.pop().toString();
 };
