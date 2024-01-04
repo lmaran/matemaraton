@@ -145,6 +145,8 @@ router.get("/cursuri/:courseId/exercitii/:exerciseId/muta", isAuthenticated, cou
 router.post("/cursuri/:courseId/exercitii/:exerciseId/muta", isAuthenticated, courseExerciseController.movePost);
 router.post("/cursuri/:courseId/exercitii/:exerciseId/sterge", isAuthenticated, courseExerciseController.deleteOneById);
 router.get("/cursuri/:courseId/exercitii/:exerciseId/json", isAuthenticated, courseExerciseController.jsonGet);
+router.post("/cursuri/:courseId/exercitii/:exerciseId/upload-files", isAuthenticated, courseExerciseController.uploadFiles);
+router.post("/cursuri/:courseId/exercitii/upload-files", isAuthenticated, courseExerciseController.uploadFiles);
 //router.post("/cursuri/:courseId/capitole/:chapterId/lectii/adauga", isAuthenticated, courseLessonController.createOrEditPost);
 router.get("/cursuri/:courseId/available-lessons", isAuthenticated, courseExerciseController.getAvailableLessons);
 router.get(
@@ -235,7 +237,6 @@ router.get("/reset-password/confirm-success", userResetPasswordController.getRes
 router.get("/editia-[1|2|3|4|5]", editionController.getEdition);
 
 // file
-router.post("/fisiere/upload-many", fileController.uploadMany);
 router.delete("/fisiere/:fileId", fileController.deleteOneById);
 
 module.exports = router;

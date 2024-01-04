@@ -1,11 +1,6 @@
 export const uploadFilesHelper = {
     uploadFiles: (options) => {
-        const { uploadFileSelectInput, url, maxFiles, maxFileSizeInMB } = options;
-
-        const dropArea = document.querySelector(".drop-area"); // find the closest ancestor which matches the selectors
-        const progressBar = document.querySelector(".progress");
-        const uploadFileErrorDiv = document.querySelector(".upload-file-error-div");
-        const galleryTbl = document.getElementById("gallery-tbl");
+        const { uploadFileSelectInput, url, maxFiles, maxFileSizeInMB, dropArea, progressBar, uploadFileErrorDiv, galleryTbl } = options;
 
         uploadFileSelectInput.addEventListener("change", handleInputFiles, false);
 
@@ -129,7 +124,7 @@ export const uploadFilesHelper = {
         }
 
         function previewFiles(result) {
-            const files = result.files;
+            const files = result.files.filter((x) => x.isSuccess);
             const statementEditorTxt = document.getElementById("statement-editor-txt");
             files.forEach((file) => {
                 // Add image preview in markdown

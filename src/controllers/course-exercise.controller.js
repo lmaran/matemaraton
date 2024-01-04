@@ -5,6 +5,8 @@ const markdownService = require("../services/markdown.service");
 const idGeneratorMongoService = require("../services/id-generator-mongo.service");
 const arrayHelper = require("../helpers/array.helper");
 const exerciseHelper = require("../helpers/exercise.helper");
+const { EventEmitter } = require("events");
+const uploadFileService = require("../services/upload-file.service");
 
 const { availableExerciseTypes, availableSections, availableLevels } = require("../constants/constants");
 
@@ -694,6 +696,35 @@ exports.deleteOneById = async (req, res) => {
         res.redirect(`/cursuri/${courseId}/lectii/${lesson.id}/modifica?sectionId=${sectionId}#section${sectionId}`);
     } catch (err) {
         return res.status(500).json(err.message);
+    }
+};
+
+exports.uploadFiles = async (req, res) => {
+    const { exerciseId } = req.params;
+
+    const params = {
+        maxFileSize: 1 * 1024 * 1024, // 1 MB
+        maxFiles: 3,
+        allowedMimeType: ["image/png", "image/svg+xml", "image/jpeg2"],
+        containerName: "exercises",
+        sourceType: "exercise",
+        sourceId: exerciseId,
+    };
+
+    const canCreateOrEditExercise = await autz.can(req.user, "create-or-edit:exercise");
+    if (!canCreateOrEditExercise) {
+        return res.status(403).json({ code: "forbidden", message: "Lipsă permisiuni." });
+    }
+
+    const emitter = new EventEmitter();
+    try {
+        uploadFileService.uploadFiles(req, emitter, params);
+
+        emitter.once("uploaded", (result) => {
+            return res.json(result);
+        });
+    } catch (err) {
+        return res.status(500).json({ code: "exception", message: err.message });
     }
 };
 
