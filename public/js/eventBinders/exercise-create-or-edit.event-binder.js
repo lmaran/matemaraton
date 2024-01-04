@@ -45,9 +45,18 @@ const uploadFileSelectInput = document.getElementById("upload-file-select-input"
 if (uploadFileSelectInput) {
     const options = {
         uploadFileSelectInput,
-        url: "/fisiere/upload-many",
+        // url: "/fisiere/upload-many",
+        url: "/cursuri/63b6ba0c89a768e8c6d6d5e8/exercitii/657caf7734a905f954398e31/upload-files",
         maxFiles: 3,
         maxFileSizeInMB: 1,
+
+        dropArea: document.querySelector(".drop-area"), // find the closest ancestor which matches the selectors
+        progressBar: document.querySelector(".progress"), // let it undefined if you don't need preview in markdownEditor
+        uploadFileErrorDiv: document.querySelector(".upload-file-error-div"),
+
+        markdownEditorTxt: document.getElementById("statement-editor-txt"), // let it undefined if you don't need preview in markdownEditor
+        galleryTbl: document.getElementById("gallery-tbl"), // let it undefined if you don't need preview in gallery
+        previewFilesFunction: uploadFilesHelper.previewFiles,
     };
 
     uploadFilesHelper.uploadFiles(options);
