@@ -1,17 +1,91 @@
 export const uploadFilesHelper = {
     uploadFiles: (options) => {
-        const { uploadFileSelectInput, url, maxFiles, maxFileSizeInMB, dropArea, progressBar, uploadFileErrorDiv, galleryTbl } = options;
+        const {
+            uploadFileSelectInput,
+            url,
+            maxFiles,
+            maxFileSizeInMB,
+            dropArea,
+            progressBar,
+            uploadFileErrorDiv,
+            markdownEditorTxt,
+            galleryTbl,
+            previewFilesFunction,
+        } = options;
 
+        uploadFilesHelper.handleBrowse(
+            uploadFileSelectInput,
+            url,
+            maxFiles,
+            maxFileSizeInMB,
+            dropArea,
+            progressBar,
+            uploadFileErrorDiv,
+            markdownEditorTxt,
+            galleryTbl,
+            previewFilesFunction
+        );
+        uploadFilesHelper.handleDragAndDrop(
+            uploadFileSelectInput,
+            url,
+            maxFiles,
+            maxFileSizeInMB,
+            dropArea,
+            progressBar,
+            uploadFileErrorDiv,
+            markdownEditorTxt,
+            galleryTbl,
+            previewFilesFunction
+        );
+    },
+
+    handleBrowse: (
+        uploadFileSelectInput,
+        url,
+        maxFiles,
+        maxFileSizeInMB,
+        dropArea,
+        progressBar,
+        uploadFileErrorDiv,
+        markdownEditorTxt,
+        galleryTbl,
+        previewFilesFunction
+    ) => {
         uploadFileSelectInput.addEventListener("change", handleInputFiles, false);
 
+        function handleInputFiles() {
+            const files = this.files;
+            uploadFilesHelper.handleFiles(
+                files,
+                uploadFileSelectInput,
+                url,
+                maxFiles,
+                maxFileSizeInMB,
+                dropArea,
+                progressBar,
+                uploadFileErrorDiv,
+                markdownEditorTxt,
+                galleryTbl,
+                previewFilesFunction
+            );
+        }
+    },
+
+    handleDragAndDrop: (
+        uploadFileSelectInput,
+        url,
+        maxFiles,
+        maxFileSizeInMB,
+        dropArea,
+        progressBar,
+        uploadFileErrorDiv,
+        markdownEditorTxt,
+        galleryTbl,
+        previewFilesFunction
+    ) => {
         ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
             dropArea.addEventListener(eventName, preventDefaults, false);
         });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
 
         ["dragenter", "dragover"].forEach((eventName) => {
             dropArea.addEventListener(eventName, highlight, false);
@@ -21,10 +95,7 @@ export const uploadFilesHelper = {
             dropArea.addEventListener(eventName, unHighlight, false);
         });
 
-        function handleInputFiles() {
-            const files = this.files;
-            handleFiles(files);
-        }
+        dropArea.addEventListener("drop", handleDrop, false);
 
         function highlight() {
             dropArea.classList.add("highlight");
@@ -34,32 +105,57 @@ export const uploadFilesHelper = {
             dropArea.classList.remove("highlight");
         }
 
-        dropArea.addEventListener("drop", handleDrop, false);
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
 
         function handleDrop(e) {
             const dt = e.dataTransfer;
             const files = dt.files;
 
-            handleFiles(files);
+            uploadFilesHelper.handleFiles(
+                files,
+                uploadFileSelectInput,
+                url,
+                maxFiles,
+                maxFileSizeInMB,
+                dropArea,
+                progressBar,
+                uploadFileErrorDiv,
+                markdownEditorTxt,
+                galleryTbl,
+                previewFilesFunction
+            );
+        }
+    },
+
+    handleFiles: (
+        files,
+        uploadFileSelectInput,
+        url,
+        maxFiles,
+        maxFileSizeInMB,
+        dropArea,
+        progressBar,
+        uploadFileErrorDiv,
+        markdownEditorTxt,
+        galleryTbl,
+        previewFilesFunction
+    ) => {
+        files = [...files]; // files is not an array, but a FileList. So, we’ll need to convert it to an array.
+
+        const validationFilesMessage = getValidationFilesMessage(files, maxFiles, maxFileSizeInMB);
+        if (validationFilesMessage) {
+            alert(validationFilesMessage);
+            uploadFileSelectInput.classList.add("is-invalid");
+            uploadFileErrorDiv.innerHTML = validationFilesMessage;
+            return false;
+        } else {
+            uploadFileSelectInput.classList.remove("is-invalid");
         }
 
-        function handleFiles(files) {
-            files = [...files]; // files is not an array, but a FileList. So, we’ll need to convert it to an array.
-
-            const validationFilesMessage = getValidationFilesMessage(files, maxFiles, maxFileSizeInMB);
-            if (validationFilesMessage) {
-                alert(validationFilesMessage);
-                uploadFileSelectInput.classList.add("is-invalid");
-                uploadFileErrorDiv.innerHTML = validationFilesMessage;
-                return false;
-            } else {
-                uploadFileSelectInput.classList.remove("is-invalid");
-            }
-
-            initializeProgress(files.length);
-
-            remoteUploadFiles(files, url);
-        }
+        uploadFilesHelper.remoteUploadFiles(files, url, progressBar, markdownEditorTxt, galleryTbl, previewFilesFunction);
 
         function getValidationFilesMessage(files, maxFiles, maxFileSizeInMB) {
             maxFiles = maxFiles || 20;
@@ -79,36 +175,40 @@ export const uploadFilesHelper = {
 
             return undefined;
         }
+    },
 
-        function remoteUploadFiles(files, url) {
-            const xhr = new XMLHttpRequest(); // with 'XMLHttpRequest' we can track upload progress (we cannot do that with 'fetch')
-            xhr.responseType = "json";
+    remoteUploadFiles: (files, url, progressBar, markdownEditorTxt, galleryTbl, previewFilesFunction) => {
+        const xhr = new XMLHttpRequest(); // with 'XMLHttpRequest' we can track upload progress (we cannot do that with 'fetch')
+        xhr.responseType = "json";
 
-            xhr.open("POST", url, true);
+        if (progressBar) initializeProgress(files.length);
 
+        xhr.open("POST", url, true);
+
+        if (progressBar)
             xhr.upload.addEventListener("progress", function (e) {
                 updateProgress((e.loaded * 100.0) / e.total || 100);
             });
 
-            xhr.addEventListener("readystatechange", function () {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    previewFiles(xhr.response);
-                } else if (xhr.readyState == 4 && xhr.status != 200) {
-                    // Error. Inform the user
-                }
-            });
-
+        xhr.addEventListener("readystatechange", function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                // uploadFilesHelper.previewFiles(xhr.response);
+                previewFilesFunction(xhr.response, markdownEditorTxt, galleryTbl);
+            } else if (xhr.readyState == 4 && xhr.status != 200) {
+                // Error. Inform the user
+            }
+        });
+        if (progressBar)
             xhr.onload = () => {
                 closeProgress(); // on success or error
             };
 
-            const formData = new FormData();
-            files.forEach((file) => {
-                formData.append("file", file);
-            });
+        const formData = new FormData();
+        files.forEach((file) => {
+            formData.append("file", file);
+        });
 
-            xhr.send(formData);
-        }
+        xhr.send(formData);
 
         function initializeProgress() {
             progressBar.classList.remove("d-none");
@@ -122,43 +222,43 @@ export const uploadFilesHelper = {
         function closeProgress() {
             progressBar.classList.add("d-none");
         }
+    },
 
-        function previewFiles(result) {
-            const files = result.files.filter((x) => x.isSuccess);
-            const statementEditorTxt = document.getElementById("statement-editor-txt");
-            files.forEach((file) => {
-                // Add image preview in markdown
-                if (statementEditorTxt.value) statementEditorTxt.value += "\\\n"; // add the image on a new line
-                statementEditorTxt.value += `![](${file.url})`;
-                statementEditorTxt.dispatchEvent(new Event("change"));
+    previewFiles: (result, markdownEditorTxt, galleryTbl) => {
+        const files = result.files.filter((x) => x.isSuccess);
 
-                // we use a file container to add data-attributes on it
+        files.forEach((file) => {
+            const imageMimeTypes = ["image/png", "image/svg+xml", "image/jpeg"];
+            const isImage = imageMimeTypes.includes(file.mimeType);
 
+            // 1. Add image preview in markdownEditor
+            if (markdownEditorTxt) {
+                if (markdownEditorTxt.value) markdownEditorTxt.value += "\\\n"; // add the image on a new line
+                markdownEditorTxt.value += isImage ? `![](${file.url})` : `[${file.name}](${file.url})`;
+                markdownEditorTxt.dispatchEvent(new Event("change"));
+            }
+
+            // 2. Add image preview in gallery
+            if (galleryTbl) {
                 const row = galleryTbl.insertRow(-1); // We are adding at the end
 
                 const c1 = row.insertCell(0);
 
-                const fileParts = file.url.split(".");
-                if (fileParts.length > 0) {
-                    const fileExtension = fileParts[fileParts.length - 1];
-                    if (["jpg", "jpeg", "png", "svg"].includes(fileExtension.toLowerCase())) {
-                        const img = document.createElement("img");
-                        img.src = file.url;
-                        img.height = "100";
+                if (isImage) {
+                    const img = document.createElement("img");
+                    img.src = file.url;
+                    img.height = "100";
 
-                        c1.appendChild(img);
-                    } else {
-                        // maybe add a pdf thumbnail/icon
+                    c1.appendChild(img);
+                } else {
+                    // maybe add a thumbnail/icon based on mimeType or file extension
 
-                        // if (fileExtension.toLowerCase() === "pdf")
-
-                        const a = document.createElement("a");
-                        const linkText = document.createTextNode(file.url);
-                        a.appendChild(linkText);
-                        a.title = "my title text";
-                        a.href = file.url;
-                        c1.appendChild(a);
-                    }
+                    const a = document.createElement("a");
+                    const linkText = document.createTextNode(file.url);
+                    a.appendChild(linkText);
+                    a.title = file.name;
+                    a.href = file.url;
+                    c1.appendChild(a);
                 }
 
                 const c2 = row.insertCell(1);
@@ -226,7 +326,7 @@ export const uploadFilesHelper = {
                 // fileContainerInput.value = file.url;
 
                 // gallery.appendChild(fileContainerInput);
-            });
-        }
+            }
+        });
     },
 };

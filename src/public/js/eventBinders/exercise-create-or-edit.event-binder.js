@@ -43,9 +43,6 @@ document.getElementById("gallery-tbl").addEventListener("click", eventHandlers.h
 const uploadFileSelectInput = document.getElementById("upload-file-select-input");
 
 if (uploadFileSelectInput) {
-    //const dropArea = document.querySelector(".drop-area"); // find the closest ancestor which matches the selectors
-    const galleryTbl = document.getElementById("gallery-tbl");
-
     const options = {
         uploadFileSelectInput,
         // url: "/fisiere/upload-many",
@@ -54,9 +51,12 @@ if (uploadFileSelectInput) {
         maxFileSizeInMB: 1,
 
         dropArea: document.querySelector(".drop-area"), // find the closest ancestor which matches the selectors
-        progressBar: document.querySelector(".progress"),
+        progressBar: document.querySelector(".progress"), // let it undefined if you don't need preview in markdownEditor
         uploadFileErrorDiv: document.querySelector(".upload-file-error-div"),
-        galleryTbl,
+
+        markdownEditorTxt: document.getElementById("statement-editor-txt"), // let it undefined if you don't need preview in markdownEditor
+        galleryTbl: document.getElementById("gallery-tbl"), // let it undefined if you don't need preview in gallery
+        previewFilesFunction: uploadFilesHelper.previewFiles,
     };
 
     uploadFilesHelper.uploadFiles(options);

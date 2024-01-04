@@ -705,7 +705,7 @@ exports.uploadFiles = async (req, res) => {
     const params = {
         maxFileSize: 1 * 1024 * 1024, // 1 MB
         maxFiles: 3,
-        allowedMimeType: ["image/png", "image/svg+xml", "image/jpeg2"],
+        allowedMimeType: ["image/png", "image/svg+xml", "image/jpeg"],
         containerName: "exercises",
         sourceType: "exercise",
         sourceId: exerciseId,
