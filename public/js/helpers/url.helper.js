@@ -13,6 +13,7 @@ export const urlHelper = {
      * Input: http://www.example.com/dir/file.html
      * Output: file.html
      * Source: https://stackoverflow.com/a/47956767
+     * Note: OK, but it is no longer used
      */
     getFilenameWithoutExtensionFromUrl: (url) => {
         const filename = urlHelper.getFilenameFromUrl(url);

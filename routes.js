@@ -147,6 +147,10 @@ router.post("/cursuri/:courseId/exercitii/:exerciseId/sterge", isAuthenticated, 
 router.get("/cursuri/:courseId/exercitii/:exerciseId/json", isAuthenticated, courseExerciseController.jsonGet);
 router.post("/cursuri/:courseId/exercitii/:exerciseId/upload-files", isAuthenticated, courseExerciseController.uploadFiles);
 router.post("/cursuri/:courseId/exercitii/upload-files", isAuthenticated, courseExerciseController.uploadFiles);
+
+router.delete(`/cursuri/:courseId/exercitii/fisiere/:fileId`, courseExerciseController.deleteFileById); // delete at create
+router.delete(`/cursuri/:courseId/exercitii/:exerciseId/fisiere/:fileId`, courseExerciseController.deleteFileById); // delete at edit
+
 //router.post("/cursuri/:courseId/capitole/:chapterId/lectii/adauga", isAuthenticated, courseLessonController.createOrEditPost);
 router.get("/cursuri/:courseId/available-lessons", isAuthenticated, courseExerciseController.getAvailableLessons);
 router.get(
@@ -237,6 +241,9 @@ router.get("/reset-password/confirm-success", userResetPasswordController.getRes
 router.get("/editia-[1|2|3|4|5]", editionController.getEdition);
 
 // file
-router.delete("/fisiere/:fileId", fileController.deleteOneById);
+router.get("/fisiere", fileController.getAll);
+// router.delete("/fisiere/:fileId", fileController.deleteOneById);
+router.get("/fisiere/:fileId", fileController.getOneById);
+router.get("/fisiere/:fileId/json", fileController.jsonGetOneById);
 
 module.exports = router;

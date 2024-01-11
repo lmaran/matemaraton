@@ -1,55 +1,65 @@
-const autz = require("../services/autz.service");
-const exerciseService = require("../services/exercise.service");
 const fileService = require("../services/file.service");
-const blobService = require("../services/blob.service");
+const dateTimeHelper = require("../helpers/date-time.helper");
+const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
-const containerName = "exercises";
-
-exports.deleteOneById = async (req, res) => {
+exports.getOneById = async (req, res) => {
     const { fileId } = req.params;
-    const { exerciseId, extension } = req.query;
 
     try {
-        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
-        if (!canCreateOrEditCourse) {
-            return res.status(403).json({ code: "forbidden", message: "Lipsă permisiuni." });
-        }
+        // validate parameters
+        const file = await fileService.getOneById(fileId);
+        if (!file) return res.status(500).send("Fișier negăsit!");
 
-        // const course = await courseService.getOneById(courseId);
-        // if (!course) return res.status(500).send("Curs negăsit!");
+        //let pageTitle = availableSheetTypes[sheet.sheetType - 1].text;
 
-        // const { exerciseMeta: exercise } = exerciseHelper.getExerciseAndParentsFromCourse(course, exerciseId);
-        // if (!exercise) return res.status(500).send("Exercițiu negăsit!");
+        const data = {
+            file,
+            // pageTitle,
+        };
 
-        const exercise = await exerciseService.getOneById(exerciseId);
-        if (!exercise) return res.status(404).send("Exercițiu negăsit.");
-
-        // const blobServiceClient = BlobServiceClient.fromConnectionString(config.azureBlobStorageConnectionString);
-        // const url = "https://" + blobServiceClient.accountName + ".blob.core.windows.net/exercises/" + fileId;
-        const fileIndex = (exercise.files || []).findIndex((x) => x.url.includes(fileId));
-
-        if (fileIndex > -1) {
-            exercise.files.splice(fileIndex, 1); // remove from array
-
-            // Delete from Azure blobs
-            const blobName = `${fileId}.${extension || "png"}`;
-            const blobDeleteResponse = await blobService.deleteBlob(containerName, blobName);
-
-            if (blobDeleteResponse.errorCode && blobDeleteResponse.errorCode !== "BlobNotFound") {
-                return res.status(500).json("Eroare la ștergerea blob-ului.");
-            }
-
-            // Delete from exercise
-            exerciseService.updateOne(exercise);
-
-            // Delete from files
-            fileService.deleteOneById(fileId);
-        }
-
-        // res.redirect(`/cursuri/${courseId}/capitole/${chapter.id}/modifica`);
-        // res.sendStatus(204); // no content
-        return res.json(exercise.files);
+        res.render("file/file", data);
     } catch (err) {
-        return res.status(500).json({ code: "exception", message: err.message });
+        return res.status(500).json(err.message);
+    }
+};
+
+exports.getAll = async (req, res) => {
+    try {
+        const files = await fileService.getAll();
+
+        files.forEach((file) => (file.createdOn = dateTimeHelper.getShortDateAndTimeDateRo(file.createdOn))); // ex: 22.11.2023
+
+        const data = {
+            files,
+        };
+
+        //res.send(data);
+        res.render("file/files", data);
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
+};
+
+exports.jsonGetOneById = async (req, res) => {
+    const { fileId } = req.params;
+    try {
+        // validate parameters
+        const sheet = await fileService.getOneById(fileId);
+        if (!sheet) return res.status(500).send("Fișă negăsită!");
+
+        const prettyJson = prettyJsonHelper.getPrettyJson(sheet);
+
+        const data = {
+            fileId,
+            prettyJson,
+        };
+
+        // TODO: fix it
+        data.canCreateOrEditSheet = true;
+
+        //res.send(data);
+        res.render("file/file-json", data);
+    } catch (err) {
+        return res.status(500).json(err.message);
     }
 };

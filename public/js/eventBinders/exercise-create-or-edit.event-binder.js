@@ -8,7 +8,9 @@ statementEditorTxt.addEventListener("change", dateTimeHelper.debounce(eventHandl
 
 document.getElementById("answer-editor-txt").addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.getAnswerPreview, 500)); // with debouncer (500 ms)
 
-document.getElementById("solution-editor-txt").addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.getSolutionPreview, 500)); // with debouncer (500 ms)
+const solutionEditorTxt = document.getElementById("solution-editor-txt");
+solutionEditorTxt.addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.getSolutionPreview, 500)); // with debouncer (500 ms)
+solutionEditorTxt.addEventListener("change", dateTimeHelper.debounce(eventHandlers.getSolutionPreview, 500)); // for image preview
 
 document.getElementById("exerciseTypeSelect").addEventListener("change", eventHandlers.setDefaultAnswerType);
 
@@ -40,21 +42,49 @@ document.getElementById("gallery-tbl").addEventListener("click", eventHandlers.h
 
 // ! all the code below is ok - commented out temporary.
 
-const uploadFileSelectInput = document.getElementById("upload-file-select-input");
+const courseId = document.getElementById("courseId").value;
+const exerciseId = document.getElementById("exerciseId").value; // empty in edit mode
+const url = exerciseId ? `/cursuri/${courseId}/exercitii/${exerciseId}/upload-files` : `/cursuri/${courseId}/exercitii/upload-files`;
 
-if (uploadFileSelectInput) {
+const allowedExtensions = ["png", "svg", "jpeg", "jpg", "pdf"];
+
+const uploadFileStatementInput = document.getElementById("upload-file-statement-input");
+if (uploadFileStatementInput) {
     const options = {
-        uploadFileSelectInput,
-        // url: "/fisiere/upload-many",
-        url: "/cursuri/63b6ba0c89a768e8c6d6d5e8/exercitii/657caf7734a905f954398e31/upload-files",
+        uploadFileInput: uploadFileStatementInput,
+        url,
+
         maxFiles: 3,
         maxFileSizeInMB: 1,
+        allowedExtensions,
 
-        dropArea: document.querySelector(".drop-area"), // find the closest ancestor which matches the selectors
-        progressBar: document.querySelector(".progress"), // let it undefined if you don't need preview in markdownEditor
-        uploadFileErrorDiv: document.querySelector(".upload-file-error-div"),
+        dropArea: statementEditorTxt,
+        progressBar: document.getElementById("upload-file-progress-statement-div"), // let it undefined if you don't need preview in markdownEditor
+        uploadFileErrorDiv: document.getElementById("upload-file-error-statement-div"),
 
-        markdownEditorTxt: document.getElementById("statement-editor-txt"), // let it undefined if you don't need preview in markdownEditor
+        markdownEditorTxt: statementEditorTxt, // let it undefined if you don't need preview in markdownEditor
+        galleryTbl: document.getElementById("gallery-tbl"), // let it undefined if you don't need preview in gallery
+        previewFilesFunction: uploadFilesHelper.previewFiles,
+    };
+
+    uploadFilesHelper.uploadFiles(options);
+}
+
+const uploadFileSolutionInput = document.getElementById("upload-file-solution-input");
+if (uploadFileSolutionInput) {
+    const options = {
+        uploadFileInput: uploadFileSolutionInput,
+        url,
+
+        maxFiles: 3,
+        maxFileSizeInMB: 1,
+        allowedExtensions,
+
+        dropArea: solutionEditorTxt,
+        progressBar: document.getElementById("upload-file-progress-solution-div"), // let it undefined if you don't need preview in markdownEditor
+        uploadFileErrorDiv: document.getElementById("upload-file-error-solution-div"),
+
+        markdownEditorTxt: solutionEditorTxt, // let it undefined if you don't need preview in markdownEditor
         galleryTbl: document.getElementById("gallery-tbl"), // let it undefined if you don't need preview in gallery
         previewFilesFunction: uploadFilesHelper.previewFiles,
     };
