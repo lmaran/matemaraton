@@ -41,7 +41,7 @@
     {{!-- statement --}}
     <div class="row">
         <div class="col-md-12 statement-div">
-            <label class="fw-bold"> Enunț: </label>
+            <label for="statement-editor-txt"  class="fw-bold"> Enunț: </label>
 
             <textarea id="statement-editor-txt" rows="8" name="statement"
                 class="statement-input drop-area form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.statement}}}</textarea>
@@ -54,9 +54,7 @@
             </div>
 
 
-            {{!-- <progress class="progress-bar d-none2 w-100" max=100 value=0></progress> --}}
-
-            <div class="progress d-none" role="progressbar" aria-label="Basic example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="height: 2px">
+            <div id="upload-file-progress-statement-div" class="progress d-none" role="progressbar" aria-label="Basic example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="height: 2px">
                 <div class="progress-bar w-100"></div>
             </div>
 
@@ -72,28 +70,13 @@
                 
 
                 <div class="float-end">
-
-                    {{!-- <form enctype="multipart/form-data">
-
-
-                        <input type="file" name="filefield" id="upload-file-select-input" multiple accept="image/*" class="d-none">
-                        <span class="upload-file-error-div invalid-feedback">Mesaj de eroare</span>
-                        <label class="upload-file-label d-none2 btn btn-light border border-primary btn-xs" for="upload-file-select-input">
-                            <i class="bi bi-card-image"></i>
-                            Adaugă poza
-                        </label>
-
-                    </form> --}}
-
-                    <span class="upload-file-error-div invalid-feedback">Mesaj de eroare</span>
-                    <label class="upload-file-label d-none2 btn btn-light border border-primary btn-xs" for="upload-file-select-input">
+                    <span id="upload-file-error-statement-div" class="upload-file-error-div invalid-feedback">Mesaj de eroare</span>
+                    <label class="btn btn-light border border-primary btn-xs" for="upload-file-statement-input">
                         <i class="bi bi-card-image"></i>
                         Adaugă poza
                     </label>
 
-
                     <a id="toggle-statement-editor-btn" href="">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</a>
-
                 </div>
             </div>
 
@@ -206,8 +189,8 @@
             <label for="solution-editor-txt" class="fw-bold"> Rezolvare completă: </label>
 
             <textarea id="solution-editor-txt" rows="8" name="solution"
-                style="border-radius:0; border-bottom-width:0; border-color:#008000"
-                class="form-control {{#if errors.solution}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.solution}}}</textarea>
+                style2="border-radius:0; border-bottom-width:0; border-color:#008000"
+                class="solution-input drop-area form-control {{#if errors.solution}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}">{{{exercise.solution}}}</textarea>
             <div class="invalid-feedback">{{errors.solution.msg}}</div>
 
             <div id="solution-preview-div"
@@ -215,8 +198,28 @@
                 {{{exercise.solutionPreview}}}
             </div>
 
-            <div class="float-end">
-                <a id="toggle-solution-editor-btn" href="">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</a>
+            <div id="upload-file-progress-solution-div" class="progress d-none" role="progressbar" aria-label="Basic example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="height: 2px">
+                <div class="progress-bar w-100"></div>
+            </div>
+
+            {{!-- Statement menu --}}
+            <div class="exercise-menu-div hide-on-print clearfix">
+                {{!-- <div class="float-start">
+                    {{#if hints}}
+                        <a class="toggle-hints-btn" href="">Indicații</a>
+                        <span class="text-muted">({{hints.length}})</span>
+                    {{/if}}
+                </div> --}}
+
+                <div class="float-end">
+                    <span id="upload-file-error-solution-div" class="upload-file-error-div invalid-feedback">Mesaj de eroare</span>
+                    <label class="btn btn-light border border-primary btn-xs" for="upload-file-solution-input">
+                        <i class="bi bi-card-image"></i>
+                        Adaugă poza
+                    </label>
+
+                    <a id="toggle-solution-editor-btn" href="">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</a>
+                </div>
             </div>
         </div>
     </div>
@@ -335,13 +338,10 @@
                     <tr>
                         <td>
                             <img src="{{url}}" height="50"/>
+                            <input class="d-none" name="fileIds" value="{{id}}"/>
                         </td>
                         <td>
-                            <input name="files" value="{{url}}"/>
-                            {{!-- <input name="files" value="{{extension}}"/> --}}
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-link delete-file-btn" data-url="{{url}}" data-extension="{{extension}}">Șterge</button>
+                            <button type="button" class="btn btn-link delete-file-btn" data-fileid="{{id}}">Șterge</button>
                         </td>
                     </tr>
                     {{/each}}
@@ -353,12 +353,12 @@
     </div>
 
 
-    <input type="hidden" name="courseId" value="{{courseId}}" />
+    <input type="hidden" name="courseId" value="{{courseId}}" id="courseId" />
     <input type="hidden" name="chapterId" value="{{chapterId}}" />
     <input type="hidden" name="lessonId" value="{{lessonId}}" />
     <input type="hidden" name="sectionId" value="{{sectionId}}" />
     <input type="hidden" name="levelId" value="{{levelId}}" />
-    <input type="hidden" name="exerciseId" value="{{exercise._id}}" />
+    <input type="hidden" name="exerciseId" value="{{exercise._id}}" id="exerciseId" />
 
     <div class="row mt-3 mb-3">
         <div class="col-md-7s offset-md-3s">
@@ -388,7 +388,8 @@
     {{!-- <input type2="hidden" name="courseId2" value="{{courseId}}" />
     <input type2="hidden" name="exerciseId2" value="{{exercise._id}}" /> --}}
 
-    <input type="file" name="filefield" id="upload-file-select-input" multiple accept="image/*" class="d-none">
+    <input type="file" name="filefield1" id="upload-file-statement-input" multiple accept="image/*" class="d-none">
+    <input type="file" name="filefield2" id="upload-file-solution-input" multiple accept="image/*" class="d-none">
 
 </form>
 

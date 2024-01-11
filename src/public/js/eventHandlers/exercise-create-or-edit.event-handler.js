@@ -180,7 +180,7 @@ export const eventHandlers = {
     },
 
     handleClickInGallery: async (event) => {
-        // handle 'delete' events
+        // Handle 'delete' events
         const target = event.target; // shortcut
         if (target) {
             // if (target.tagName != "INPUT") event.preventDefault();
@@ -194,36 +194,24 @@ export const eventHandlers = {
                 // const editorIsHide = editorTxt.classList.contains("d-none");
                 // target.textContent = editorIsHide ? "Editează" : "Ascunde";
 
-                const fileUrl = target.dataset.url;
-                const extension = target.dataset.extension;
-                const fileId = urlHelper.getFilenameWithoutExtensionFromUrl(fileUrl);
-                //alert(fileId);
+                const courseId = document.getElementById("courseId").value;
+                const exerciseId = document.getElementById("exerciseId").value; // empty in edit mode
+                const fileId = target.dataset.fileid; // all attribute names are lower case
 
-                // const { isSuccess } = await deleteRequest(`/fisiere/${fileId}`);
-                // if (isSuccess) {
-                //     alert("ok");
-                // } else {
-                //     alert("err");
-                // }
+                const url = exerciseId
+                    ? `/cursuri/${courseId}/exercitii/${exerciseId}/fisiere/${fileId}`
+                    : `/cursuri/${courseId}/exercitii/fisiere/${fileId}`;
 
-                const exerciseId = document.getElementsByName("exerciseId")[0].value;
-
-                const [error, response] = await fetchHelpers.delete(`/fisiere/${fileId}?exerciseId=${exerciseId}&extension=${extension}`);
+                const [error, response] = await fetchHelpers.delete(url);
                 if (error) {
-                    console.log(response);
                     alert(response.message);
                     return;
                 }
 
+                // Remove the element from DOM (ES6 way)
                 const parentDiv = target.closest("tr"); // find the closest ancestor which matches the selectors
-                parentDiv.remove(); // remove element from DOM (ES6 way)
+                parentDiv.remove();
             }
-            // else if (target.classList.contains("delete-answer-option-btn")) {
-            //     const parentDiv = target.closest(".answer-option-parent-div"); // find the closest ancestor which matches the selectors
-            //     parentDiv.remove(); // remove element from DOM (ES6 way)
-
-            //     updateAnswerOptionLabels(); // update label for remaining elements
-            // }
         }
     },
 
@@ -269,54 +257,6 @@ export const eventHandlers = {
 
     submitMySolution: async (data) => {
         return fetchHelpers.post(`/exercitii/${data.exerciseId}/rezolvari`, data);
-    },
-
-    deleteFile_old: async (event) => {
-        // event.preventDefault();
-        // if (target.tagName != "INPUT") event.preventDefault();
-
-        // handle 'toggle edit' and 'delete' events
-        const target = event.target; // shortcut
-        if (target) {
-            const fileUrl = target.dataset.url;
-            const fileId = urlHelper.getFilenameWithoutExtensionFromUrl(fileUrl);
-            //alert(fileId);
-
-            // const { isSuccess } = await deleteRequest(`/fisiere/${fileId}`);
-            // if (isSuccess) {
-            //     alert("ok");
-            // } else {
-            //     alert("err");
-            // }
-
-            const exerciseId = document.getElementsByName("exerciseId")[0].value;
-
-            const [error, response] = await fetchHelpers.delete(`/fisiere/${fileId}?exerciseId=${exerciseId}`);
-            if (error) {
-                console.log(response);
-                alert(error);
-                return;
-            }
-
-            //alert("ok");
-            const parentDiv = target.closest("tr"); // find the closest ancestor which matches the selectors
-            parentDiv.remove(); // remove element from DOM (ES6 way)
-
-            // if (target.classList.contains("toggle-hint-editor-btn")) {
-            //     const parentDiv = target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
-            //     const editorTxt = parentDiv.querySelector(".hint-editor-txt");
-
-            //     editorTxt.classList.toggle("d-none");
-
-            //     const editorIsHide = editorTxt.classList.contains("d-none");
-            //     target.textContent = editorIsHide ? "Editează" : "Ascunde";
-            // } else if (target.classList.contains("delete-hint-btn")) {
-            //     const parentDiv = target.closest(".hint-parent-div"); // find the closest ancestor which matches the selectors
-            //     parentDiv.remove(); // remove element from DOM (ES6 way)
-
-            //     updateHintLabels(); // update label for remaining elements
-            // }
-        }
     },
 };
 

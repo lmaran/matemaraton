@@ -7,6 +7,9 @@ const arrayHelper = require("../helpers/array.helper");
 const exerciseHelper = require("../helpers/exercise.helper");
 const { EventEmitter } = require("events");
 const uploadFileService = require("../services/upload-file.service");
+const fileService = require("../services/file.service");
+const blobService = require("../services/blob.service");
+const stringHelper = require("../helpers/string.helper");
 
 const { availableExerciseTypes, availableSections, availableLevels } = require("../constants/constants");
 
@@ -150,7 +153,7 @@ exports.createPost = async (req, res) => {
         isCorrectAnswerChecks,
         solution,
         hints,
-        files,
+        fileIds,
         position,
     } = req.body;
 
@@ -182,10 +185,15 @@ exports.createPost = async (req, res) => {
         exercise.author = author;
 
         if (hints) exercise.hints = getHintsAsArray(hints);
-        if (files) exercise.files = getFilesAsArray(files);
+
         if (answerOptions) exercise.answerOptions = getAnswerOptionsAsArray(answerOptions, isCorrectAnswerChecks);
 
+        const fileIdsAsArray = getFileIdsAsArray(fileIds);
+        if (fileIdsAsArray.length > 0) exercise.files = await getExerciseFilesFromIds(fileIdsAsArray);
+
         await exerciseService.insertOne(exercise);
+
+        if (fileIdsAsArray.length > 0) await fileService.updateSourceIds(fileIdsAsArray, exerciseId);
 
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
@@ -332,7 +340,7 @@ exports.editPost = async (req, res) => {
         isCorrectAnswerChecks,
         solution,
         hints,
-        files,
+        // fileIds, // we don't need them as new or deleted files already updated the files field in the exercise
         position,
     } = req.body;
 
@@ -366,9 +374,9 @@ exports.editPost = async (req, res) => {
         exercise.sourceName = sourceName;
         exercise.author = author;
 
-        if (hints) exercise.hints = getHintsAsArray(hints);
-        if (files) exercise.files = getFilesAsArray(files);
         if (answerOptions) exercise.answerOptions = getAnswerOptionsAsArray(answerOptions, isCorrectAnswerChecks);
+
+        if (hints) exercise.hints = getHintsAsArray(hints);
 
         await exerciseService.updateOne(exercise);
 
@@ -700,15 +708,13 @@ exports.deleteOneById = async (req, res) => {
 };
 
 exports.uploadFiles = async (req, res) => {
-    const { exerciseId } = req.params;
+    const { courseId, exerciseId } = req.params;
 
     const params = {
         maxFileSize: 1 * 1024 * 1024, // 1 MB
         maxFiles: 3,
-        allowedMimeType: ["image/png", "image/svg+xml", "image/jpeg"],
+        allowedExtensions: ["png", "svg", "jpeg", "jpg", "pdf"],
         containerName: "exercises",
-        sourceType: "exercise",
-        sourceId: exerciseId,
     };
 
     const canCreateOrEditExercise = await autz.can(req.user, "create-or-edit:exercise");
@@ -720,9 +726,89 @@ exports.uploadFiles = async (req, res) => {
     try {
         uploadFileService.uploadFiles(req, emitter, params);
 
-        emitter.once("uploaded", (result) => {
+        emitter.once("uploaded", async (result) => {
+            const resultFiles = result.files.filter((x) => x.isSuccess);
+            if (resultFiles.length == 0) return res.json(result);
+
+            // 1. Save file to DB.
+            const filesToDB = resultFiles.map((file) => ({
+                _id: fileService.getObjectId(file.id),
+                name: file.name,
+                url: file.url,
+                size: file.size,
+
+                accountName: blobService.getAccountName(),
+                containerName: "exercises",
+                sourceType: `/cursuri/${courseId}/exercitii`,
+                sourceId: exerciseId,
+                createdOn: new Date(),
+                createdBy: { id: req.user._id.toString(), name: `${req.user.firstName} ${req.user.lastName}` },
+            }));
+
+            if (filesToDB.length > 0) await fileService.insertMany(filesToDB);
+
+            // 2. Add the new files to the exercise (edit mode only)
+            if (exerciseId) {
+                const exercise = await exerciseService.getOneById(exerciseId);
+                if (!exercise) return res.status(404).send("Exercițiu negăsit.");
+
+                const filesToExercise = resultFiles.map((file) => ({
+                    id: file.id,
+                    name: file.name,
+                    url: file.url,
+                    size: file.size,
+                }));
+
+                // Concatenate the two arrays
+                exercise.files = [...(exercise.files || []), ...filesToExercise];
+                await exerciseService.updateOne(exercise);
+            }
+
             return res.json(result);
         });
+    } catch (err) {
+        return res.status(500).json({ code: "exception", message: err.message });
+    }
+};
+
+exports.deleteFileById = async (req, res) => {
+    const { exerciseId, fileId } = req.params;
+
+    try {
+        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+        if (!canCreateOrEditCourse) {
+            return res.status(403).json({ code: "forbidden", message: "Lipsă permisiuni." });
+        }
+
+        // Delete from exercise (edit mode only)
+        if (exerciseId) {
+            const exercise = await exerciseService.getOneById(exerciseId);
+            if (!exercise) return res.status(404).send("Exercițiu negăsit.");
+
+            const fileIndex = (exercise.files || []).findIndex((x) => x.url.includes(fileId));
+            if (fileIndex > -1) {
+                exercise.files.splice(fileIndex, 1); // remove from array
+                exerciseService.updateOne(exercise);
+            }
+        }
+
+        // Delete from Azure blobs
+        const fileFromDB = await fileService.getOneById(fileId);
+        if (fileFromDB) {
+            const fileExtension = stringHelper.getFileExtension(fileFromDB.name);
+            const blobName = `${fileId}.${fileExtension}`;
+            const blobDeleteResponse = await blobService.deleteBlob(fileFromDB.containerName, blobName);
+
+            if (blobDeleteResponse.errorCode && blobDeleteResponse.errorCode !== "BlobNotFound") {
+                return res.status(500).json("Eroare la ștergerea blob-ului.");
+            }
+        }
+
+        // Delete from files
+        if (fileFromDB) await fileService.deleteOneById(fileId);
+
+        res.sendStatus(204); // no content
+        // return res.json(exercise.files);
     } catch (err) {
         return res.status(500).json({ code: "exception", message: err.message });
     }
@@ -743,17 +829,19 @@ const getHintsAsArray = (hints) => {
     return array;
 };
 
-const getFilesAsArray = (files) => {
+const getFileIdsAsArray = (fileIds) => {
+    if (!fileIds) return [];
+
     const array = [];
-    if (Array.isArray(files)) {
-        files.forEach((file) => {
-            file = file.trim();
-            if (file) array.push({ url: file });
+    if (Array.isArray(fileIds)) {
+        fileIds.forEach((id) => {
+            id = id.trim();
+            if (id) array.push(id);
         });
     } else {
         // an object with a single option
-        const file = files.trim();
-        if (file) array.push({ url: file });
+        const id = fileIds.trim();
+        if (id) array.push(id);
     }
     return array;
 };
@@ -870,4 +958,26 @@ const addExerciseToLocation = async (courseId, lessonId, sectionId, levelId, pos
     if (updateResult.modifiedCount != 1) return { isValid: false, message: "Eroare la salvarea în DB!" };
 
     return { isValid: true };
+};
+
+// Input: an array of fileIds
+// Output: an array of files
+const getExerciseFilesFromIds = async (fileIds) => {
+    if (!fileIds) return [];
+
+    const files = [];
+    const filesFromDB = await fileService.getAllByIds(fileIds);
+
+    fileIds.forEach((fileId) => {
+        const file = filesFromDB.find((x) => x._id.toString() == fileId);
+
+        // Inside an exercise we don't store all file details
+        files.push({
+            id: file._id,
+            name: file.name,
+            url: file.url,
+            size: file.size,
+        });
+    });
+    return files;
 };

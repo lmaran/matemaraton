@@ -1,10 +1,13 @@
+import { stringHelper } from "./string.helper.js";
+
 export const uploadFilesHelper = {
     uploadFiles: (options) => {
         const {
-            uploadFileSelectInput,
+            uploadFileInput,
             url,
             maxFiles,
             maxFileSizeInMB,
+            allowedExtensions,
             dropArea,
             progressBar,
             uploadFileErrorDiv,
@@ -14,10 +17,11 @@ export const uploadFilesHelper = {
         } = options;
 
         uploadFilesHelper.handleBrowse(
-            uploadFileSelectInput,
+            uploadFileInput,
             url,
             maxFiles,
             maxFileSizeInMB,
+            allowedExtensions,
             dropArea,
             progressBar,
             uploadFileErrorDiv,
@@ -26,10 +30,11 @@ export const uploadFilesHelper = {
             previewFilesFunction
         );
         uploadFilesHelper.handleDragAndDrop(
-            uploadFileSelectInput,
+            uploadFileInput,
             url,
             maxFiles,
             maxFileSizeInMB,
+            allowedExtensions,
             dropArea,
             progressBar,
             uploadFileErrorDiv,
@@ -40,10 +45,11 @@ export const uploadFilesHelper = {
     },
 
     handleBrowse: (
-        uploadFileSelectInput,
+        uploadFileInput,
         url,
         maxFiles,
         maxFileSizeInMB,
+        allowedExtensions,
         dropArea,
         progressBar,
         uploadFileErrorDiv,
@@ -51,16 +57,17 @@ export const uploadFilesHelper = {
         galleryTbl,
         previewFilesFunction
     ) => {
-        uploadFileSelectInput.addEventListener("change", handleInputFiles, false);
+        uploadFileInput.addEventListener("change", handleInputFiles, false);
 
         function handleInputFiles() {
             const files = this.files;
             uploadFilesHelper.handleFiles(
                 files,
-                uploadFileSelectInput,
+                uploadFileInput,
                 url,
                 maxFiles,
                 maxFileSizeInMB,
+                allowedExtensions,
                 dropArea,
                 progressBar,
                 uploadFileErrorDiv,
@@ -72,10 +79,11 @@ export const uploadFilesHelper = {
     },
 
     handleDragAndDrop: (
-        uploadFileSelectInput,
+        uploadFileInput,
         url,
         maxFiles,
         maxFileSizeInMB,
+        allowedExtensions,
         dropArea,
         progressBar,
         uploadFileErrorDiv,
@@ -116,10 +124,11 @@ export const uploadFilesHelper = {
 
             uploadFilesHelper.handleFiles(
                 files,
-                uploadFileSelectInput,
+                uploadFileInput,
                 url,
                 maxFiles,
                 maxFileSizeInMB,
+                allowedExtensions,
                 dropArea,
                 progressBar,
                 uploadFileErrorDiv,
@@ -132,10 +141,11 @@ export const uploadFilesHelper = {
 
     handleFiles: (
         files,
-        uploadFileSelectInput,
+        uploadFileInput,
         url,
         maxFiles,
         maxFileSizeInMB,
+        allowedExtensions,
         dropArea,
         progressBar,
         uploadFileErrorDiv,
@@ -145,33 +155,35 @@ export const uploadFilesHelper = {
     ) => {
         files = [...files]; // files is not an array, but a FileList. So, we’ll need to convert it to an array.
 
-        const validationFilesMessage = getValidationFilesMessage(files, maxFiles, maxFileSizeInMB);
+        const validationFilesMessage = getValidationFilesMessage(files, maxFiles, maxFileSizeInMB, allowedExtensions);
         if (validationFilesMessage) {
             alert(validationFilesMessage);
-            uploadFileSelectInput.classList.add("is-invalid");
+            uploadFileInput.classList.add("is-invalid");
             uploadFileErrorDiv.innerHTML = validationFilesMessage;
             return false;
         } else {
-            uploadFileSelectInput.classList.remove("is-invalid");
+            uploadFileInput.classList.remove("is-invalid");
         }
 
         uploadFilesHelper.remoteUploadFiles(files, url, progressBar, markdownEditorTxt, galleryTbl, previewFilesFunction);
 
-        function getValidationFilesMessage(files, maxFiles, maxFileSizeInMB) {
+        function getValidationFilesMessage(files, maxFiles, maxFileSizeInMB, allowedExtensions) {
             maxFiles = maxFiles || 20;
             maxFileSizeInMB = maxFileSizeInMB || 20;
 
             if (files.length > maxFiles) return `Poți adăuga maxim ${maxFiles} poze!`;
 
             let isFileSizeValid = true;
-            //let isFileTypeValid = true; // useful for drag & drop
+            let isFileExtensionValid = true; // useful for drag & drop
             files.forEach((file) => {
                 if (file.size > maxFileSizeInMB * 1024 * 1024) isFileSizeValid = false;
-                //if (!file.type.startsWith("image/")) isFileTypeValid = false;
+
+                const fileExtension = stringHelper.getFileExtension(file.name);
+                if (!allowedExtensions.includes(fileExtension)) isFileExtensionValid = false;
             });
 
             if (!isFileSizeValid) return `Un fișier poate avea maxim ${maxFileSizeInMB} MB!`;
-            //if (!isFileTypeValid) return "Poți adăuga doar poze ('.jpeg / .png')!";
+            if (!isFileExtensionValid) return `Sunt permise doar fișiere cu extensia ${allowedExtensions.join(", ")}.`;
 
             return undefined;
         }
@@ -228,8 +240,10 @@ export const uploadFilesHelper = {
         const files = result.files.filter((x) => x.isSuccess);
 
         files.forEach((file) => {
-            const imageMimeTypes = ["image/png", "image/svg+xml", "image/jpeg"];
-            const isImage = imageMimeTypes.includes(file.mimeType);
+            const imageExtensions = ["png", "svg", "jpeg", "jpg"];
+            const fileExtension = stringHelper.getFileExtension(file.name);
+
+            const isImage = imageExtensions.includes(fileExtension);
 
             // 1. Add image preview in markdownEditor
             if (markdownEditorTxt) {
@@ -247,11 +261,11 @@ export const uploadFilesHelper = {
                 if (isImage) {
                     const img = document.createElement("img");
                     img.src = file.url;
-                    img.height = "100";
+                    img.height = "50";
 
                     c1.appendChild(img);
                 } else {
-                    // maybe add a thumbnail/icon based on mimeType or file extension
+                    // maybe add a thumbnail/icon based on file extension
 
                     const a = document.createElement("a");
                     const linkText = document.createTextNode(file.url);
@@ -261,71 +275,21 @@ export const uploadFilesHelper = {
                     c1.appendChild(a);
                 }
 
+                const fileIdInput = document.createElement("input");
+                fileIdInput.name = "fileIds";
+                fileIdInput.classList.add("d-none");
+                fileIdInput.value = file.id;
+                c1.appendChild(fileIdInput);
+
                 const c2 = row.insertCell(1);
-
-                const fileUrlInput = document.createElement("input");
-                fileUrlInput.name = "files";
-                fileUrlInput.classList.add("d-none2");
-                fileUrlInput.value = file.url;
-                c2.appendChild(fileUrlInput);
-
-                // const fileExtensionInput = document.createElement("input");
-                // fileExtensionInput.name = "files";
-                // fileExtensionInput.classList.add("d-none2");
-                // fileExtensionInput.value = file.extension;
-                // c2.appendChild(fileExtensionInput);
-
-                const c3 = row.insertCell(2);
 
                 const deleteFileBtn = document.createElement("button");
                 deleteFileBtn.textContent = "Șterge";
                 deleteFileBtn.type = "button";
                 deleteFileBtn.classList.add("btn", "btn-link", "delete-file-btn");
-                deleteFileBtn.dataset.url = file.url; // same as deleteFileBtn.setAttribute("data-url", file.url);
-                deleteFileBtn.dataset.extension = file.extension;
+                deleteFileBtn.dataset.fileid = file.id; // same as deleteFileBtn.setAttribute("data-fileid", file.id); // no upperCase
 
-                c3.appendChild(deleteFileBtn);
-
-                // const fileContainerSpan = document.createElement("span");
-                // fileContainerSpan.classList.add("file-container-span");
-                // fileContainerSpan.setAttribute("data-url", file.url);
-
-                // const fileParts = file.url.split(".");
-                // if (fileParts.length > 0) {
-                //     const fileExtension = fileParts[fileParts.length - 1];
-                //     if (["jpg", "jpeg", "png", "svg"].includes(fileExtension.toLowerCase())) {
-                //         const img = document.createElement("img");
-                //         img.src = file.url;
-                //         //img.style.height = "100px";
-                //         //img.width = "100";
-                //         img.height = "100";
-                //         fileContainerSpan.appendChild(img);
-                //     } else if (fileExtension.toLowerCase() === "pdf") {
-                //         // maybe add a pdf thumbnail/icon
-                //         const a = document.createElement("a");
-                //         const linkText = document.createTextNode(file.url);
-                //         a.appendChild(linkText);
-                //         a.title = "my title text";
-                //         a.href = file.url;
-                //         fileContainerSpan.appendChild(a);
-                //     } else {
-                //         const a = document.createElement("a");
-                //         const linkText = document.createTextNode(file.url);
-                //         a.appendChild(linkText);
-                //         a.title = "my title text";
-                //         a.href = file.url;
-                //         fileContainerSpan.appendChild(a);
-                //     }
-                // }
-
-                // gallery.appendChild(fileContainerSpan);
-
-                // const fileContainerInput = document.createElement("input");
-                // fileContainerInput.name = "files";
-                // fileContainerInput.classList.add("d-none2");
-                // fileContainerInput.value = file.url;
-
-                // gallery.appendChild(fileContainerInput);
+                c2.appendChild(deleteFileBtn);
             }
         });
     },

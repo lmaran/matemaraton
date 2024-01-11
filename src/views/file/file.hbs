@@ -1,0 +1,86 @@
+
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        {{!-- {{#if lessonId}}
+            <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
+            <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}">{{courseCode}}</a></li>
+            <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}">Cap.{{inc chapterIndex}}</a></li>
+            <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}">L.{{inc lessonIndex}}</a></li>
+        {{else}} --}}
+            <li class="breadcrumb-item"><a href="/fisiere/">Fișiere</a></li>
+        {{!-- {{/if}} --}}
+
+
+        {{!-- {{#if canCreateOrEditCourse}} --}}
+        {{!-- <li title="Editează" class2="ms-auto"><a href="/fise/{{sheet._id}}/modifica?type={{type}}"><i class="bi bi-pencil me-1"></i></a></li> --}}
+        {{!-- {{/if}} --}}
+        <li title="Json" class="ms-auto me-2"><a href="/fisiere/{{file._id}}/json"><i class="bi bi-braces me-1"></i></a></li>
+    </ol>
+</nav>
+
+
+<div id="title-preview-div" class="text-center mt-4 mb-5">
+    {{{file.titlePreview}}}
+</div>
+
+<img src="{{file.url}}" height="200"/>
+
+<table class="table thead-light table-bordered table-hover mt-5">
+    {{!-- <thead>
+        <tr>
+            <th>Nume</th>
+            <th>CreatDe</th>
+            <th>CreatLa (UTC)</th>
+            <th>Șterge</th>
+        </tr>
+    </thead> --}}
+    <tbody>
+
+        <tr>
+            <td>Id</td>
+            <td>{{file._id}}</td>
+        </tr>
+        <tr>
+            <td>Nume</td>
+            <td>{{file.name}}</td>
+        </tr>
+        <tr>
+            <td>Url</td>
+            <td>{{file.url}}</td>
+        </tr>
+        <tr>
+            <td>Dimensiune</td>
+            <td>{{file.size}}</td>
+        </tr>
+        <tr>
+            <td>Account</td>
+            <td>{{file.accountName}}</td>
+        </tr>
+        <tr>
+            <td>Container</td>
+            <td>{{file.containerName}}</td>
+        </tr>
+        <tr>
+            <td>Sursa</td>
+            <td>{{file.sourceType}}/{{file.sourceId}}</td>
+        </tr>
+        <tr>
+            <td>CreatLa</td>
+            <td>{{file.createdOn}}</td>
+        </tr>
+        <tr>
+            <td>CreatDe</td>
+            <td>{{file.createdBy.name}}</td>
+        </tr>
+        <tr>
+            <td>CreatLa</td>
+            <td>{{file.createdOn}}</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
