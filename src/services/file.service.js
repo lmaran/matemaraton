@@ -26,6 +26,12 @@ exports.deleteOneById = async (id) => {
     return db.collection(collection).deleteOne({ _id: new ObjectId(id) });
 };
 
+exports.deleteAllByIds = async (fileIds) => {
+    const db = await mongoHelper.getDb();
+    const filter = { _id: { $in: fileIds.map((x) => new ObjectId(x)) } };
+    return db.collection(collection).deleteMany(filter);
+};
+
 exports.insertOne = async (item) => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).insertOne(item);

@@ -1,4 +1,5 @@
 import { stringHelper } from "./string.helper.js";
+import { constants } from "../constants/constants.js";
 
 export const uploadFilesHelper = {
     uploadFiles: (options) => {
@@ -240,10 +241,9 @@ export const uploadFilesHelper = {
         const files = result.files.filter((x) => x.isSuccess);
 
         files.forEach((file) => {
-            const imageExtensions = ["png", "svg", "jpeg", "jpg"];
             const fileExtension = stringHelper.getFileExtension(file.name);
 
-            const isImage = imageExtensions.includes(fileExtension);
+            const isImage = constants.imageExtensions.includes(fileExtension);
 
             // 1. Add image preview in markdownEditor
             if (markdownEditorTxt) {
@@ -263,15 +263,23 @@ export const uploadFilesHelper = {
                     img.src = file.url;
                     img.height = "50";
 
-                    c1.appendChild(img);
-                } else {
-                    // maybe add a thumbnail/icon based on file extension
-
                     const a = document.createElement("a");
-                    const linkText = document.createTextNode(file.url);
-                    a.appendChild(linkText);
                     a.title = file.name;
                     a.href = file.url;
+                    a.appendChild(img);
+
+                    c1.appendChild(a);
+                } else {
+                    const img = document.createElement("img");
+                    img.src = `/images/${fileExtension}-icon.png`;
+                    img.height = "32";
+                    c1.appendChild(img);
+
+                    const a = document.createElement("a");
+                    a.href = file.url;
+                    const linkText = document.createTextNode(file.name);
+                    a.appendChild(linkText);
+
                     c1.appendChild(a);
                 }
 
@@ -283,13 +291,26 @@ export const uploadFilesHelper = {
 
                 const c2 = row.insertCell(1);
 
-                const deleteFileBtn = document.createElement("button");
-                deleteFileBtn.textContent = "Șterge";
-                deleteFileBtn.type = "button";
-                deleteFileBtn.classList.add("btn", "btn-link", "delete-file-btn");
-                deleteFileBtn.dataset.fileid = file.id; // same as deleteFileBtn.setAttribute("data-fileid", file.id); // no upperCase
+                const deleteLink = document.createElement("a");
+                deleteLink.role = "button";
+                deleteLink.classList.add("delete-file-btn");
+                deleteLink.dataset.fileid = file.id; // same as deleteFileBtn.setAttribute("data-fileid", file.id); // no upperCase
+                const deleteLinkText = document.createTextNode("Șterge");
+                deleteLink.appendChild(deleteLinkText);
 
-                c2.appendChild(deleteFileBtn);
+                const detailsLink = document.createElement("a");
+                detailsLink.href = file.url;
+                const detailsLinkText = document.createTextNode("Detalii");
+                detailsLink.appendChild(detailsLinkText);
+
+                const separatorSpan = document.createElement("span");
+                separatorSpan.textContent = "|";
+                separatorSpan.classList.add("ms-2", "me-2");
+
+                c2.align = "center";
+                c2.appendChild(deleteLink);
+                c2.appendChild(separatorSpan);
+                c2.appendChild(detailsLink);
             }
         });
     },

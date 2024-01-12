@@ -11,7 +11,7 @@ const fileService = require("../services/file.service");
 const blobService = require("../services/blob.service");
 const stringHelper = require("../helpers/string.helper");
 
-const { availableExerciseTypes, availableSections, availableLevels } = require("../constants/constants");
+const { availableExerciseTypes, availableSections, availableLevels, imageExtensions } = require("../constants/constants");
 
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
@@ -157,7 +157,7 @@ exports.createPost = async (req, res) => {
         position,
     } = req.body;
 
-    let { exerciseId } = req.body;
+    // let { exerciseId } = req.body;
 
     let exercise;
 
@@ -170,9 +170,11 @@ exports.createPost = async (req, res) => {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
 
-        exerciseId = courseService.getObjectId();
+        const exerciseIdObj = courseService.getObjectId();
+        const exerciseId = exerciseIdObj.toString();
+
         exercise = {
-            _id: exerciseId,
+            _id: exerciseIdObj,
             code: await idGeneratorMongoService.getNextId("exercises"),
         };
 
@@ -208,7 +210,7 @@ exports.createPost = async (req, res) => {
         const newExercise = {
             sectionId,
             levelId,
-            id: exercise._id.toString(),
+            id: exerciseId,
         };
 
         // sort exercises by sectionId, then by levelId
@@ -277,6 +279,12 @@ exports.editGet = async (req, res) => {
                     answerOption.textPreview = markdownService.render(answerOption.text);
                 });
             }
+
+            (exercise.files || []).forEach((file) => {
+                const fileExtension = stringHelper.getFileExtension(file.name);
+                file.extension = fileExtension;
+                file.isImage = imageExtensions.includes(fileExtension);
+            });
         }
 
         // sort exercises by sectionId, then by levelId
@@ -687,18 +695,38 @@ exports.deleteOneById = async (req, res) => {
         }
 
         const course = await courseService.getOneById(courseId);
-        if (!course) return res.status(500).send("Curs negăsit!");
+        if (!course) return res.status(404).send("Curs negăsit!");
+
+        const exercise = await exerciseService.getOneById(exerciseId);
+        if (!exercise) return res.status(404).send("Exercițiu negăsit.");
 
         const { lesson, exerciseMeta, exerciseIndex } = exerciseHelper.getExerciseAndParentsFromCourse(course, exerciseId);
 
+        // 1. Remove the exercise reference from the lesson
         if (exerciseIndex > -1) {
             lesson.exercises.splice(exerciseIndex, 1); // remove from array
-
-            const result = await courseService.updateOne(course);
-
-            // delete also the exercise content
-            if (result.modifiedCount == 1) exerciseService.deleteOneById(exerciseId);
+            await courseService.updateOne(course);
         }
+
+        // 2. Delete the blobs, if exist
+        const files = (exercise && exercise.files) || [];
+        const fileIds = files.map((x) => x.id);
+        if (fileIds.length > 0) {
+            const filesFromDB = await fileService.getAllByIds(fileIds);
+
+            filesFromDB.forEach(async (fileFromDB) => {
+                // TODO: extract the common code in a separate method (see "Delete from Azure blobs" section in "DeleteFileById" and also "FilesController")
+                const fileExtension = stringHelper.getFileExtension(fileFromDB.name);
+                const blobName = `${fileFromDB._id.toString()}.${fileExtension}`;
+                await blobService.deleteBlob(fileFromDB.containerName, blobName);
+            });
+
+            // Delete also from Files
+            await fileService.deleteAllByIds(fileIds);
+        }
+
+        // 3. Delete the exercise itself
+        await exerciseService.deleteOneById(exerciseId);
 
         const { sectionId } = exerciseMeta;
         res.redirect(`/cursuri/${courseId}/lectii/${lesson.id}/modifica?sectionId=${sectionId}#section${sectionId}`);
@@ -740,7 +768,7 @@ exports.uploadFiles = async (req, res) => {
                 accountName: blobService.getAccountName(),
                 containerName: "exercises",
                 sourceType: `/cursuri/${courseId}/exercitii`,
-                sourceId: exerciseId,
+                sourceId: exerciseId, // exerciseId is defined only in editMode
                 createdOn: new Date(),
                 createdBy: { id: req.user._id.toString(), name: `${req.user.firstName} ${req.user.lastName}` },
             }));
@@ -973,7 +1001,7 @@ const getExerciseFilesFromIds = async (fileIds) => {
 
         // Inside an exercise we don't store all file details
         files.push({
-            id: file._id,
+            id: fileId, // or file._id.toString(),
             name: file.name,
             url: file.url,
             size: file.size,
