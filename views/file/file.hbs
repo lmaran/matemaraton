@@ -25,17 +25,14 @@
     {{{file.titlePreview}}}
 </div>
 
-<img src="{{file.url}}" height="200"/>
+{{#if file.isImage}}
+    <a href="{{file.url}}"><img src="{{file.url}}" /></a>
+{{else}}
+    <img src="/images/{{file.extension}}-icon.png" height="32"/>
+    <a href="{{file.url}}">{{file.name}}</a>
+{{/if}}
 
 <table class="table thead-light table-bordered table-hover mt-5">
-    {{!-- <thead>
-        <tr>
-            <th>Nume</th>
-            <th>CreatDe</th>
-            <th>CreatLa (UTC)</th>
-            <th>Șterge</th>
-        </tr>
-    </thead> --}}
     <tbody>
 
         <tr>

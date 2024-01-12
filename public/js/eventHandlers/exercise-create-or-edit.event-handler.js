@@ -183,20 +183,20 @@ export const eventHandlers = {
         // Handle 'delete' events
         const target = event.target; // shortcut
         if (target) {
-            // if (target.tagName != "INPUT") event.preventDefault();
-
             if (target.classList.contains("delete-file-btn")) {
+                const fileId = target.dataset.fileid; // all attribute names are lower case
+
+                const editorTxt = document.getElementById("statement-editor-txt");
+                if (editorTxt.value.includes(fileId)) return alert(`Fișierul cu id ${fileId} nu poate fi șters fiindcă apare în enunț.`);
+
+                const solutionTxt = document.getElementById("solution-editor-txt");
+                if (solutionTxt.value.includes(fileId)) return alert(`Fișierul cu id ${fileId} nu poate fi șters fiindcă apare în soluție.`);
+
                 const answer = confirm("Ești sigur că vrei să ștergi acest fișier?");
                 if (!answer) return;
-                // const parentDiv = target.closest(".answer-option-parent-div"); // find the closest ancestor which matches the selectors
-                // const editorTxt = parentDiv.querySelector(".answer-option-editor-txt");
-                // editorTxt.classList.toggle("d-none");
-                // const editorIsHide = editorTxt.classList.contains("d-none");
-                // target.textContent = editorIsHide ? "Editează" : "Ascunde";
 
                 const courseId = document.getElementById("courseId").value;
                 const exerciseId = document.getElementById("exerciseId").value; // empty in edit mode
-                const fileId = target.dataset.fileid; // all attribute names are lower case
 
                 const url = exerciseId
                     ? `/cursuri/${courseId}/exercitii/${exerciseId}/fisiere/${fileId}`

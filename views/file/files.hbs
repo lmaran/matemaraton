@@ -9,21 +9,20 @@
     </ol>
 </nav>
 
-<h1>Fișe</h1>
+<h1>Fișiere</h1>
 
 {{!-- <a href="/fise/adauga" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Adaugă fișă</a> --}}
 
 <form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;"></form>
-<table class="table thead-light table-bordered table-hover mt-5">
+<table id="files-tbl" class="table thead-light table-bordered table-hover mt-5">
     <thead>
         <tr>
             <th>Fișier</th>
             <th>Nume</th>
             <th>Dimensiune</th>
-            <th>Sursa</th>
             <th>CreatDe</th>
             <th>CreatLa (UTC)</th>
-            
+            <th>Sursa</th>
             <th></th>
         </tr>
     </thead>
@@ -31,22 +30,23 @@
         {{#each files}}
         <tr>
             <td>
-                <img src="{{url}}" height="50"/>
+                {{#if isImage}}
+                    <a href="{{url}}"><img src="{{url}}" height="50"/></a>
+                {{else}}
+                    <img src="/images/{{extension}}-icon.png" height="32"/>
+                {{/if}}
             </td>
-            <td>{{name}}</td>
+            <td><a href="{{url}}">{{name}}</a></td>
             <td>{{size}}</td>
+            <td>{{createdBy.name}}</td>
+            <td>{{createdOn}}</td>
             <td>
                 {{#if sourceId}}
                     <a href="{{sourceType}}/{{sourceId}}">Sursa</a>
                 {{else}}
-                    {{!-- {{sourceType}} --}}
+                    <a role="button" class="link-danger delete-file-btn" data-fileid="{{_id}}">Șterge</a>
                 {{/if}}
             </td>
-            <td>{{createdBy.name}}</td>
-            <td>{{createdOn}}</td>
-            {{!-- <td>
-                <button type="button" class="btn btn-link delete-file-btn" data-url="{{url}}">Șterge</button>
-            </td> --}}
             <td>
                 <a href="/fisiere/{{_id}}">Detalii</a>
             </td>
@@ -54,3 +54,7 @@
         {{/each}}
     </tbody>
 </table>
+
+{{#section 'script'}}
+<script type="module" src="/js/eventBinders/files.event-binder.js"></script>
+{{/section}}

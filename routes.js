@@ -242,7 +242,7 @@ router.get("/editia-[1|2|3|4|5]", editionController.getEdition);
 
 // file
 router.get("/fisiere", fileController.getAll);
-// router.delete("/fisiere/:fileId", fileController.deleteOneById);
+router.delete("/fisiere/:fileId", fileController.deleteOneById);
 router.get("/fisiere/:fileId", fileController.getOneById);
 router.get("/fisiere/:fileId/json", fileController.jsonGetOneById);
 

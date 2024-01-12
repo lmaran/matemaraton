@@ -315,39 +315,32 @@
 
     {{!-- Files --}}
     <div class="row mt-3">
-        <div class="col-md-12 statement-div">
+        <div class="col-md-6">
             <label class="fw-bold"> Fișiere: </label>
-            {{!-- <div class="gallery _mt-3">
-                {{#each exercise.files}}
-                <div class="file-container-span" data-url="{{url}}">
-                    <img src="{{url}}" height="100"/>
-                    <input name="files" value="{{url}}"/>
-                </div>
-                {{/each}}
-            </div> --}}
 
             <table id="gallery-tbl" class="table thead-light table-bordered table-hover">
-                {{!-- <thead>
-                    <tr>
-                        <th>Nume</th>
-                        <th>CreatLa (UTC)</th>
-                    </tr>
-                </thead> --}}
                 <tbody>
                     {{#each exercise.files}}
                     <tr>
                         <td>
-                            <img src="{{url}}" height="50"/>
+                            {{#if isImage}}
+                                <a href="{{url}}" title="{{name}}"><img src="{{url}}" height="50"/></a>
+                            {{else}}
+                                <img src="/images/{{extension}}-icon.png" height="32"/>
+                                <a href="{{url}}">{{name}}</a>
+                            {{/if}}
                             <input class="d-none" name="fileIds" value="{{id}}"/>
                         </td>
-                        <td>
-                            <button type="button" class="btn btn-link delete-file-btn" data-fileid="{{id}}">Șterge</button>
+
+                        <td align="center">
+                            <a role="button" class="delete-file-btn" data-fileid="{{id}}">Șterge</a> 
+                            <span class="ms-2 me-2">|</span>
+                            <a href="/fisiere/{{id}}">Detalii</a>
                         </td>
                     </tr>
                     {{/each}}
                 </tbody>
             </table>
-
 
         </div>
     </div>
@@ -388,8 +381,8 @@
     {{!-- <input type2="hidden" name="courseId2" value="{{courseId}}" />
     <input type2="hidden" name="exerciseId2" value="{{exercise._id}}" /> --}}
 
-    <input type="file" name="filefield1" id="upload-file-statement-input" multiple accept="image/*" class="d-none">
-    <input type="file" name="filefield2" id="upload-file-solution-input" multiple accept="image/*" class="d-none">
+    <input type="file" name="filefield1" id="upload-file-statement-input" multiple accept="image/*, application/pdf" class="d-none">
+    <input type="file" name="filefield2" id="upload-file-solution-input" multiple accept="image/*, application/pdf" class="d-none">
 
 </form>
 

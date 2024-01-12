@@ -1,6 +1,10 @@
 const fileService = require("../services/file.service");
 const dateTimeHelper = require("../helpers/date-time.helper");
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
+const stringHelper = require("../helpers/string.helper");
+const blobService = require("../services/blob.service");
+
+const { imageExtensions } = require("../constants/constants");
 
 exports.getOneById = async (req, res) => {
     const { fileId } = req.params;
@@ -9,6 +13,11 @@ exports.getOneById = async (req, res) => {
         // validate parameters
         const file = await fileService.getOneById(fileId);
         if (!file) return res.status(500).send("Fișier negăsit!");
+
+        // file.createdOn = dateTimeHelper.getShortDateAndTimeDateRo(file.createdOn); // ex: 22.11.2023
+        const fileExtension = stringHelper.getFileExtension(file.name);
+        file.extension = fileExtension;
+        file.isImage = imageExtensions.includes(fileExtension);
 
         //let pageTitle = availableSheetTypes[sheet.sheetType - 1].text;
 
@@ -27,7 +36,12 @@ exports.getAll = async (req, res) => {
     try {
         const files = await fileService.getAll();
 
-        files.forEach((file) => (file.createdOn = dateTimeHelper.getShortDateAndTimeDateRo(file.createdOn))); // ex: 22.11.2023
+        files.forEach((file) => {
+            file.createdOn = dateTimeHelper.getShortDateAndTimeDateRo(file.createdOn); // ex: 22.11.2023
+            const fileExtension = stringHelper.getFileExtension(file.name);
+            file.extension = fileExtension;
+            file.isImage = imageExtensions.includes(fileExtension);
+        });
 
         const data = {
             files,
@@ -61,5 +75,26 @@ exports.jsonGetOneById = async (req, res) => {
         res.render("file/file-json", data);
     } catch (err) {
         return res.status(500).json(err.message);
+    }
+};
+
+exports.deleteOneById = async (req, res) => {
+    const { fileId } = req.params;
+
+    try {
+        const fileFromDB = await fileService.getOneById(fileId);
+        if (!fileFromDB) return res.status(404).json({ code: "not-found", message: "Fișier negăsit" });
+
+        // Delete from Azure blobs
+        const fileExtension = stringHelper.getFileExtension(fileFromDB.name);
+        const blobName = `${fileFromDB._id.toString()}.${fileExtension}`;
+        await blobService.deleteBlob(fileFromDB.containerName, blobName);
+
+        // Delete also from Files
+        await fileService.deleteOneById(fileId);
+
+        res.sendStatus(204); // no content
+    } catch (err) {
+        return res.status(500).json({ code: "exception", message: err.message });
     }
 };

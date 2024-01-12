@@ -36,4 +36,6 @@ module.exports = {
         { text: "Exerciții rezolvate", value: "2" },
         { text: "Temă individuală", value: "3" },
     ],
+
+    imageExtensions: ["png", "svg", "jpeg", "jpg"],
 };
