@@ -1,3 +1,6 @@
+const createNewSheetInLessonAnchor = document.getElementById("create-sheet-in-lesson");
+const oldHref = createNewSheetInLessonAnchor.getAttribute("href");
+
 export const eventHandler = {
     onDOMContentLoaded: async () => {
         // Update the cart component
@@ -94,9 +97,7 @@ export const eventHandler = {
             const createNewSheetAnchor = document.getElementById("create-new-sheet");
             createNewSheetAnchor.setAttribute("href", "/fise/adauga?cart=" + JSON.stringify(exercisesParam));
 
-            const createNewSheetInLessonAnchor = document.getElementById("create-sheet-in-lesson");
             if (createNewSheetInLessonAnchor) {
-                const oldHref = createNewSheetInLessonAnchor.getAttribute("href");
                 createNewSheetInLessonAnchor.setAttribute("href", `${oldHref}?cart=${JSON.stringify(exercisesParam)}`);
             }
         }
