@@ -118,15 +118,13 @@ exports.createGet = async (req, res) => {
     const { courseId, lessonId } = req.params;
     const { cart } = req.query;
 
-    const cartItems = cart ? JSON.parse(cart) : [];
-
-    // let chapterIndex, availablePositions, selectedPosition;
-
     try {
         const canCreateOrEditCourse = await autz.can(req.user, "create-or-update:sheet");
         if (!canCreateOrEditCourse) {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
+
+        const cartItems = cart ? JSON.parse(cart) : [];
 
         let exercises = [];
         if (cartItems) {
