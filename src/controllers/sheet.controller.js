@@ -126,20 +126,20 @@ exports.createGet = async (req, res) => {
 
         const cartItems = cart ? JSON.parse(cart) : [];
 
-        let exercises = [];
+        let exercisesFromDB = [];
+        const exercises = []; // returns the exercises in the same order (same ids) as in request
         if (cartItems) {
             const allExercisesIds = (cartItems || []).map((x) => x.e);
 
-            // // deduplicate exercisesIds
-            // const allUniqueExercisesIds = [...new Set(allExercisesIds)];
-
             // get exercises from DB
             if (allExercisesIds.length > 0) {
-                exercises = await exerciseService.getAllByIds(allExercisesIds);
+                exercisesFromDB = await exerciseService.getAllByIds(allExercisesIds);
             }
 
             // add preview
-            exercises.forEach((exercise, idx) => {
+            allExercisesIds.forEach((exerciseId, idx) => {
+                const exercise = exercisesFromDB.find((x) => x._id.toString() == exerciseId);
+
                 const statementNumber = `**Problema ${++idx}.**`;
 
                 exerciseHelper.addPreview(exercise, statementNumber, true);
@@ -149,7 +149,21 @@ exports.createGet = async (req, res) => {
                 const comma = authorAndSource1 != "" ? ", " : "";
                 exercise.authorAndSource1 = `${authorAndSource1}${comma}E.${exercise.code}`;
                 exercise.source2 = source2;
+
+                exercises.push(exercise);
             });
+
+            // exercises.forEach((exercise, idx) => {
+            //     const statementNumber = `**Problema ${++idx}.**`;
+
+            //     exerciseHelper.addPreview(exercise, statementNumber, true);
+
+            //     const { authorAndSource1, source2 } = exerciseHelper.getAuthorAndSource(exercise);
+
+            //     const comma = authorAndSource1 != "" ? ", " : "";
+            //     exercise.authorAndSource1 = `${authorAndSource1}${comma}E.${exercise.code}`;
+            //     exercise.source2 = source2;
+            // });
         }
 
         const fullUserName = `${req.user.firstName} ${req.user.lastName}`.trim();
