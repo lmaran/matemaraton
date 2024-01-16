@@ -1,16 +1,11 @@
 const createNewSheetInLessonAnchor = document.getElementById("create-sheet-in-lesson");
-const oldHref = createNewSheetInLessonAnchor.getAttribute("href");
+
+const oldHref = createNewSheetInLessonAnchor?.getAttribute("href"); // we have a value in lesson, otherwise null
 
 export const eventHandler = {
     onDOMContentLoaded: async () => {
         // Update the cart component
         eventHandler.updateCartComponent();
-
-        // const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-        // const cartSpan = document.getElementById("cart-span");
-
-        // if (cartItems.length > 0) cartSpan.classList.replace("me-2", "me-3");
-        // else cartSpan.classList.replace("me-3", "me-2");
     },
 
     updateCartComponent: async () => {
