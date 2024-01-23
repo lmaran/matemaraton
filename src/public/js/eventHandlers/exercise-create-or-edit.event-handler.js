@@ -77,6 +77,9 @@ export const eventHandlers = {
 
         const previewDiv = document.getElementById("statement-preview-div");
         previewDiv.style.borderTopStyle = editorIsHide ? "solid" : "dashed";
+
+        const editMenuStatementSpan = document.getElementById("edit-menu-statement-span");
+        editMenuStatementSpan.classList.toggle("d-none");
     },
     toggleAnswerEditor: async (event) => {
         event.preventDefault();
@@ -101,6 +104,9 @@ export const eventHandlers = {
 
         const previewDiv = document.getElementById("solution-preview-div");
         previewDiv.style.borderTopStyle = editorIsHide ? "solid" : "dashed";
+
+        const editMenuSolutionSpan = document.getElementById("edit-menu-solution-span");
+        editMenuSolutionSpan.classList.toggle("d-none");
     },
     handleClickForAllHints: async (event) => {
         event.preventDefault();
