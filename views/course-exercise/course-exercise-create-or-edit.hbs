@@ -70,11 +70,13 @@
                 
 
                 <div class="float-end">
-                    <span id="upload-file-error-statement-div" class="upload-file-error-div invalid-feedback">Mesaj de eroare</span>
-                    <label class="btn btn-light border border-primary btn-xs" for="upload-file-statement-input">
-                        <i class="bi bi-card-image"></i>
-                        Adaugă poza
-                    </label>
+                    <span id="edit-menu-statement-span" class="d-none">
+                        <span id="upload-file-error-statement-div" class="upload-file-error-div invalid-feedback">Mesaj de eroare</span>
+                        <label class="btn btn-light border border-primary btn-xs" for="upload-file-statement-input">
+                            <i class="bi bi-card-image"></i>
+                            Adaugă poza
+                        </label>
+                    </span>
 
                     <a id="toggle-statement-editor-btn" href="">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</a>
                 </div>
@@ -202,7 +204,7 @@
                 <div class="progress-bar w-100"></div>
             </div>
 
-            {{!-- Statement menu --}}
+            {{!-- Solution menu --}}
             <div class="exercise-menu-div hide-on-print clearfix">
                 {{!-- <div class="float-start">
                     {{#if hints}}
@@ -212,11 +214,13 @@
                 </div> --}}
 
                 <div class="float-end">
-                    <span id="upload-file-error-solution-div" class="upload-file-error-div invalid-feedback">Mesaj de eroare</span>
-                    <label class="btn btn-light border border-primary btn-xs" for="upload-file-solution-input">
-                        <i class="bi bi-card-image"></i>
-                        Adaugă poza
-                    </label>
+                    <span id="edit-menu-solution-span" class="d-none">
+                        <span id="upload-file-error-solution-div" class="upload-file-error-div invalid-feedback">Mesaj de eroare</span>
+                        <label class="btn btn-light border border-primary btn-xs" for="upload-file-solution-input">
+                            <i class="bi bi-card-image"></i>
+                            Adaugă poza
+                        </label>
+                    </span>
 
                     <a id="toggle-solution-editor-btn" href="">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</a>
                 </div>
