@@ -1,92 +1,91 @@
 const config = require("../config");
 const { BlobServiceClient } = require("@azure/storage-blob");
+// const streamHelper = require("../helpers/stream.helper");
 
-exports.uploadStream = async (containerName, inputFileStream, blobName, mimeType) => {
+exports.uploadBlobFromStream = async (containerClient, inputFileStream, blobName, mimeType) => {
     const bufferSize = 4 * 1024 * 1024; // Size of every buffer allocated, also the block size in the uploaded block blob. Default value is 8MB
     const maxConcurrency = 5; // the max number of buffers that can be allocated, positive correlation with max uploading concurrency. Default value is 5
 
-    // TODO: send containerClient as a parameter (reuse it)
-    // const blobServiceClient = BlobServiceClient.fromConnectionString(config.azureBlobStorageConnectionString);
-    // const containerClient = blobServiceClient.getContainerClient(containerName);
-    //const blobServiceClient = this.getBlobServiceClient();
-    const containerClient = this.getContainerClient(containerName);
-
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
-    // UploadStream parameters:
-    // https://learn.microsoft.com/en-us/javascript/api/%40azure/storage-blob/blockblobclient?view=azure-node-latest#@azure-storage-blob-blockblobclient-uploadstream
+    // UploadStream parameters: https://learn.microsoft.com/en-us/javascript/api/%40azure/storage-blob/blockblobclient?view=azure-node-latest#@azure-storage-blob-blockblobclient-uploadstream
     const blobUploadResponse = await blockBlobClient.uploadStream(inputFileStream, bufferSize, maxConcurrency, {
+        blobHTTPHeaders: { blobContentType: mimeType },
+    });
+
+    // Response properties: https://learn.microsoft.com/en-us/javascript/api/@azure/storage-blob/blockblobuploadheaders?view=azure-node-latest
+    const blobUrl = `${containerClient.url}/${blobName}`;
+    return [blobUploadResponse, blobUrl];
+};
+
+exports.uploadBlobFromString = async (containerClient, fileContentsAsString, blobName, mimeType) => {
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+    // Upload parameters:
+    // https://learn.microsoft.com/en-us/javascript/api/@azure/storage-blob/blockblobclient?view=azure-node-latest#@azure-storage-blob-blockblobclient-upload
+    const blobUploadResponse = await blockBlobClient.upload(fileContentsAsString, fileContentsAsString.length, {
         blobHTTPHeaders: { blobContentType: mimeType },
     });
 
     // Response properties:
     // https://learn.microsoft.com/en-us/javascript/api/@azure/storage-blob/blockblobuploadheaders?view=azure-node-latest
-    const blobUrl = `https://${blobServiceClient.accountName}.blob.core.windows.net/${containerName}/${blobName}`;
+    const blobUrl = `${containerClient.url}/${blobName}`;
     return [blobUploadResponse, blobUrl];
 };
 
+// https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-download-javascript#download-to-a-string
+exports.downloadBlobToString = async (containerClient, blobName) => {
+    const blobClient = containerClient.getBlobClient(blobName);
+
+    // OK, but old:
+    // const downloadResponse = await blobClient.download();
+    // const result = await streamHelper.streamToString(downloadResponse.readableStreamBody);
+
+    const result = await blobClient.downloadToBuffer();
+    return result.toString();
+};
+
 // https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-delete-javascript
-exports.deleteBlob = async (containerName, blobName) => {
-    // include: Delete the base blob and all of its snapshots.
-    // only: Delete only the blob's snapshots and not the blob itself.
+exports.deleteBlob = async (containerClient, blobName) => {
     const options = {
-        deleteSnapshots: "include", // or 'only'
+        deleteSnapshots: "include",
     };
 
-    // TODO: send containerClient as a parameter (reuse it)
-    const blobServiceClient = BlobServiceClient.fromConnectionString(config.azureBlobStorageConnectionString);
-    const containerClient = blobServiceClient.getContainerClient(containerName);
+    const blockBlobClient = await containerClient.getBlockBlobClient(blobName);
+    return await blockBlobClient.delete(options); // we can use 'delete()' or 'deleteIfExists()'
+};
+
+// https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-delete-javascript
+exports.deleteBlobIfExists = async (containerClient, blobName) => {
+    const options = {
+        deleteSnapshots: "include",
+    };
 
     const blockBlobClient = await containerClient.getBlockBlobClient(blobName);
-
-    const blobDeleteResponse = await blockBlobClient.deleteIfExists(options); // we can use 'delete()' or 'deleteIfExists()'
-
-    return blobDeleteResponse;
+    return await blockBlobClient.deleteIfExists(options); // we can use 'delete()' or 'deleteIfExists()'
 };
 
-let blobServiceClient = null;
+exports.getBlobProperties = async (containerClient, blobName) => {
+    const blockBlobClient = await containerClient.getBlockBlobClient(blobName);
+    return blockBlobClient.getProperties();
+};
+
+// We expose this method for the case we need to create the container outside this file (for caching)
 exports.getBlobServiceClient = () => {
-    try {
-        if (!blobServiceClient) {
-            blobServiceClient = BlobServiceClient.fromConnectionString(config.azureBlobStorageConnectionString);
-        }
-        return blobServiceClient;
-    } catch (error) {
-        throw new Error(error);
-    }
+    return getBlobServiceClient();
 };
 
-let containerClient = null;
+// We cannot cache the container here as we can have many kinds of containers (exercise, theory etc)
+// So, please don't use this container builder when you know in advance what kind of container do you need (use instead the container created in its specific service, ex: exercise-blob.service.js)
 exports.getContainerClient = (containerName) => {
-    try {
-        if (!containerClient) {
-            blobServiceClient = this.getBlobServiceClient();
-            containerClient = blobServiceClient.getContainerClient(containerName);
-        }
-        return containerClient;
-    } catch (error) {
-        throw new Error(error);
-    }
+    blobServiceClient = getBlobServiceClient();
+    return blobServiceClient.getContainerClient(containerName);
 };
 
-let accountName = null;
-exports.getAccountName = () => {
-    try {
-        if (!accountName) {
-            accountName = this.getBlobServiceClient().accountName;
-        }
-        return accountName;
-    } catch (error) {
-        throw new Error(error);
+let blobServiceClient = null; // reuse this blobServiceClient
+const getBlobServiceClient = () => {
+    if (!blobServiceClient) {
+        blobServiceClient = BlobServiceClient.fromConnectionString(config.azureBlobStorageConnectionString);
     }
-};
-
-exports.getBlobProperties = async (containerName, blobName) => {
-    try {
-        const containerClient = this.getContainerClient(containerName);
-        const blockBlobClient = await containerClient.getBlockBlobClient(blobName);
-        return blockBlobClient.getProperties();
-    } catch (error) {
-        throw new Error(error);
-    }
+    return blobServiceClient;
 };

@@ -8,8 +8,9 @@ const exerciseHelper = require("../helpers/exercise.helper");
 const { EventEmitter } = require("events");
 const uploadFileService = require("../services/upload-file.service");
 const fileService = require("../services/file.service");
-const blobService = require("../services/blob.service");
+const exerciseBlobService = require("../services/exercise-blob.service");
 const stringHelper = require("../helpers/string.helper");
+const svgHelper = require("../helpers/svg.helper");
 
 const { availableExerciseTypes, availableSections, availableLevels, imageExtensions } = require("../constants/constants");
 
@@ -718,7 +719,7 @@ exports.deleteOneById = async (req, res) => {
                 // TODO: extract the common code in a separate method (see "Delete from Azure blobs" section in "DeleteFileById" and also "FilesController")
                 const fileExtension = stringHelper.getFileExtension(fileFromDB.name);
                 const blobName = `${fileFromDB._id.toString()}.${fileExtension}`;
-                await blobService.deleteBlob(fileFromDB.containerName, blobName);
+                await exerciseBlobService.deleteBlobIfExists(blobName);
             });
 
             // Delete also from Files
@@ -738,11 +739,13 @@ exports.deleteOneById = async (req, res) => {
 exports.uploadFiles = async (req, res) => {
     const { courseId, exerciseId } = req.params;
 
+    const containerClient = exerciseBlobService.getContainerClient();
+
     const params = {
         maxFileSize: 1 * 1024 * 1024, // 1 MB
         maxFiles: 3,
         allowedExtensions: ["png", "svg", "jpeg", "jpg", "pdf"],
-        containerName: "exercises",
+        containerClient,
     };
 
     const canCreateOrEditExercise = await autz.can(req.user, "create-or-edit:exercise");
@@ -765,7 +768,7 @@ exports.uploadFiles = async (req, res) => {
                 url: file.url,
                 size: file.size,
 
-                accountName: blobService.getAccountName(),
+                accountName: exerciseBlobService.getAccountName(),
                 containerName: "exercises",
                 sourceType: `/cursuri/${courseId}/exercitii`,
                 sourceId: exerciseId, // exerciseId is defined only in editMode
@@ -792,7 +795,34 @@ exports.uploadFiles = async (req, res) => {
                 await exerciseService.updateOne(exercise);
             }
 
-            return res.json(result);
+            // 3. If svg, scale down to 80%
+            const scaleRatio = 80; // scale down to 80%
+            const svgResultFiles = resultFiles.filter((file) => stringHelper.getFileExtension(file.name) == "svg");
+            let svgResultFilesCount = svgResultFiles.length;
+            if (svgResultFilesCount == 0) return res.json(result);
+
+            emitter.once("allSvgResized", () => {
+                return res.json(result);
+            });
+
+            svgResultFiles.forEach(async (file) => {
+                const fileExtension = stringHelper.getFileExtension(file.name);
+                const blobName = `${file.id}.${fileExtension}`;
+
+                // Acest "await" din fața lui "downloadBlobToString" împiedică execuția instrucțiunilor următoare din ciclul curent forEach
+                // până când streamul nu e complet descărcat, dar lasă procesorul liber pentru următoarele cicluri forEach și apoi pentru codul care urmează după forEach.
+                // Acest comportament este normal atunci când lucrăm cu stream-uri, unde evenimentele unde fluxul de date (evenimentul on data) soseștie asincron.
+                // Am experimentat atât cu "downloadBlobToString", cât și cu alte metode din streamHelper.
+                const oldContent = await exerciseBlobService.downloadBlobToString(blobName);
+
+                const newContent = svgHelper.resizeSvg(oldContent, scaleRatio);
+
+                await exerciseBlobService.uploadBlobFromString(newContent, blobName, "image/svg+xml");
+
+                svgResultFilesCount--;
+
+                if (svgResultFilesCount == 0) emitter.emit("allSvgResized");
+            });
         });
     } catch (err) {
         return res.status(500).json({ code: "exception", message: err.message });
@@ -825,7 +855,7 @@ exports.deleteFileById = async (req, res) => {
         if (fileFromDB) {
             const fileExtension = stringHelper.getFileExtension(fileFromDB.name);
             const blobName = `${fileId}.${fileExtension}`;
-            const blobDeleteResponse = await blobService.deleteBlob(fileFromDB.containerName, blobName);
+            const blobDeleteResponse = await exerciseBlobService.deleteBlobIfExists(blobName);
 
             if (blobDeleteResponse.errorCode && blobDeleteResponse.errorCode !== "BlobNotFound") {
                 return res.status(500).json("Eroare la ștergerea blob-ului.");

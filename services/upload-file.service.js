@@ -3,6 +3,8 @@ const stringHelper = require("../helpers/string.helper");
 const fileService = require("./file.service");
 const blobService = require("./blob.service");
 
+// This is a generic service and should deal with any kind of containers (exercise, theory etc)
+
 // Output
 // {
 //     "statusCode":"too-many-files", // fișierele care depășesc limita nu apar în listă
@@ -29,7 +31,7 @@ exports.uploadFiles = async (req, emitter, params) => {
     // Called once, no matter haw many files there are
     // https://stackoverflow.com/a/29996871/2726725
 
-    const { maxFileSize, maxFiles, allowedExtensions, containerName } = params;
+    const { maxFileSize, maxFiles, allowedExtensions, containerClient } = params;
     const result = { files: [] };
     let finished = false;
 
@@ -58,9 +60,9 @@ exports.uploadFiles = async (req, emitter, params) => {
         const fileId = fileObjectId.toString(); // "5f4bfb45d8278706d442058c"
         const blobName = `${fileId}.${fileExtension}`; // "5f4bfb45d8278706d442058c.jpg"
 
-        const [blobUploadResponse, blobUrl] = await blobService.uploadStream(containerName, fileStream, blobName, mimeType);
+        const [blobUploadResponse, blobUrl] = await blobService.uploadBlobFromStream(containerClient, fileStream, blobName, mimeType);
 
-        const blobProperties = await blobService.getBlobProperties(containerName, blobName); // get file size
+        const blobProperties = await blobService.getBlobProperties(containerClient, blobName); // get file size
 
         if (blobUploadResponse.errorCode) {
             file.isSuccess = false;
@@ -73,7 +75,7 @@ exports.uploadFiles = async (req, emitter, params) => {
                 file.statusMessage = `Sunt permise doar fișiere mai mici de ${maxFileSize / (1024 * 1024)}MB.`;
 
                 // Remove truncated files from blobs (fire and forget)
-                blobService.deleteBlob(containerName, blobName);
+                blobService.deleteBlobIfExists(containerClient, blobName);
             } else {
                 file.isSuccess = true;
                 file.url = blobUrl;
