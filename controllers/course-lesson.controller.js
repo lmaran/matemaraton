@@ -55,6 +55,7 @@ exports.getOneById = async (req, res) => {
 
             canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
             pageTitle: `${lesson.name}`,
+            user: req.user,
         };
 
         //res.send(data);

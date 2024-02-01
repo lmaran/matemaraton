@@ -8,4 +8,4 @@ document.addEventListener("DOMContentLoaded", eventHandler.onDOMContentLoaded);
 // To work in the current tab, dispatch a storage event after each update (source: https://stackoverflow.com/a/65348883)
 window.addEventListener("storage", eventHandler.updateCartComponent);
 
-document.getElementById("clear-cart").addEventListener("click", eventHandler.clearCart);
+document.getElementById("clear-cart")?.addEventListener("click", eventHandler.clearCart);

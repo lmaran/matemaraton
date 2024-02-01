@@ -21,7 +21,120 @@
 
 {{!-- {{toJSON lesson}} --}}
 
-{{#if lesson.theory.textPreview}}
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        {{!-- <a class="nav-link active fs-5" aria-current="page" href="#">Teorie</a> --}}
+        <button class="nav-link _fs-5 active" id="theory-tab" data-bs-toggle="tab" data-bs-target="#theory-tab-pane" type="button" role="tab" aria-controls="theory-tab-pane" aria-selected="true">Teorie</button>
+    </li>
+    <li class="nav-item">
+        {{!-- <a class="nav-link fs-5" href="#">Exerciții</a> --}}
+        <button class="nav-link _fs-5" id="exercises-tab" data-bs-toggle="tab" data-bs-target="#exercises-tab-pane" type="button" role="tab" aria-controls="exercises-tab-pane" aria-selected="false">
+            Exerciții ({{lesson.sectionsObj.total}})
+        </button>
+    </li>
+    <li class="nav-item">
+        {{!-- <a class="nav-link fs-5" href="#">Exerciții</a> --}}
+        <button class="nav-link _fs-5" id="sheets-tab" data-bs-toggle="tab" data-bs-target="#sheets-tab-pane" type="button" role="tab" aria-controls="sheets-tab-pane" aria-selected="false">
+            Fișe ({{lesson.sheets.length}}) 
+        </button>
+    </li>
+    {{!-- <li class="nav-item">
+        
+        <button class="nav-link _fs-5 active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general-tab-pane" type="button" role="tab" aria-controls="general-tab-pane" aria-selected="true">General</button>
+    </li> --}}
+</ul>
+
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane show active" id="theory-tab-pane" role="tabpanel" aria-labelledby="theory-tab" tabindex="0">
+        <section class="mt-4">
+        {{{lesson.theory.textPreview}}}
+        <a class="fs-6" href="/cursuri/{{courseId}}/lectii/{{lessonId}}/teorie">Tipărește</a>
+        </section>
+    </div>
+
+    <div class="tab-pane" id="exercises-tab-pane" role="tabpanel" aria-labelledby="exercises-tab" tabindex="1">
+        {{#each lesson.sectionsObj.sections}}
+        {{#if total}}
+        <section id="section{{id}}" class="mt-4">
+            <div class="section-menu-div mb-4">
+                <h2>{{name}}
+                    <span class="text-muted fw-light">({{total}})</span>
+                </h2>
+            </div>
+
+            <div class="section-content-div mb-3">
+            {{#each levels}}
+                {{#if exercises.length}}
+                <section>
+                    <div class="level-menu-div">
+                        <span class="fs-4">{{name}}</span>
+                    </div>
+
+                    <div class="level-content-div mb-3">
+                        {{#each exercises}}
+                        <div class="exercise-div">
+                            {{> exercise-statement @this}}
+                            {{> exercise-menu @this sectionId = ../../id levelId = ../id allowView=true allowEdit=false allowDelete=false allowMove=false allowUpdateCart=true}}
+                            {{> exercise-panels @this }}
+                        </div>
+                        {{/each}}
+                    </div>
+                </section>
+                {{/if}}
+            {{/each}}
+            </div>
+        </section>
+        {{/if}} 
+        {{/each}}
+    </div>
+
+    <div class="tab-pane" id="sheets-tab-pane" role="tabpanel" aria-labelledby="sheets-tab" tabindex="2">
+        {{#if @root.user}}
+        <section class="mt-4">
+            {{!-- <div class="sheets-header-div mt-5 mb-4 border-bottom border-secondary">
+                <h2>Fișe de lucru
+                    <span class="text-muted fw-light">({{lesson.sheets.length}})</span>
+                </h2>
+            </div> --}}
+            <div id="sheets-menu-div">
+                <a id="create-sheet-in-lesson" href="/cursuri/{{courseId}}/lectii/{{lessonId}}/fise/adauga" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-lg"></i> Crează o fișă</a> cu exercițiile din cos.
+            </div>
+            <div id="sheets-content-div">
+                <table class="table thead-light table-bordered table-hover mt-3">
+                    <thead>
+                        <tr>
+                            <th>Nume</th>
+                            <th>CreatLa (UTC)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each lesson.sheets}}
+                        <tr>
+                            <td>
+                                <a href="cursuri/{{@root.courseId}}/lectii/{{@root.lessonId}}/fise/{{_id}}">{{name}}{{#unless name}}Fără nume{{/unless}}
+                            </td>
+                            <td>
+                                {{createdOn}}
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+        {{/if}}
+    </div>
+
+    {{!-- <div class="tab-pane show active" id="general-tab-pane" role="tabpanel" aria-labelledby="theory-tab" tabindex="3">
+        <section class="mt-4">
+        General
+        </section>
+    </div> --}}
+</div>
+
+{{!-- {{#if lesson.theory.textPreview}}
     <section>
         <h2 class="mt-3 mb-3 border-bottom border-secondary">
             Noțiuni teoretice
@@ -32,85 +145,12 @@
             {{{lesson.theory.textPreview}}}
         </div>
     </section>
-{{/if}}
+{{/if}} --}}
 
 
-{{#each lesson.sectionsObj.sections}}
-    {{#if total}}
-    <section id="section{{id}}">
-        <div class="section-menu-div mt-5 mb-4 border-bottom border-secondary">
-            <h2>{{name}}
-                <span class="text-muted fw-light">({{total}})</span>
 
-                {{#if total}}
-                    <a class="toggle-section-btn h6 fw-normal" href="#">{{#if isActive}}Ascunde exercițiile{{else}}Afișează{{/if}}</a>
-                {{/if}}
-            </h2>
-        </div>
 
-        <div class="section-content-div mb-3 {{#unless isActive}}d-none{{/unless}}">
-        {{#each levels}}
-            {{#if exercises.length}}
-            <section>
-                <div class="level-menu-div">
-                    <h3 class="fs-4">{{name}}</h3>
-                </div>
 
-                <div class="level-content-div mb-3">
-                    {{#each exercises}}
-                    <div class="exercise-div">
-                        {{> exercise-statement @this}}
-                        {{> exercise-menu @this sectionId = ../../id levelId = ../id allowView=true allowEdit=false allowDelete=false allowMove=false allowUpdateCart=true}}
-                        {{> exercise-panels @this }}
-                    </div>
-                    {{/each}}
-                </div>
-            </section>
-            {{/if}}
-        {{/each}}
-        </div>
-    </section>
-    {{/if}} 
-{{/each}}
-
-<section class="mt-5">
-    <div class="sheets-header-div mt-5 mb-4 border-bottom border-secondary">
-        <h2>Fișe de lucru
-            <span class="text-muted fw-light">({{lesson.sheets.length}})</span>
-
-            {{!-- {{#if true}}
-                <a class="toggle-sheets-btn h6 fw-normal" href="#">{{#if isActive}}Ascunde fișele{{else}}Afișează{{/if}}</a>
-            {{/if}} --}}
-        </h2>
-    </div>
-    <div id="sheets-menu-div">
-        <a id="create-sheet-in-lesson" href="/cursuri/{{courseId}}/lectii/{{lessonId}}/fise/adauga" class="btn btn-primary btn-sm">
-        <i class="bi bi-plus-lg"></i> Crează o fișă</a> cu exercițiile din cos.
-    </div>
-    <div id="sheets-content-div">
-        <table class="table thead-light table-bordered table-hover mt-3">
-            <thead>
-                <tr>
-                    <th>Nume</th>
-                    <th>CreatLa (UTC)</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#each lesson.sheets}}
-                <tr>
-                    <td>
-                        <a href="cursuri/{{@root.courseId}}/lectii/{{@root.lessonId}}/fise/{{_id}}">{{name}}{{#unless name}}Fără nume{{/unless}}
-                    </td>
-                    <td>
-                        {{createdOn}}
-                    </td>
-                </tr>
-                {{/each}}
-            </tbody>
-        </table>
-    </div>
-
-</section>
 
 
 <div class="mt-5 mb-5"></div>
