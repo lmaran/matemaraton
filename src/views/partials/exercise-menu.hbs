@@ -47,7 +47,7 @@
             <i class="bi bi-arrows-move me-1"></i></a>
         {{/if}}
 
-        {{#if allowUpdateCart}}
+        {{#if (and allowUpdateCart @root.user)}}
             <button type="button" data-exercise-id="{{_id}}" class="remove-from-cart-btn d-none btn btn-light border border-primary btn-xs">Scoate din coș</button>
             <button type="button" data-exercise-id="{{_id}}" data-exercise-code="{{code}}" data-course-id="{{@root.courseId}}" class="add-to-cart-btn btn btn-primary btn-xs">Adaugă în coș</button>
         {{/if}}

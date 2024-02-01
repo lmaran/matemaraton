@@ -9,10 +9,11 @@ export const eventHandler = {
     },
 
     updateCartComponent: async () => {
-        const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-
         // Update the number in the cart icon
         const cartBadge = document.getElementById("cart-badge");
+        if (!cartBadge) return;
+
+        const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
         cartBadge.textContent = cartItems.length;
 
         // Update add-to-chart buttons

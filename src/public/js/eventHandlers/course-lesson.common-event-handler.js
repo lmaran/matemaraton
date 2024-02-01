@@ -26,19 +26,6 @@ export const commonEventHandler = {
         window.dispatchEvent(new Event("storage"));
     },
 
-    toggleSection: async (event) => {
-        event.preventDefault();
-        const target = event.target; // shortcut
-
-        const parentDiv = target.closest("section");
-        const sectionContentDiv = parentDiv.querySelector(".section-content-div");
-
-        sectionContentDiv.classList.toggle("d-none");
-
-        const sectionDivIsHide = sectionContentDiv.classList.contains("d-none");
-        target.textContent = sectionDivIsHide ? "Afișează" : "Ascunde exercițiile";
-    },
-
     toggleAnswer: async (event) => {
         event.preventDefault();
         const target = event.target; // shortcut
