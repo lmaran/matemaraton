@@ -7,14 +7,7 @@
         display: block;
     }
 
-    #agenda LI:before {
-        /* only <li>s in agenda section */
-        content: counters(item, ".") ". ";
-        counter-increment: item
-    }
-
     #table-of-contents LI:before {
-        /* only <li>s in agenda section */
         content: counters(item, ".") ". ";
         counter-increment: item
     }
@@ -52,7 +45,6 @@
             {{#if isActive}}
                 <a class="pl-1" href="/cursuri/{{@root.course._id}}/lectii/{{id}}">{{name}}</a>
                 <span class="text-muted">({{ exercises.length }}{{#unless exercises.length}}0{{/unless}})</span>
-                {{!-- (<a href="/cursuri/{{@root.course._id}}/capitole/{{id}}">{{ exercises.length }}{{#unless exercises.length}}0{{/unless}}</a>) --}}
             {{else}}
                 <span class="text-muted">{{name}}</span>
             {{/if}}
