@@ -120,7 +120,7 @@
 {{#each exercises}}
     <div class="exercise-div mb-4">
         {{> exercise-statement @this}}
-        {{> exercise-menu @this sectionId = ../../id levelId = ../id allowView=false allowEdit=false allowDelete=false allowMove=false}}
+        {{> exercise-menu @this levelId = ../id allowView=false allowEdit=false allowDelete=false allowMove=false}}
         {{> exercise-panels @this }}
     </div>
 {{/each}}

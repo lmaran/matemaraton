@@ -5,7 +5,7 @@
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/modifica">{{courseCode}}</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/modifica">
                 Cap.{{inc chapterIndex}}</a></li>
-        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}/modifica?sectionId={{sectionId}}#section{{sectionId}}">L.{{inc lessonIndex}}</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}/modifica">L.{{inc lessonIndex}}</a></li>
         <li class="breadcrumb-item active">E.{{exercise.code}}</li>
 
         {{#if isEditMode}}
@@ -353,7 +353,6 @@
     <input type="hidden" name="courseId" value="{{courseId}}" id="courseId" />
     <input type="hidden" name="chapterId" value="{{chapterId}}" />
     <input type="hidden" name="lessonId" value="{{lessonId}}" />
-    <input type="hidden" name="sectionId" value="{{sectionId}}" />
     <input type="hidden" name="levelId" value="{{levelId}}" />
     <input type="hidden" name="exerciseId" value="{{exercise._id}}" id="exerciseId" />
 

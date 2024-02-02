@@ -26,7 +26,7 @@
     <li class="nav-item">
         {{!-- <a class="nav-link active fs-5" aria-current="page" href="#">Teorie</a> --}}
         <button class="nav-link" id="exercises-tab" data-bs-toggle="tab" data-bs-target="#exercises-tab-pane" type="button" role="tab" aria-controls="exercises-tab-pane" aria-selected="true">
-            Exerciții ({{lesson.sectionsObj.total}})
+            Exerciții ({{lesson.levelsObj.total}})
         </button>
     </li>
     <li class="nav-item">
@@ -87,47 +87,30 @@
     <div class="tab-pane show" id="exercises-tab-pane" role="tabpanel" aria-labelledby="exercises-tab" tabindex="1">
         <section class="mt-4">
             
-            {{#each lesson.sectionsObj.sections}}
-            <section id="section{{id}}">
-                <div class="section-menu-div mt-5 mb-4">
-                    <h2>{{name}}
-                        <span class="text-muted fw-light">({{total}})</span>
-                    </h2>
-                </div>
+            {{#each lesson.levelsObj.levels}}
+                <section>
+                    <div class="level-menu-div">
+                        <h3 class="fs-4">{{name}}
 
-                <div class="section-content-div mb-3">
-                {{#each levels}}
-                    <section>
-                        <div class="level-menu-div">
-                            <h3 class="fs-4">{{name}}
+                            <a class="fs-6 add-exercise-btn me-2" title="Adaugă exercițiu" 
+                                href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lessonId}}/niveluri/{{id}}/exercitii/adauga">
+                                <i class="bi bi-plus-square"></i>
+                            </a>
+                        </h3>
+                    </div>
 
-                                <a class="fs-6 add-exercise-btn me-2" title="Adaugă exercițiu" 
-                                    href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapterId}}/lectii/{{@root.lessonId}}/sectiuni/{{../id}}/niveluri/{{id}}/exercitii/adauga">
-                                    <i class="bi bi-plus-square"></i>
-                                </a>
-                            </h3>
+                    <div class="level-content-div mb-3">
+                    {{#each exercises}}
+                        <div class="exercise-div">
+                            {{> exercise-statement @this}}
+                            {{> exercise-menu @this levelId = ../id allowView=true allowEdit=true allowDelete=true allowMove=true }}
+                            {{> exercise-panels @this }}
                         </div>
-
-                        <div class="level-content-div mb-3">
-                        {{#each exercises}}
-                            <div class="exercise-div">
-                                {{> exercise-statement @this}}
-                                {{> exercise-menu @this sectionId = ../../id levelId = ../id allowView=true allowEdit=true allowDelete=true allowMove=true }}
-                                {{> exercise-panels @this }}
-                            </div>
-                        {{/each}}
-                        </div>
-                    </section>
-                {{/each}}
-                </div>
-            </section>
+                    {{/each}}
+                    </div>
+                </section>
             {{/each}}
-            {{!-- {{else}}
-                <div class="alert alert-info mt-4" role="alert">
-                    <i class="bi bi-info-circle me-2"></i>
-                    Salvează lecția pentru a putea adăuga exerciții!
-                </div>
-            {{/if}} --}}
+
         </section>
     </div>
     {{/if}}
