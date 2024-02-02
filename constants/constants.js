@@ -5,17 +5,6 @@ module.exports = {
         { text: "Cu răspuns exact (tip numeric)", value: "3" },
     ],
 
-    availableSections: [
-        {
-            id: 1,
-            name: "Exerciții rezolvate",
-        },
-        {
-            id: 2,
-            name: "Exerciții propuse",
-        },
-    ],
-
     availableLevels: [
         {
             id: 1,

@@ -5,7 +5,7 @@
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}">{{courseCode}}</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}">
                 Cap.{{inc chapterIndex}}</a></li>
-        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}?sectionId={{sectionId}}#section{{sectionId}}">L.{{inc lessonIndex}}</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}">L.{{inc lessonIndex}}</a></li>
 
         <li class="breadcrumb-item active">E.{{exercise.code}}</li>
 
@@ -46,7 +46,7 @@
 
 <div class="exercise-div">
     {{> exercise-statement exercise}}
-    {{> exercise-menu exercise sectionId = sectionId levelId = levelId }}
+    {{> exercise-menu exercise levelId = levelId }}
     {{> exercise-panels exercise }}
 </div>
 

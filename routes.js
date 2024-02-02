@@ -129,12 +129,12 @@ router.get("/cursuri/:courseId/lectii/:lessonId/teorie", courseTheoryController.
 
 // course-exercise
 router.get(
-    "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/sectiuni/:sectionId/niveluri/:levelId/exercitii/adauga",
+    "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/niveluri/:levelId/exercitii/adauga",
     isAuthenticated,
     courseExerciseController.createGet
 );
 router.post(
-    "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/sectiuni/:sectionId/niveluri/:levelId/exercitii/adauga",
+    "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/niveluri/:levelId/exercitii/adauga",
     isAuthenticated,
     courseExerciseController.createPost
 );
@@ -154,7 +154,7 @@ router.delete(`/cursuri/:courseId/exercitii/:exerciseId/fisiere/:fileId`, course
 //router.post("/cursuri/:courseId/capitole/:chapterId/lectii/adauga", isAuthenticated, courseLessonController.createOrEditPost);
 router.get("/cursuri/:courseId/available-lessons", isAuthenticated, courseExerciseController.getAvailableLessons);
 router.get(
-    "/cursuri/:courseId/lectii/:lessonId/sectiuni/:sectionId/niveluri/:levelId/exercise/:exerciseId/available-positions",
+    "/cursuri/:courseId/lectii/:lessonId/niveluri/:levelId/exercise/:exerciseId/available-positions",
     isAuthenticated,
     courseExerciseController.getAvailablePositions
 );

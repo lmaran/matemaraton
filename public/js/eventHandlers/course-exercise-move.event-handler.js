@@ -29,11 +29,6 @@ export const eventHandlers = {
         await setDefaultPosition();
     },
 
-    setDefaultSection: async (event) => {
-        event.preventDefault();
-        await setDefaultPosition();
-    },
-
     setDefaultLevel: async (event) => {
         event.preventDefault();
         await setDefaultPosition();
@@ -43,14 +38,13 @@ export const eventHandlers = {
 const setDefaultPosition = async () => {
     const courseId = document.getElementById("courseSelect").value;
     const lessonId = document.getElementById("lessonSelect").value;
-    const sectionId = document.getElementById("sectionSelect").value;
     const levelId = document.getElementById("levelSelect").value;
     const positionSelect = document.getElementById("positionSelect");
     const exerciseId = document.getElementById("exerciseId").value;
 
     if (lessonId == "") return;
 
-    const { availablePositions } = await courseExerciseService.getAvailablePositions({ courseId, lessonId, sectionId, levelId, exerciseId });
+    const { availablePositions } = await courseExerciseService.getAvailablePositions({ courseId, lessonId, levelId, exerciseId });
 
     // positionSelect: remove all options
     while (positionSelect.options.length) positionSelect.remove(0);

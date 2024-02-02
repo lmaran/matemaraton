@@ -29,7 +29,7 @@
     <li class="nav-item">
         {{!-- <a class="nav-link fs-5" href="#">Exerciții</a> --}}
         <button class="nav-link" id="exercises-tab" data-bs-toggle="tab" data-bs-target="#exercises-tab-pane" type="button" role="tab" aria-controls="exercises-tab-pane" aria-selected="false">
-            Exerciții ({{lesson.sectionsObj.total}})
+            Exerciții ({{lesson.levelsObj.total}})
         </button>
     </li>
     <li class="nav-item">
@@ -54,39 +54,27 @@
     </div>
 
     <div class="tab-pane" id="exercises-tab-pane" role="tabpanel" aria-labelledby="exercises-tab" tabindex="1">
-        {{#each lesson.sectionsObj.sections}}
-        {{#if total}}
-        <section id="section{{id}}" class="mt-4">
-            <div class="section-menu-div mb-4">
-                <h2>{{name}}
-                    <span class="text-muted fw-light">({{total}})</span>
-                </h2>
-            </div>
 
-            <div class="section-content-div mb-3">
-            {{#each levels}}
-                {{#if exercises.length}}
-                <section>
-                    <div class="level-menu-div">
-                        <span class="fs-4">{{name}}</span>
-                    </div>
+        {{#each lesson.levelsObj.levels}}
+            {{#if exercises.length}}
+            <section>
+                <div class="level-menu-div">
+                    <span class="fs-4">{{name}}</span>
+                </div>
 
-                    <div class="level-content-div mb-3">
-                        {{#each exercises}}
-                        <div class="exercise-div">
-                            {{> exercise-statement @this}}
-                            {{> exercise-menu @this sectionId = ../../id levelId = ../id allowView=true allowEdit=false allowDelete=false allowMove=false allowUpdateCart=true}}
-                            {{> exercise-panels @this }}
-                        </div>
-                        {{/each}}
+                <div class="level-content-div mb-3">
+                    {{#each exercises}}
+                    <div class="exercise-div">
+                        {{> exercise-statement @this}}
+                        {{> exercise-menu @this levelId = ../id allowView=true allowEdit=false allowDelete=false allowMove=false allowUpdateCart=true}}
+                        {{> exercise-panels @this }}
                     </div>
-                </section>
-                {{/if}}
-            {{/each}}
-            </div>
-        </section>
-        {{/if}} 
+                    {{/each}}
+                </div>
+            </section>
+            {{/if}}
         {{/each}}
+
     </div>
 
     <div class="tab-pane" id="sheets-tab-pane" role="tabpanel" aria-labelledby="sheets-tab" tabindex="2">

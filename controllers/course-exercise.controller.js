@@ -12,7 +12,7 @@ const exerciseBlobService = require("../services/exercise-blob.service");
 const stringHelper = require("../helpers/string.helper");
 const svgHelper = require("../helpers/svg.helper");
 
-const { availableExerciseTypes, availableSections, availableLevels, imageExtensions } = require("../constants/constants");
+const { availableExerciseTypes, availableLevels, imageExtensions } = require("../constants/constants");
 
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
@@ -48,7 +48,6 @@ exports.getOneById = async (req, res) => {
             lessonId: lesson.id,
             lessonIndex,
 
-            sectionId: exerciseMeta.sectionId,
             levelId: exerciseMeta.levelId,
 
             exercise,
@@ -69,7 +68,7 @@ exports.getOneById = async (req, res) => {
 };
 
 exports.createGet = async (req, res) => {
-    const { courseId, chapterId, lessonId, sectionId, levelId } = req.params;
+    const { courseId, chapterId, lessonId, levelId } = req.params;
 
     let lesson, chapterIndex, availablePositions, selectedPosition, exercise;
 
@@ -92,14 +91,14 @@ exports.createGet = async (req, res) => {
 
         exercise = { exerciseType: 1 }; // Set 'open answer' as the default exercise type
 
-        // sort exercises by sectionId, then by levelId
+        // sort exercises by levelId
         const newExercises = (lesson.exercises || [])
-            .sort((exerciseA, exerciseB) => exerciseA.sectionId - exerciseB.sectionId || exerciseA.levelId - exerciseB.levelId)
+            .sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId)
             .map((x, idx) => {
                 x.name = `Problema ${++idx}`;
                 return x;
             })
-            .filter((x) => x.sectionId == sectionId && x.levelId == levelId);
+            .filter((x) => x.levelId == levelId);
 
         // in editMode, exerciseId will be undefined (falsy)
         // The parentheses ( ... ) around the assignment statement are required when using object literal destructuring assignment without a declaration.
@@ -118,7 +117,6 @@ exports.createGet = async (req, res) => {
             lessonId,
             lessonIndex: lesson.index,
 
-            sectionId,
             levelId,
 
             exercise,
@@ -140,7 +138,6 @@ exports.createPost = async (req, res) => {
         courseId,
         chapterId,
         lessonId,
-        sectionId,
         levelId,
 
         //grade,
@@ -162,7 +159,6 @@ exports.createPost = async (req, res) => {
 
     let exercise;
 
-    if (!["1", "2"].includes(sectionId)) return res.status(500).send("Secțiune invalidă!");
     if (!["1", "2", "3", "4"].includes(levelId)) return res.status(500).send("Nivel de dificultate invalid!");
 
     try {
@@ -209,25 +205,22 @@ exports.createPost = async (req, res) => {
 
         // TODO use the "addExerciseToLocation()" method
         const newExercise = {
-            sectionId,
             levelId,
             id: exerciseId,
         };
 
-        // sort exercises by sectionId, then by levelId
+        // sort exercises by levelId
         const newExercises = (lesson.exercises || [])
-            .sort((exerciseA, exerciseB) => exerciseA.sectionId - exerciseB.sectionId || exerciseA.levelId - exerciseB.levelId)
-            .filter((x) => x.sectionId == sectionId && x.levelId == levelId);
+            .sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId)
+            .filter((x) => x.levelId == levelId);
 
         arrayHelper.moveOrInsertAtIndex(newExercises, newExercise, "id", position);
 
         // remove all exercises within the current level
-        lesson.exercises = (lesson.exercises || []).filter((x) => !(x.sectionId == sectionId && x.levelId == levelId));
+        lesson.exercises = (lesson.exercises || []).filter((x) => !(x.levelId == levelId));
 
         // add all the new exercises within the current level and sort the result
-        lesson.exercises = (lesson.exercises || [])
-            .concat(newExercises)
-            .sort((exerciseA, exerciseB) => exerciseA.sectionId - exerciseB.sectionId || exerciseA.levelId - exerciseB.levelId);
+        lesson.exercises = (lesson.exercises || []).concat(newExercises).sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId);
 
         courseService.updateOne(course);
 
@@ -288,14 +281,14 @@ exports.editGet = async (req, res) => {
             });
         }
 
-        // sort exercises by sectionId, then by levelId
+        // sort exercises by levelId
         const newExercises = (lesson.exercises || [])
-            .sort((exerciseA, exerciseB) => exerciseA.sectionId - exerciseB.sectionId || exerciseA.levelId - exerciseB.levelId)
+            .sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId)
             .map((x, idx) => {
                 x.name = `Problema ${++idx}`;
                 return x;
             })
-            .filter((x) => x.sectionId == exerciseMeta.sectionId && x.levelId == exerciseMeta.levelId);
+            .filter((x) => x.levelId == exerciseMeta.levelId);
 
         // in editMode, lessonId will be undefined (falsy)
         // The parentheses ( ... ) around the assignment statement are required when using object literal destructuring assignment without a declaration.
@@ -314,7 +307,6 @@ exports.editGet = async (req, res) => {
             lessonId: lesson.id,
             lessonIndex,
 
-            sectionId: exerciseMeta.sectionId,
             levelId: exerciseMeta.levelId,
 
             availablePositions,
@@ -335,7 +327,6 @@ exports.editPost = async (req, res) => {
         courseId,
         chapterId,
         lessonId,
-        sectionId,
         levelId,
 
         //grade,
@@ -357,7 +348,6 @@ exports.editPost = async (req, res) => {
 
     let exercise;
 
-    if (!["1", "2"].includes(sectionId)) return res.status(500).send("Secțiune invalidă!");
     if (!["1", "2", "3", "4"].includes(levelId)) return res.status(500).send("Nivel de dificultate invalid!");
 
     try {
@@ -400,25 +390,22 @@ exports.editPost = async (req, res) => {
 
         // TODO use the "addExerciseToLocation()" method
         const newExercise = {
-            sectionId,
             levelId,
             id: exercise._id.toString(),
         };
 
-        // sort exercises by sectionId, then by levelId
+        // sort exercises by levelId
         const newExercises = (lesson.exercises || [])
-            .sort((exerciseA, exerciseB) => exerciseA.sectionId - exerciseB.sectionId || exerciseA.levelId - exerciseB.levelId)
-            .filter((x) => x.sectionId == sectionId && x.levelId == levelId);
+            .sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId)
+            .filter((x) => x.levelId == levelId);
 
         arrayHelper.moveOrInsertAtIndex(newExercises, newExercise, "id", position);
 
         // remove all exercises within the current level
-        lesson.exercises = (lesson.exercises || []).filter((x) => !(x.sectionId == sectionId && x.levelId == levelId));
+        lesson.exercises = (lesson.exercises || []).filter((x) => !(x.levelId == levelId));
 
         // add all the new exercises within the current level and sort the result
-        lesson.exercises = (lesson.exercises || [])
-            .concat(newExercises)
-            .sort((exerciseA, exerciseB) => exerciseA.sectionId - exerciseB.sectionId || exerciseA.levelId - exerciseB.levelId);
+        lesson.exercises = (lesson.exercises || []).concat(newExercises).sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId);
 
         courseService.updateOne(course);
 
@@ -446,7 +433,7 @@ exports.moveGet = async (req, res) => {
         if (!course) return res.status(500).send("Curs negăsit!");
 
         const { chapter, chapterIndex, lesson, lessonIndex, exerciseMeta } = exerciseHelper.getExerciseAndParentsFromCourse(course, exerciseId);
-        const { sectionId, levelId } = exerciseMeta;
+        const { levelId } = exerciseMeta;
 
         const exercise = await exerciseService.getOneById(exerciseId);
 
@@ -466,14 +453,14 @@ exports.moveGet = async (req, res) => {
             });
         });
 
-        // sort exercises by sectionId, then by levelId
+        // sort exercises by levelId
         const newExercises = (lesson.exercises || [])
-            .sort((exerciseA, exerciseB) => exerciseA.sectionId - exerciseB.sectionId || exerciseA.levelId - exerciseB.levelId)
+            .sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId)
             .map((x, idx) => {
                 x.name = `Problema ${++idx}`;
                 return x;
             })
-            .filter((x) => x.sectionId == sectionId && x.levelId == levelId);
+            .filter((x) => x.levelId == levelId);
 
         // in editMode, lessonId will be undefined (falsy)
         // The parentheses ( ... ) around the assignment statement are required when using object literal destructuring assignment without a declaration.
@@ -493,7 +480,6 @@ exports.moveGet = async (req, res) => {
             exerciseId,
             exerciseCode: exercise.code,
 
-            sectionId,
             levelId,
 
             availablePositions,
@@ -501,7 +487,6 @@ exports.moveGet = async (req, res) => {
 
             availableCourses,
             availableLessons,
-            availableSections,
             availableLevels,
 
             canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
@@ -515,25 +500,23 @@ exports.moveGet = async (req, res) => {
 };
 
 exports.movePost = async (req, res) => {
-    //const { courseId, chapterId, lessonId, sectionId, levelId, exerciseId } = req.params;
+    //const { courseId, chapterId, lessonId, levelId, exerciseId } = req.params;
 
     const {
         exerciseId,
 
         courseId: courseIdOld,
         lessonId: lessonIdOld,
-        sectionId: sectionIdOld,
         levelId: levelIdOld,
         positionId: positionIdOld,
 
         course: courseIdNew,
         lesson: lessonIdNew,
-        section: sectionIdNew,
         level: levelIdNew,
         position: positionIdNew,
     } = req.body;
 
-    const redirectUri = `/cursuri/${courseIdNew}/lectii/${lessonIdNew}/modifica?sectionId=${sectionIdNew}#section${sectionIdNew}`;
+    const redirectUri = `/cursuri/${courseIdNew}/lectii/${lessonIdNew}/modifica`;
 
     // let lessonRef, courseCode, chapterIndex, availablePositions, selectedPosition;
 
@@ -543,7 +526,7 @@ exports.movePost = async (req, res) => {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
         // if nothing has changed, redirect
-        if (lessonIdNew == lessonIdOld && sectionIdNew == sectionIdOld && levelIdNew == levelIdOld && positionIdNew == positionIdOld) {
+        if (lessonIdNew == lessonIdOld && levelIdNew == levelIdOld && positionIdNew == positionIdOld) {
             return res.redirect(redirectUri);
         }
 
@@ -554,7 +537,7 @@ exports.movePost = async (req, res) => {
         if (!isValid) return res.status(500).send(message);
 
         // add the exercise to the new location
-        ({ isValid, message } = await addExerciseToLocation(courseIdNew, lessonIdNew, sectionIdNew, levelIdNew, positionIdNew, exerciseId));
+        ({ isValid, message } = await addExerciseToLocation(courseIdNew, lessonIdNew, levelIdNew, positionIdNew, exerciseId));
         if (!isValid) return res.status(500).send(message);
 
         // res.send(data);
@@ -598,7 +581,7 @@ exports.getAvailableLessons = async (req, res) => {
 };
 
 exports.getAvailablePositions = async (req, res) => {
-    const { courseId, lessonId, sectionId, levelId, exerciseId } = req.params;
+    const { courseId, lessonId, levelId, exerciseId } = req.params;
     let lessonRef, availablePositions;
 
     try {
@@ -616,14 +599,14 @@ exports.getAvailablePositions = async (req, res) => {
         }
         if (!lessonRef) return res.status(500).send("Lecție negăsită!");
 
-        // sort exercises by sectionId, then by levelId
+        // sort exercises by levelId
         const newExercises = (lessonRef.exercises || [])
-            .sort((exerciseA, exerciseB) => exerciseA.sectionId - exerciseB.sectionId || exerciseA.levelId - exerciseB.levelId)
+            .sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId)
             .map((x, idx) => {
                 x.name = `Problema ${++idx}`;
                 return x;
             })
-            .filter((x) => x.sectionId == sectionId && x.levelId == levelId);
+            .filter((x) => x.levelId == levelId);
 
         // in editMode, lessonId will be undefined (falsy)
         // The parentheses ( ... ) around the assignment statement are required when using object literal destructuring assignment without a declaration.
@@ -668,7 +651,6 @@ exports.jsonGet = async (req, res) => {
             lessonId: lesson.id,
             lessonIndex,
 
-            sectionId: exerciseMeta.sectionId,
             levelId: exerciseMeta.levelId,
 
             exerciseId: exerciseId,
@@ -729,8 +711,7 @@ exports.deleteOneById = async (req, res) => {
         // 3. Delete the exercise itself
         await exerciseService.deleteOneById(exerciseId);
 
-        const { sectionId } = exerciseMeta;
-        res.redirect(`/cursuri/${courseId}/lectii/${lesson.id}/modifica?sectionId=${sectionId}#section${sectionId}`);
+        res.redirect(`/cursuri/${courseId}/lectii/${lesson.id}/modifica`);
     } catch (err) {
         return res.status(500).json(err.message);
     }
@@ -973,7 +954,7 @@ const removeExerciseFromLocation = async (courseId, exerciseId) => {
     return { isValid: true };
 };
 
-const addExerciseToLocation = async (courseId, lessonId, sectionId, levelId, positionId, exerciseId) => {
+const addExerciseToLocation = async (courseId, lessonId, levelId, positionId, exerciseId) => {
     const course = await courseService.getOneById(courseId);
     if (!course) return { isValid: false, message: "Curs negăsit!" };
 
@@ -986,25 +967,22 @@ const addExerciseToLocation = async (courseId, lessonId, sectionId, levelId, pos
             lessonFound = true;
 
             const newExercise = {
-                sectionId,
                 levelId,
                 id: exerciseId,
             };
 
-            // sort exercises by sectionId, then by levelId
+            // sort exercises by levelId
             const newExercises = (lesson.exercises || [])
-                .sort((exerciseA, exerciseB) => exerciseA.sectionId - exerciseB.sectionId || exerciseA.levelId - exerciseB.levelId)
-                .filter((x) => x.sectionId == sectionId && x.levelId == levelId);
+                .sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId)
+                .filter((x) => x.levelId == levelId);
 
             arrayHelper.moveOrInsertAtIndex(newExercises, newExercise, "id", positionId);
 
             // remove all exercises within the current level
-            lesson.exercises = (lesson.exercises || []).filter((x) => !(x.sectionId == sectionId && x.levelId == levelId));
+            lesson.exercises = (lesson.exercises || []).filter((x) => !(x.levelId == levelId));
 
             // add all the new exercises within the current level and sort the result
-            lesson.exercises = (lesson.exercises || [])
-                .concat(newExercises)
-                .sort((exerciseA, exerciseB) => exerciseA.sectionId - exerciseB.sectionId || exerciseA.levelId - exerciseB.levelId);
+            lesson.exercises = (lesson.exercises || []).concat(newExercises).sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId);
 
             updateResult = await courseService.updateOne(course);
 

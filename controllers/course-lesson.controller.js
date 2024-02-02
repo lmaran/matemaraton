@@ -10,11 +10,10 @@ const dateTimeHelper = require("../helpers/date-time.helper");
 
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
-const { availableSections, availableLevels } = require("../constants/constants");
+const { availableLevels } = require("../constants/constants");
 
 exports.getOneById = async (req, res) => {
     const { courseId, lessonId } = req.params;
-    const { sectionId } = req.query;
 
     try {
         // validate parameters
@@ -30,9 +29,7 @@ exports.getOneById = async (req, res) => {
 
         const exercisesFromDb = await getAllExercisesInLesson(lesson);
 
-        lesson.sectionsObj = getSectionsObj(lesson.exercises, exercisesFromDb, true);
-
-        setActiveSection(lesson.sectionsObj, sectionId);
+        lesson.levelsObj = getLevelsObj(lesson.exercises, exercisesFromDb, true);
 
         // remove unnecessary fields
         if (lesson.theory) delete lesson.theory.text;
@@ -196,7 +193,6 @@ exports.createPost = async (req, res) => {
 
 exports.editGet = async (req, res) => {
     const { courseId, lessonId } = req.params;
-    const { sectionId } = req.query;
 
     let availablePositions, selectedPosition;
 
@@ -218,9 +214,7 @@ exports.editGet = async (req, res) => {
 
         const exercisesFromDb = await getAllExercisesInLesson(lesson);
 
-        lesson.sectionsObj = getSectionsObj(lesson.exercises, exercisesFromDb, true);
-
-        setActiveSection(lesson.sectionsObj, sectionId);
+        lesson.levelsObj = getLevelsObj(lesson.exercises, exercisesFromDb, true);
 
         // remove unnecessary fields
         delete lesson.exercises;
@@ -341,35 +335,31 @@ const getAllExercisesInLesson = async (lesson) => {
 };
 
 //  exercisesRef: [
-//     { id: '5f4636cd17efad83f707e937', sectionId:1, level: 1 },
-//     { id: '5f47d415eb57b91c67e5367d', sectionId:1, level: 1 },
-//     { id: '5f47dec6eb57b91c67e5367e', sectionId:1, level: 2 }]
-const getSectionsObj = (exercisesRef, exercisesFromDb, clear) => {
-    // initialize the section backbone (we need all sections and levels in editMode)
-    const sections = [];
-    availableSections.forEach((s) => {
-        s.total = 0;
-        s.levels = [];
-        availableLevels.forEach((l) => {
-            s.levels.push({
-                id: l.id,
-                name: l.name,
-                total: 0,
-                exercises: [],
-            });
+//     { id: '5f4636cd17efad83f707e937', level: 1 },
+//     { id: '5f47d415eb57b91c67e5367d', level: 1 },
+//     { id: '5f47dec6eb57b91c67e5367e', evel: 2 }]
+const getLevelsObj = (exercisesRef, exercisesFromDb, clear) => {
+    // initialize the level backbone (we need all levels in editMode)
+    const levels = [];
+
+    availableLevels.forEach((l) => {
+        levels.push({
+            id: l.id,
+            name: l.name,
+            total: 0,
+            exercises: [],
         });
-        sections.push(s);
     });
 
-    const sectionsObj = {
+    const levelsObj = {
         total: 0,
-        sections: sections,
+        levels: levels,
     };
 
-    if (!exercisesRef) return sectionsObj;
+    if (!exercisesRef) return levelsObj;
 
-    // sort exercises by sectionId, then by levelId
-    exercisesRef.sort((exerciseA, exerciseB) => exerciseA.sectionId - exerciseB.sectionId || exerciseA.levelId - exerciseB.levelId);
+    // sort exercises by levelId
+    exercisesRef.sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId);
 
     const exercises = exercisesRef.map((x) => {
         let exercise = exercisesFromDb.find((y) => y._id.toString() === x.id);
@@ -390,26 +380,13 @@ const getSectionsObj = (exercisesRef, exercisesFromDb, clear) => {
         exercise.authorAndSource1 = authorAndSource1;
         exercise.source2 = source2;
 
-        const section = sectionsObj.sections.find((s) => s.id == e.sectionId);
-
-        if (section) {
-            const level = section.levels.find((l) => l.id == e.levelId);
-            if (level) {
-                level.exercises.push(exercise);
-                level.total++;
-                section.total++;
-                sectionsObj.total++;
-            }
+        const level = levelsObj.levels.find((l) => l.id == e.levelId);
+        if (level) {
+            level.exercises.push(exercise);
+            level.total++;
+            levelsObj.total++;
         }
     });
 
-    return sectionsObj;
-};
-
-const setActiveSection = (sectionsObj, activeSectionId) => {
-    sectionsObj.sections.forEach((section) => {
-        if (section.id == activeSectionId) {
-            section.isActive = true;
-        }
-    });
+    return levelsObj;
 };

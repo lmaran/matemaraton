@@ -6,9 +6,7 @@ export const courseExerciseService = {
         return fetchHelpers.get(`/cursuri/${courseId}/available-lessons`);
     },
     getAvailablePositions: async (data) => {
-        const { courseId, lessonId, sectionId, levelId, exerciseId } = data;
-        return fetchHelpers.get(
-            `/cursuri/${courseId}/lectii/${lessonId}/sectiuni/${sectionId}/niveluri/${levelId}/exercise/${exerciseId}/available-positions`
-        );
+        const { courseId, lessonId, levelId, exerciseId } = data;
+        return fetchHelpers.get(`/cursuri/${courseId}/lectii/${lessonId}/niveluri/${levelId}/exercise/${exerciseId}/available-positions`);
     },
 };

@@ -64,8 +64,6 @@
     {{#each sheet.exercises}}
     <div class="exercise-div">
         {{> exercise-statement @this}}
-        {{!-- {{> exercise-menu @this sectionId = ../../id levelId = ../id allowView=false allowEdit=false allowDelete=false allowMove=false allowUpdateCart=false}}
-        {{> exercise-panels @this }} --}}
         <input type="hidden" name="exerciseIdsInput" value="{{_id}}"/>
     </div>
     {{/each}}
