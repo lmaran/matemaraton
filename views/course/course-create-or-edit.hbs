@@ -8,7 +8,6 @@
     }
 
     #table-of-contents LI:before {
-        /* only <li>s in table-of-content section */
         content: counters(item, ".") ". ";
         counter-increment: item
     }
@@ -30,142 +29,167 @@
 
 <h1>{{#if isEditMode}}Curs {{course.code}}{{else}}Curs nou{{/if}}</h1>
 
-<form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
-
-    <div class="row">
-        <div class="col-md-3">
-            <label for="codeInput" class="fw-bold">Cod:</label>
-            <input type="text" name="code" class="form-control" id="codeInput" placeholder="" value="{{course.code}}">
-            <small>
-                <p class="text-muted mb-0">Ex: M105</p>
-            </small>
-        </div>
-
-        <div class="col-md-9">
-            <label for="nameInput" class="fw-bold">Nume:</label>
-            <input type="text" name="name" class="form-control" id="nameInput" placeholder="" value="{{course.name}}">
-            <small>
-                <p class="text-muted mb-0">Ex: Matematică, clasa a V-a</p>
-            </small>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12">
-            <label for="descriptionInput" class="fw-bold">Descriere:</label>
-            <textarea type="text" name="description" class="form-control" id="descriptionInput"
-                placeholder="">{{course.description}}</textarea>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-6">
-            <label for="gradeSelect" class="fw-bold">Clasa:</label>
-            <select name="grade" class="form-select" id="gradeSelect">
-                {{#select course.grade}}
-                <option value=""></option>
-                {{#each gradeAvailableOptions}}
-                <option value="{{value}}">{{text}}</option>
-                {{/each}}
-
-                {{/select}}
-            </select>
-        </div>
-
-        <div class="col-md-6">
-            <label for="branchSelect" class="fw-bold">Categoria:</label>
-            <select name="category" class="form-select" id="branchSelect">
-                {{#select course.category}}
-                <option value=""></option>
-                {{#each categoryAvailableOptions}}
-                <option value="{{value}}">{{text}}</option>
-                {{/each}}
-
-                {{/select}}
-            </select>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="isHiddenCheck" name="isHidden" {{#if
-                    course.isHidden}}checked{{/if}}>
-                <label class="form-check-label fw-bold" for="isHiddenCheck">Ascuns</label>
-                <small>
-                    <p class="text-muted mb-0">Doar tu (proprietarul) poți vedea resursele ascunse.</p>
-                </small>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="isActiveCheck" name="isActive" 
-                {{!-- {{#if course.isActive}}checked{{/if}}> --}}
-                {{#if (or course.isActive isCreateMode)}}checked{{/if}}>
-                <label class="form-check-label fw-bold" for="isActiveCheck">Activ</label>
-                <small>
-                    <p class="text-muted mb-0">Resursele dezactivate nu sunt vizibile în exterior.</p>
-                </small>
-            </div>
-        </div>
-    </div>
-
-    <input type="hidden" name="id" value="{{course._id}}" />
-
-    <div class="mt-4">
-        <div class="col-md-7s offset-md-3s">
-            <button type="submit" name="saveBtn" class="btn btn-primary"><i class="bi bi-save"></i>
-                Salveaza</button>
-
-            {{#if isEditMode}}
-            <a href="/cursuri/{{course._id}}" class="btn btn-light"><i class="bi bi-eye"></i>
-                Vizualizează</a>
-            <button type="submit" formaction="/cursuri/{{course._id}}/sterge" name="deleteBtn" class="btn btn-link"
-                onclick="return confirm('Ești sigur că vrei să ștergi acest curs?');"><i class="bi bi-trash-fill"></i>
-                Șterge</button>
-            {{/if}}
-        </div>
-    </div>
-
-</form>
-
-{{!-- <hr class="mt-5 mb-5"> --}}
-
-{{#if isEditMode}}
-<h3 class=" font-weight-light mt-5">Capitole:</h3>
-
-<ol id="table-of-contents" class="pl-0">
-    {{#each course.chapters}}
-    <li>
-        <a href="/cursuri/{{@root.course._id}}/capitole/{{id}}/modifica" class2="text-uppercase">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
-
-        {{#if isHidden}}
-        <a href="/cursuri/{{@root.course._id}}/capitole/{{id}}/modifica">
-            <i class="bi bi-eye-slash text-danger"></i></a>
-        {{/if}}
-
-        <ol>
-            {{#each lessons}}
-            <li>
-                {{!-- <a class="pl-1" href="/cursuri/{{@root.course._id}}/capitole/{{../id}}/lectii/{{id}}/modifica">{{name}}{{#unless name}}Fără nume{{/unless}}</a> --}}
-            
-                {{!-- {{#if exercises.length }} --}}
-                    <a class="pl-1" href="/cursuri/{{@root.course._id}}/lectii/{{id}}/modifica">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
-                    (<a href="/cursuri/{{@root.course._id}}/capitole/{{id}}">{{ exercises.length }}{{#unless exercises.length}}0{{/unless}}</a>)
-                {{!-- {{else}}
-                    <span class="text-muted">{{name}}</span>
-                {{/if}} --}}
-            
-            </li>
-            {{/each}}
-        </ol>
-
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        {{!-- <a class="nav-link active fs-5" aria-current="page" href="#">Teorie</a> --}}
+        <button class="nav-link active" id="chapters-tab" data-bs-toggle="tab" data-bs-target="#chapters-tab-pane" type="button" role="tab" aria-controls="chapters-tab-pane" aria-selected="true">
+            Capitole
+        </button>
     </li>
-    {{/each}}
-</ol>
+    <li class="nav-item">
+        <button class="nav-link " id="general-tab" data-bs-toggle="tab" data-bs-target="#general-tab-pane" type="button" role="tab" aria-controls="general-tab-pane" aria-selected="true">
+            <i class="bi bi-gear"></i>
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane show active" id="chapters-tab-pane" role="tabpanel" aria-labelledby="chapters-tab" tabindex="0">
+        <section class="mt-4">
+            {{#if isEditMode}}
+            {{!-- <h3 class=" font-weight-light mt-5">Capitole:</h3> --}}
+
+            <ol id="table-of-contents" class="pl-0">
+                {{#each course.chapters}}
+                <li>
+                    <a href="/cursuri/{{@root.course._id}}/capitole/{{id}}/modifica" class2="text-uppercase">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
+
+                    {{#if isHidden}}
+                    <a href="/cursuri/{{@root.course._id}}/capitole/{{id}}/modifica">
+                        <i class="bi bi-eye-slash text-danger"></i></a>
+                    {{/if}}
+
+                    <ol>
+                        {{#each lessons}}
+                        <li>
+                            {{!-- <a class="pl-1" href="/cursuri/{{@root.course._id}}/capitole/{{../id}}/lectii/{{id}}/modifica">{{name}}{{#unless name}}Fără nume{{/unless}}</a> --}}
+                        
+                            {{!-- {{#if exercises.length }} --}}
+                                <a class="pl-1" href="/cursuri/{{@root.course._id}}/lectii/{{id}}/modifica">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
+                                (<a href="/cursuri/{{@root.course._id}}/capitole/{{id}}">{{ exercises.length }}{{#unless exercises.length}}0{{/unless}}</a>)
+                            {{!-- {{else}}
+                                <span class="text-muted">{{name}}</span>
+                            {{/if}} --}}
+                        
+                        </li>
+                        {{/each}}
+                    </ol>
+
+                </li>
+                {{/each}}
+            </ol>
 
 
-<a href="/cursuri/{{course._id}}/capitole/adauga" class="btn btn-primary btn-sm">
-    <i class="bi bi-plus-lg"></i> Adaugă capitol</a>
-{{/if}}
+            <a href="/cursuri/{{course._id}}/capitole/adauga" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-lg"></i> Adaugă capitol</a>
+            {{/if}}
+        </section>
+    </div>
+
+    <div class="tab-pane show" id="general-tab-pane" role="tabpanel" aria-labelledby="general-tab" tabindex="1">
+        <section class="mt-4">
+            <form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <label for="codeInput" class="fw-bold">Cod:</label>
+                        <input type="text" name="code" class="form-control" id="codeInput" placeholder="" value="{{course.code}}">
+                        <small>
+                            <p class="text-muted mb-0">Ex: M105</p>
+                        </small>
+                    </div>
+
+                    <div class="col-md-9">
+                        <label for="nameInput" class="fw-bold">Nume:</label>
+                        <input type="text" name="name" class="form-control" id="nameInput" placeholder="" value="{{course.name}}">
+                        <small>
+                            <p class="text-muted mb-0">Ex: Matematică, clasa a V-a</p>
+                        </small>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="descriptionInput" class="fw-bold">Descriere:</label>
+                        <textarea type="text" name="description" class="form-control" id="descriptionInput"
+                            placeholder="">{{course.description}}</textarea>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="gradeSelect" class="fw-bold">Clasa:</label>
+                        <select name="grade" class="form-select" id="gradeSelect">
+                            {{#select course.grade}}
+                            <option value=""></option>
+                            {{#each gradeAvailableOptions}}
+                            <option value="{{value}}">{{text}}</option>
+                            {{/each}}
+
+                            {{/select}}
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="branchSelect" class="fw-bold">Categoria:</label>
+                        <select name="category" class="form-select" id="branchSelect">
+                            {{#select course.category}}
+                            <option value=""></option>
+                            {{#each categoryAvailableOptions}}
+                            <option value="{{value}}">{{text}}</option>
+                            {{/each}}
+
+                            {{/select}}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="isHiddenCheck" name="isHidden" {{#if
+                                course.isHidden}}checked{{/if}}>
+                            <label class="form-check-label fw-bold" for="isHiddenCheck">Ascuns</label>
+                            <small>
+                                <p class="text-muted mb-0">Doar tu (proprietarul) poți vedea resursele ascunse.</p>
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="isActiveCheck" name="isActive" 
+                            {{!-- {{#if course.isActive}}checked{{/if}}> --}}
+                            {{#if (or course.isActive isCreateMode)}}checked{{/if}}>
+                            <label class="form-check-label fw-bold" for="isActiveCheck">Activ</label>
+                            <small>
+                                <p class="text-muted mb-0">Resursele dezactivate nu sunt vizibile în exterior.</p>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" name="id" value="{{course._id}}" />
+
+                <div class="mt-4">
+                    <div class="col-md-7s offset-md-3s">
+                        <button type="submit" name="saveBtn" class="btn btn-primary"><i class="bi bi-save"></i>
+                            Salveaza</button>
+
+                        {{#if isEditMode}}
+                        <button type="submit" formaction="/cursuri/{{course._id}}/sterge" name="deleteBtn" class="btn btn-link"
+                            onclick="return confirm('Ești sigur că vrei să ștergi acest curs?');"><i class="bi bi-trash-fill"></i>
+                            Șterge</button>
+                        {{/if}}
+                    </div>
+                </div>
+
+            </form>
+        </section>
+    </div>
+</div>
+
+
+
+
+

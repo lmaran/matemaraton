@@ -172,9 +172,10 @@ exports.createPost = async (req, res) => {
         // update lesson fields
         lesson.name = name;
         lesson.description = description;
-        lesson.theory = {
-            text: theory.trim(),
-        };
+        if (theory)
+            lesson.theory = {
+                text: theory.trim(),
+            };
 
         if (isHidden === "on") {
             // If the 'value' attribute was omitted, the default value for the checkbox is 'on' (mozilla.org)
@@ -187,7 +188,7 @@ exports.createPost = async (req, res) => {
 
         courseService.updateOne(course);
 
-        res.redirect(`/cursuri/${courseId}/capitole/${chapterId}/modifica`);
+        res.redirect(`/cursuri/${courseId}/lectii/${lessonId}/modifica`);
     } catch (err) {
         return res.status(500).json(err.message);
     }
@@ -225,6 +226,10 @@ exports.editGet = async (req, res) => {
         delete lesson.exercises;
 
         ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(chapter.lessons, lessonId));
+
+        lesson.sheets = lesson.sheetIds ? await sheetService.getAllByIds(lesson.sheetIds) : [];
+
+        lesson.sheets.forEach((sheet) => (sheet.createdOn = dateTimeHelper.getShortDateAndTimeDateRo(sheet.createdOn))); // ex: 22.11.2023
 
         const data = {
             isEditMode: true,
