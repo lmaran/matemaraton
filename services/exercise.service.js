@@ -81,3 +81,8 @@ exports.insertSolution = async (item) => {
     const db = await mongoHelper.getDb();
     return db.collection("submissions").insertOne(item);
 };
+
+exports.updateCourseId = async (exerciseId, courseIdNew) => {
+    const db = await mongoHelper.getDb();
+    return db.collection(collection).updateOne({ _id: new ObjectId(exerciseId) }, { $set: { courseId: courseIdNew } });
+};

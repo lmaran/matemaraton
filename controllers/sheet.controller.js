@@ -163,7 +163,6 @@ exports.createGet = async (req, res) => {
 
         // Default options
         const sheet = {
-            sheetType: 3,
             name: "Temă individuală",
             title: `#### Titlu\r\n##### Subtitlu\r\n ${fullUserNameText}[matemaraton.ro](https://matemaraton.ro), ${currentDateStr}`,
         };
@@ -202,7 +201,7 @@ exports.createGet = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
-    const { courseId, lessonId, sheetType, name, title, exerciseIdsInput } = req.body;
+    const { courseId, lessonId, name, title, exerciseIdsInput } = req.body;
     let exerciseIds = [];
 
     // let lesson;
@@ -216,7 +215,6 @@ exports.createPost = async (req, res) => {
         if (exerciseIdsInput) exerciseIds = Array.isArray(exerciseIdsInput) ? exerciseIdsInput : [exerciseIdsInput];
 
         const sheet = {
-            sheetType,
             name,
             title,
             exerciseIds,
