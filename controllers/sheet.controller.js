@@ -10,8 +10,6 @@ const dateTimeHelper = require("../helpers/date-time.helper");
 
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
-const { availableSheetTypes } = require("../constants/constants");
-
 exports.getOneById = async (req, res) => {
     const { sheetId } = req.params;
     let { type } = req.query;
@@ -30,16 +28,9 @@ exports.getOneById = async (req, res) => {
             exercises = await exerciseService.getAllByIds(sheet.exerciseIds);
         }
 
-        sheet.sheetType = sheet.sheetType || 1;
-        let pageTitle = availableSheetTypes[sheet.sheetType - 1].text;
-        if (sheet.sheetType == 3 && type == "solutions") {
-            pageTitle = "Soluții temă individuală";
-        }
+        const pageTitle = "Temă individuală";
 
         if (sheet.title) {
-            if (sheet.sheetType == 3 && type == "solutions") {
-                sheet.title = sheet.title.replace("Temă individuală", "Soluții temă individuală");
-            }
             sheet.titlePreview = markdownService.render(sheet.title);
         }
 
@@ -173,14 +164,13 @@ exports.createGet = async (req, res) => {
         // Default options
         const sheet = {
             sheetType: 3,
-            name: availableSheetTypes[2].text,
+            name: "Temă individuală",
             title: `#### Titlu\r\n##### Subtitlu\r\n ${fullUserNameText}[matemaraton.ro](https://matemaraton.ro), ${currentDateStr}`,
         };
 
         const data = {
             exercises,
             sheet,
-            availableSheetTypes,
         };
 
         if (courseId && lessonId) {
@@ -197,7 +187,7 @@ exports.createGet = async (req, res) => {
             data.lessonId = lessonId;
             data.lessonIndex = lessonIndex;
 
-            data.sheet.title = `#### ${lesson.name}\r\n##### ${availableSheetTypes[2].text}\r\n ${fullUserNameText}[matemaraton.ro](https://matemaraton.ro), ${currentDateStr}`;
+            data.sheet.title = `#### ${lesson.name}\r\n##### Temă individuală\r\n ${fullUserNameText}[matemaraton.ro](https://matemaraton.ro), ${currentDateStr}`;
         }
 
         (data.sheet.titlePreview = markdownService.render(data.sheet.title)),
@@ -306,7 +296,6 @@ exports.updateGet = async (req, res) => {
 
         const data = {
             sheet,
-            availableSheetTypes,
         };
 
         const { courseId, lessonId } = sheet;

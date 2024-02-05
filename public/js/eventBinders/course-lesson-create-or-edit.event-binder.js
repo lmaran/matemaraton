@@ -2,8 +2,8 @@ import { commonEventHandler } from "../eventHandlers/course-lesson.common-event-
 import { eventHandlers } from "../eventHandlers/course-lesson-create-or-edit.event-handler.js";
 import { dateTimeHelper } from "../helpers/date-time.helper.js";
 
-document.getElementById("toggle-theory-editor-btn").addEventListener("click", eventHandlers.toggleTheoryEditor);
-document.getElementById("theory-editor-txt").addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.getTheoryPreview, 500)); // with debouncer (500 ms)
+document.getElementById("toggle-theory-editor-btn")?.addEventListener("click", eventHandlers.toggleTheoryEditor);
+document.getElementById("theory-editor-txt")?.addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.getTheoryPreview, 500)); // with debouncer (500 ms)
 
 // common
 document.querySelectorAll(".toggle-answer-btn").forEach((item) => item.addEventListener("click", commonEventHandler.toggleAnswer));

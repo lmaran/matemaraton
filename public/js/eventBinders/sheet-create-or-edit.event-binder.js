@@ -15,7 +15,3 @@ document.querySelectorAll(".toggle-solution-btn").forEach((item) => item.addEven
 document.addEventListener("DOMContentLoaded", eventHandlers.onDOMContentLoaded);
 
 document.getElementById("title-editor-txt").addEventListener("keyup", dateTimeHelper.debounce(eventHandlers.getTitlePreview, 500)); // with debouncer (500 ms)
-
-document.getElementById("sheetTypeSelect").addEventListener("change", eventHandlers.setDefaultSheetType);
-
-// document.getElementById("toggle-title-editor-btn").addEventListener("click", eventHandlers.toggleTitleEditor);
