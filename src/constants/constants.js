@@ -20,11 +20,5 @@ module.exports = {
         },
     ],
 
-    availableSheetTypes: [
-        { text: "Material teoretic", value: "1" },
-        { text: "Exerciții rezolvate", value: "2" },
-        { text: "Temă individuală", value: "3" },
-    ],
-
     imageExtensions: ["png", "svg", "jpeg", "jpg"],
 };

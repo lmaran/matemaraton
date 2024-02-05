@@ -19,8 +19,6 @@ exports.getOneById = async (req, res) => {
         file.extension = fileExtension;
         file.isImage = imageExtensions.includes(fileExtension);
 
-        //let pageTitle = availableSheetTypes[sheet.sheetType - 1].text;
-
         const data = {
             file,
             // pageTitle,

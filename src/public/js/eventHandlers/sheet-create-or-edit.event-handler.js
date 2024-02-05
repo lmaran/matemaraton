@@ -39,36 +39,6 @@ export const eventHandlers = {
         }
     },
 
-    setDefaultSheetType: async (event) => {
-        const selectedExerciseType = event.target.value;
-
-        const answerMainRow = document.getElementById("answer-main-row");
-        const answerOptionMainRow = document.getElementById("answer-option-main-row");
-
-        const answerType1Lbl = document.getElementById("answer-type1-lbl");
-        const answerType3Lbl = document.getElementById("answer-type3-lbl");
-
-        switch (selectedExerciseType) {
-            case "1":
-            case "3":
-                answerMainRow.classList.remove("d-none");
-                answerOptionMainRow.classList.add("d-none");
-
-                if (selectedExerciseType == "1") {
-                    answerType1Lbl.classList.remove("d-none");
-                    answerType3Lbl.classList.add("d-none");
-                } else {
-                    answerType1Lbl.classList.add("d-none");
-                    answerType3Lbl.classList.remove("d-none");
-                }
-
-                break;
-            case "2":
-                answerMainRow.classList.add("d-none");
-                answerOptionMainRow.classList.remove("d-none");
-                break;
-        }
-    },
     // toggleTitleEditor: async (event) => {
     //     event.preventDefault();
 
