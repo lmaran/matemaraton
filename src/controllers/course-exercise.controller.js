@@ -173,15 +173,15 @@ exports.createPost = async (req, res) => {
         exercise = {
             _id: exerciseIdObj,
             code: await idGeneratorMongoService.getNextId("exercises"),
+            statement,
+            solution,
+            answer,
+            exerciseType,
+            contestName,
+            sourceName,
+            author,
+            courseId,
         };
-
-        exercise.statement = statement;
-        exercise.solution = solution;
-        exercise.answer = answer;
-        exercise.exerciseType = exerciseType;
-        exercise.contestName = contestName;
-        exercise.sourceName = sourceName;
-        exercise.author = author;
 
         if (hints) exercise.hints = getHintsAsArray(hints);
 
@@ -539,6 +539,8 @@ exports.movePost = async (req, res) => {
         // add the exercise to the new location
         ({ isValid, message } = await addExerciseToLocation(courseIdNew, lessonIdNew, levelIdNew, positionIdNew, exerciseId));
         if (!isValid) return res.status(500).send(message);
+
+        if (courseIdNew != courseIdOld) await exerciseService.updateCourseId(exerciseId, courseIdNew);
 
         // res.send(data);
         res.redirect(redirectUri);
