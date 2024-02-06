@@ -24,32 +24,32 @@
     <div class="float-end">
         {{#if allowView}}
         <a title="Vizualizează exercițiul" 
-            href="/cursuri/{{@root.courseId}}/exercitii/{{_id}}">
+            href="/exercitii/{{_id}}">
             <i class="bi bi-eye me-1"></i></a>
         {{/if}}
 
         {{#if allowEdit}}
         <a title="Editează exercițiul" 
-            href="/cursuri/{{@root.courseId}}/exercitii/{{_id}}/modifica">
+            href="/exercitii/{{_id}}/modifica">
             <i class="bi bi-pencil me-1"></i></a>
         {{/if}}
 
         {{#if allowDelete}}
         <button title="Șterge exercițiul" type="submit"
-            formaction="/cursuri/{{@root.courseId}}/exercitii/{{_id}}/sterge"
+            formaction="/exercitii/{{_id}}/sterge"
             name="deleteBtn" class="btn btn-link p-0 border-0 me-1 align-top"
             onclick="return confirm('Ești sigur că vrei să ștergi acest exercițiu?');"><i class="bi bi-trash"></i></button>
         {{/if}}
 
         {{#if allowMove}}
         <a title="Mută exercițiul" 
-            href="/cursuri/{{@root.courseId}}/exercitii/{{_id}}/muta">
+            href="/exercitii/{{_id}}/muta">
             <i class="bi bi-arrows-move me-1"></i></a>
         {{/if}}
 
         {{#if (and allowUpdateCart @root.user)}}
             <button type="button" data-exercise-id="{{_id}}" class="remove-from-cart-btn d-none btn btn-light border border-primary btn-xs">Scoate din coș</button>
-            <button type="button" data-exercise-id="{{_id}}" data-exercise-code="{{code}}" data-course-id="{{@root.courseId}}" class="add-to-cart-btn btn btn-primary btn-xs">Adaugă în coș</button>
+            <button type="button" data-exercise-id="{{_id}}" data-exercise-code="{{code}}" class="add-to-cart-btn btn btn-primary btn-xs">Adaugă în coș</button>
         {{/if}}
     </div>
 </div>

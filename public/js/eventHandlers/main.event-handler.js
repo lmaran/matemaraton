@@ -50,7 +50,7 @@ export const eventHandler = {
 
             const a = document.createElement("a");
             a.classList.add("dropdown-item", "pe-2");
-            a.setAttribute("href", `/cursuri/${x.courseId}/exercitii/${x.exerciseId}`);
+            a.setAttribute("href", `/exercitii/${x.exerciseId}`);
             a.innerText = `E.${x.exerciseCode}`;
 
             const i = document.createElement("i");

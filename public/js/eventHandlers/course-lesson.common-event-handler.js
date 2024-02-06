@@ -4,7 +4,7 @@
 export const commonEventHandler = {
     addToCart: async (event) => {
         const target = event.target; // shortcut
-        const exercise = target.dataset; // { exerciseId, exerciseCode, courseId }
+        const exercise = target.dataset; // { exerciseId, exerciseCode }
 
         const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
         cartItems.push(exercise);

@@ -1,4 +1,4 @@
-import { courseExerciseService } from "../services/course-exercise.service.js";
+import { courseExerciseService } from "../services/exercise.service.js";
 
 export const eventHandlers = {
     setDefaultCourse: async (event) => {
