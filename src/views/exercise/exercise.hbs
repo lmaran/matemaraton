@@ -1,20 +1,23 @@
 <nav aria-label="breadcrumb">
-    <ol id="exercise-id-container" class="breadcrumb" data-exercise-id="{{exercise._id}}">
+    <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
-
-        {{#if canCreateOrEditExercise}}
-        <li class="breadcrumb-item"><a href="/exercitii">Exerciții</a></li>
-        {{else}}
-        <li class="breadcrumb-item"><a href="/teste">Teste</a></li>
-        {{/if}}
+        <li class="breadcrumb-item"><a href="/cursuri">Cursuri</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}">{{courseCode}}</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}">
+                Cap.{{inc chapterIndex}}</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}">L.{{inc lessonIndex}}</a></li>
 
         <li class="breadcrumb-item active">E.{{exercise.code}}</li>
+
+        {{#if canCreateOrEditCourse}}
+        <li title="Modifică" class="ms-auto"><a href="/exercitii/{{exercise._id}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
+        {{/if}}
     </ol>
 </nav>
 
+{{!-- {{toJSON @root}} --}}
 
-<h1>Exercițiul {{exercise.code}}</h1>
-<h4>{{exercise.contestName}}</h4>
+<h1 class="hide-on-print">Exercițiul {{exercise.code}}</h1>
 
 <div class="mt-3 hide-on-print">
     <div class="col-md-7s offset-md-3s">
@@ -35,137 +38,17 @@
         </form>
         {{/if}}
 
-
-
-        {{!-- <button type="submit" formaction="/exercitii/sterge" name="deleteBtn" class="btn btn-link"
-            onclick="return confirm('Ești sigur că vrei să ștergi acest exercițiu?');"><i class="bi bi-trash-fill"></i>
-            Șterge</button> --}}
-
-
-
-
-        <button type="button" class="btn btn-light btn-outline-primary" title="Tipărește" onclick="window.print()">
-            <i class="bi bi-printer-fill"></i>
+        <button type="button" class="btn btn-sm btn-light btn-outline-primary" title="Tipărește" onclick="window.print()">
+            <i class="bi bi-printer"></i> Tipărește
         </button>
     </div>
 </div>
 
-<div style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px" class="mt-2">
-    {{{exercise.statementPreview}}}
-    {{#if exercise.answerOptions}}
-    <div class="row">
-        {{#each exercise.answerOptions}}
-        <div class="col text-nowrap">{{{textPreview}}}</div>
-        {{/each}}
-    </div>
-    {{/if}}
+<div class="exercise-div">
+    {{> exercise-statement exercise}}
+    {{> exercise-menu exercise levelId = levelId }}
+    {{> exercise-panels exercise }}
 </div>
-{{!-- <div class="font-italic small text-right text-muted">{{exercise.contestName}}</div>
-<div class="font-italic small text-right text-muted">{{exercise.sourceName}}</div> --}}
-
-
-{{!-- {{#if exercise.answer}}
-<div>
-    <button id="toggle-answer-btn" type="button" class="btn btn-link p-0">Rezultat final</button>
-</div>
-<div id="answer-div" class="d-none2">
-    {{#if exercise.answerOptions}}
-    {{{exercise.correctAnswerPreview}}}
-    {{else}}
-    {{{exercise.answerPreview}}}
-    {{/if}}
-</div>
-{{/if}} --}}
-
-
-{{#if exercise.hints}}
-<div>
-    <button id="toggle-hints-btn" type="button" class="btn btn-link p-0">Indicații
-    </button>
-    <span class="align-middle text-muted">({{exercise.hints.length}})</span>
-</div>
-<div id="hints-div" class="d-none mb-4" data-total-hints="{{exercise.hints.length}}"
-    style="border: 1px solid #007bff; padding: 6px 12px; background-color: #f5faff; min-height:58px">
-    {{#each exercise.hints}}
-    <div {{#if (ne @index 0)}} class="d-none" {{/if}} data-hint-nr="{{inc @index}}">{{{textPreview}}}</div>
-    {{/each}}
-    {{#if (gt exercise.hints.length 1)}}
-    <button id="show-next-hint-btn" type="button" class="btn btn-link p-0">Vezi următoarea indicație</button>
-    {{/if}}
-</div>
-{{/if}}
-
-
-{{#if exercise.solutionPreview}}
-<div id="solution-div" class="d-none2">
-    <div class="fw-bold mt-2">Soluție:</div>
-    <div style2"border: 1px solid lightgray; padding: 6px 12px; background-color: min-height:58px">
-        {{{exercise.solutionPreview}}}
-    </div>
-</div>
-
-<hr class="mb-1">
-{{/if}}
-
-
-
-<div class="row">
-    <div class="col text-nowrap">
-        {{#if exercise.answerOptions}}
-        {{{exercise.correctAnswerPreview}}}
-        {{/if}}
-
-        {{#if exercise.answerPreview}}
-        {{{exercise.answerPreview}}}
-        {{/if}}
-    </div>
-    {{#if solutionPreview}}
-    <div class="col text-nowrap font-italic font-weight-light small text-right text-muted">Rezolvare: L. Măran</div>
-    {{/if}}
-</div>
-
-{{!--
-<hr> --}}
-
-{{#if canCreateOrEditExercise}}
-
-<div class="mt-4">Rezolvarea mea:</div>
-<div class="drop-area">
-    <form class="my-form">
-
-        <div class="form-group">
-            <input type="file" id="upload-file-select-input" multiple accept="image/*" class="d-none">
-            <label class="upload-file-select-label" for="upload-file-select-input">
-                <i class="bi bi-paperclip"></i>
-                Adaugă poza
-            </label>
-
-            <span class="drag-message-span text-muted font-weight-light">sau trage poza aici</span>
-            <div class="upload-file-error-div invalid-feedback">Mesaj de eroare</div>
-            <progress class="progress-bar d-none w-100" max=100 value=0></progress>
-            <div class="gallery mt-3"></div>
-        </div>
-
-        <div class="mt-2">
-            <textarea rows="2" name="comment-textarea" placeholder="Comentariu (opțional)..."
-                style="border-radius:0; border-color:#ccc"
-                class="comment-textarea form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}"></textarea>
-            <div class="invalid-feedback">{{errors.answer.msg}}</div>
-        </div>
-
-        <div class="mb-0 mt-2">
-            <button type="button" id="my-solution-submit-btn" class="btn btn-primary btn-sm">
-                <i class="bi bi-cursor-fill"></i>
-                Trimite rezolvarea
-            </button>
-        </div>
-
-    </form>
-</div>
-
-{{/if}}
-
-<br>
 
 {{#section 'script'}}
 <script type="module" src="/js/eventBinders/exercise.event-binder.js"></script>

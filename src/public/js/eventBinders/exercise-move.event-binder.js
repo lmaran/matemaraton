@@ -1,4 +1,4 @@
-import { eventHandlers } from "../eventHandlers/course-exercise-move.event-handler.js";
+import { eventHandlers } from "../eventHandlers/exercise-move.event-handler.js";
 
 document.getElementById("courseSelect").addEventListener("change", eventHandlers.setDefaultCourse);
 document.getElementById("lessonSelect").addEventListener("change", eventHandlers.setDefaultLesson);

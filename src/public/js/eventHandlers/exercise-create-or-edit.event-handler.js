@@ -1,5 +1,4 @@
 import { markdownService } from "../services/markdown.service.js";
-import { urlHelper } from "../helpers/url.helper.js";
 import { fetchHelpers } from "../helpers/fetch.helper.js";
 
 const statementPreviewDiv = document.getElementById("statement-preview-div");
@@ -201,12 +200,9 @@ export const eventHandlers = {
                 const answer = confirm("Ești sigur că vrei să ștergi acest fișier?");
                 if (!answer) return;
 
-                const courseId = document.getElementById("courseId").value;
                 const exerciseId = document.getElementById("exerciseId").value; // empty in edit mode
 
-                const url = exerciseId
-                    ? `/cursuri/${courseId}/exercitii/${exerciseId}/fisiere/${fileId}`
-                    : `/cursuri/${courseId}/exercitii/fisiere/${fileId}`;
+                const url = exerciseId ? `/exercitii/${exerciseId}/fisiere/${fileId}` : `/exercitii/fisiere/${fileId}`;
 
                 const [error, response] = await fetchHelpers.delete(url);
                 if (error) {

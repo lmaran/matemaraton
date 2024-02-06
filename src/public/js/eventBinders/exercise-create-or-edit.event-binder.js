@@ -42,9 +42,8 @@ document.getElementById("gallery-tbl").addEventListener("click", eventHandlers.h
 
 // ! all the code below is ok - commented out temporary.
 
-const courseId = document.getElementById("courseId").value;
 const exerciseId = document.getElementById("exerciseId").value; // empty in edit mode
-const url = exerciseId ? `/cursuri/${courseId}/exercitii/${exerciseId}/upload-files` : `/cursuri/${courseId}/exercitii/upload-files`;
+const url = exerciseId ? `/exercitii/${exerciseId}/upload-files` : `/exercitii/upload-files`;
 
 const allowedExtensions = ["png", "svg", "jpeg", "jpg", "pdf"];
 
