@@ -264,6 +264,7 @@ exports.createPost = async (req, res) => {
             sourceName,
             author,
             courseId,
+            lessonId,
         };
 
         if (hints) exercise.hints = getHintsAsArray(hints);
@@ -439,11 +440,6 @@ exports.editPost = async (req, res) => {
         if (!canCreateOrEditCourse) {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
-
-        // const course = await courseService.getOneById(courseId);
-        // if (!course) return res.status(500).send("Curs negăsit!");
-
-        //const { chapter, chapterIndex, lesson, lessonIndex, exerciseMeta } = exerciseHelper.getExerciseAndParentsFromCourse(course, exerciseId);
 
         exercise = await exerciseService.getOneById(exerciseId);
         if (!exercise) return res.status(500).send("Exercițiu negăsit!");
@@ -625,7 +621,14 @@ exports.movePost = async (req, res) => {
         ({ isValid, message } = await addExerciseToLocation(courseIdNew, lessonIdNew, levelIdNew, positionIdNew, exerciseId));
         if (!isValid) return res.status(500).send(message);
 
-        if (courseIdNew != courseIdOld) await exerciseService.updateCourseId(exerciseId, courseIdNew);
+        if (courseIdNew != courseIdOld || lessonIdNew != lessonIdOld) {
+            const newExercisePartial = {
+                _id: exerciseId,
+                lessonId: lessonIdNew,
+                courseId: courseIdNew,
+            };
+            await exerciseService.updateOne(newExercisePartial);
+        }
 
         // res.send(data);
         res.redirect(redirectUri);
