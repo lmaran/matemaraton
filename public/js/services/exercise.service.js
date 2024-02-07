@@ -1,13 +1,12 @@
 import { fetchHelpers } from "../helpers/fetch.helper.js";
 
-export const exerciseService = {
-    // getRenderedMarkdown: async data => {
-    //     return fetchHelpers.post("/markdown/get-rendered-markdown", data);
-    // },
-    submitMySolution: async (data) => {
-        return fetchHelpers.post(`/exercitii/${data.exerciseId}/rezolvari`, data);
+export const courseExerciseService = {
+    getAvailableLessons: async (data) => {
+        const { courseId } = data;
+        return fetchHelpers.get(`/cursuri/${courseId}/available-lessons`);
     },
-    // saveExercise: async data => {
-    //     return fetchHelpers.put(`/exercitii/statement/${data.exerciseId}`, data);
-    // }
+    getAvailablePositions: async (data) => {
+        const { courseId, lessonId, levelId, exerciseId } = data;
+        return fetchHelpers.get(`/cursuri/${courseId}/lectii/${lessonId}/niveluri/${levelId}/exercise/${exerciseId}/available-positions`);
+    },
 };
