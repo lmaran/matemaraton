@@ -1,6 +1,6 @@
-const createNewSheetInLessonAnchor = document.getElementById("create-sheet-in-lesson");
+const createNewSheet = document.getElementById("create-new-sheet");
 
-const oldHref = createNewSheetInLessonAnchor?.getAttribute("href"); // we have a value in lesson, otherwise null
+const oldHref = createNewSheet?.getAttribute("href"); // we have a value in lesson, otherwise null
 
 export const eventHandler = {
     onDOMContentLoaded: async () => {
@@ -87,15 +87,12 @@ export const eventHandler = {
         else cartSpan.classList.replace("me-3", "me-2");
 
         // If the cart is not empty, set the href for 'Add to a new sheet' menu item
-        if (cartItems.length > 0) {
+        if (createNewSheet && cartItems.length > 0) {
             const exercisesParam = [];
             cartItems.forEach((x) => exercisesParam.push({ e: x.exerciseId, c: x.courseId }));
-            const createNewSheetAnchor = document.getElementById("create-new-sheet");
-            createNewSheetAnchor.setAttribute("href", "/fise/adauga?cart=" + JSON.stringify(exercisesParam));
 
-            if (createNewSheetInLessonAnchor) {
-                createNewSheetInLessonAnchor.setAttribute("href", `${oldHref}?cart=${JSON.stringify(exercisesParam)}`);
-            }
+            const urlSymbol = oldHref.includes("?") ? "&" : "?";
+            createNewSheet.setAttribute("href", `${oldHref}${urlSymbol}cart=${JSON.stringify(exercisesParam)}`);
         }
 
         // If the cart is empty, hide the red badge and also some dropdown menu items

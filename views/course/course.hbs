@@ -43,7 +43,7 @@
         <div class="ps-3">
             {{inc @../index}}.{{inc @index}}. 
             {{#if isActive}}
-                <a class="pl-1" href="/cursuri/{{@root.course._id}}/lectii/{{id}}">{{name}}</a>
+                <a class="pl-1" href="/lectii/{{id}}">{{name}}</a>
                 <span class="text-muted">({{ exercises.length }}{{#unless exercises.length}}0{{/unless}})</span>
             {{else}}
                 <span class="text-muted">{{name}}</span>

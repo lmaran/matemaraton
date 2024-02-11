@@ -9,8 +9,8 @@
         {{/if}}
         
         {{#if isEditMode}}
-        <li title="Json" class="ms-auto me-2"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}/json"><i class="bi bi-braces me-1"></i></a></li>
-        <li title="Vizualizează"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}"><i class="bi bi-eye me-1"></i></a></li>
+        <li title="Json" class="ms-auto me-2"><a href="/lectii/{{lessonId}}/json"><i class="bi bi-braces me-1"></i></a></li>
+        <li title="Vizualizează"><a href="/lectii/{{lessonId}}"><i class="bi bi-eye me-1"></i></a></li>
         {{/if}}
     </ol>
 </nav>
@@ -95,7 +95,7 @@
                         <h3 class="fs-4">{{name}}
 
                             <a class="fs-6 add-exercise-btn me-2" title="Adaugă exercițiu" 
-                                href="/exercitii/adauga?courseId={{@root.courseId}}&chapterId={{@root.chapterId}}&lessonId={{@root.lessonId}}&levelId={{id}}">
+                                href="/exercitii/adauga?lessonId={{@root.lessonId}}&levelId={{id}}">
                                 <i class="bi bi-plus-square"></i>
                             </a>
                         </h3>
@@ -127,7 +127,7 @@
                 </h2>
             </div> --}}
             <div id="sheets-menu-div">
-                <a id="create-sheet-in-lesson" href="/cursuri/{{courseId}}/lectii/{{lessonId}}/fise/adauga" class="btn btn-primary btn-sm">
+                <a id="create-new-sheet" href="/fise/adauga?lessonId={{lessonId}}" class="btn btn-primary btn-sm">
                 <i class="bi bi-plus-lg"></i> Crează o fișă</a> cu exercițiile din cos.
             </div>
             <div id="sheets-content-div">
@@ -142,7 +142,7 @@
                         {{#each lesson.sheets}}
                         <tr>
                             <td>
-                                <a href="cursuri/{{@root.courseId}}/lectii/{{@root.lessonId}}/fise/{{_id}}">{{name}}{{#unless name}}Fără nume{{/unless}}
+                                <a href="/fise/{{_id}}">{{name}}{{#unless name}}Fără nume{{/unless}}
                             </td>
                             <td>
                                 {{createdOn}}
@@ -206,11 +206,8 @@
                         Salveaza</button>
 
                     {{#if isEditMode}}
-                    {{!-- <a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/lectii/{{lessonId}}"
-                        class="btn btn-light"><i class="bi bi-eye"></i>
-                        Vizualizează</a> --}}
                     <button type="submit"
-                        formaction="/cursuri/{{courseId}}/lectii/{{lessonId}}/sterge"
+                        formaction="/lectii/{{lessonId}}/sterge"
                         name="deleteBtn" class="btn btn-link"
                         onclick="return confirm('Ești sigur că vrei să ștergi această lecție?');"><i
                             class="bi bi-trash-fill"></i>
@@ -223,11 +220,8 @@
     </div>
 </div>
 
-<input type="hidden" name="courseId" value="{{courseId}}" />
-<input type="hidden" name="chapterId" value="{{chapterId}}" />
-
 </form>
 
 {{#section 'script'}}
-<script type="module" src="/js/eventBinders/course-lesson-create-or-edit.event-binder.js"></script>
+<script type="module" src="/js/eventBinders/lesson-create-or-edit.event-binder.js"></script>
 {{/section}}

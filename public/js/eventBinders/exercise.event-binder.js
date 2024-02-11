@@ -1,4 +1,4 @@
-import { commonEventHandler } from "../eventHandlers/course-lesson.common-event-handler.js";
+import { commonEventHandler } from "../eventHandlers/lesson.common-event-handler.js";
 
 // common
 document.querySelectorAll(".toggle-level-btn").forEach((item) => item.addEventListener("click", commonEventHandler.toggleLevel));

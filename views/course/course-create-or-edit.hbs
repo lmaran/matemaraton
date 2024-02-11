@@ -62,15 +62,8 @@
                     <ol>
                         {{#each lessons}}
                         <li>
-                            {{!-- <a class="pl-1" href="/cursuri/{{@root.course._id}}/capitole/{{../id}}/lectii/{{id}}/modifica">{{name}}{{#unless name}}Fără nume{{/unless}}</a> --}}
-                        
-                            {{!-- {{#if exercises.length }} --}}
-                                <a class="pl-1" href="/cursuri/{{@root.course._id}}/lectii/{{id}}/modifica">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
-                                (<a href="/cursuri/{{@root.course._id}}/capitole/{{id}}">{{ exercises.length }}{{#unless exercises.length}}0{{/unless}}</a>)
-                            {{!-- {{else}}
-                                <span class="text-muted">{{name}}</span>
-                            {{/if}} --}}
-                        
+                            <a class="pl-1" href="/lectii/{{id}}/modifica">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
+                            (<a href="/cursuri/{{@root.course._id}}/capitole/{{id}}">{{ exercises.length }}{{#unless exercises.length}}0{{/unless}}</a>)
                         </li>
                         {{/each}}
                     </ol>
@@ -78,7 +71,6 @@
                 </li>
                 {{/each}}
             </ol>
-
 
             <a href="/cursuri/{{course._id}}/capitole/adauga" class="btn btn-primary btn-sm">
                 <i class="bi bi-plus-lg"></i> Adaugă capitol</a>

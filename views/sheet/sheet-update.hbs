@@ -5,7 +5,7 @@
             <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
             <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}">{{courseCode}}</a></li>
             <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}">Cap.{{inc chapterIndex}}</a></li>
-            <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}">L.{{inc lessonIndex}}</a></li>
+            <li class="breadcrumb-item"><a href="/lectii/{{lessonId}}">L.{{inc lessonIndex}}</a></li>
         {{else}}
             <li class="breadcrumb-item"><a href="/fise/">Fișe</a></li>
         {{/if}}
@@ -68,31 +68,6 @@
     </div>
 
 </form>
-
-{{!-- {{#if isEditMode}}
-<h4 class="mt-5">Lecții</h4>
-<ol id="table-of-contents" class="pl-0">
-    {{#each chapter.lessons}}
-    <li>
-        <a href="/cursuri/{{@root.courseId}}/lectii/{{id}}/modifica">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
-        {{#if isHidden}}
-        <a href="/cursuri/{{@root.courseId}}/lectii/{{id}}/modifica">
-            <i class="bi bi-eye-slash text-danger"></i></a>
-        {{/if}}
-    </li>
-    {{/each}}
-</ol>
-
-<a href="/cursuri/{{courseId}}/capitole/{{chapter.id}}/lectii/adauga" class="btn btn-primary btn-sm">
-<i class="bi bi-plus-lg"></i> Adaugă lecție</a>
-
-{{else}}
-    <div class="alert alert-info mt-4" role="alert">
-        <i class="bi bi-info-circle me-2"></i>
-        Salvează capitolul pentru a putea adăuga lecții!
-    </div>
-{{/if}} --}}
-
 
 <div class="mt-5"></div>
 

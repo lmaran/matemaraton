@@ -7,6 +7,7 @@ const markdownService = require("../services/markdown.service");
 const exerciseHelper = require("../helpers/exercise.helper");
 const lessonHelper = require("../helpers/lesson.helper");
 const dateTimeHelper = require("../helpers/date-time.helper");
+const lessonService = require("../services/lesson.service");
 
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
@@ -55,16 +56,19 @@ exports.getOneById = async (req, res) => {
             pageTitle,
         };
 
-        const { courseId, lessonId } = sheet;
+        const { lessonId } = sheet;
 
-        if (courseId && lessonId) {
-            const course = await courseService.getOneById(courseId);
-            if (!course) return res.status(500).send("Curs negăsit!");
-
-            const { chapter, chapterIndex, lesson, lessonIndex } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
+        if (lessonId) {
+            const lesson = await lessonService.getOneById(lessonId);
             if (!lesson) return res.status(500).send("Lecție negăsită!");
 
-            data.courseId = courseId;
+            const course = await courseService.getOneById(lesson.courseId);
+            if (!course) return res.status(500).send("Curs negăsit!");
+
+            const { chapter, chapterIndex, lessonIndex } = lessonHelper.getLessonParentInfo(course, lessonId);
+            if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+            data.courseId = lesson.courseId;
             data.courseCode = course.code;
             data.chapterId = chapter.id;
             data.chapterIndex = chapterIndex;
@@ -106,8 +110,7 @@ exports.getAll = async (req, res) => {
 };
 
 exports.createGet = async (req, res) => {
-    const { courseId, lessonId } = req.params;
-    const { cart } = req.query;
+    const { lessonId, cart } = req.query;
 
     try {
         const canCreateOrEditCourse = await autz.can(req.user, "create-or-update:sheet");
@@ -172,14 +175,17 @@ exports.createGet = async (req, res) => {
             sheet,
         };
 
-        if (courseId && lessonId) {
-            const course = await courseService.getOneById(courseId);
-            if (!course) return res.status(500).send("Curs negăsit!");
-
-            const { chapter, chapterIndex, lesson, lessonIndex } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
+        if (lessonId) {
+            const lesson = await lessonService.getOneById(lessonId);
             if (!lesson) return res.status(500).send("Lecție negăsită!");
 
-            data.courseId = courseId;
+            const course = await courseService.getOneById(lesson.courseId);
+            if (!course) return res.status(500).send("Curs negăsit!");
+
+            const { chapter, chapterIndex, lessonIndex } = lessonHelper.getLessonParentInfo(course, lessonId);
+            if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+            data.courseId = lesson.courseId;
             data.courseCode = course.code;
             data.chapterId = chapter.id;
             data.chapterIndex = chapterIndex;
@@ -201,7 +207,8 @@ exports.createGet = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
-    const { courseId, lessonId, name, title, exerciseIdsInput } = req.body;
+    const { lessonId, name, title, exerciseIdsInput } = req.body;
+    // const { lessonId } = req.query;
     let exerciseIds = [];
 
     // let lesson;
@@ -220,8 +227,7 @@ exports.createPost = async (req, res) => {
             exerciseIds,
         };
 
-        if (courseId && lessonId) {
-            sheet.courseId = courseId;
+        if (lessonId) {
             sheet.lessonId = lessonId;
         }
 
@@ -239,17 +245,14 @@ exports.createPost = async (req, res) => {
         const sheetId = result.insertedId.toString();
 
         // Attach the sheet to the lesson (if the lesson exists)
-        if (courseId && lessonId) {
-            const course = await courseService.getOneById(courseId);
-            if (!course) return res.status(500).send("Curs negăsit!");
-
-            const { lesson } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
+        if (lessonId) {
+            const lesson = await lessonService.getOneById(lessonId);
             if (!lesson) return res.status(500).send("Lecție negăsită!");
 
             lesson.sheetIds = lesson.sheetIds || [];
             lesson.sheetIds.push(sheetId);
 
-            courseService.updateOne(course);
+            lessonService.updateOne(lesson);
         }
 
         res.redirect(`/fise/${sheetId}`);
@@ -296,16 +299,19 @@ exports.updateGet = async (req, res) => {
             sheet,
         };
 
-        const { courseId, lessonId } = sheet;
+        const { lessonId } = sheet;
 
-        if (courseId && lessonId) {
-            const course = await courseService.getOneById(courseId);
-            if (!course) return res.status(500).send("Curs negăsit!");
-
-            const { chapter, chapterIndex, lesson, lessonIndex } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
+        if (lessonId) {
+            const lesson = await lessonService.getOneById(lessonId);
             if (!lesson) return res.status(500).send("Lecție negăsită!");
 
-            data.courseId = courseId;
+            const course = await courseService.getOneById(lesson.courseId);
+            if (!course) return res.status(500).send("Curs negăsit!");
+
+            const { chapter, chapterIndex, lessonIndex } = lessonHelper.getLessonParentInfo(course, lessonId);
+            if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+            data.courseId = lesson.courseId;
             data.courseCode = course.code;
             data.chapterId = chapter.id;
             data.chapterIndex = chapterIndex;
@@ -381,13 +387,15 @@ exports.deleteOneById = async (req, res) => {
     const sheet = await sheetService.getOneById(sheetId);
     if (!sheet) return res.status(500).send("Fișă negăsită!");
 
-    const { courseId, lessonId } = sheet;
+    const { lessonId } = sheet;
 
-    if (courseId && lessonId) {
-        const course = await courseService.getOneById(courseId);
+    if (lessonId) {
+        const lesson = await lessonService.getOneById(lessonId);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+        const course = await courseService.getOneById(lesson.courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { lesson } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
         if (!lesson) return res.status(500).send("Lecție negăsită!");
 
         if (lesson.sheetIds) lesson.sheetIds = lesson.sheetIds.filter((x) => x !== sheetId);
@@ -398,7 +406,7 @@ exports.deleteOneById = async (req, res) => {
     // Delete from sheets
     sheetService.deleteOneById(sheetId);
 
-    if (courseId && lessonId) res.redirect(`/cursuri/${courseId}/lectii/${lessonId}`);
+    if (lessonId) res.redirect(`/lectii/${lessonId}`);
     else res.redirect(`/fise`);
 };
 
@@ -416,19 +424,22 @@ exports.jsonGetOneById = async (req, res) => {
             prettyJson,
         };
 
-        const { courseId, lessonId } = sheet;
+        const { lessonId } = sheet;
 
-        if (courseId && lessonId) {
-            const course = await courseService.getOneById(courseId);
+        if (lessonId) {
+            const lesson = await lessonService.getOneById(lessonId);
+            if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+            const course = await courseService.getOneById(lesson.courseId);
             if (!course) return res.status(500).send("Curs negăsit!");
 
-            const { chapter, chapterIndex, lesson, lessonIndex } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
+            const { chapter, chapterIndex, lessonIndex } = lessonHelper.getLessonParentInfo(course, lessonId);
             if (!lesson) return res.status(500).send("Lecție negăsită!");
 
             // lesson.sheetIds = lesson.sheets || [];
             // lesson.sheetIds.push(sheetId);
 
-            data.courseId = courseId;
+            data.courseId = lesson.courseId;
             data.courseCode = course.code;
             data.chapterId = chapter.id;
             data.chapterIndex = chapterIndex;

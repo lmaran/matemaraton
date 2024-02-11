@@ -1,4 +1,5 @@
 const markdownService = require("../services/markdown.service");
+const lessonHelper = require("../helpers/lesson.helper");
 
 exports.addPreview = (exercise, statementNumber, clear) => {
     if (exercise) {
@@ -72,37 +73,17 @@ exports.getAuthorAndSource = (exercise) => {
     };
 };
 
-exports.getExerciseAndParentsFromCourse = (course, exerciseId) => {
-    let chapter;
-    let chapterIndex = -1;
-    let lesson;
-    let lessonIndex = -1;
-    let exercise;
-    let exerciseIndex = -1;
+exports.getExerciseParentInfo = (course, lesson, lessonId, exerciseId) => {
+    let exerciseIndex = -1,
+        levelId = null;
 
-    const chapters = course.chapters || [];
-    for (let i = 0; i < chapters.length; i++) {
-        const lessons = chapters[i].lessons || [];
-        for (let j = 0; j < lessons.length; j++) {
-            const exercises = lessons[j].exercises || [];
-            for (let k = 0; k < exercises.length; k++) {
-                if (exercises[k].id == exerciseId) {
-                    exercise = exercises[k];
-                    exerciseIndex = k;
-                    break;
-                }
-            }
+    const { chapter, chapterIndex, lessonIndex } = lessonHelper.getLessonParentInfo(course, lessonId);
 
-            if (exercise) {
-                lesson = lessons[j];
-                lessonIndex = j;
-                break;
-            }
-        }
-
-        if (lesson) {
-            chapter = chapters[i];
-            chapterIndex = i;
+    const exercises = lesson.exercises || [];
+    for (let i = 0; i < exercises.length; i++) {
+        if (exercises[i].id == exerciseId) {
+            levelId = exercises[i].levelId;
+            exerciseIndex = i;
             break;
         }
     }
@@ -110,9 +91,8 @@ exports.getExerciseAndParentsFromCourse = (course, exerciseId) => {
     return {
         chapter,
         chapterIndex,
-        lesson,
         lessonIndex,
-        exerciseMeta: exercise,
+        levelId,
         exerciseIndex,
     };
 };

@@ -4,18 +4,22 @@ const autz = require("../services/autz.service");
 const markdownService = require("../services/markdown.service");
 const exerciseHelper = require("../helpers/exercise.helper");
 const lessonHelper = require("../helpers/lesson.helper");
+const lessonService = require("../services/lesson.service");
 
 const { availableLevels } = require("../constants/constants");
 
 exports.getOneById = async (req, res) => {
-    const { courseId, lessonId } = req.params;
+    const { lessonId } = req.params;
 
     try {
         // validate parameters
-        const course = await courseService.getOneById(courseId);
+        const lesson = await lessonService.getOneById(lessonId);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+        const course = await courseService.getOneById(lesson.courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, chapterIndex, lesson, lessonIndex } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
+        const { chapter, chapterIndex, lessonIndex } = lessonHelper.getLessonParentInfo(course, lessonId);
         if (!lesson) return res.status(500).send("Lecție negăsită!");
 
         if (lesson.theory) {
@@ -31,7 +35,7 @@ exports.getOneById = async (req, res) => {
         delete lesson.exercises;
 
         const data = {
-            courseId,
+            courseId: lesson.courseId,
             courseCode: course.code,
             courseName: course.name,
             courseCategory: course.category,

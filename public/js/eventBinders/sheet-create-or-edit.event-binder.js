@@ -1,5 +1,5 @@
 import { eventHandlers } from "../eventHandlers/sheet-create-or-edit.event-handler.js";
-import { commonEventHandler } from "../eventHandlers/course-lesson.common-event-handler.js";
+import { commonEventHandler } from "../eventHandlers/lesson.common-event-handler.js";
 import { dateTimeHelper } from "../helpers/date-time.helper.js";
 
 // document.getElementById("toggle-theory-editor-btn").addEventListener("click", eventHandlers.toggleTheoryEditor);

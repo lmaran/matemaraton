@@ -41,16 +41,16 @@
             <ol id="table-of-contents" class="pl-0">
                 {{#each chapter.lessons}}
                 <li>
-                    <a href="/cursuri/{{@root.courseId}}/lectii/{{id}}/modifica">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
+                    <a href="/lectii/{{id}}/modifica">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
                     {{#if isHidden}}
-                    <a href="/cursuri/{{@root.courseId}}/lectii/{{id}}/modifica">
+                    <a href="/lectii/{{id}}/modifica">
                         <i class="bi bi-eye-slash text-danger"></i></a>
                     {{/if}}
                 </li>
                 {{/each}}
             </ol>
 
-            <a href="/cursuri/{{courseId}}/capitole/{{chapter.id}}/lectii/adauga" class="btn btn-primary btn-sm">
+            <a href="/lectii/adauga?courseId={{courseId}}&chapterId={{chapter.id}}" class="btn btn-primary btn-sm">
             <i class="bi bi-plus-lg"></i> Adaugă lecție</a>
 
             {{else}}
