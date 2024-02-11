@@ -8,7 +8,7 @@
         <li class="breadcrumb-item active">L.{{inc lessonIndex}}</li>
         
         {{#if canCreateOrEditCourse}}
-        <li title="Editează" class="ms-auto"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
+        <li title="Editează" class="ms-auto"><a href="/lectii/{{lessonId}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
         {{/if}}
     </ol>
 </nav>
@@ -49,7 +49,7 @@
     <div class="tab-pane show active" id="theory-tab-pane" role="tabpanel" aria-labelledby="theory-tab" tabindex="0">
         <section class="mt-4">
         {{{lesson.theory.textPreview}}}
-        <a class="fs-6" href="/cursuri/{{courseId}}/lectii/{{lessonId}}/teorie">Tipărește</a>
+        <a class="fs-6" href="/lectii/{{lessonId}}/teorie">Tipărește</a>
         </section>
     </div>
 
@@ -86,7 +86,7 @@
                 </h2>
             </div> --}}
             <div id="sheets-menu-div">
-                <a id="create-sheet-in-lesson" href="/cursuri/{{courseId}}/lectii/{{lessonId}}/fise/adauga" class="btn btn-primary btn-sm">
+                <a id="create-new-sheet" href="/fise/adauga?lessonId={{lessonId}}" class="btn btn-primary btn-sm">
                 <i class="bi bi-plus-lg"></i> Crează o fișă</a> cu exercițiile din cos.
             </div>
             <div id="sheets-content-div">
@@ -101,7 +101,7 @@
                         {{#each lesson.sheets}}
                         <tr>
                             <td>
-                                <a href="cursuri/{{@root.courseId}}/lectii/{{@root.lessonId}}/fise/{{_id}}">{{name}}{{#unless name}}Fără nume{{/unless}}
+                                <a href="/fise/{{_id}}">{{name}}{{#unless name}}Fără nume{{/unless}}
                             </td>
                             <td>
                                 {{createdOn}}
@@ -127,5 +127,5 @@
 
 
 {{#section 'script'}}
-<script type="module" src="/js/eventBinders/course-lesson.event-binder.js"></script>
+<script type="module" src="/js/eventBinders/lesson.event-binder.js"></script>
 {{/section}}

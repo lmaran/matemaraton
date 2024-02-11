@@ -5,7 +5,7 @@
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/modifica">{{courseCode}}</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/modifica">
                 Cap.{{inc chapterIndex}}</a></li>
-        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/lectii/{{lessonId}}/modifica">L.{{inc lessonIndex}}</a></li>
+        <li class="breadcrumb-item"><a href="/lectii/{{lessonId}}/modifica">L.{{inc lessonIndex}}</a></li>
         <li class="breadcrumb-item"><a href="/exercitii/{{exerciseId}}/modifica">E.{{exerciseCode}}</a></li>
     </ol>
 </nav>
@@ -82,7 +82,7 @@
             <button type="submit" name="saveBtn" class="btn btn-primary"><i class="bi bi-save"></i>Salveaza</button>
 
             <a title="Json" class="btn btn-light" 
-            href="/cursuri/{{courseId}}/lectii/{{lessonId}}/modifica?levelId={{levelId}}#level{{levelId}}" >
+            href="/lectii/{{lessonId}}/modifica?courseId={{courseId}}&levelId={{levelId}}#level{{levelId}}" >
             <i class="bi bi-x"></i>Renunță</a>
         </div>
     </div>

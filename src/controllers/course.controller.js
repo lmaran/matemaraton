@@ -1,5 +1,7 @@
 const courseService = require("../services/course.service");
+const lessonService = require("../services/lesson.service");
 const autz = require("../services/autz.service");
+const lessonHelper = require("../helpers/lesson.helper");
 
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
@@ -37,6 +39,34 @@ exports.createOrEditGet = async (req, res) => {
     //let classId;
     if (isEditMode) {
         const course = await courseService.getOneById(req.params.id);
+        if (!course) return res.status(500).send("Curs negăsit!");
+
+        // TODO: refactor (duplicates, see GetOneById or Move)
+        const lessonIds = lessonHelper.getAllLessonIdsFromCourse(course);
+        const allLessonsFromDB = await lessonService.getAllByIds(lessonIds);
+
+        (course.chapters || []).forEach((chapter) => {
+            chapter.numberOfActiveLessons = 0;
+            chapter.lessons = [];
+            if (chapter.lessonIds) {
+                chapter.lessonIds.forEach((lessonId) => {
+                    const lesson = allLessonsFromDB.find((x) => x._id.toString() == lessonId);
+
+                    // TODO: fetch from DB only those fields we really need (e.g. no Theory, only the total number of exercises etc)
+                    const newLesson = {
+                        id: lesson._id.toString(),
+                        name: lesson.name,
+                        exercises: lesson.exercises,
+                        isActive: !!(lesson.exercises?.length || lesson.theory?.text),
+                    };
+
+                    if (newLesson.isActive) chapter.numberOfActiveLessons++;
+
+                    chapter.lessons.push(newLesson);
+                });
+            }
+        });
+
         data.course = course;
     }
     //res.send(data);
@@ -164,18 +194,33 @@ exports.jsonGetAll = async (req, res) => {
 exports.getOneById = async (req, res) => {
     const courseId = req.params.id;
     const course = await courseService.getOneById(courseId);
+    if (!course) return res.status(500).send("Curs negăsit!");
 
-    if (course && course.chapters) {
-        course.chapters.forEach((chapter) => {
-            chapter.numberOfActiveLessons = 0;
-            if (chapter.lessons) {
-                chapter.lessons.forEach((lesson) => {
-                    lesson.isActive = !!(lesson.exercises?.length || lesson.theory?.text);
-                    if (lesson.isActive) chapter.numberOfActiveLessons++;
-                });
-            }
-        });
-    }
+    // TODO: refactor (duplicates, see createOrEditGet and getCourseChapter)
+    const lessonIds = lessonHelper.getAllLessonIdsFromCourse(course);
+    const allLessonsFromDB = await lessonService.getAllByIds(lessonIds);
+
+    (course.chapters || []).forEach((chapter) => {
+        chapter.numberOfActiveLessons = 0;
+        chapter.lessons = [];
+        if (chapter.lessonIds) {
+            chapter.lessonIds.forEach((lessonId) => {
+                const lesson = allLessonsFromDB.find((x) => x._id.toString() == lessonId);
+
+                // TODO: fetch from DB only those fields we really need (e.g. no Theory, only the total number of exercises etc)
+                const newLesson = {
+                    id: lesson._id.toString(),
+                    name: lesson.name,
+                    exercises: lesson.exercises,
+                    isActive: !!(lesson.exercises?.length || lesson.theory?.text),
+                };
+
+                if (newLesson.isActive) chapter.numberOfActiveLessons++;
+
+                chapter.lessons.push(newLesson);
+            });
+        }
+    });
 
     const data = {
         course,

@@ -1,15 +1,15 @@
 const courseService = require("../services/course.service");
+const lessonService = require("../services/lesson.service");
 const autz = require("../services/autz.service");
 const arrayHelper = require("../helpers/array.helper");
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
 exports.createOrEditGet = async (req, res) => {
-    const courseId = req.params.courseId;
-    const chapterId = req.params.chapterId;
+    const { courseId, chapterId } = req.params;
 
     const isEditMode = !!chapterId;
 
-    let courseCode, chapterRef, chapterIndex, availablePositions, selectedPosition;
+    let chapterRef, chapterIndex, availablePositions, selectedPosition;
 
     try {
         const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
@@ -19,12 +19,32 @@ exports.createOrEditGet = async (req, res) => {
 
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
-        courseCode = course.code;
 
         if (isEditMode) {
             chapterRef = (course.chapters || []).find((x) => x.id === chapterId);
             if (!chapterRef) return res.status(500).send("Capitol negăsit!");
             chapterIndex = course.chapters.findIndex((x) => x.id === chapterId);
+
+            if (chapterRef.lessonIds) {
+                const allLessonsFromDB = await lessonService.getAllByIds(chapterRef.lessonIds);
+
+                chapterRef.lessonIds.forEach((lessonId) => {
+                    const lesson = allLessonsFromDB.find((x) => x._id.toString() == lessonId);
+
+                    // TODO: fetch from DB only those fields we really need (e.g. no Theory, only the total number of exercises etc)
+                    const newLesson = {
+                        id: lesson._id.toString(),
+                        name: lesson.name,
+                        exercises: lesson.exercises,
+                        isActive: !!(lesson.exercises?.length || lesson.theory?.text),
+                    };
+
+                    if (newLesson.isActive) chapterRef.numberOfActiveLessons++;
+
+                    chapterRef.lessons = chapterRef.lessons || [];
+                    chapterRef.lessons.push(newLesson);
+                });
+            }
         }
 
         // in editMode, chapterId will be undefined (falsy)
@@ -35,7 +55,7 @@ exports.createOrEditGet = async (req, res) => {
         const data = {
             isEditMode,
             courseId,
-            courseCode,
+            courseCode: course.code,
 
             chapterId,
             chapterIndex,
@@ -103,39 +123,42 @@ exports.createOrEditPost = async (req, res) => {
 };
 
 exports.getOneById = async (req, res) => {
-    const courseId = req.params.courseId;
-    const chapterId = req.params.chapterId;
+    const { courseId, chapterId } = req.params;
+
     const course = await courseService.getOneById(courseId);
     const chapters = course.chapters || [];
 
     const chapterIndex = chapters.findIndex((x) => x.id === chapterId);
-    let chapter = {};
-    if (chapterIndex > -1) {
-        chapter = chapters[chapterIndex];
-    }
 
-    // if (course && course.chapters) {
-    //     course.chapters.forEach((chapter) => {
-    //         chapter.numberOfActiveLessons = 0;
-    //         if (chapter.lessons) {
-    //             chapter.lessons.forEach((lesson) => {
-    //                 lesson.isActive = !!(lesson.exercises?.length || lesson.theory?.text);
-    //                 if (lesson.isActive) chapter.numberOfActiveLessons++;
-    //             });
-    //         }
-    //     });
-    // }
+    if (chapterIndex == -1) return res.status(500).send("Capitol negăsit!");
 
-    if (chapter.lessons) {
-        chapter.lessons.forEach((lesson) => {
-            lesson.isActive = !!(lesson.exercises?.length || lesson.theory?.text);
+    const chapterRef = chapters[chapterIndex];
+
+    if (chapterRef.lessonIds) {
+        const allLessonsFromDB = await lessonService.getAllByIds(chapterRef.lessonIds);
+
+        chapterRef.lessonIds.forEach((lessonId) => {
+            const lesson = allLessonsFromDB.find((x) => x._id.toString() == lessonId);
+
+            // TODO: fetch from DB only those fields we really need (e.g. no Theory, only the total number of exercises etc)
+            const newLesson = {
+                id: lesson._id.toString(),
+                name: lesson.name,
+                exercises: lesson.exercises,
+                isActive: !!(lesson.exercises?.length || lesson.theory?.text),
+            };
+
+            if (newLesson.isActive) chapterRef.numberOfActiveLessons++;
+
+            chapterRef.lessons = chapterRef.lessons || [];
+            chapterRef.lessons.push(newLesson);
         });
     }
 
     const data = {
         courseId,
         courseCode: course.code,
-        chapter,
+        chapter: chapterRef,
         chapterIndex,
         canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
     };

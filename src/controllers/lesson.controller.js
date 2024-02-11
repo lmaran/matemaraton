@@ -1,5 +1,6 @@
 const courseService = require("../services/course.service");
 const exerciseService = require("../services/exercise.service");
+const lessonService = require("../services/lesson.service");
 const autz = require("../services/autz.service");
 const arrayHelper = require("../helpers/array.helper");
 const markdownService = require("../services/markdown.service");
@@ -13,15 +14,17 @@ const prettyJsonHelper = require("../helpers/pretty-json.helper");
 const { availableLevels } = require("../constants/constants");
 
 exports.getOneById = async (req, res) => {
-    const { courseId, lessonId } = req.params;
+    const { lessonId } = req.params;
 
     try {
         // validate parameters
-        const course = await courseService.getOneById(courseId);
+        const lesson = await lessonService.getOneById(lessonId);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+        const course = await courseService.getOneById(lesson.courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, chapterIndex, lesson, lessonIndex } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
-        if (!lesson) return res.status(500).send("Lecție negăsită!");
+        const { chapter, chapterIndex, lessonIndex } = lessonHelper.getLessonParentInfo(course, lessonId);
 
         if (lesson.theory) {
             lesson.theory.textPreview = markdownService.render(lesson.theory.text);
@@ -40,7 +43,7 @@ exports.getOneById = async (req, res) => {
         lesson.sheets.forEach((sheet) => (sheet.createdOn = dateTimeHelper.getShortDateAndTimeDateRo(sheet.createdOn))); // ex: 22.11.2023
 
         const data = {
-            courseId,
+            courseId: lesson.courseId,
             courseCode: course.code,
 
             chapterId: chapter.id,
@@ -56,7 +59,7 @@ exports.getOneById = async (req, res) => {
         };
 
         //res.send(data);
-        res.render("course-lesson/course-lesson", data);
+        res.render("lesson/lesson", data);
     } catch (err) {
         //console.log(err);
         return res.status(500).json(err.message);
@@ -64,24 +67,21 @@ exports.getOneById = async (req, res) => {
 };
 
 exports.jsonGetOneById = async (req, res) => {
-    const { courseId, lessonId } = req.params;
+    const { lessonId } = req.params;
 
     try {
-        // validate parameters
-        const course = await courseService.getOneById(courseId);
-        if (!course) return res.status(500).send("Curs negăsit!");
-
-        const { chapter, chapterIndex, lesson, lessonIndex } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
+        const lesson = await lessonService.getOneById(lessonId);
         if (!lesson) return res.status(500).send("Lecție negăsită!");
 
-        // keep only the current chapter and current lesson
-        chapter.lessons = chapter.lessons.filter((x) => x.id == lesson.id);
-        course.chapters = course.chapters.filter((x) => x.id == chapter.id);
+        const course = await courseService.getOneById(lesson.courseId);
+        if (!course) return res.status(500).send("Curs negăsit!");
 
-        const courseLessonAsPrettyJson = prettyJsonHelper.getPrettyJson(course);
+        const { chapter, chapterIndex, lessonIndex } = lessonHelper.getLessonParentInfo(course, lessonId);
+
+        const lessonAsPrettyJson = prettyJsonHelper.getPrettyJson(lesson);
 
         const data = {
-            courseId,
+            courseId: lesson.courseId,
             courseCode: course.code,
 
             chapterId: chapter.id,
@@ -90,14 +90,14 @@ exports.jsonGetOneById = async (req, res) => {
             lessonId,
             lessonIndex,
 
-            courseLessonAsPrettyJson,
+            lessonAsPrettyJson,
 
             canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
             pageTitle: `${lesson.name}`,
         };
 
         //res.send(data);
-        res.render("course-lesson/course-lesson-json", data);
+        res.render("lesson/lesson-json", data);
     } catch (err) {
         //console.log(err);
         return res.status(500).json(err.message);
@@ -136,7 +136,7 @@ exports.createGet = async (req, res) => {
         };
 
         //res.send(data);
-        res.render("course-lesson/course-lesson-create-or-edit", data);
+        res.render("lesson/lesson-create-or-edit", data);
     } catch (err) {
         //console.log(err);
         return res.status(500).json(err.message);
@@ -185,14 +185,14 @@ exports.createPost = async (req, res) => {
 
         courseService.updateOne(course);
 
-        res.redirect(`/cursuri/${courseId}/lectii/${lessonId}/modifica`);
+        res.redirect(`/lectii/${lessonId}/modifica`);
     } catch (err) {
         return res.status(500).json(err.message);
     }
 };
 
 exports.editGet = async (req, res) => {
-    const { courseId, lessonId } = req.params;
+    const { lessonId } = req.params;
 
     let availablePositions, selectedPosition;
 
@@ -202,10 +202,13 @@ exports.editGet = async (req, res) => {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
 
-        const course = await courseService.getOneById(courseId);
+        const lesson = await lessonService.getOneById(lessonId);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+        const course = await courseService.getOneById(lesson.courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, chapterIndex, lesson, lessonIndex } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
+        const { chapter, chapterIndex, lessonIndex } = lessonHelper.getLessonParentInfo(course, lessonId);
         if (!lesson) return res.status(500).send("Lecție negăsită!");
 
         if (lesson.theory) {
@@ -227,7 +230,7 @@ exports.editGet = async (req, res) => {
 
         const data = {
             isEditMode: true,
-            courseId,
+            courseId: lesson.courseId,
             courseCode: course.code,
             chapterId: chapter.id,
             chapterIndex,
@@ -239,7 +242,7 @@ exports.editGet = async (req, res) => {
         };
 
         //res.send(data);
-        res.render("course-lesson/course-lesson-create-or-edit", data);
+        res.render("lesson/lesson-create-or-edit", data);
     } catch (err) {
         //console.log(err);
         return res.status(500).json(err.message);
@@ -256,10 +259,13 @@ exports.editPost = async (req, res) => {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
 
+        const lesson = await lessonService.getOneById(lessonId);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
+
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, lesson } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
+        const { chapter } = lessonHelper.getLessonParentInfo(course, lessonId);
         if (!lesson) return res.status(500).send("Lecție negăsită!");
 
         // update lesson fields
@@ -280,14 +286,14 @@ exports.editPost = async (req, res) => {
 
         courseService.updateOne(course);
 
-        res.redirect(`/cursuri/${courseId}/lectii/${lessonId}/modifica`);
+        res.redirect(`/lectii/${lessonId}/modifica`);
     } catch (err) {
         return res.status(500).json(err.message);
     }
 };
 
 exports.deleteOneById = async (req, res) => {
-    const { courseId, lessonId } = req.params;
+    const { lessonId } = req.params;
 
     try {
         const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
@@ -295,10 +301,13 @@ exports.deleteOneById = async (req, res) => {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
 
-        const course = await courseService.getOneById(courseId);
+        const lesson = await lessonService.getOneById(lessonId);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+        const course = await courseService.getOneById(lesson.courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, lessonIndex } = lessonHelper.getLessonAndParentsFromCourse(course, lessonId);
+        const { chapter, lessonIndex } = lessonHelper.getLessonParentInfo(course, lessonId);
 
         if (lessonIndex > -1) {
             //const lesson = lessons[lessonIndex];
@@ -312,7 +321,7 @@ exports.deleteOneById = async (req, res) => {
             courseService.updateOne(course);
         }
 
-        res.redirect(`/cursuri/${courseId}/capitole/${chapter.id}/modifica`);
+        res.redirect(`/cursuri/${lesson.courseId}/capitole/${chapter.id}/modifica`);
     } catch (err) {
         return res.status(500).json(err.message);
     }

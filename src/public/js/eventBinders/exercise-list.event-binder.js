@@ -1,5 +1,5 @@
 import { eventHandlers } from "../eventHandlers/exercise-list.event-handler.js";
-import { commonEventHandler } from "../eventHandlers/course-lesson.common-event-handler.js";
+import { commonEventHandler } from "../eventHandlers/lesson.common-event-handler.js";
 
 document.getElementById("pageSizeSelect").addEventListener("change", eventHandlers.setPageSize);
 document.getElementById("previousPageBtn").addEventListener("click", eventHandlers.handleClickForAllPaginationButttons);

@@ -11,6 +11,8 @@ const fileService = require("../services/file.service");
 const exerciseBlobService = require("../services/exercise-blob.service");
 const stringHelper = require("../helpers/string.helper");
 const svgHelper = require("../helpers/svg.helper");
+const lessonService = require("../services/lesson.service");
+const lessonHelper = require("../helpers/lesson.helper");
 
 const { availableExerciseTypes, availableLevels, imageExtensions } = require("../constants/constants");
 
@@ -101,16 +103,21 @@ exports.getAll = async (req, res) => {
 
 exports.getOneById = async (req, res) => {
     const { exerciseId } = req.params;
-    let availablePositions, selectedPosition, exercise;
+    let availablePositions, selectedPosition;
 
     try {
-        exercise = await exerciseService.getOneById(exerciseId);
+        const exercise = await exerciseService.getOneById(exerciseId);
         if (!exercise) return res.status(500).send("Exercițiu negăsit!");
 
-        const course = await courseService.getOneById(exercise.courseId);
+        const lessonId = exercise.lessonId;
+        const lesson = await lessonService.getOneById(lessonId);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+        const courseId = lesson.courseId;
+        const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, chapterIndex, lesson, lessonIndex, exerciseMeta } = exerciseHelper.getExerciseAndParentsFromCourse(course, exerciseId);
+        const { chapter, chapterIndex, lessonIndex, levelId } = exerciseHelper.getExerciseParentInfo(course, lesson, lessonId, exerciseId);
 
         const statementNumber = `**E.${exercise.code}.**`;
         exerciseHelper.addPreview(exercise, statementNumber, true);
@@ -122,17 +129,16 @@ exports.getOneById = async (req, res) => {
         exercise.exerciseType = availableExerciseTypes.find((x) => x.value == exercise.exerciseType);
 
         const data = {
-            courseId: exercise.courseId,
+            courseId,
             courseCode: course.code,
 
             chapterId: chapter.id,
             chapterIndex,
 
-            lessonId: lesson.id,
+            lessonId,
             lessonIndex,
 
-            levelId: exerciseMeta.levelId,
-
+            levelId: levelId,
             exercise,
 
             availablePositions,
@@ -151,9 +157,9 @@ exports.getOneById = async (req, res) => {
 };
 
 exports.createGet = async (req, res) => {
-    const { courseId, chapterId, lessonId, levelId } = req.query;
+    const { lessonId, levelId } = req.query;
 
-    let lesson, chapterIndex, availablePositions, selectedPosition, exercise;
+    let availablePositions, selectedPosition, exercise;
 
     try {
         const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
@@ -161,16 +167,14 @@ exports.createGet = async (req, res) => {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
 
+        const lesson = await lessonService.getOneById(lessonId);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+        const courseId = lesson.courseId;
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const chapterRef = (course.chapters || []).find((x) => x.id === chapterId);
-        if (!chapterRef) return res.status(500).send("Capitol negăsit!");
-        chapterIndex = course.chapters.findIndex((x) => x.id === chapterId);
-
-        lesson = (chapterRef.lessons || []).find((x) => x.id === lessonId);
-        if (!lesson) return res.status(500).send("Lecție negăsită!");
-        lesson.index = chapterRef.lessons.findIndex((x) => x.id === lessonId);
+        const { chapter, chapterIndex, lessonIndex } = lessonHelper.getLessonParentInfo(course, lessonId);
 
         exercise = { exerciseType: 1 }; // Set 'open answer' as the default exercise type
 
@@ -194,11 +198,11 @@ exports.createGet = async (req, res) => {
             courseId,
             courseCode: course.code,
 
-            chapterId,
+            chapterId: chapter.id,
             chapterIndex,
 
             lessonId,
-            lessonIndex: lesson.index,
+            lessonIndex,
 
             levelId,
 
@@ -218,12 +222,8 @@ exports.createGet = async (req, res) => {
 
 exports.createPost = async (req, res) => {
     const {
-        courseId,
-        chapterId,
         lessonId,
         levelId,
-
-        //grade,
         contestName,
         exerciseType,
         sourceName,
@@ -250,6 +250,9 @@ exports.createPost = async (req, res) => {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
 
+        const lesson = await lessonService.getOneById(lessonId);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
+
         const exerciseIdObj = courseService.getObjectId();
         const exerciseId = exerciseIdObj.toString();
 
@@ -263,7 +266,7 @@ exports.createPost = async (req, res) => {
             contestName,
             sourceName,
             author,
-            courseId,
+            courseId: lesson.courseId,
             lessonId,
         };
 
@@ -277,15 +280,6 @@ exports.createPost = async (req, res) => {
         await exerciseService.insertOne(exercise);
 
         if (fileIdsAsArray.length > 0) await fileService.updateSourceIds(fileIdsAsArray, exerciseId);
-
-        const course = await courseService.getOneById(courseId);
-        if (!course) return res.status(500).send("Curs negăsit!");
-
-        const chapter = (course.chapters || []).find((x) => x.id === chapterId);
-        if (!chapter) return res.status(500).send("Capitol negăsit!");
-
-        const lesson = (chapter.lessons || []).find((x) => x.id === lessonId);
-        if (!lesson) return res.status(500).send("Lecție negăsită!");
 
         // TODO use the "addExerciseToLocation()" method
         const newExercise = {
@@ -306,7 +300,7 @@ exports.createPost = async (req, res) => {
         // add all the new exercises within the current level and sort the result
         lesson.exercises = (lesson.exercises || []).concat(newExercises).sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId);
 
-        courseService.updateOne(course);
+        lessonService.updateOne(lesson);
 
         res.redirect(`/exercitii/${exerciseId}/modifica`);
 
@@ -319,21 +313,24 @@ exports.createPost = async (req, res) => {
 exports.editGet = async (req, res) => {
     const { exerciseId } = req.params;
 
-    let availablePositions, selectedPosition, exercise;
+    let availablePositions, selectedPosition;
 
     try {
         const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
-        if (!canCreateOrEditCourse) {
-            return res.status(403).send("Lipsă permisiuni!"); // forbidden
-        }
+        if (!canCreateOrEditCourse) return res.status(403).send("Lipsă permisiuni!"); // forbidden
 
-        exercise = await exerciseService.getOneById(exerciseId);
+        const exercise = await exerciseService.getOneById(exerciseId);
         if (!exercise) return res.status(500).send("Exercițiu negăsit!");
 
-        const course = await courseService.getOneById(exercise.courseId);
+        const lessonId = exercise.lessonId;
+        const lesson = await lessonService.getOneById(lessonId);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+        const courseId = lesson.courseId;
+        const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, chapterIndex, lesson, lessonIndex, exerciseMeta } = exerciseHelper.getExerciseAndParentsFromCourse(course, exerciseId);
+        const { chapter, chapterIndex, lessonIndex, levelId } = exerciseHelper.getExerciseParentInfo(course, lesson, lessonId, exerciseId);
 
         if (exercise) {
             if (exercise.statement) {
@@ -373,7 +370,7 @@ exports.editGet = async (req, res) => {
                 x.name = `Problema ${++idx}`;
                 return x;
             })
-            .filter((x) => x.levelId == exerciseMeta.levelId);
+            .filter((x) => x.levelId == levelId);
 
         // in editMode, lessonId will be undefined (falsy)
         // The parentheses ( ... ) around the assignment statement are required when using object literal destructuring assignment without a declaration.
@@ -383,16 +380,16 @@ exports.editGet = async (req, res) => {
         const data = {
             isEditMode: true,
 
-            courseId: course._id,
+            courseId,
             courseCode: course.code,
 
             chapterId: chapter.id,
             chapterIndex,
 
-            lessonId: lesson.id,
+            lessonId,
             lessonIndex,
 
-            levelId: exerciseMeta.levelId,
+            levelId,
 
             availablePositions,
             selectedPosition,
@@ -409,9 +406,7 @@ exports.editGet = async (req, res) => {
 
 exports.editPost = async (req, res) => {
     const {
-        courseId,
-        chapterId,
-        lessonId,
+        //lessonId,
         levelId,
 
         //grade,
@@ -425,8 +420,6 @@ exports.editPost = async (req, res) => {
         isCorrectAnswerChecks,
         solution,
         hints,
-        // fileIds, // we don't need them as new or deleted files already updated the files field in the exercise
-        position,
     } = req.body;
 
     const { exerciseId } = req.body;
@@ -459,41 +452,8 @@ exports.editPost = async (req, res) => {
 
         await exerciseService.updateOne(exercise);
 
-        const course = await courseService.getOneById(courseId);
-        if (!course) return res.status(500).send("Curs negăsit!");
-
-        const chapter = (course.chapters || []).find((x) => x.id === chapterId);
-        if (!chapter) return res.status(500).send("Capitol negăsit!");
-
-        const lesson = (chapter.lessons || []).find((x) => x.id === lessonId);
-        if (!lesson) return res.status(500).send("Lecție negăsită!");
-
-        // TODO use the "addExerciseToLocation()" method
-        const newExercise = {
-            levelId,
-            id: exercise._id.toString(),
-        };
-
-        // sort exercises by levelId
-        const newExercises = (lesson.exercises || [])
-            .sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId)
-            .filter((x) => x.levelId == levelId);
-
-        arrayHelper.moveOrInsertAtIndex(newExercises, newExercise, "id", position);
-
-        // remove all exercises within the current level
-        lesson.exercises = (lesson.exercises || []).filter((x) => !(x.levelId == levelId));
-
-        // add all the new exercises within the current level and sort the result
-        lesson.exercises = (lesson.exercises || []).concat(newExercises).sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId);
-
-        courseService.updateOne(course);
-
         res.redirect(`/exercitii/${exerciseId}/modifica`);
-
-        //res.send(req.body);
     } catch (err) {
-        console.log(err);
         return res.status(500).json(err.message);
     }
 };
@@ -512,11 +472,15 @@ exports.moveGet = async (req, res) => {
         const exercise = await exerciseService.getOneById(exerciseId);
         if (!exercise) return res.status(500).send("Exercițiu negăsit!");
 
-        const course = await courseService.getOneById(exercise.courseId);
+        const lessonId = exercise.lessonId;
+        const lesson = await lessonService.getOneById(lessonId);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+        const courseId = lesson.courseId;
+        const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, chapterIndex, lesson, lessonIndex, exerciseMeta } = exerciseHelper.getExerciseAndParentsFromCourse(course, exerciseId);
-        const { levelId } = exerciseMeta;
+        const { chapter, chapterIndex, lessonIndex, levelId } = exerciseHelper.getExerciseParentInfo(course, lesson, lessonId, exerciseId);
 
         let availableCourses = await courseService.getCoursesNames();
         availableCourses = availableCourses.map((c) => {
@@ -524,15 +488,24 @@ exports.moveGet = async (req, res) => {
             return c;
         });
 
-        const availableLessons = [];
-        (course.chapters || []).forEach((c) => {
-            (c.lessons || []).forEach((l) => {
-                availableLessons.push({
-                    id: l.id,
-                    name: l.name,
-                });
-            });
-        });
+        // TODO: refactor (duplicates, see GetOneById or Move)
+        const lessonIds = lessonHelper.getAllLessonIdsFromCourse(course);
+        const lessonsFromDB = await lessonService.getAllByIds(lessonIds);
+
+        const availableLessons = lessonHelper.getAvailableLessons(course, lessonsFromDB);
+
+        // const availableLessons = [];
+        // (course.chapters || []).forEach((chapter) => {
+        //     (chapter.lessonIds || []).forEach((lessonId) => {
+        //         const lesson = allLessonsFromDB.find((x) => x._id.toString() == lessonId);
+
+        //         // TODO: fetch from DB only those fields we really need (e.g. no Theory, only the total number of exercises etc)
+        //         availableLessons.push({
+        //             id: lesson._id.toString(),
+        //             name: lesson.name,
+        //         });
+        //     });
+        // });
 
         // sort exercises by levelId
         const newExercises = (lesson.exercises || [])
@@ -549,13 +522,13 @@ exports.moveGet = async (req, res) => {
         ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(newExercises, exerciseId, true));
 
         const data = {
-            courseId: exercise.courseId,
+            courseId,
             courseCode: course.code,
 
             chapterId: chapter.id,
             chapterIndex,
 
-            lessonId: lesson.id,
+            lessonId,
             lessonIndex,
 
             exerciseId,
@@ -581,8 +554,6 @@ exports.moveGet = async (req, res) => {
 };
 
 exports.movePost = async (req, res) => {
-    //const { courseId, chapterId, lessonId, levelId, exerciseId } = req.params;
-
     const {
         exerciseId,
 
@@ -597,9 +568,7 @@ exports.movePost = async (req, res) => {
         position: positionIdNew,
     } = req.body;
 
-    const redirectUri = `/cursuri/${courseIdNew}/lectii/${lessonIdNew}/modifica`;
-
-    // let lessonRef, courseCode, chapterIndex, availablePositions, selectedPosition;
+    const redirectUri = `/lectii/${lessonIdNew}/modifica`;
 
     try {
         const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
@@ -611,14 +580,13 @@ exports.movePost = async (req, res) => {
             return res.redirect(redirectUri);
         }
 
+        // Remove the exercise from the old location
         let isValid, message;
-        ({ isValid, message } = await removeExerciseFromLocation(courseIdOld, exerciseId));
-
-        // remove the exercise from the old location
+        ({ isValid, message } = await removeExerciseFromLocation(lessonIdOld, exerciseId));
         if (!isValid) return res.status(500).send(message);
 
-        // add the exercise to the new location
-        ({ isValid, message } = await addExerciseToLocation(courseIdNew, lessonIdNew, levelIdNew, positionIdNew, exerciseId));
+        // Add the exercise to the new location
+        ({ isValid, message } = await addExerciseToLocation(lessonIdNew, levelIdNew, positionIdNew, exerciseId));
         if (!isValid) return res.status(500).send(message);
 
         if (courseIdNew != courseIdOld || lessonIdNew != lessonIdOld) {
@@ -649,15 +617,10 @@ exports.getAvailableLessons = async (req, res) => {
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const availableLessons = [];
-        (course.chapters || []).forEach((c) => {
-            (c.lessons || []).forEach((l) => {
-                availableLessons.push({
-                    id: l.id,
-                    name: l.name,
-                });
-            });
-        });
+        const lessonIds = lessonHelper.getAllLessonIdsFromCourse(course);
+        const lessonsFromDB = await lessonService.getAllByIds(lessonIds);
+
+        const availableLessons = lessonHelper.getAvailableLessons(course, lessonsFromDB);
 
         const data = {
             availableLessons,
@@ -670,8 +633,8 @@ exports.getAvailableLessons = async (req, res) => {
 };
 
 exports.getAvailablePositions = async (req, res) => {
-    const { courseId, lessonId, levelId, exerciseId } = req.params;
-    let lessonRef, availablePositions;
+    const { lessonId, levelId, exerciseId } = req.params;
+    let availablePositions;
 
     try {
         const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
@@ -679,17 +642,20 @@ exports.getAvailablePositions = async (req, res) => {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
 
-        const course = await courseService.getOneById(courseId);
-        if (!course) return res.status(500).send("Curs negăsit!");
+        // const course = await courseService.getOneById(courseId);
+        // if (!course) return res.status(500).send("Curs negăsit!");
 
-        for (const chapterRef of course.chapters || []) {
-            lessonRef = (chapterRef.lessons || []).find((x) => x.id === lessonId);
-            if (lessonRef) break;
-        }
-        if (!lessonRef) return res.status(500).send("Lecție negăsită!");
+        // for (const chapterRef of course.chapters || []) {
+        //     lessonRef = (chapterRef.lessons || []).find((x) => x.id === lessonId);
+        //     if (lessonRef) break;
+        // }
+        // if (!lessonRef) return res.status(500).send("Lecție negăsită!");
+
+        const lesson = await lessonService.getOneById(lessonId);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
 
         // sort exercises by levelId
-        const newExercises = (lessonRef.exercises || [])
+        const newExercises = (lesson.exercises || [])
             .sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId)
             .map((x, idx) => {
                 x.name = `Problema ${++idx}`;
@@ -724,26 +690,31 @@ exports.jsonGet = async (req, res) => {
         const exercise = await exerciseService.getOneById(exerciseId);
         if (!exercise) return res.status(500).send("Exercițiu negăsit!");
 
-        const course = await courseService.getOneById(exercise.courseId);
+        const lessonId = exercise.lessonId;
+        const lesson = await lessonService.getOneById(lessonId);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+        const courseId = lesson.courseId;
+        const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, chapterIndex, lesson, lessonIndex, exerciseMeta } = exerciseHelper.getExerciseAndParentsFromCourse(course, exerciseId);
+        const { chapter, chapterIndex, lessonIndex, levelId } = exerciseHelper.getExerciseParentInfo(course, lesson, lessonId, exerciseId);
 
         const exerciseAsPrettyJson = prettyJsonHelper.getPrettyJson(exercise);
 
         const data = {
-            courseId: exercise.courseId,
+            courseId,
             courseCode: course.code,
 
             chapterId: chapter.id,
             chapterIndex,
 
-            lessonId: lesson.id,
+            lessonId,
             lessonIndex,
 
-            levelId: exerciseMeta.levelId,
+            levelId,
 
-            exerciseId: exerciseId,
+            exerciseId,
             exerciseCode: exercise.code,
 
             exerciseAsPrettyJson,
@@ -751,7 +722,6 @@ exports.jsonGet = async (req, res) => {
         };
 
         //res.send(data);
-
         res.render("exercise/exercise-json", data);
     } catch (err) {
         return res.status(500).json(err.message);
@@ -768,18 +738,19 @@ exports.deleteOneById = async (req, res) => {
         }
 
         const exercise = await exerciseService.getOneById(exerciseId);
-        if (!exercise) return res.status(404).send("Exercițiu negăsit.");
+        if (!exercise) return res.status(500).send("Exercițiu negăsit!");
 
-        const course = await courseService.getOneById(exercise.courseId);
-        if (!course) return res.status(404).send("Curs negăsit!");
+        const lessonId = exercise.lessonId;
+        const lesson = await lessonService.getOneById(lessonId);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
 
-        const { lesson, exerciseIndex } = exerciseHelper.getExerciseAndParentsFromCourse(course, exerciseId);
+        const courseId = lesson.courseId;
+        const course = await courseService.getOneById(courseId);
+        if (!course) return res.status(500).send("Curs negăsit!");
 
         // 1. Remove the exercise reference from the lesson
-        if (exerciseIndex > -1) {
-            lesson.exercises.splice(exerciseIndex, 1); // remove from array
-            await courseService.updateOne(course);
-        }
+        lesson.exercises = (lesson.exercises || []).filter((x) => !(x.id == exerciseId)); // remove from array
+        await lessonService.updateOne(lesson);
 
         // 2. Delete the blobs, if exist
         const files = (exercise && exercise.files) || [];
@@ -801,7 +772,7 @@ exports.deleteOneById = async (req, res) => {
         // 3. Delete the exercise itself
         await exerciseService.deleteOneById(exerciseId);
 
-        res.redirect(`/cursuri/${exercise.courseId}/lectii/${lesson.id}/modifica`);
+        res.redirect(`/lectii/${lessonId}/modifica`);
     } catch (err) {
         return res.status(500).json(err.message);
     }
@@ -1015,72 +986,43 @@ const getAnswerOptionsAsArray = (answerOptions, isCorrectAnswerChecks) => {
     return answerOptionsAsArray;
 };
 
-const removeExerciseFromLocation = async (courseId, exerciseId) => {
-    const course = await courseService.getOneById(courseId);
-    if (!course) return { isValid: false, message: "Curs negăsit!" };
+const removeExerciseFromLocation = async (lessonId, exerciseId) => {
+    const lesson = await lessonService.getOneById(lessonId);
+    if (!lesson) return { isValid: false, message: "Lecție negăsită!" };
 
-    let updateResult,
-        found = false;
+    // Remove the exercise and save to DB
+    lesson.exercises = (lesson.exercises || []).filter((x) => x.id != exerciseId);
+    const updateResult = await lessonService.updateOne(lesson);
 
-    for (const chapter of course.chapters || []) {
-        for (const lesson of chapter.lessons || []) {
-            const exerciseIndex = (lesson.exercises || []).findIndex((x) => x.id == exerciseId);
-
-            if (exerciseIndex > -1) {
-                found = true;
-                // remove exercise and save to DB
-                lesson.exercises.splice(exerciseIndex, 1);
-                updateResult = await courseService.updateOne(course);
-
-                break;
-            }
-        }
-        if (found) break;
-    }
-
-    if (!found) return { isValid: false, message: "Exercițiu negăsit!" };
     if (updateResult.modifiedCount != 1) return { isValid: false, message: "Eroare la salvarea în DB!" };
 
     return { isValid: true };
 };
 
-const addExerciseToLocation = async (courseId, lessonId, levelId, positionId, exerciseId) => {
-    const course = await courseService.getOneById(courseId);
-    if (!course) return { isValid: false, message: "Curs negăsit!" };
+const addExerciseToLocation = async (lessonId, levelId, positionId, exerciseId) => {
+    const lesson = await lessonService.getOneById(lessonId);
+    if (!lesson) return { isValid: false, message: "Lecție negăsită!" };
 
-    let updateResult,
-        lessonFound = false;
+    const newExercise = {
+        levelId,
+        id: exerciseId,
+    };
 
-    for (const chapter of course.chapters || []) {
-        const lesson = (chapter.lessons || []).find((l) => l.id == lessonId);
-        if (lesson) {
-            lessonFound = true;
+    // Sort exercises by levelId
+    const newExercises = (lesson.exercises || [])
+        .sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId)
+        .filter((x) => x.levelId == levelId);
 
-            const newExercise = {
-                levelId,
-                id: exerciseId,
-            };
+    arrayHelper.moveOrInsertAtIndex(newExercises, newExercise, "id", positionId);
 
-            // sort exercises by levelId
-            const newExercises = (lesson.exercises || [])
-                .sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId)
-                .filter((x) => x.levelId == levelId);
+    // Remove all exercises within the current level
+    lesson.exercises = (lesson.exercises || []).filter((x) => !(x.levelId == levelId));
 
-            arrayHelper.moveOrInsertAtIndex(newExercises, newExercise, "id", positionId);
+    // Add all the new exercises within the current level and sort the result
+    lesson.exercises = (lesson.exercises || []).concat(newExercises).sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId);
 
-            // remove all exercises within the current level
-            lesson.exercises = (lesson.exercises || []).filter((x) => !(x.levelId == levelId));
+    const updateResult = await lessonService.updateOne(lesson);
 
-            // add all the new exercises within the current level and sort the result
-            lesson.exercises = (lesson.exercises || []).concat(newExercises).sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId);
-
-            updateResult = await courseService.updateOne(course);
-
-            break;
-        }
-    }
-
-    if (!lessonFound) return { isValid: false, message: "Lecție negăsită!" };
     if (updateResult.modifiedCount != 1) return { isValid: false, message: "Eroare la salvarea în DB!" };
 
     return { isValid: true };
