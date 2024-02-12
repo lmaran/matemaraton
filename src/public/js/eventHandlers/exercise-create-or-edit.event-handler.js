@@ -184,6 +184,7 @@ export const eventHandlers = {
         mainDiv.insertAdjacentHTML("beforeend", markup); // much faster that innerHTML
     },
 
+    // TODO refactor (remove duplicate codes, see LessonTheory)
     handleClickInGallery: async (event) => {
         // Handle 'delete' events
         const target = event.target; // shortcut

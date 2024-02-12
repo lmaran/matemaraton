@@ -73,17 +73,17 @@ router.get("/fise/:sheetId/json", sheetController.jsonGetOneById);
 
 // courses
 router.get("/cursuri", courseController.getAll);
-router.get("/cursuri/:id/json", isAuthenticated, courseController.jsonGetOneById);
-router.get("/cursuri/:id/modifica", isAuthenticated, courseController.createOrEditGet);
-router.post("/cursuri/:id/modifica", isAuthenticated, courseController.createOrEditPost);
+router.get("/cursuri/:courseId/json", isAuthenticated, courseController.jsonGetOneById);
+router.get("/cursuri/:courseId/modifica", isAuthenticated, courseController.createOrEditGet);
+router.post("/cursuri/:courseId/modifica", isAuthenticated, courseController.createOrEditPost);
 router.get("/cursuri/adauga", isAuthenticated, courseController.createOrEditGet);
 router.post("/cursuri/adauga", isAuthenticated, courseController.createOrEditPost);
 router.get("/cursuri/modifica", isAuthenticated, courseController.createOrEditListGet);
 router.get("/cursuri/json", isAuthenticated, courseController.jsonGetAll);
 //router.post("/cursuri/modifica", isAuthenticated, courseController.createOrEditListPost);
-router.get("/cursuri/:id", courseController.getOneById);
-router.get("/cursuri/:id/capitole", isAuthenticated, courseController.getOneById); // only for url access
-router.post("/cursuri/:id/sterge", isAuthenticated, courseController.deleteOneById);
+router.get("/cursuri/:courseId", courseController.getOneById);
+router.get("/cursuri/:courseId/capitole", isAuthenticated, courseController.getOneById); // only for url access
+router.post("/cursuri/:courseId/sterge", isAuthenticated, courseController.deleteOneById);
 
 // course-chapters
 router.get("/cursuri/:courseId/capitole/adauga", isAuthenticated, courseChapterController.createOrEditGet);
@@ -102,6 +102,9 @@ router.get("/lectii/:lessonId/json", isAuthenticated, lessonController.jsonGetOn
 router.get("/lectii/:lessonId/modifica", isAuthenticated, lessonController.editGet);
 router.post("/lectii/:lessonId/modifica", isAuthenticated, lessonController.editPost);
 router.post("/lectii/:lessonId/sterge", isAuthenticated, lessonController.deleteOneById);
+router.post("/lectii/:lessonId/upload-files", isAuthenticated, lessonController.uploadFiles);
+router.delete(`/lectii/fisiere/:fileId`, lessonController.deleteFileById); // delete at create
+router.delete(`/lectii/:lessonId/fisiere/:fileId`, lessonController.deleteFileById); // delete at edit
 
 // course-theory
 router.get("/lectii/:lessonId/teorie", courseTheoryController.getOneById);
@@ -118,7 +121,6 @@ router.post("/exercitii/:exerciseId/muta", isAuthenticated, exerciseController.m
 router.post("/exercitii/:exerciseId/sterge", isAuthenticated, exerciseController.deleteOneById);
 router.get("/exercitii/:exerciseId/json", isAuthenticated, exerciseController.jsonGet);
 router.post("/exercitii/:exerciseId/upload-files", isAuthenticated, exerciseController.uploadFiles);
-
 router.post("/exercitii/upload-files", isAuthenticated, exerciseController.uploadFiles);
 router.delete(`/exercitii/fisiere/:fileId`, exerciseController.deleteFileById); // delete at create
 router.delete(`/exercitii/:exerciseId/fisiere/:fileId`, exerciseController.deleteFileById); // delete at edit

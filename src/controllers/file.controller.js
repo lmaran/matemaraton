@@ -86,7 +86,9 @@ exports.deleteOneById = async (req, res) => {
         // Delete from Azure blobs
         const fileExtension = stringHelper.getFileExtension(fileFromDB.name);
         const blobName = `${fileFromDB._id.toString()}.${fileExtension}`;
-        await blobService.deleteBlob(fileFromDB.containerName, blobName);
+
+        const containerClient = blobService.getContainerClient(fileFromDB.containerName);
+        await blobService.deleteBlobIfExists(containerClient, blobName);
 
         // Delete also from Files
         await fileService.deleteOneById(fileId);

@@ -32,17 +32,19 @@ exports.createOrEditGet = async (req, res) => {
                     const lesson = allLessonsFromDB.find((x) => x._id.toString() == lessonId);
 
                     // TODO: fetch from DB only those fields we really need (e.g. no Theory, only the total number of exercises etc)
-                    const newLesson = {
-                        id: lesson._id.toString(),
-                        name: lesson.name,
-                        exercises: lesson.exercises,
-                        isActive: !!(lesson.exercises?.length || lesson.theory?.text),
-                    };
+                    if (lesson) {
+                        const newLesson = {
+                            id: lesson._id.toString(),
+                            name: lesson.name,
+                            exercises: lesson.exercises,
+                            isActive: !!(lesson.exercises?.length || lesson.theory?.text),
+                        };
 
-                    if (newLesson.isActive) chapterRef.numberOfActiveLessons++;
+                        if (newLesson.isActive) chapterRef.numberOfActiveLessons++;
 
-                    chapterRef.lessons = chapterRef.lessons || [];
-                    chapterRef.lessons.push(newLesson);
+                        chapterRef.lessons = chapterRef.lessons || [];
+                        chapterRef.lessons.push(newLesson);
+                    }
                 });
             }
         }
@@ -110,7 +112,7 @@ exports.createOrEditPost = async (req, res) => {
 
         course.chapters = course.chapters || [];
 
-        arrayHelper.moveOrInsertAtIndex(course.chapters, chapter, "id", position);
+        arrayHelper.moveOrInsertObjectAtIndex(course.chapters, chapter, "id", position);
 
         courseService.updateOne(course);
 
@@ -141,17 +143,19 @@ exports.getOneById = async (req, res) => {
             const lesson = allLessonsFromDB.find((x) => x._id.toString() == lessonId);
 
             // TODO: fetch from DB only those fields we really need (e.g. no Theory, only the total number of exercises etc)
-            const newLesson = {
-                id: lesson._id.toString(),
-                name: lesson.name,
-                exercises: lesson.exercises,
-                isActive: !!(lesson.exercises?.length || lesson.theory?.text),
-            };
+            if (lesson) {
+                const newLesson = {
+                    id: lesson._id.toString(),
+                    name: lesson.name,
+                    exercises: lesson.exercises,
+                    isActive: !!(lesson.exercises?.length || lesson.theory?.text),
+                };
 
-            if (newLesson.isActive) chapterRef.numberOfActiveLessons++;
+                if (newLesson.isActive) chapterRef.numberOfActiveLessons++;
 
-            chapterRef.lessons = chapterRef.lessons || [];
-            chapterRef.lessons.push(newLesson);
+                chapterRef.lessons = chapterRef.lessons || [];
+                chapterRef.lessons.push(newLesson);
+            }
         });
     }
 

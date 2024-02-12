@@ -41,6 +41,13 @@ exports.getAllLessonIdsFromCourse = (course) => {
     return lessonIds;
 };
 
+exports.getAllLessonIdsFromChapter = (chapter) => {
+    const lessonIds = [];
+    if (chapter.lessonIds) lessonIds.push(...chapter.lessonIds);
+
+    return lessonIds;
+};
+
 exports.getAvailableLessons = (course, lessonsFromDb) => {
     const availableLessons = [];
     (course.chapters || []).forEach((chapter) => {
@@ -53,6 +60,23 @@ exports.getAvailableLessons = (course, lessonsFromDb) => {
                 // exercises: lesson.exercises,
                 // isActive: !!(lesson.exercises?.length || lesson.theory?.text),
             });
+        });
+    });
+
+    return availableLessons;
+};
+
+exports.getAvailableLessonsFromChapter = (chapter, lessonsFromDb) => {
+    const availableLessons = [];
+
+    (chapter.lessonIds || []).forEach((lessonId) => {
+        const lesson = lessonsFromDb.find((x) => x._id.toString() == lessonId);
+
+        availableLessons.push({
+            id: lesson._id.toString(),
+            name: lesson.name,
+            // exercises: lesson.exercises,
+            // isActive: !!(lesson.exercises?.length || lesson.theory?.text),
         });
     });
 

@@ -32,15 +32,12 @@ if (answerOptionMainDiv) {
 }
 
 document.getElementById("gallery-tbl").addEventListener("click", eventHandlers.handleClickInGallery);
-// document.querySelectorAll(".delete-file-btn").forEach((item) => item.addEventListener("click", eventHandlers.deleteFile));
 
 /**
  * upload files
  * smashingmagazine.com/2018/01/drag-drop-file-uploader-vanilla-js/
  * https://developer.mozilla.org/en-US/docs/Web/API/File/Using_files_from_web_applications
  */
-
-// ! all the code below is ok - commented out temporary.
 
 const exerciseId = document.getElementById("exerciseId").value; // empty in edit mode
 const url = exerciseId ? `/exercitii/${exerciseId}/upload-files` : `/exercitii/upload-files`;
