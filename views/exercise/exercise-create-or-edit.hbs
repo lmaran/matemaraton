@@ -380,13 +380,8 @@
 
 {{!-- We cannot nest html form tags --}}
 <form enctype="multipart/form-data">
-    {{!-- TODO: CourseId and exerciseId are duplicated. We only need a fileId to delete a file (create a 'files' table) --}}
-    {{!-- <input type2="hidden" name="courseId2" value="{{courseId}}" />
-    <input type2="hidden" name="exerciseId2" value="{{exercise._id}}" /> --}}
-
     <input type="file" name="filefield1" id="upload-file-statement-input" multiple accept="image/*, application/pdf" class="d-none">
     <input type="file" name="filefield2" id="upload-file-solution-input" multiple accept="image/*, application/pdf" class="d-none">
-
 </form>
 
 {{#section 'script'}}

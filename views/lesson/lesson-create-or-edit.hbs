@@ -59,8 +59,7 @@
 
                     {{!-- close the textarea tag on the same line to get rid of the unintended spaces: https://stackoverflow.com/a/34102261 --}}
                     <textarea id="theory-editor-txt" rows="8" name="theory" type="text" 
-                        style="border-radius:0; border-bottom-width:0; border-color:#bb815d"
-                        class="form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}" placeholder="">{{lesson.theory.text}}</textarea>
+                        class="theory-input drop-area form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}" placeholder="">{{lesson.theory.text}}</textarea>
                     <div class="invalid-feedback">{{errors.theory.msg}}</div>
 
                     <div id="theory-preview-div" class="mt-0"
@@ -68,11 +67,68 @@
                         {{{lesson.theory.textPreview}}}
                     </div>
 
-                    <span class="ms-end">
-                        <a id="toggle-theory-editor-btn" href="">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</a>
-                    </span>
+                    <div id="upload-file-progress-theory-div" class="progress d-none" role="progressbar" aria-label="Basic example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="height: 2px">
+                        <div class="progress-bar w-100"></div>
+                    </div>
+
+                    {{!-- Theory menu --}}
+                    <div class="theory-menu-div hide-on-print clearfix">
+                        {{!-- <div class="float-start">
+                            {{#if hints}}
+                                <a class="toggle-hints-btn" href="">Indicații</a>
+                                <span class="text-muted">({{hints.length}})</span>
+                            {{/if}}
+                        </div> --}}
+
+                        <div class="float-end">
+                            <span id="edit-menu-theory-span" class="d-none">
+                                <span id="upload-file-error-theory-div" class="upload-file-error-div invalid-feedback">Mesaj de eroare</span>
+                                <label class="btn btn-light border border-primary btn-xs" for="upload-file-theory-input">
+                                    <i class="bi bi-card-image"></i>
+                                    Adaugă poza
+                                </label>
+                            </span>
+
+                            <a id="toggle-theory-editor-btn" href="">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</a>
+                        </div>
+                    </div>
+
                 </div>
             </div>
+
+            {{!-- Files --}}
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label class="fw-bold"> Fișiere: </label>
+
+                    <table id="gallery-tbl" class="table thead-light table-bordered table-hover">
+                        <tbody>
+                            {{#each lesson.files}}
+                            <tr>
+                                <td>
+                                    {{#if isImage}}
+                                        <a href="{{url}}" title="{{name}}"><img src="{{url}}" height="50"/></a>
+                                    {{else}}
+                                        <img src="/images/{{extension}}-icon.png" height="32"/>
+                                        <a href="{{url}}">{{name}}</a>
+                                    {{/if}}
+                                    <input class="d-none" name="fileIds" value="{{id}}"/>
+                                </td>
+
+                                <td align="center">
+                                    <a role="button" class="delete-file-btn" data-fileid="{{id}}">Șterge</a> 
+                                    <span class="ms-2 me-2">|</span>
+                                    <a href="/fisiere/{{id}}">Detalii</a>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+            <input type="hidden" name="lessonId" value="{{lessonId}}" id="lessonId"/>
 
             <div class="mt-4">
                 <div class="col-md-7s offset-md-3s">
@@ -215,11 +271,19 @@
                     {{/if}}
                 </div>
             </div>
+
+            <input type="hidden" name="courseId" value="{{courseId}}"/>
+            <input type="hidden" name="chapterId" value="{{chapterId}}"/>
             
         </section>
     </div>
 </div>
 
+</form>
+
+{{!-- We cannot nest html form tags --}}
+<form enctype="multipart/form-data">
+    <input type="file" name="filefield1" id="upload-file-theory-input" multiple accept="image/*, application/pdf" class="d-none">
 </form>
 
 {{#section 'script'}}

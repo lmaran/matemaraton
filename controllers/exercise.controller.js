@@ -19,8 +19,6 @@ const { availableExerciseTypes, availableLevels, imageExtensions } = require("..
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
 exports.getAll = async (req, res) => {
-    // const exercises = await exerciseService.getAll();
-
     const pageSizes = [
         { text: "10 pe pagină", value: "10" },
         { text: "30 pe pagină", value: "30" },
@@ -49,7 +47,7 @@ exports.getAll = async (req, res) => {
 
         if (exercise.answerOptions) {
             exercise.answerOptions.forEach((answerOption, idx) => {
-                // insert a label (letter) in front of each option: "a" for the 1st option, "b" for the 2nd a.s.o.
+                // Insert a label (letter) in front of each option: "a" for the 1st option, "b" for the 2nd a.s.o.
                 answerOption.textPreview = markdownService.render(`${alphabet[idx]}) ${answerOption.text}`);
                 if (answerOption.isCorrect) {
                     exercise.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
@@ -187,7 +185,7 @@ exports.createGet = async (req, res) => {
             })
             .filter((x) => x.levelId == levelId);
 
-        // in editMode, exerciseId will be undefined (falsy)
+        // In editMode, exerciseId will be undefined (falsy)
         // The parentheses ( ... ) around the assignment statement are required when using object literal destructuring assignment without a declaration.
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
         ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(newExercises, undefined, true));
@@ -238,8 +236,6 @@ exports.createPost = async (req, res) => {
         position,
     } = req.body;
 
-    // let { exerciseId } = req.body;
-
     let exercise;
 
     if (!["1", "2", "3", "4"].includes(levelId)) return res.status(500).send("Nivel de dificultate invalid!");
@@ -287,17 +283,17 @@ exports.createPost = async (req, res) => {
             id: exerciseId,
         };
 
-        // sort exercises by levelId
+        // Sort exercises by levelId
         const newExercises = (lesson.exercises || [])
             .sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId)
             .filter((x) => x.levelId == levelId);
 
-        arrayHelper.moveOrInsertAtIndex(newExercises, newExercise, "id", position);
+        arrayHelper.moveOrInsertObjectAtIndex(newExercises, newExercise, "id", position);
 
-        // remove all exercises within the current level
+        // Remove all exercises within the current level
         lesson.exercises = (lesson.exercises || []).filter((x) => !(x.levelId == levelId));
 
-        // add all the new exercises within the current level and sort the result
+        // Add all the new exercises within the current level and sort the result
         lesson.exercises = (lesson.exercises || []).concat(newExercises).sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId);
 
         lessonService.updateOne(lesson);
@@ -372,7 +368,7 @@ exports.editGet = async (req, res) => {
             })
             .filter((x) => x.levelId == levelId);
 
-        // in editMode, lessonId will be undefined (falsy)
+        // In editMode, lessonId will be undefined (falsy)
         // The parentheses ( ... ) around the assignment statement are required when using object literal destructuring assignment without a declaration.
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
         ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(newExercises, exerciseId, true));
@@ -405,22 +401,8 @@ exports.editGet = async (req, res) => {
 };
 
 exports.editPost = async (req, res) => {
-    const {
-        //lessonId,
-        levelId,
-
-        //grade,
-        contestName,
-        exerciseType,
-        sourceName,
-        author,
-        statement,
-        answer,
-        answerOptions,
-        isCorrectAnswerChecks,
-        solution,
-        hints,
-    } = req.body;
+    const { levelId, contestName, exerciseType, sourceName, author, statement, answer, answerOptions, isCorrectAnswerChecks, solution, hints } =
+        req.body;
 
     const { exerciseId } = req.body;
 
@@ -494,19 +476,6 @@ exports.moveGet = async (req, res) => {
 
         const availableLessons = lessonHelper.getAvailableLessons(course, lessonsFromDB);
 
-        // const availableLessons = [];
-        // (course.chapters || []).forEach((chapter) => {
-        //     (chapter.lessonIds || []).forEach((lessonId) => {
-        //         const lesson = allLessonsFromDB.find((x) => x._id.toString() == lessonId);
-
-        //         // TODO: fetch from DB only those fields we really need (e.g. no Theory, only the total number of exercises etc)
-        //         availableLessons.push({
-        //             id: lesson._id.toString(),
-        //             name: lesson.name,
-        //         });
-        //     });
-        // });
-
         // sort exercises by levelId
         const newExercises = (lesson.exercises || [])
             .sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId)
@@ -516,7 +485,7 @@ exports.moveGet = async (req, res) => {
             })
             .filter((x) => x.levelId == levelId);
 
-        // in editMode, lessonId will be undefined (falsy)
+        // In editMode, lessonId will be undefined (falsy)
         // The parentheses ( ... ) around the assignment statement are required when using object literal destructuring assignment without a declaration.
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
         ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(newExercises, exerciseId, true));
@@ -575,7 +544,7 @@ exports.movePost = async (req, res) => {
         if (!canCreateOrEditCourse) {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
-        // if nothing has changed, redirect
+        // If nothing has changed, redirect
         if (lessonIdNew == lessonIdOld && levelIdNew == levelIdOld && positionIdNew == positionIdOld) {
             return res.redirect(redirectUri);
         }
@@ -642,15 +611,6 @@ exports.getAvailablePositions = async (req, res) => {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
 
-        // const course = await courseService.getOneById(courseId);
-        // if (!course) return res.status(500).send("Curs negăsit!");
-
-        // for (const chapterRef of course.chapters || []) {
-        //     lessonRef = (chapterRef.lessons || []).find((x) => x.id === lessonId);
-        //     if (lessonRef) break;
-        // }
-        // if (!lessonRef) return res.status(500).send("Lecție negăsită!");
-
         const lesson = await lessonService.getOneById(lessonId);
         if (!lesson) return res.status(500).send("Lecție negăsită!");
 
@@ -663,7 +623,7 @@ exports.getAvailablePositions = async (req, res) => {
             })
             .filter((x) => x.levelId == levelId);
 
-        // in editMode, lessonId will be undefined (falsy)
+        // In editMode, lessonId will be undefined (falsy)
         // The parentheses ( ... ) around the assignment statement are required when using object literal destructuring assignment without a declaration.
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
         ({ availablePositions } = arrayHelper.getAvailablePositions(newExercises, exerciseId, true));
@@ -778,6 +738,7 @@ exports.deleteOneById = async (req, res) => {
     }
 };
 
+// TODO: Refactor (remove duplicate code, see LessonTheory)
 exports.uploadFiles = async (req, res) => {
     const { exerciseId } = req.params;
 
@@ -885,11 +846,8 @@ exports.deleteFileById = async (req, res) => {
             const exercise = await exerciseService.getOneById(exerciseId);
             if (!exercise) return res.status(404).send("Exercițiu negăsit.");
 
-            const fileIndex = (exercise.files || []).findIndex((x) => x.url.includes(fileId));
-            if (fileIndex > -1) {
-                exercise.files.splice(fileIndex, 1); // remove from array
-                exerciseService.updateOne(exercise);
-            }
+            exercise.files = (exercise.files || []).filter((x) => x.id != fileId);
+            exerciseService.updateOne(exercise);
         }
 
         // Delete from Azure blobs
@@ -922,7 +880,7 @@ const getHintsAsArray = (hints) => {
             if (hint) array.push({ text: hint });
         });
     } else {
-        // an object with a single option
+        // An object with a single option
         const hint = hints.trim();
         if (hint) array.push({ text: hint });
     }
@@ -939,7 +897,7 @@ const getFileIdsAsArray = (fileIds) => {
             if (id) array.push(id);
         });
     } else {
-        // an object with a single option
+        // An object with a single option
         const id = fileIds.trim();
         if (id) array.push(id);
     }
@@ -954,7 +912,7 @@ const getAnswerOptionsAsArray = (answerOptions, isCorrectAnswerChecks) => {
             if (answerOption) {
                 const newAnswerOption = { text: answerOption };
 
-                // set isCorrectAnswer (if apply)
+                // Set isCorrectAnswer (if apply)
                 if (isCorrectAnswerChecks) {
                     if (Array.isArray(isCorrectAnswerChecks)) {
                         if (isCorrectAnswerChecks.includes(String(idx + 1))) {
@@ -971,12 +929,12 @@ const getAnswerOptionsAsArray = (answerOptions, isCorrectAnswerChecks) => {
             }
         });
     } else {
-        // an object with a single option
+        // An object with a single option
         const answerOptions = answerOptions.trim();
         if (answerOptions) {
             const newAnswerOption = { text: answerOptions };
 
-            // set isCorrectAnswer (if apply)
+            // Set isCorrectAnswer (if apply)
             if (isCorrectAnswerChecks && isCorrectAnswerChecks === "1") {
                 newAnswerOption.isCorrect = true;
             }
@@ -1013,7 +971,7 @@ const addExerciseToLocation = async (lessonId, levelId, positionId, exerciseId) 
         .sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId)
         .filter((x) => x.levelId == levelId);
 
-    arrayHelper.moveOrInsertAtIndex(newExercises, newExercise, "id", positionId);
+    arrayHelper.moveOrInsertObjectAtIndex(newExercises, newExercise, "id", positionId);
 
     // Remove all exercises within the current level
     lesson.exercises = (lesson.exercises || []).filter((x) => !(x.levelId == levelId));

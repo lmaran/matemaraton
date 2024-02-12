@@ -78,8 +78,23 @@ exports.move = (array, fromIdx, toIdx) => {
  * Remove one element from a list (if exists) and add it to a new position
  * This  method mutes the original array, so be sure the input array is not null
  */
-exports.moveOrInsertAtIndex = (array, newElement, keyName, newIdx) => {
+exports.moveOrInsertObjectAtIndex = (array, newElement, keyName, newIdx) => {
     const oldIdx = array.findIndex((x) => x[keyName] == newElement[keyName]);
+    if (newIdx == oldIdx) return; // if we keep the same position, we don't have to do anything
+
+    // 1: remove the element (if exists)
+    if (oldIdx > -1) array.splice(oldIdx, 1);
+
+    // 2: add the element to the new position
+    array.splice(newIdx, 0, newElement); // add one element to a specific index
+};
+
+/**
+ * Remove one element from a list of values (if exists) and add it to a new position
+ * This  method mutes the original array, so be sure the input array is not null
+ */
+exports.moveOrInsertStringAtIndex = (array, newElement, newIdx) => {
+    const oldIdx = array.findIndex((x) => x == newElement);
     if (newIdx == oldIdx) return; // if we keep the same position, we don't have to do anything
 
     // 1: remove the element (if exists)

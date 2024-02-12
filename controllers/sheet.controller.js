@@ -239,7 +239,7 @@ exports.createPost = async (req, res) => {
         //     lesson.isHidden = true;
         // } else delete lesson.isHidden;
         // chapterRef.lessons = chapterRef.lessons || [];
-        // arrayHelper.moveOrInsertAtIndex(chapterRef.lessons, lesson, "id", position);
+        // arrayHelper.moveOrInsermoveOrInsertObjectAtIndextAtIndex(chapterRef.lessons, lesson, "id", position);
 
         const result = await sheetService.insertOne(sheet);
         const sheetId = result.insertedId.toString();

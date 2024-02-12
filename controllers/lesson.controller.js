@@ -8,10 +8,16 @@ const exerciseHelper = require("../helpers/exercise.helper");
 const lessonHelper = require("../helpers/lesson.helper");
 const sheetService = require("../services/sheet.service");
 const dateTimeHelper = require("../helpers/date-time.helper");
+const lessonBlobService = require("../services/lesson-blob.service");
+const uploadFileService = require("../services/upload-file.service");
+const fileService = require("../services/file.service");
+const { EventEmitter } = require("events");
 
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
+const stringHelper = require("../helpers/string.helper");
+const svgHelper = require("../helpers/svg.helper");
 
-const { availableLevels } = require("../constants/constants");
+const { availableLevels, imageExtensions } = require("../constants/constants");
 
 exports.getOneById = async (req, res) => {
     const { lessonId } = req.params;
@@ -105,7 +111,7 @@ exports.jsonGetOneById = async (req, res) => {
 };
 
 exports.createGet = async (req, res) => {
-    const { courseId, chapterId } = req.params;
+    const { courseId, chapterId } = req.query;
 
     let chapterIndex, availablePositions, selectedPosition;
 
@@ -122,7 +128,13 @@ exports.createGet = async (req, res) => {
         if (!chapter) return res.status(500).send("Capitol negăsit!");
         chapterIndex = course.chapters.findIndex((x) => x.id === chapterId);
 
-        ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(chapter.lessons, undefined));
+        // TODO: refactor (duplicates, see GetOneById or Move)
+        const lessonIds = lessonHelper.getAllLessonIdsFromChapter(chapter);
+        const lessonsFromDB = await lessonService.getAllByIds(lessonIds);
+
+        const availableLessons = lessonHelper.getAvailableLessonsFromChapter(chapter, lessonsFromDB);
+
+        ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(availableLessons, undefined));
 
         const data = {
             courseId,
@@ -145,7 +157,6 @@ exports.createGet = async (req, res) => {
 
 exports.createPost = async (req, res) => {
     const { courseId, chapterId, name, description, isHidden, position, theory } = req.body;
-    let { lessonId } = req.params;
 
     let lesson;
 
@@ -161,9 +172,12 @@ exports.createPost = async (req, res) => {
         const chapterRef = (course.chapters || []).find((x) => x.id === chapterId);
         if (!chapterRef) return res.status(500).send("Capitol negăsit!");
 
-        lessonId = courseService.getObjectId().toString();
+        const lessonIdObj = courseService.getObjectId();
+        const lessonId = lessonIdObj.toString();
+
         lesson = {
-            id: lessonId,
+            _id: lessonIdObj,
+            courseId,
         };
 
         // update lesson fields
@@ -179,11 +193,12 @@ exports.createPost = async (req, res) => {
             lesson.isHidden = true;
         } else delete lesson.isHidden;
 
-        chapterRef.lessons = chapterRef.lessons || [];
+        chapterRef.lessonIds = chapterRef.lessonIds || [];
 
-        arrayHelper.moveOrInsertAtIndex(chapterRef.lessons, lesson, "id", position);
+        arrayHelper.moveOrInsertStringAtIndex(chapterRef.lessonIds, lessonId, position);
 
         courseService.updateOne(course);
+        lessonService.insertOne(lesson);
 
         res.redirect(`/lectii/${lessonId}/modifica`);
     } catch (err) {
@@ -222,11 +237,23 @@ exports.editGet = async (req, res) => {
         // remove unnecessary fields
         delete lesson.exercises;
 
-        ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(chapter.lessons, lessonId));
+        // TODO: refactor (duplicates, see GetOneById or Move)
+        const lessonIds = lessonHelper.getAllLessonIdsFromChapter(chapter);
+        const lessonsFromDB = await lessonService.getAllByIds(lessonIds);
+
+        const availableLessons = lessonHelper.getAvailableLessonsFromChapter(chapter, lessonsFromDB);
+
+        ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(availableLessons, lessonId));
 
         lesson.sheets = lesson.sheetIds ? await sheetService.getAllByIds(lesson.sheetIds) : [];
 
         lesson.sheets.forEach((sheet) => (sheet.createdOn = dateTimeHelper.getShortDateAndTimeDateRo(sheet.createdOn))); // ex: 22.11.2023
+
+        (lesson.files || []).forEach((file) => {
+            const fileExtension = stringHelper.getFileExtension(file.name);
+            file.extension = fileExtension;
+            file.isImage = imageExtensions.includes(fileExtension);
+        });
 
         const data = {
             isEditMode: true,
@@ -250,7 +277,7 @@ exports.editGet = async (req, res) => {
 };
 
 exports.editPost = async (req, res) => {
-    const { courseId, name, description, isHidden, position, theory } = req.body;
+    const { name, description, isHidden, theory } = req.body;
     const { lessonId } = req.params;
 
     try {
@@ -262,13 +289,7 @@ exports.editPost = async (req, res) => {
         const lesson = await lessonService.getOneById(lessonId);
         if (!lesson) return res.status(500).send("Lecție negăsită!");
 
-        const course = await courseService.getOneById(courseId);
-        if (!course) return res.status(500).send("Curs negăsit!");
-
-        const { chapter } = lessonHelper.getLessonParentInfo(course, lessonId);
-        if (!lesson) return res.status(500).send("Lecție negăsită!");
-
-        // update lesson fields
+        // Update lesson fields
         lesson.name = name;
         lesson.description = description;
         lesson.theory = {
@@ -280,11 +301,7 @@ exports.editPost = async (req, res) => {
             lesson.isHidden = true;
         } else delete lesson.isHidden;
 
-        chapter.lessons = chapter.lessons || [];
-
-        arrayHelper.moveOrInsertAtIndex(chapter.lessons, lesson, "id", position);
-
-        courseService.updateOne(course);
+        lessonService.updateOne(lesson);
 
         res.redirect(`/lectii/${lessonId}/modifica`);
     } catch (err) {
@@ -304,26 +321,156 @@ exports.deleteOneById = async (req, res) => {
         const lesson = await lessonService.getOneById(lessonId);
         if (!lesson) return res.status(500).send("Lecție negăsită!");
 
+        if (lesson.exercises && lesson.exercises.length > 0) {
+            return res.status(403).send("Șterge întâi exercițiile!");
+        }
+
         const course = await courseService.getOneById(lesson.courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, lessonIndex } = lessonHelper.getLessonParentInfo(course, lessonId);
+        const { chapter } = lessonHelper.getLessonParentInfo(course, lessonId);
 
-        if (lessonIndex > -1) {
-            //const lesson = lessons[lessonIndex];
-
-            // TODO fix it (delete only empty lessons)
-            // if (lesson.lessons && chapter.lessons.length > 0) {
-            //     return res.status(403).send("Șterge întâi lecțiile!");
-            // }
-
-            chapter.lessons.splice(lessonIndex, 1); // remove from array
-            courseService.updateOne(course);
-        }
+        chapter.lessonIds = (chapter.lessonIds || []).filter((x) => x != lessonId); // remove from array
+        await courseService.updateOne(course);
+        await lessonService.deleteOneById(lessonId);
 
         res.redirect(`/cursuri/${lesson.courseId}/capitole/${chapter.id}/modifica`);
     } catch (err) {
         return res.status(500).json(err.message);
+    }
+};
+
+// TODO: Refactor (remove duplicate code, see LessonTheory)
+exports.uploadFiles = async (req, res) => {
+    const { lessonId } = req.params;
+
+    const containerClient = lessonBlobService.getContainerClient();
+
+    const params = {
+        maxFileSize: 1 * 1024 * 1024, // 1 MB
+        maxFiles: 3,
+        allowedExtensions: ["png", "svg", "jpeg", "jpg", "pdf"],
+        containerClient,
+    };
+
+    const canCreateOrEditExercise = await autz.can(req.user, "create-or-edit:exercise");
+    if (!canCreateOrEditExercise) {
+        return res.status(403).json({ code: "forbidden", message: "Lipsă permisiuni." });
+    }
+
+    const emitter = new EventEmitter();
+    try {
+        uploadFileService.uploadFiles(req, emitter, params);
+
+        emitter.once("uploaded", async (result) => {
+            const resultFiles = result.files.filter((x) => x.isSuccess);
+            if (resultFiles.length == 0) return res.json(result);
+
+            // 1. Save file to DB.
+            const filesToDB = resultFiles.map((file) => ({
+                _id: fileService.getObjectId(file.id),
+                name: file.name,
+                url: file.url,
+                size: file.size,
+
+                accountName: lessonBlobService.getAccountName(),
+                containerName: "lectii",
+                sourceType: `/lectii`,
+                sourceId: lessonId, // lessonId is defined only in editMode
+                createdOn: new Date(),
+                createdBy: { id: req.user._id.toString(), name: `${req.user.firstName} ${req.user.lastName}` },
+            }));
+
+            if (filesToDB.length > 0) await fileService.insertMany(filesToDB);
+
+            // 2. Add the new files to the lesson (edit mode only)
+            if (lessonId) {
+                const lesson = await lessonService.getOneById(lessonId);
+                if (!lesson) return res.status(404).send("Lecție negăsită.");
+
+                const filesToLesson = resultFiles.map((file) => ({
+                    id: file.id,
+                    name: file.name,
+                    url: file.url,
+                    size: file.size,
+                }));
+
+                // Concatenate the two arrays
+                lesson.files = [...(lesson.files || []), ...filesToLesson];
+                await lessonService.updateOne(lesson);
+            }
+
+            // 3. If svg, scale down to 80%
+            const scaleRatio = 80; // scale down to 80%
+            const svgResultFiles = resultFiles.filter((file) => stringHelper.getFileExtension(file.name) == "svg");
+            let svgResultFilesCount = svgResultFiles.length;
+            if (svgResultFilesCount == 0) return res.json(result);
+
+            emitter.once("allSvgResized", () => {
+                return res.json(result);
+            });
+
+            svgResultFiles.forEach(async (file) => {
+                const fileExtension = stringHelper.getFileExtension(file.name);
+                const blobName = `${file.id}.${fileExtension}`;
+
+                // Acest "await" din fața lui "downloadBlobToString" împiedică execuția instrucțiunilor următoare din ciclul curent forEach
+                // până când streamul nu e complet descărcat, dar lasă procesorul liber pentru următoarele cicluri forEach și apoi pentru codul care urmează după forEach.
+                // Acest comportament este normal atunci când lucrăm cu stream-uri, unde evenimentele unde fluxul de date (evenimentul on data) soseștie asincron.
+                // Am experimentat atât cu "downloadBlobToString", cât și cu alte metode din streamHelper.
+                const oldContent = await lessonBlobService.downloadBlobToString(blobName);
+
+                const newContent = svgHelper.resizeSvg(oldContent, scaleRatio);
+
+                await lessonBlobService.uploadBlobFromString(newContent, blobName, "image/svg+xml");
+
+                svgResultFilesCount--;
+
+                if (svgResultFilesCount == 0) emitter.emit("allSvgResized");
+            });
+        });
+    } catch (err) {
+        return res.status(500).json({ code: "exception", message: err.message });
+    }
+};
+
+exports.deleteFileById = async (req, res) => {
+    const { lessonId, fileId } = req.params;
+
+    try {
+        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+        if (!canCreateOrEditCourse) {
+            return res.status(403).json({ code: "forbidden", message: "Lipsă permisiuni." });
+        }
+
+        // Delete from lesson (edit mode only)
+        if (lessonId) {
+            const lesson = await lessonService.getOneById(lessonId);
+            if (!lesson) return res.status(404).send("Lecție negăsită.");
+
+            lesson.files = (lesson.files || []).filter((x) => x.id != fileId);
+            lessonService.updateOne(lesson);
+        }
+
+        // Delete from Azure blobs
+        const fileFromDB = await fileService.getOneById(fileId);
+        if (fileFromDB) {
+            const fileExtension = stringHelper.getFileExtension(fileFromDB.name);
+            const blobName = `${fileId}.${fileExtension}`;
+            const blobDeleteResponse = await lessonBlobService.deleteBlobIfExists(blobName);
+
+            if (blobDeleteResponse.errorCode && blobDeleteResponse.errorCode !== "BlobNotFound") {
+                return res.status(500).json("Eroare la ștergerea blob-ului.");
+            }
+        }
+
+        // Delete from files
+        if (fileFromDB) await fileService.deleteOneById(fileId);
+
+        res.sendStatus(204); // no content
+        // return res.json(exercise.files);
+    } catch (err) {
+        return res.status(500).json({ code: "exception", message: err.message });
     }
 };
 

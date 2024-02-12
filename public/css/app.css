@@ -179,6 +179,12 @@ https://github.com/twbs/bootstrap/issues/20643#issuecomment-325579156 */
     _max-height: 150px;
 }
 
+.theory-input {
+    border-radius:0; 
+    border-bottom-width:0; 
+    border-color:#bb815d;
+}
+
 .statement-input {
     border-radius:0; 
     border-bottom-width:0; 
