@@ -2,8 +2,125 @@ const courseService = require("../services/course.service");
 const lessonService = require("../services/lesson.service");
 const autz = require("../services/autz.service");
 const lessonHelper = require("../helpers/lesson.helper");
-
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
+
+exports.getOneById = async (req, res) => {
+    try {
+        const { courseId } = req.params;
+        const course = await courseService.getOneById(courseId);
+        if (!course) return res.status(500).send("Curs negăsit!");
+
+        // TODO: refactor (duplicates, see createOrEditGet and getCourseChapter)
+        const lessonIds = lessonHelper.getAllLessonIdsFromCourse(course);
+        const allLessonsFromDB = await lessonService.getAllByIds(lessonIds);
+
+        (course.chapters || []).forEach((chapter) => {
+            chapter.numberOfActiveLessons = 0;
+            chapter.lessons = [];
+            if (chapter.lessonIds) {
+                chapter.lessonIds.forEach((lessonId) => {
+                    const lesson = allLessonsFromDB.find((x) => x._id.toString() == lessonId);
+                    if (lesson) {
+                        // TODO: fetch from DB only those fields we really need (e.g. no Theory, only the total number of exercises etc)
+                        const newLesson = {
+                            id: lesson._id.toString(),
+                            name: lesson.name,
+                            exercises: lesson.exercises,
+                            isActive: !!(lesson.exercises?.length || lesson.theory?.text),
+                        };
+
+                        if (newLesson.isActive) chapter.numberOfActiveLessons++;
+
+                        chapter.lessons.push(newLesson);
+                    }
+                });
+            }
+        });
+
+        const data = {
+            course,
+            canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
+            pageTitle: `${course.name}`,
+        };
+
+        //res.send(data);
+        res.render("course/course", data);
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
+};
+
+exports.getAll = async (req, res) => {
+    try {
+        const courses = await courseService.getAll();
+
+        const generalCourses = [];
+        const localOlympiadCourses = [];
+        const countyOlympiadCourses = [];
+        courses
+            .filter((x) => !x.isHidden)
+            .sort((a, b) => (a.code > b.code ? 1 : -1))
+            .forEach((course) => {
+                if (course.category === "Evaluare Națională") {
+                    generalCourses.push(course);
+                } else if (course.category === "Olimpiadă, etapa locală") {
+                    localOlympiadCourses.push(course);
+                } else if (course.category === "Olimpiadă, etapa județeană") {
+                    countyOlympiadCourses.push(course);
+                }
+            });
+
+        const data = {
+            generalCourses,
+            localOlympiadCourses,
+            countyOlympiadCourses,
+            canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
+        };
+        //res.send(data);
+        res.render("course/courses", data);
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
+};
+
+exports.createOrEditListGet = async (req, res) => {
+    try {
+        const canCreateOrEditCourseList = await autz.can(req.user, "create-or-edit:courses");
+        if (!canCreateOrEditCourseList) {
+            return res.status(403).send("Lipsă permisiuni!"); // forbidden
+        }
+
+        const courses = await courseService.getAll();
+
+        const generalCourses = [];
+        const localOlympiadCourses = [];
+        const countyOlympiadCourses = [];
+        courses
+            .filter((x) => !x.isHidden)
+            .sort((a, b) => (a.code > b.code ? 1 : -1))
+            .forEach((course) => {
+                if (course.category === "Evaluare Națională") {
+                    generalCourses.push(course);
+                } else if (course.category === "Olimpiadă, etapa locală") {
+                    localOlympiadCourses.push(course);
+                } else if (course.category === "Olimpiadă, etapa județeană") {
+                    countyOlympiadCourses.push(course);
+                }
+            });
+
+        const data = {
+            generalCourses,
+            localOlympiadCourses,
+            countyOlympiadCourses,
+            canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
+        };
+
+        //res.send(data);
+        res.render("course/courses-create-or-edit", data);
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
+};
 
 exports.createOrEditGet = async (req, res) => {
     try {
@@ -14,6 +131,16 @@ exports.createOrEditGet = async (req, res) => {
         const { courseId } = req.params;
 
         const isEditMode = !!courseId;
+
+        let isChaptersTabActive, isGeneralTabActive;
+        if (isEditMode) {
+            const { view } = req.query;
+            isChaptersTabActive = view != "general";
+            isGeneralTabActive = view == "general";
+        } else {
+            isChaptersTabActive = false;
+            isGeneralTabActive = true;
+        }
 
         const gradeAvailableOptions = [
             { text: "Primar", value: "P" },
@@ -34,6 +161,8 @@ exports.createOrEditGet = async (req, res) => {
         ];
 
         const data = {
+            isChaptersTabActive,
+            isGeneralTabActive,
             isEditMode,
             isCreateMode: !isEditMode,
             gradeAvailableOptions,
@@ -133,55 +262,6 @@ exports.createOrEditPost = async (req, res) => {
     }
 };
 
-exports.createOrEditListGet = async (req, res) => {
-    const canCreateOrEditCourseList = await autz.can(req.user, "create-or-edit:courses");
-    if (!canCreateOrEditCourseList) {
-        return res.status(403).send("Lipsă permisiuni!"); // forbidden
-    }
-
-    const courses = await courseService.getAll();
-
-    const data = {
-        //isEditMode,
-        // gradeAvailableOptions,
-        // categoryAvailableOptions,
-        courses,
-        canCreateOrEditCourseList,
-    };
-
-    //res.send(data);
-    res.render("course/courses-create-or-edit", data);
-};
-
-exports.getAll = async (req, res) => {
-    const courses = await courseService.getAll();
-
-    const generalCourses = [];
-    const localOlympiadCourses = [];
-    const countyOlympiadCourses = [];
-    courses
-        .filter((x) => !x.isHidden)
-        .sort((a, b) => (a.code > b.code ? 1 : -1))
-        .forEach((course) => {
-            if (course.category === "Evaluare Națională") {
-                generalCourses.push(course);
-            } else if (course.category === "Olimpiadă, etapa locală") {
-                localOlympiadCourses.push(course);
-            } else if (course.category === "Olimpiadă, etapa județeană") {
-                countyOlympiadCourses.push(course);
-            }
-        });
-
-    const data = {
-        generalCourses,
-        localOlympiadCourses,
-        countyOlympiadCourses,
-        canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
-    };
-    //res.send(data);
-    res.render("course/courses", data);
-};
-
 exports.jsonGetAll = async (req, res) => {
     const courses = await courseService.getAll();
 
@@ -193,52 +273,6 @@ exports.jsonGetAll = async (req, res) => {
     };
     //res.send(data);
     res.render("course/courses-json", data);
-};
-
-exports.getOneById = async (req, res) => {
-    try {
-        const { courseId } = req.params;
-        const course = await courseService.getOneById(courseId);
-        if (!course) return res.status(500).send("Curs negăsit!");
-
-        // TODO: refactor (duplicates, see createOrEditGet and getCourseChapter)
-        const lessonIds = lessonHelper.getAllLessonIdsFromCourse(course);
-        const allLessonsFromDB = await lessonService.getAllByIds(lessonIds);
-
-        (course.chapters || []).forEach((chapter) => {
-            chapter.numberOfActiveLessons = 0;
-            chapter.lessons = [];
-            if (chapter.lessonIds) {
-                chapter.lessonIds.forEach((lessonId) => {
-                    const lesson = allLessonsFromDB.find((x) => x._id.toString() == lessonId);
-                    if (lesson) {
-                        // TODO: fetch from DB only those fields we really need (e.g. no Theory, only the total number of exercises etc)
-                        const newLesson = {
-                            id: lesson._id.toString(),
-                            name: lesson.name,
-                            exercises: lesson.exercises,
-                            isActive: !!(lesson.exercises?.length || lesson.theory?.text),
-                        };
-
-                        if (newLesson.isActive) chapter.numberOfActiveLessons++;
-
-                        chapter.lessons.push(newLesson);
-                    }
-                });
-            }
-        });
-
-        const data = {
-            course,
-            canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
-            pageTitle: `${course.name}`,
-        };
-
-        //res.send(data);
-        res.render("course/course", data);
-    } catch (err) {
-        return res.status(500).json(err.message);
-    }
 };
 
 exports.jsonGetOneById = async (req, res) => {

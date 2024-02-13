@@ -8,7 +8,7 @@
         {{/if}}
         
         {{#if isEditMode}}
-        <li title="Json" class="ms-auto me-2"><a href="/cursuri/{{courseId}}/capitole/{{chapter.id}}/json"><i class="bi bi-braces me-1"></i></a></li>
+        <li title="Json" class="ms-auto me-2"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/json"><i class="bi bi-braces me-1"></i></a></li>
         <li title="Vizualizează"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}"><i class="bi bi-eye me-1"></i></a></li>
         {{/if}}
     </ol>
@@ -20,37 +20,38 @@
 {{#if isEditMode}}
 <ul class="nav nav-tabs">
     <li class="nav-item">
-        {{!-- <a class="nav-link active fs-5" aria-current="page" href="#">Teorie</a> --}}
-        <button class="nav-link active" id="lessons-tab" data-bs-toggle="tab" data-bs-target="#lessons-tab-pane" type="button" role="tab" aria-controls="lessons-tab-pane" aria-selected="true">
-            Lecții
-        </button>
+         <a class="nav-link {{#if isLessonsTabActive}}active{{/if}}" id="lessons-tab" aria-current="page" href="/cursuri/{{courseId}}/capitole/{{chapterId}}/modifica">Lecții</a>
     </li>
     <li class="nav-item">
-        <button class="nav-link " id="general-tab" data-bs-toggle="tab" data-bs-target="#general-tab-pane" type="button" role="tab" aria-controls="general-tab-pane" aria-selected="true">
-            <i class="bi bi-gear"></i>
-        </button>
+        <a class="nav-link {{#if isGeneralTabActive}}active{{/if}}" id="general-tab"href="/cursuri/{{courseId}}/capitole/{{chapterId}}/modifica?view=general"><i class="bi bi-gear"></i></a>
     </li>
 </ul>
 {{/if}}
 
 <div class="tab-content" id="myTabContent">
-    <div class="tab-pane show active" id="lessons-tab-pane" role="tabpanel" aria-labelledby="lessons-tab" tabindex="0">
+    <div class="tab-pane show {{#if isLessonsTabActive}}active{{/if}}" id="lessons-tab-pane" role="tabpanel" aria-labelledby="lessons-tab" tabindex="0">
         <section class="mt-4">
             {{#if isEditMode}}
-            {{!-- <h4 class="mt-5">Lecții</h4> --}}
-            <ol id="table-of-contents" class="pl-0">
-                {{#each chapter.lessons}}
-                <li>
-                    <a href="/lectii/{{id}}/modifica">{{name}}{{#unless name}}Fără nume{{/unless}}</a>
-                    {{#if isHidden}}
-                    <a href="/lectii/{{id}}/modifica">
-                        <i class="bi bi-eye-slash text-danger"></i></a>
-                    {{/if}}
-                </li>
-                {{/each}}
-            </ol>
 
-            <a href="/lectii/adauga?courseId={{courseId}}&chapterId={{chapter.id}}" class="btn btn-primary btn-sm">
+            {{#each chapter.lessons}}
+            <div>
+                {{inc @index}}.
+                {{#if isActive}}
+                    <a href="/lectii/{{id}}/modifica">{{name}}</a>
+                    <span class="text-muted">({{ exercises.length }}{{#unless exercises.length}}0{{/unless}})</span>
+                {{else}}
+                    <span class="text-muted">{{name}}</span> 
+                    <a class="pl-1 text-decoration-none" href="/lectii/{{id}}/modifica">...</a>
+                {{/if}}
+
+                {{#if isHidden}}
+                    <a href="/cursuri/{{@root.courseId}}/capitole/{{@root.chapter.id}}/lectii/{{id}}/modifica">
+                        <i class="bi bi-eye-slash text-danger"></i></a>
+                {{/if}}
+            </div>
+            {{/each}}
+
+            <a href="/lectii/adauga?courseId={{courseId}}&chapterId={{chapter.id}}" class="btn btn-primary btn-sm mt-4">
             <i class="bi bi-plus-lg"></i> Adaugă lecție</a>
 
             {{else}}
@@ -62,7 +63,7 @@
         </section>
     </div>
 
-    <div class="tab-pane show {{#unless isEditMode}}active{{/unless}}" id="general-tab-pane" role="tabpanel" aria-labelledby="general-tab" tabindex="1">
+    <div class="tab-pane show {{#if isGeneralTabActive}}active{{/if}}" id="general-tab-pane" role="tabpanel" aria-labelledby="general-tab" tabindex="1">
         <section class="mt-4">
             <form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
@@ -114,7 +115,7 @@
 
                 <div class="mt-4">
                     <div class="col-md-7s offset-md-3s">
-                        <button type="submit" name="saveBtn" class="btn btn-primary"><i class="bi bi-save"></i>
+                        <button type="submit" name="saveBtn" class="btn btn-primary btn-sm"><i class="bi bi-save"></i>
                             Salveaza</button>
 
                         {{#if isEditMode}}

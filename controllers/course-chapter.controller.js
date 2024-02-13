@@ -6,8 +6,19 @@ const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
 exports.createOrEditGet = async (req, res) => {
     const { courseId, chapterId } = req.params;
+    const { view } = req.query;
 
     const isEditMode = !!chapterId;
+
+    let isLessonsTabActive, isGeneralTabActive;
+    if (isEditMode) {
+        const { view } = req.query;
+        isLessonsTabActive = view != "general";
+        isGeneralTabActive = view == "general";
+    } else {
+        isLessonsTabActive = false;
+        isGeneralTabActive = true;
+    }
 
     let chapterRef, chapterIndex, availablePositions, selectedPosition;
 
@@ -55,6 +66,8 @@ exports.createOrEditGet = async (req, res) => {
         ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(course.chapters, chapterId));
 
         const data = {
+            isLessonsTabActive,
+            isGeneralTabActive,
             isEditMode,
             courseId,
             courseCode: course.code,
@@ -211,23 +224,14 @@ exports.deleteOneById = async (req, res) => {
     }
 
     const course = await courseService.getOneById(courseId);
-    const chapters = course.chapters || [];
+    const chapter = (course.chapters || []).find((x) => x.id == chapterId);
 
-    const chapterIndex = chapters.findIndex((x) => x.id === chapterId);
-    if (chapterIndex > -1) {
-        const chapter = chapters[chapterIndex];
-
-        if (chapter.lessons && chapter.lessons.length > 0) {
-            return res.status(403).send("Șterge întâi lecțiile!");
-        }
-
-        chapters.splice(chapterIndex, 1); // remove from array
-
-        const updateResult = await courseService.updateOne(course);
-
-        // delete also the exercise content
-        if (updateResult.modifiedCount != 1) return res.status(403).send("Șterge întâi lecțiile!");
+    if (chapter.lessonIds && chapter.lessonIds.length > 0) {
+        return res.status(403).send("Șterge întâi lecțiile!");
     }
+
+    course.chapters = (course.chapters || []).filter((x) => x.id != chapterId); // remove the chapter from array
+    await courseService.updateOne(course);
 
     res.redirect(`/cursuri/${courseId}/modifica`);
 };
