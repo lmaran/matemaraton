@@ -11,7 +11,7 @@
 
 <h1>Fișe</h1>
 
-<a href="/fise/adauga" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Adaugă fișă</a>
+{{!-- <a href="/fise/adauga" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Adaugă fișă</a> --}}
 
 <form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;"></form>
 <table class="table thead-light table-bordered table-hover mt-5">
@@ -31,7 +31,7 @@
             <td>{{createdOn}}</td>
             <td>
                 {{#if lessonId}}
-                <a href="/lectii/{{lessonId}}">Lecție</a>
+                <a href="/lectii/{{lessonId}}?view=fise">Lecție</a>
                 {{/if}}
             </td>
         </tr>

@@ -22,6 +22,19 @@ const { availableLevels, imageExtensions } = require("../constants/constants");
 exports.getOneById = async (req, res) => {
     const { lessonId } = req.params;
 
+    let isTheoryTabActive, isExercisesTabActive, isSheetsTabActive;
+    const viewParameter = req.query.view;
+    switch (viewParameter) {
+        case "exercitii":
+            isExercisesTabActive = true;
+            break;
+        case "fise":
+            isSheetsTabActive = true;
+            break;
+        default:
+            isTheoryTabActive = true;
+    }
+
     try {
         // validate parameters
         const lesson = await lessonService.getOneById(lessonId);
@@ -49,6 +62,12 @@ exports.getOneById = async (req, res) => {
         lesson.sheets.forEach((sheet) => (sheet.createdOn = dateTimeHelper.getShortDateAndTimeDateRo(sheet.createdOn))); // ex: 22.11.2023
 
         const data = {
+            isTheoryTabActive,
+            isExercisesTabActive,
+            isSheetsTabActive,
+
+            viewParameter,
+
             courseId: lesson.courseId,
             courseCode: course.code,
 
@@ -137,6 +156,8 @@ exports.createGet = async (req, res) => {
         ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(availableLessons, undefined));
 
         const data = {
+            isGeneralTabActive: true,
+
             courseId,
             courseCode: course.code,
 
@@ -208,6 +229,23 @@ exports.createPost = async (req, res) => {
 
 exports.editGet = async (req, res) => {
     const { lessonId } = req.params;
+    let viewParameter = req.query.view;
+
+    let isTheoryTabActive, isExercisesTabActive, isSheetsTabActive, isGeneralTabActive;
+    switch (viewParameter) {
+        case "exercitii":
+            isExercisesTabActive = true;
+            break;
+        case "fise":
+            isSheetsTabActive = true;
+            break;
+        case "general":
+            isGeneralTabActive = true;
+            viewParameter = "";
+            break;
+        default:
+            isTheoryTabActive = true;
+    }
 
     let availablePositions, selectedPosition;
 
@@ -256,6 +294,13 @@ exports.editGet = async (req, res) => {
         });
 
         const data = {
+            isTheoryTabActive,
+            isExercisesTabActive,
+            isSheetsTabActive,
+            isGeneralTabActive,
+
+            viewParameter,
+
             isEditMode: true,
             courseId: lesson.courseId,
             courseCode: course.code,

@@ -9,21 +9,23 @@ exports.addPreview = (exercise, statementNumber, clear) => {
             if (clear) delete exercise.statement;
         }
 
-        // Insert a label (e.g. "a", "b"...) in front of each option.
-        if (exercise.answerOptions) {
-            const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
-            exercise.answerOptions.forEach((answerOption, idx) => {
-                answerOption.textPreview = markdownService.render(`${alphabet[idx]}) ${answerOption.text}`);
-                if (answerOption.isCorrect) {
-                    exercise.correctAnswerPreview = markdownService.render(`**Răspuns:** ${answerOption.text}`);
-                    if (clear) delete answerOption.text;
-                }
-            });
-        }
-
-        if (exercise.answer) {
-            exercise.answerPreview = markdownService.render(`**Răspuns:** ${exercise.answer}`);
-            if (clear) delete exercise.answer;
+        // Insert a label (e.g. "a", "b"...) in front of each option. ExerciseType=2 => grilă.
+        if (exercise.exerciseType == "2") {
+            if (exercise.answerOptions) {
+                const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+                exercise.answerOptions.forEach((answerOption, idx) => {
+                    answerOption.textPreview = markdownService.render(`${alphabet[idx]}) ${answerOption.text}`);
+                    if (answerOption.isCorrect) {
+                        exercise.answerPreview = markdownService.render(`**Răspuns:** ${alphabet[idx]}) ${answerOption.text}`);
+                        if (clear) delete answerOption.text;
+                    }
+                });
+            }
+        } else {
+            if (exercise.answer) {
+                exercise.answerPreview = markdownService.render(`**Răspuns:** ${exercise.answer}`);
+                if (clear) delete exercise.answer;
+            }
         }
 
         if (exercise.solution) {

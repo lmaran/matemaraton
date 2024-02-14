@@ -1,25 +1,3 @@
-<style>
-    OL {
-        counter-reset: item;
-    }
-
-    LI {
-        display: block;
-    }
-
-    #agenda LI:before {
-        /* only <li>s in agenda section */
-        content: counters(item, ".") ". ";
-        counter-increment: item
-    }
-
-    #table-of-contents LI:before {
-        /* only <li>s in agenda section */
-        content: counters(item, ".") ". ";
-        counter-increment: item
-    }
-</style>
-
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
@@ -27,7 +5,7 @@
             <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
             <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}">{{courseCode}}</a></li>
             <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}">Cap.{{inc chapterIndex}}</a></li>
-            <li class="breadcrumb-item"><a href="/lectii/{{lessonId}}">L.{{inc lessonIndex}}</a></li>
+            <li class="breadcrumb-item"><a href="/lectii/{{lessonId}}?view=fise">L.{{inc lessonIndex}}</a></li>
         {{else}}
             <li class="breadcrumb-item"><a href="/fise/">Fișe</a></li>
         {{/if}}
@@ -36,9 +14,7 @@
             <i role='button' class="bi bi-printer me-2" onclick="window.print()"></i>
         </li>
 
-        {{!-- {{#if canCreateOrEditCourse}} --}}
         <li title="Editează" class2="ms-auto"><a href="/fise/{{sheet._id}}/modifica?type={{type}}"><i class="bi bi-pencil me-1"></i></a></li>
-        {{!-- {{/if}} --}}
     </ol>
 </nav>
 
@@ -81,10 +57,14 @@
     {{/if}}
 
     {{#if (eq @root.type "solutions")}}
-    <div class="fw-bold mt-2">Soluție:</div>
-    <div class="solution-div _mt-2">
-        {{{solutionPreview}}}
-    </div>
+        {{#if solutionPreview}}
+        <div class="fw-bold mt-2">Soluție:</div>
+        <div class="solution-div _mt-2">
+            {{{solutionPreview}}}
+        </div>
+        {{else}}
+         <div class="mt-2">Lipsește soluția</div>
+        {{/if}}
     {{/if}}
 
 </div>
