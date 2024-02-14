@@ -8,7 +8,7 @@
         <li class="breadcrumb-item active">L.{{inc lessonIndex}}</li>
         
         {{#if canCreateOrEditCourse}}
-        <li title="Editează" class="ms-auto"><a href="/lectii/{{lessonId}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
+        <li title="Editează" class="ms-auto"><a href="/lectii/{{lessonId}}/modifica{{#if viewParameter}}?view={{viewParameter}}{{/if}}"><i class="bi bi-pencil me-1"></i></a></li>
         {{/if}}
     </ol>
 </nav>
@@ -23,38 +23,26 @@
 
 <ul class="nav nav-tabs">
     <li class="nav-item">
-        {{!-- <a class="nav-link active fs-5" aria-current="page" href="#">Teorie</a> --}}
-        <button class="nav-link active" id="theory-tab" data-bs-toggle="tab" data-bs-target="#theory-tab-pane" type="button" role="tab" aria-controls="theory-tab-pane" aria-selected="true">Teorie</button>
+        <a class="nav-link {{#if isTheoryTabActive}}active{{/if}}" href="/lectii/{{lessonId}}">Teorie</a>
     </li>
     <li class="nav-item">
-        {{!-- <a class="nav-link fs-5" href="#">Exerciții</a> --}}
-        <button class="nav-link" id="exercises-tab" data-bs-toggle="tab" data-bs-target="#exercises-tab-pane" type="button" role="tab" aria-controls="exercises-tab-pane" aria-selected="false">
-            Exerciții ({{lesson.levelsObj.total}})
-        </button>
+        <a class="nav-link {{#if isExercisesTabActive}}active{{/if}}" href="/lectii/{{lessonId}}?view=exercitii">Exerciții ({{lesson.levelsObj.total}})</a>
     </li>
     <li class="nav-item">
-        {{!-- <a class="nav-link fs-5" href="#">Exerciții</a> --}}
-        <button class="nav-link" id="sheets-tab" data-bs-toggle="tab" data-bs-target="#sheets-tab-pane" type="button" role="tab" aria-controls="sheets-tab-pane" aria-selected="false">
-            Fișe ({{lesson.sheets.length}}) 
-        </button>
+        <a class="nav-link {{#if isSheetsTabActive}}active{{/if}}" href="/lectii/{{lessonId}}?view=fise">Fișe ({{lesson.sheets.length}})</a>
     </li>
-    {{!-- <li class="nav-item">
-        <button class="nav-link " id="general-tab" data-bs-toggle="tab" data-bs-target="#general-tab-pane" type="button" role="tab" aria-controls="general-tab-pane" aria-selected="true">
-            <i class="bi bi-gear"></i>
-        </button>
-    </li> --}}
 </ul>
 
 <div class="tab-content" id="myTabContent">
-    <div class="tab-pane show active" id="theory-tab-pane" role="tabpanel" aria-labelledby="theory-tab" tabindex="0">
+
+    <div class="tab-pane show {{#if isTheoryTabActive}}active{{/if}}" id="theory-tab-pane" role="tabpanel" aria-labelledby="theory-tab" tabindex="0">
         <section class="mt-4">
         {{{lesson.theory.textPreview}}}
         <a class="fs-6" href="/lectii/{{lessonId}}/teorie">Tipărește</a>
         </section>
     </div>
 
-    <div class="tab-pane" id="exercises-tab-pane" role="tabpanel" aria-labelledby="exercises-tab" tabindex="1">
-
+    <div class="tab-pane show {{#if isExercisesTabActive}}active{{/if}}" id="exercises-tab-pane" role="tabpanel" aria-labelledby="exercises-tab" tabindex="1">
         {{#each lesson.levelsObj.levels}}
             {{#if exercises.length}}
             <section>
@@ -74,17 +62,11 @@
             </section>
             {{/if}}
         {{/each}}
-
     </div>
 
-    <div class="tab-pane" id="sheets-tab-pane" role="tabpanel" aria-labelledby="sheets-tab" tabindex="2">
+    <div class="tab-pane show {{#if isSheetsTabActive}}active{{/if}}" id="sheets-tab-pane" role="tabpanel" aria-labelledby="sheets-tab" tabindex="2">
         {{#if @root.user}}
         <section class="mt-4">
-            {{!-- <div class="sheets-header-div mt-5 mb-4 border-bottom border-secondary">
-                <h2>Fișe de lucru
-                    <span class="text-muted fw-light">({{lesson.sheets.length}})</span>
-                </h2>
-            </div> --}}
             <div id="sheets-menu-div">
                 <a id="create-new-sheet" href="/fise/adauga?lessonId={{lessonId}}" class="btn btn-primary btn-sm">
                 <i class="bi bi-plus-lg"></i> Crează o fișă</a> cu exercițiile din cos.
@@ -111,16 +93,10 @@
                     </tbody>
                 </table>
             </div>
-
         </section>
         {{/if}}
     </div>
 
-    {{!-- <div class="tab-pane show" id="general-tab-pane" role="tabpanel" aria-labelledby="theory-tab" tabindex="3">
-        <section class="mt-4">
-        General
-        </section>
-    </div> --}}
 </div>
 
 <div class="mt-5 mb-5"></div>

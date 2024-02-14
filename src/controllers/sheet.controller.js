@@ -19,23 +19,26 @@ exports.getOneById = async (req, res) => {
     if (!availableTypes.includes(type)) type = "statements"; // default value
 
     try {
-        // validate parameters
+        // Validate parameters
         const sheet = await sheetService.getOneById(sheetId);
         if (!sheet) return res.status(500).send("Fișă negăsită!");
 
-        // get exercises from DB
+        // Get exercises from DB
         let exercises = [];
         if (sheet.exerciseIds && sheet.exerciseIds.length > 0) {
             exercises = await exerciseService.getAllByIds(sheet.exerciseIds);
         }
 
-        const pageTitle = "Temă individuală";
+        let pageTitle = sheet.name || "Temă individuală";
+
+        // For statements, answers and hints we will preserve the original page title (no prefix)
+        if (type == "solutions") pageTitle = `Soluții-${pageTitle}`;
 
         if (sheet.title) {
             sheet.titlePreview = markdownService.render(sheet.title);
         }
 
-        // add preview
+        // Add preview
         exercises.forEach((exercise, idx) => {
             const statementNumber = `**Problema ${++idx}.**`;
 
@@ -66,7 +69,6 @@ exports.getOneById = async (req, res) => {
             if (!course) return res.status(500).send("Curs negăsit!");
 
             const { chapter, chapterIndex, lessonIndex } = lessonHelper.getLessonParentInfo(course, lessonId);
-            if (!lesson) return res.status(500).send("Lecție negăsită!");
 
             data.courseId = lesson.courseId;
             data.courseCode = course.code;
@@ -125,12 +127,12 @@ exports.createGet = async (req, res) => {
         if (cartItems) {
             const allExercisesIds = (cartItems || []).map((x) => x.e);
 
-            // get exercises from DB
+            // Get exercises from DB
             if (allExercisesIds.length > 0) {
                 exercisesFromDB = await exerciseService.getAllByIds(allExercisesIds);
             }
 
-            // add preview
+            // Add preview
             allExercisesIds.forEach((exerciseId, idx) => {
                 const exercise = exercisesFromDB.find((x) => x._id.toString() == exerciseId);
 
@@ -146,18 +148,6 @@ exports.createGet = async (req, res) => {
 
                 exercises.push(exercise);
             });
-
-            // exercises.forEach((exercise, idx) => {
-            //     const statementNumber = `**Problema ${++idx}.**`;
-
-            //     exerciseHelper.addPreview(exercise, statementNumber, true);
-
-            //     const { authorAndSource1, source2 } = exerciseHelper.getAuthorAndSource(exercise);
-
-            //     const comma = authorAndSource1 != "" ? ", " : "";
-            //     exercise.authorAndSource1 = `${authorAndSource1}${comma}E.${exercise.code}`;
-            //     exercise.source2 = source2;
-            // });
         }
 
         const fullUserName = `${req.user.firstName} ${req.user.lastName}`.trim();
@@ -166,7 +156,7 @@ exports.createGet = async (req, res) => {
 
         // Default options
         const sheet = {
-            name: "Temă individuală",
+            name: `Tema`,
             title: `#### Titlu\r\n##### Subtitlu\r\n ${fullUserNameText}[matemaraton.ro](https://matemaraton.ro), ${currentDateStr}`,
         };
 
@@ -183,7 +173,6 @@ exports.createGet = async (req, res) => {
             if (!course) return res.status(500).send("Curs negăsit!");
 
             const { chapter, chapterIndex, lessonIndex } = lessonHelper.getLessonParentInfo(course, lessonId);
-            if (!lesson) return res.status(500).send("Lecție negăsită!");
 
             data.courseId = lesson.courseId;
             data.courseCode = course.code;
@@ -192,6 +181,7 @@ exports.createGet = async (req, res) => {
             data.lessonId = lessonId;
             data.lessonIndex = lessonIndex;
 
+            data.sheet.name = `TemaX-cls${course.grade}: ${lesson.name}`;
             data.sheet.title = `#### ${lesson.name}\r\n##### Temă individuală\r\n ${fullUserNameText}[matemaraton.ro](https://matemaraton.ro), ${currentDateStr}`;
         }
 
@@ -208,10 +198,7 @@ exports.createGet = async (req, res) => {
 
 exports.createPost = async (req, res) => {
     const { lessonId, name, title, exerciseIdsInput } = req.body;
-    // const { lessonId } = req.query;
     let exerciseIds = [];
-
-    // let lesson;
 
     try {
         const canCreateOrEditCourse = await autz.can(req.user, "create-or-update:sheet");
@@ -230,16 +217,6 @@ exports.createPost = async (req, res) => {
         if (lessonId) {
             sheet.lessonId = lessonId;
         }
-
-        // sheet.theory = {
-        //     text: theory.trim(),
-        // };
-        // if (isHidden === "on") {
-        //     // If the 'value' attribute was omitted, the default value for the checkbox is 'on' (mozilla.org)
-        //     lesson.isHidden = true;
-        // } else delete lesson.isHidden;
-        // chapterRef.lessons = chapterRef.lessons || [];
-        // arrayHelper.moveOrInsermoveOrInsertObjectAtIndextAtIndex(chapterRef.lessons, lesson, "id", position);
 
         const result = await sheetService.insertOne(sheet);
         const sheetId = result.insertedId.toString();
@@ -272,13 +249,13 @@ exports.updateGet = async (req, res) => {
         const sheet = await sheetService.getOneById(sheetId);
         if (!sheet) return res.status(500).send("Fișă negăsită!");
 
-        // get exercises from DB
+        // Get exercises from DB
         let exercises = [];
         if (sheet.exerciseIds && sheet.exerciseIds.length > 0) {
             exercises = await exerciseService.getAllByIds(sheet.exerciseIds);
         }
 
-        // add preview
+        // Add preview
         exercises.forEach((exercise, idx) => {
             const statementNumber = `**Problema ${++idx}.**`;
 
@@ -325,7 +302,6 @@ exports.updateGet = async (req, res) => {
         //res.send(data);
         res.render("sheet/sheet-update", data);
     } catch (err) {
-        //console.log(err);
         return res.status(500).json(err.message);
     }
 };
@@ -354,7 +330,6 @@ exports.updatePost = async (req, res) => {
             // If the 'value' attribute was omitted, the default value for the checkbox is 'on' (mozilla.org)
             sheet.isHidden = true;
         } else {
-            //delete course.isHidden;
             sheet.isHidden = false;
         }
 
@@ -362,7 +337,6 @@ exports.updatePost = async (req, res) => {
             // If the 'value' attribute was omitted, the default value for the checkbox is 'on' (mozilla.org)
             sheet.isActive = true;
         } else {
-            //delete course.isHidden;
             sheet.isActive = false;
         }
 
@@ -413,7 +387,7 @@ exports.deleteOneById = async (req, res) => {
 exports.jsonGetOneById = async (req, res) => {
     const { sheetId } = req.params;
     try {
-        // validate parameters
+        // Validate parameters
         const sheet = await sheetService.getOneById(sheetId);
         if (!sheet) return res.status(500).send("Fișă negăsită!");
 
@@ -435,9 +409,6 @@ exports.jsonGetOneById = async (req, res) => {
 
             const { chapter, chapterIndex, lessonIndex } = lessonHelper.getLessonParentInfo(course, lessonId);
             if (!lesson) return res.status(500).send("Lecție negăsită!");
-
-            // lesson.sheetIds = lesson.sheets || [];
-            // lesson.sheetIds.push(sheetId);
 
             data.courseId = lesson.courseId;
             data.courseCode = course.code;

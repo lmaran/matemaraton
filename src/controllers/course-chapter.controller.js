@@ -6,7 +6,6 @@ const prettyJsonHelper = require("../helpers/pretty-json.helper");
 
 exports.createOrEditGet = async (req, res) => {
     const { courseId, chapterId } = req.params;
-    const { view } = req.query;
 
     const isEditMode = !!chapterId;
 
