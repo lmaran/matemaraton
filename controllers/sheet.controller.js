@@ -57,6 +57,7 @@ exports.getOneById = async (req, res) => {
             sheet,
             type,
             pageTitle,
+            canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
         };
 
         const { lessonId } = sheet;

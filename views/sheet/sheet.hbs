@@ -1,5 +1,5 @@
 <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
+    <ol class="breadcrumb pe-2">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         {{#if lessonId}}
             <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
@@ -10,11 +10,10 @@
             <li class="breadcrumb-item"><a href="/fise/">Fișe</a></li>
         {{/if}}
 
-        <li title="Tipărește" class="ms-auto">
-            <i role='button' class="bi bi-printer me-2" onclick="window.print()"></i>
-        </li>
-
-        <li title="Editează" class2="ms-auto"><a href="/fise/{{sheet._id}}/modifica?type={{type}}"><i class="bi bi-pencil me-1"></i></a></li>
+        <li class="ms-auto ms-3"><i role='button' class="bi bi-printer" onclick="window.print()"></i></li>
+        {{#if canCreateOrEditCourse}}
+        <li class="ms-3" title="Editează"><a href="/fise/{{sheet._id}}/modifica?type={{type}}"><i class="bi bi-pencil"></i></a></li>
+        {{/if}}
     </ol>
 </nav>
 

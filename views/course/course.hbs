@@ -1,11 +1,11 @@
 <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
+    <ol class="breadcrumb pe-2">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
         <li class="breadcrumb-item active">{{course.code}}</li>
 
         {{#if canCreateOrEditCourse}}
-        <li title="Editează" class="ms-auto"><a href="/cursuri/{{course._id}}/modifica"><i class="bi bi-pencil me-1"></i></a></li>
+        <li title="Editează" class="ms-auto ms-3"><a href="/cursuri/{{course._id}}/modifica"><i class="bi bi-pencil"></i></a></li>
         {{/if}}
     </ol>
 </nav>

@@ -23,7 +23,6 @@ const courseSessionController = require("./controllers/course-session.controller
 const courseController = require("./controllers/course.controller");
 const courseChapterController = require("./controllers/course-chapter.controller");
 const lessonController = require("./controllers/lesson.controller");
-const courseTheoryController = require("./controllers/course-theory.controller");
 const homeworkController = require("./controllers/homework.controller");
 const markdownController = require("./controllers/markdown.controller");
 const fileController = require("./controllers/file.controller");
@@ -105,9 +104,6 @@ router.post("/lectii/:lessonId/sterge", isAuthenticated, lessonController.delete
 router.post("/lectii/:lessonId/upload-files", isAuthenticated, lessonController.uploadFiles);
 router.delete(`/lectii/fisiere/:fileId`, lessonController.deleteFileById); // delete at create
 router.delete(`/lectii/:lessonId/fisiere/:fileId`, lessonController.deleteFileById); // delete at edit
-
-// course-theory
-router.get("/lectii/:lessonId/teorie", courseTheoryController.getOneById);
 
 // exercises
 router.get("/exercitii", isAuthenticated, exerciseController.getAll);
