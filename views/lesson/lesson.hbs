@@ -37,10 +37,9 @@
 <div class="tab-content" id="myTabContent">
 
     <div class="tab-pane show {{#if isTheoryTabActive}}active{{/if}}" id="theory-tab-pane" role="tabpanel" aria-labelledby="theory-tab" tabindex="0">
-        <section class="mt-4">
+        <div id="theory-div" class="mt-4">
         {{{lesson.theory.textPreview}}}
-        {{!-- <a class="fs-6" href="/lectii/{{lessonId}}/teorie">Tipărește</a> --}}
-        </section>
+        </div>
     </div>
 
     <div class="tab-pane show {{#if isExercisesTabActive}}active{{/if}}" id="exercises-tab-pane" role="tabpanel" aria-labelledby="exercises-tab" tabindex="1">
