@@ -1,9 +1,10 @@
 const katex = require("katex");
-const markdown_it_collapsible = require("markdown-it-collapsible");
+const markdownItCollapsible = require("markdown-it-collapsible");
 const tm = require("markdown-it-texmath");
+const markdownItDiv = require("markdown-it-div");
 
 const md = require("markdown-it")()
-    .use(markdown_it_collapsible)
+    .use(markdownItCollapsible)
     .use(tm, {
         engine: katex,
         delimiters: "dollars",
@@ -13,7 +14,8 @@ const md = require("markdown-it")()
             fleqn: true,
             throwOnError: false,
         },
-    });
+    })
+    .use(markdownItDiv);
 
 // added "minRuleThickness" option because dividing lines for \frac and \dfrac sometimes disappear (Chrome, zoom 100%)
 // default value is 0.04 (as defined in Latex specs) and seems that Chrome rounds down  sub-pixel lines
@@ -28,7 +30,7 @@ const md = require("markdown-it")()
 
 exports.render = (source) => {
     md.renderer.rules.table_open = function () {
-        return '<table class="table">';
+        return '<table class="table2">';
     };
 
     //console.log(source);

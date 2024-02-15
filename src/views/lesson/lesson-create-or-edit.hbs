@@ -1,5 +1,5 @@
 <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
+    <ol class="breadcrumb pe-2">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/modifica">Cursuri</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/modifica">{{courseCode}}</a></li>
@@ -9,8 +9,8 @@
         {{/if}}
         
         {{#if isEditMode}}
-        <li title="Json" class="ms-auto me-2"><a href="/lectii/{{lessonId}}/json"><i class="bi bi-braces me-1"></i></a></li>
-        <li title="Vizualizează"><a href="/lectii/{{lessonId}}{{#if viewParameter}}?view={{viewParameter}}{{/if}}"><i class="bi bi-eye me-1"></i></a></li>
+        <li title="Json" class="ms-auto ms-3"><a href="/lectii/{{lessonId}}/json"><i class="bi bi-braces"></i></a></li>
+        <li title="Vizualizează" class="ms-3"><a href="/lectii/{{lessonId}}{{#if viewParameter}}?view={{viewParameter}}{{/if}}"><i class="bi bi-eye"></i></a></li>
         {{/if}}
     </ol>
 </nav>
@@ -43,7 +43,6 @@
             {{!-- theory --}}
             <div class="row mb-3">
                 <div class="col-md-12 theory-div">
-                    <label class="fw-bold">Noțiuni teoretice:</label>
 
                     {{!-- close the textarea tag on the same line to get rid of the unintended spaces: https://stackoverflow.com/a/34102261 --}}
                     <textarea id="theory-editor-txt" rows="8" name="theory" type="text" 
@@ -61,21 +60,18 @@
 
                     {{!-- Theory menu --}}
                     <div class="theory-menu-div hide-on-print clearfix">
-                        {{!-- <div class="float-start">
-                            {{#if hints}}
-                                <a class="toggle-hints-btn" href="">Indicații</a>
-                                <span class="text-muted">({{hints.length}})</span>
-                            {{/if}}
-                        </div> --}}
+                        <div id="edit-menu-theory-left" class="float-start d-none">
+                             <button type="submit" name="saveBtn" class="btn btn-primary btn-sm mt-2"><i class="bi bi-save me-1"></i>Salvează</button>
+                        </div>
 
                         <div class="float-end">
-                            <span id="edit-menu-theory-span" class="d-none">
+                            <span id="edit-menu-theory-right" class="d-none">
                                 <span id="upload-file-error-theory-div" class="upload-file-error-div invalid-feedback">Mesaj de eroare</span>
                                 <label class="btn btn-light border border-primary btn-xs" for="upload-file-theory-input">
                                     <i class="bi bi-card-image"></i>
                                     Adaugă poza
                                 </label>
-                            </span>
+                            </span> 
 
                             <a id="toggle-theory-editor-btn" href="">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</a>
                         </div>
@@ -87,8 +83,9 @@
             {{!-- Files --}}
             <div class="row mt-3">
                 <div class="col-md-6">
-                    <label class="fw-bold"> Fișiere: </label>
-
+                    
+                    <label class="fw-bold {{#if lesson.files.length}}d-none{{/if}}"> Fișiere: </label>
+                    
                     <table id="gallery-tbl" class="table thead-light table-bordered table-hover">
                         <tbody>
                             {{#each lesson.files}}
@@ -112,18 +109,11 @@
                             {{/each}}
                         </tbody>
                     </table>
-
+                    
                 </div>
             </div>
 
             <input type="hidden" name="lessonId" value="{{lessonId}}" id="lessonId"/>
-
-            <div class="mt-4">
-                <div class="col-md-7s offset-md-3s">
-                    <button type="submit" name="saveBtn" class="btn btn-primary"><i class="bi bi-save"></i>
-                        Salveaza</button>
-                </div>
-            </div>
 
         </section>
     </div>
@@ -134,13 +124,12 @@
             {{#each lesson.levelsObj.levels}}
                 <section>
                     <div class="level-menu-div">
-                        <h3 class="fs-4">{{name}}
-
-                            <a class="fs-6 add-exercise-btn me-2" title="Adaugă exercițiu" 
-                                href="/exercitii/adauga?lessonId={{@root.lessonId}}&levelId={{id}}">
-                                <i class="bi bi-plus-square"></i>
-                            </a>
-                        </h3>
+                        <span class="fs-4">{{name}}</span>
+                        {{!-- <a class="fs-6 add-exercise-btn me-2" title="Adaugă exercițiu" 
+                            href="/exercitii/adauga?lessonId={{@root.lessonId}}&levelId={{id}}">
+                            <i class="bi bi-plus-square"></i>
+                        </a> --}}
+                        <a role="button" class="btn btn-primary btn-xs align-text-bottom" href="/exercitii/adauga?lessonId={{@root.lessonId}}&levelId={{id}}"><i class="bi bi-plus"></i>Adaugă exercițiu</a>
                     </div>
 
                     <div class="level-content-div mb-3">
@@ -159,17 +148,15 @@
     </div>
 
     <div class="tab-pane show {{#if isSheetsTabActive}}active{{/if}}" id="sheets-tab-pane" role="tabpanel" aria-labelledby="sheets-tab" tabindex="2">
-        {{#if @root.user}}
         <section class="mt-4">
-            {{!-- <div class="sheets-header-div mt-5 mb-4 border-bottom border-secondary">
-                <h2>Fișe de lucru
-                    <span class="text-muted fw-light">({{lesson.sheets.length}})</span>
-                </h2>
-            </div> --}}
+            {{#if @root.user}}
             <div id="sheets-menu-div">
                 <a id="create-new-sheet" href="/fise/adauga?lessonId={{lessonId}}" class="btn btn-primary btn-sm">
                 <i class="bi bi-plus-lg"></i> Crează o fișă</a> cu exercițiile din cos.
             </div>
+            {{/if}}
+
+            {{#if lesson.sheets.length}}
             <div id="sheets-content-div">
                 <table class="table thead-light table-bordered table-hover mt-3">
                     <thead>
@@ -192,9 +179,8 @@
                     </tbody>
                 </table>
             </div>
-
+            {{/if}}
         </section>
-        {{/if}}
     </div>
 
     <div class="tab-pane show {{#if isGeneralTabActive}}active{{/if}}" id="general-tab-pane" role="tabpanel" aria-labelledby="general-tab" tabindex="3">

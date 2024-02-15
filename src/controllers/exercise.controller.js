@@ -526,12 +526,10 @@ exports.movePost = async (req, res) => {
     const {
         exerciseId,
 
-        courseId: courseIdOld,
         lessonId: lessonIdOld,
         levelId: levelIdOld,
         positionId: positionIdOld,
 
-        course: courseIdNew,
         lesson: lessonIdNew,
         level: levelIdNew,
         position: positionIdNew,
@@ -549,20 +547,21 @@ exports.movePost = async (req, res) => {
             return res.redirect(redirectUri);
         }
 
-        // Remove the exercise from the old location
         let isValid, message;
-        ({ isValid, message } = await removeExerciseFromLocation(lessonIdOld, exerciseId));
-        if (!isValid) return res.status(500).send(message);
+        // Remove the exercise from the old location
+        if (lessonIdNew != lessonIdOld) {
+            ({ isValid, message } = await removeExerciseFromLocation(lessonIdOld, exerciseId));
+            if (!isValid) return res.status(500).send(message);
+        }
 
         // Add the exercise to the new location
         ({ isValid, message } = await addExerciseToLocation(lessonIdNew, levelIdNew, positionIdNew, exerciseId));
         if (!isValid) return res.status(500).send(message);
 
-        if (courseIdNew != courseIdOld || lessonIdNew != lessonIdOld) {
+        if (lessonIdNew != lessonIdOld) {
             const newExercisePartial = {
                 _id: exerciseId,
                 lessonId: lessonIdNew,
-                courseId: courseIdNew,
             };
             await exerciseService.updateOne(newExercisePartial);
         }

@@ -14,8 +14,11 @@ export const eventHandlers = {
         const previewDiv = document.getElementById("theory-preview-div");
         previewDiv.style.borderTopStyle = editorIsHide ? "solid" : "dashed";
 
-        const editMenuTheorySpan = document.getElementById("edit-menu-theory-span");
-        editMenuTheorySpan.classList.toggle("d-none");
+        const editMenuTheoryLeft = document.getElementById("edit-menu-theory-left");
+        editMenuTheoryLeft.classList.toggle("d-none");
+
+        const editMenuTheoryRight = document.getElementById("edit-menu-theory-right");
+        editMenuTheoryRight.classList.toggle("d-none");
     },
     getTheoryPreview: async (event) => {
         const data = { markdown: event.target.value };

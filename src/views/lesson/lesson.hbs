@@ -1,5 +1,5 @@
 <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
+    <ol class="breadcrumb pe-2">
         <li class="breadcrumb-item"><a href="/">Acasă</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
         <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}">{{courseCode}}</a></li>
@@ -7,8 +7,9 @@
                 Cap.{{inc chapterIndex}}</a></li>
         <li class="breadcrumb-item active">L.{{inc lessonIndex}}</li>
         
+        <li class="ms-auto ms-3"><i role='button' class="bi bi-printer" onclick="window.print()"></i></li>
         {{#if canCreateOrEditCourse}}
-        <li title="Editează" class="ms-auto"><a href="/lectii/{{lessonId}}/modifica{{#if viewParameter}}?view={{viewParameter}}{{/if}}"><i class="bi bi-pencil me-1"></i></a></li>
+        <li title="Editează" class="ms-3"><a href="/lectii/{{lessonId}}/modifica{{#if viewParameter}}?view={{viewParameter}}{{/if}}"><i class="bi bi-pencil"></i></a></li>
         {{/if}}
     </ol>
 </nav>
@@ -21,7 +22,7 @@
 
 {{!-- {{toJSON lesson}} --}}
 
-<ul class="nav nav-tabs">
+<ul class="nav nav-tabs hide-on-print">
     <li class="nav-item">
         <a class="nav-link {{#if isTheoryTabActive}}active{{/if}}" href="/lectii/{{lessonId}}">Teorie</a>
     </li>
@@ -38,11 +39,12 @@
     <div class="tab-pane show {{#if isTheoryTabActive}}active{{/if}}" id="theory-tab-pane" role="tabpanel" aria-labelledby="theory-tab" tabindex="0">
         <section class="mt-4">
         {{{lesson.theory.textPreview}}}
-        <a class="fs-6" href="/lectii/{{lessonId}}/teorie">Tipărește</a>
+        {{!-- <a class="fs-6" href="/lectii/{{lessonId}}/teorie">Tipărește</a> --}}
         </section>
     </div>
 
     <div class="tab-pane show {{#if isExercisesTabActive}}active{{/if}}" id="exercises-tab-pane" role="tabpanel" aria-labelledby="exercises-tab" tabindex="1">
+        <section class="mt-4">
         {{#each lesson.levelsObj.levels}}
             {{#if exercises.length}}
             <section>
@@ -62,15 +64,19 @@
             </section>
             {{/if}}
         {{/each}}
+        </section>
     </div>
 
     <div class="tab-pane show {{#if isSheetsTabActive}}active{{/if}}" id="sheets-tab-pane" role="tabpanel" aria-labelledby="sheets-tab" tabindex="2">
-        {{#if @root.user}}
         <section class="mt-4">
+            {{#if @root.user}} 
             <div id="sheets-menu-div">
                 <a id="create-new-sheet" href="/fise/adauga?lessonId={{lessonId}}" class="btn btn-primary btn-sm">
                 <i class="bi bi-plus-lg"></i> Crează o fișă</a> cu exercițiile din cos.
             </div>
+            {{/if}}
+
+            {{#if lesson.sheets.length}}
             <div id="sheets-content-div">
                 <table class="table thead-light table-bordered table-hover mt-3">
                     <thead>
@@ -93,8 +99,8 @@
                     </tbody>
                 </table>
             </div>
+            {{/if}}
         </section>
-        {{/if}}
     </div>
 
 </div>
