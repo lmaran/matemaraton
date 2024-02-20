@@ -67,7 +67,7 @@
         <section class="mt-4">
             <form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
-                <div class="row">
+                <div class="row mb-3">
                     <div class="col-md-12">
                         <label for="nameInput" class="fw-bold">Nume:</label>
                         <input type="text" name="name" class="form-control" id="nameInput" placeholder=""
@@ -78,15 +78,31 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-12">
-                        <label for="descriptionInput" class="fw-bold">Descriere:</label>
-                        <textarea type="text" name="description" class="form-control" id="descriptionInput"
-                            placeholder="">{{chapter.description}}</textarea>
+                <div class="row mb-3">
+                    <div class="col-md-12 description-div">
+                        <label for="description-editor-txt"  class="fw-bold">Descriere:</label>
+
+                        {{!-- close the textarea tag on the same line to get rid of the unintended spaces: https://stackoverflow.com/a/34102261 --}}
+                        <textarea id="description-editor-txt" rows="8" name="description" type="text" 
+                            class="description-input drop-area form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}" placeholder="">{{chapter.description}}</textarea>
+                        <div class="invalid-feedback">{{errors.description.msg}}</div>
+
+                        <div id="description-preview-div" class="mt-0"
+                            style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
+                            {{{chapter.descriptionPreview}}}
+                        </div>
+
+                        {{!-- Description menu --}}
+                        <div class="description-menu-div hide-on-print clearfix">
+                            <div class="float-end">
+                                <a id="toggle-description-editor-btn" href="">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</a>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="positionSelect" class="fw-bold">Poziție:</label>
                         <select name="position" class="form-select" id="positionSelect">
@@ -102,7 +118,7 @@
                     </div>
                 </div>
 
-                <div class="form-check">
+                <div class="form-check mb-3">
                     <input type="checkbox" class="form-check-input" id="isHiddenCheck" name="isHidden" {{#if
                         chapter.isHidden}}checked{{/if}}>
                     <label class="form-check-label" for="isHiddenCheck">Ascunde</label>
@@ -133,7 +149,9 @@
     </div>
 </div>
 
-
+{{#section 'script'}}
+<script type="module" src="/js/eventBinders/course-chapter-create-or-edit.event-binder.js"></script>
+{{/section}}
 
 
 

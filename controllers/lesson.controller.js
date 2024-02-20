@@ -36,7 +36,7 @@ exports.getOneById = async (req, res) => {
     }
 
     try {
-        // validate parameters
+        // Validate parameters
         const lesson = await lessonService.getOneById(lessonId);
         if (!lesson) return res.status(500).send("Lecție negăsită!");
 
@@ -53,7 +53,7 @@ exports.getOneById = async (req, res) => {
 
         lesson.levelsObj = getLevelsObj(lesson.exercises, exercisesFromDb, true);
 
-        // remove unnecessary fields
+        // Remove unnecessary fields
         if (lesson.theory) delete lesson.theory.text;
         delete lesson.exercises;
 
@@ -86,7 +86,6 @@ exports.getOneById = async (req, res) => {
         //res.send(data);
         res.render("lesson/lesson", data);
     } catch (err) {
-        //console.log(err);
         return res.status(500).json(err.message);
     }
 };
@@ -124,7 +123,6 @@ exports.jsonGetOneById = async (req, res) => {
         //res.send(data);
         res.render("lesson/lesson-json", data);
     } catch (err) {
-        //console.log(err);
         return res.status(500).json(err.message);
     }
 };
@@ -171,7 +169,6 @@ exports.createGet = async (req, res) => {
         //res.send(data);
         res.render("lesson/lesson-create-or-edit", data);
     } catch (err) {
-        //console.log(err);
         return res.status(500).json(err.message);
     }
 };
@@ -201,7 +198,7 @@ exports.createPost = async (req, res) => {
             courseId,
         };
 
-        // update lesson fields
+        // Update lesson fields
         lesson.name = name;
         lesson.description = description;
         if (theory)
@@ -272,7 +269,7 @@ exports.editGet = async (req, res) => {
 
         lesson.levelsObj = getLevelsObj(lesson.exercises, exercisesFromDb, true);
 
-        // remove unnecessary fields
+        // Remove unnecessary fields
         delete lesson.exercises;
 
         // TODO: refactor (duplicates, see GetOneById or Move)
@@ -316,7 +313,6 @@ exports.editGet = async (req, res) => {
         //res.send(data);
         res.render("lesson/lesson-create-or-edit", data);
     } catch (err) {
-        //console.log(err);
         return res.status(500).json(err.message);
     }
 };
@@ -524,10 +520,10 @@ const getAllExercisesInLesson = async (lesson) => {
     let allExercises = [];
     const allExercisesIds = (lesson.exercises || []).map((x) => x.id);
 
-    // deduplicate exercisesIds
+    // Deduplicate exercisesIds
     const allUniqueExercisesIds = [...new Set(allExercisesIds)];
 
-    // get exercises from DB
+    // Get exercises from DB
     if (allUniqueExercisesIds.length > 0) {
         allExercises = await exerciseService.getAllByIds(allUniqueExercisesIds);
     }
@@ -540,7 +536,7 @@ const getAllExercisesInLesson = async (lesson) => {
 //     { id: '5f47d415eb57b91c67e5367d', level: 1 },
 //     { id: '5f47dec6eb57b91c67e5367e', evel: 2 }]
 const getLevelsObj = (exercisesRef, exercisesFromDb, clear) => {
-    // initialize the level backbone (we need all levels in editMode)
+    // Initialize the level backbone (we need all levels in editMode)
     const levels = [];
 
     availableLevels.forEach((l) => {
@@ -559,14 +555,13 @@ const getLevelsObj = (exercisesRef, exercisesFromDb, clear) => {
 
     if (!exercisesRef) return levelsObj;
 
-    // sort exercises by levelId
+    // Sort exercises by levelId
     exercisesRef.sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId);
 
     const exercises = exercisesRef.map((x) => {
         let exercise = exercisesFromDb.find((y) => y._id.toString() === x.id);
-        // add preview
-        const statementNumber = `**E.${exercise.code}.**`;
 
+        const statementNumber = `**E.${exercise.code}.**`;
         if (!exercise) {
             exercise = { _id: x.id, statement: "Exercitiul a fost șters din DB!" };
         }
