@@ -43,7 +43,7 @@ exports.getOneById = async (req, res) => {
         const course = await courseService.getOneById(lesson.courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, chapterIndex, lessonIndex } = lessonHelper.getLessonParentInfo(course, lessonId);
+        const { chapter, chapterIndex, lessonIndex, prevLessonId, nextLessonId } = lessonHelper.getLessonParentInfo(course, lessonId);
 
         if (lesson.theory) {
             lesson.theory.textPreview = markdownService.render(lesson.theory.text);
@@ -77,6 +77,8 @@ exports.getOneById = async (req, res) => {
             lesson,
             lessonId,
             lessonIndex,
+            prevLessonId,
+            nextLessonId,
 
             canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
             pageTitle: `${lesson.name}`,
@@ -258,7 +260,7 @@ exports.editGet = async (req, res) => {
         const course = await courseService.getOneById(lesson.courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
-        const { chapter, chapterIndex, lessonIndex } = lessonHelper.getLessonParentInfo(course, lessonId);
+        const { chapter, chapterIndex, lessonIndex, prevLessonId, nextLessonId } = lessonHelper.getLessonParentInfo(course, lessonId);
         if (!lesson) return res.status(500).send("Lecție negăsită!");
 
         if (lesson.theory) {
@@ -306,6 +308,9 @@ exports.editGet = async (req, res) => {
             lesson,
             lessonId,
             lessonIndex,
+            prevLessonId,
+            nextLessonId,
+
             availablePositions,
             selectedPosition,
         };
