@@ -11,7 +11,12 @@
     </ol>
 </nav>
 
-<h1>Cap.{{inc chapterIndex}}: {{chapter.name}}</h1>
+<h1 class="d-inline-block">Cap.{{inc chapterIndex}}: {{chapter.name}}
+    <span class="hide-on-print">
+        <a href="/cursuri/{{courseId}}/capitole/{{prevChapterId}}" class="btn btn-link fs-3 p-0 align-baseline {{#unless prevChapterId}}disabled{{/unless}}"><i class="bi bi-arrow-left-circle"></i></a>
+        <a href="/cursuri/{{courseId}}/capitole/{{nextChapterId}}" class="btn btn-link fs-3 p-0 align-baseline {{#unless nextChapterId}}disabled{{/unless}}"><i class="bi bi-arrow-right-circle"></i></a>
+    </span>
+</h1>
 
 <div class="text-muted">
     {{{chapter.descriptionPreview}}}

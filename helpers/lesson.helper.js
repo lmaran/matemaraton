@@ -1,18 +1,23 @@
-const lessonService = require("../services/lesson.service");
-
 exports.getLessonParentInfo = (course, lessonId) => {
     let chapter;
     let chapterIndex = -1;
     let found = false;
     let lessonIndex = -1;
+    let prevLessonId = null;
+    let nextLessonId = null;
 
     const chapters = course.chapters || [];
     for (let i = 0; i < chapters.length; i++) {
         const lessonIds = chapters[i].lessonIds || [];
-        for (let j = 0; j < lessonIds.length; j++) {
+        const lessonsLength = lessonIds.length;
+        for (let j = 0; j < lessonsLength; j++) {
             if (lessonIds[j] == lessonId) {
                 found = true;
                 lessonIndex = j;
+
+                // TODO when isActive is implemented at the lesson level, prev and next should ignore inactive lessons
+                if (j > 0) prevLessonId = lessonIds[j - 1];
+                if (j < lessonsLength - 1) nextLessonId = lessonIds[j + 1];
                 break;
             }
         }
@@ -28,6 +33,8 @@ exports.getLessonParentInfo = (course, lessonId) => {
         chapter,
         chapterIndex,
         lessonIndex,
+        prevLessonId,
+        nextLessonId,
     };
 };
 

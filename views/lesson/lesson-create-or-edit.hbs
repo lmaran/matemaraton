@@ -15,7 +15,12 @@
     </ol>
 </nav>
 
-<h1>{{#if isEditMode}}Lecția {{inc lessonIndex}}: {{lesson.name}}{{else}}Lecție nouă{{/if}}</h1>
+<h1 class="d-inline-block">{{#if isEditMode}}Lecția {{inc lessonIndex}}: {{lesson.name}}{{else}}Lecție nouă{{/if}}
+    <span class="hide-on-print">
+        <a href="/lectii/{{prevLessonId}}" class="btn btn-link fs-3 p-0 align-baseline {{#unless prevLessonId}}disabled{{/unless}}"><i class="bi bi-arrow-left-circle"></i></a>
+        <a href="/lectii/{{nextLessonId}}" class="btn btn-link fs-3 p-0 align-baseline {{#unless nextLessonId}}disabled{{/unless}}"><i class="bi bi-arrow-right-circle"></i></a>
+    </span>
+</h1>
 
 {{#if isEditMode}}
 <ul class="nav nav-tabs">

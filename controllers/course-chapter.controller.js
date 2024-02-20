@@ -5,6 +5,64 @@ const arrayHelper = require("../helpers/array.helper");
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
 const markdownService = require("../services/markdown.service");
 
+exports.getOneById = async (req, res) => {
+    const { courseId, chapterId } = req.params;
+
+    const course = await courseService.getOneById(courseId);
+    const chapters = course.chapters || [];
+
+    const chapterIndex = chapters.findIndex((x) => x.id === chapterId);
+
+    if (chapterIndex == -1) return res.status(500).send("Capitol negăsit!");
+
+    const chapterRef = chapters[chapterIndex];
+
+    let prevChapterId, nextChapterId;
+    if (chapterIndex > 0) prevChapterId = chapters[chapterIndex - 1]?.id;
+    if (chapterIndex < chapters.length - 1) nextChapterId = chapters[chapterIndex + 1]?.id;
+
+    if (chapterRef.description) {
+        chapterRef.descriptionPreview = markdownService.render(chapterRef.description);
+    }
+
+    if (chapterRef.lessonIds) {
+        const allLessonsFromDB = await lessonService.getAllByIds(chapterRef.lessonIds);
+
+        chapterRef.lessonIds.forEach((lessonId) => {
+            const lesson = allLessonsFromDB.find((x) => x._id.toString() == lessonId);
+
+            // TODO: fetch from DB only those fields we really need (e.g. no Theory, only the total number of exercises etc)
+            if (lesson) {
+                const newLesson = {
+                    id: lesson._id.toString(),
+                    name: lesson.name,
+                    exercises: lesson.exercises,
+                    isActive: !!(lesson.exercises?.length || lesson.theory?.text),
+                };
+
+                if (newLesson.isActive) chapterRef.numberOfActiveLessons++;
+
+                chapterRef.lessons = chapterRef.lessons || [];
+                chapterRef.lessons.push(newLesson);
+            }
+        });
+    }
+
+    const data = {
+        courseId,
+        courseCode: course.code,
+        chapter: chapterRef,
+        chapterIndex,
+        prevChapterId,
+        nextChapterId,
+
+        canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
+    };
+
+    //res.send(data);
+    res.render("course-chapter/course-chapter", data);
+};
+
 exports.createOrEditGet = async (req, res) => {
     const { courseId, chapterId } = req.params;
 
@@ -21,6 +79,7 @@ exports.createOrEditGet = async (req, res) => {
     }
 
     let chapterRef, chapterIndex, availablePositions, selectedPosition;
+    let prevChapterId, nextChapterId;
 
     try {
         const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
@@ -35,6 +94,9 @@ exports.createOrEditGet = async (req, res) => {
             chapterRef = (course.chapters || []).find((x) => x.id === chapterId);
             if (!chapterRef) return res.status(500).send("Capitol negăsit!");
             chapterIndex = course.chapters.findIndex((x) => x.id === chapterId);
+
+            if (chapterIndex > 0) prevChapterId = course.chapters[chapterIndex - 1]?.id;
+            if (chapterIndex < course.chapters.length - 1) nextChapterId = course.chapters[chapterIndex + 1]?.id;
 
             if (chapterRef.description) {
                 chapterRef.descriptionPreview = markdownService.render(chapterRef.description);
@@ -64,7 +126,7 @@ exports.createOrEditGet = async (req, res) => {
             }
         }
 
-        // in editMode, chapterId will be undefined (falsy)
+        // In editMode, chapterId will be undefined (falsy)
         // The parentheses ( ... ) around the assignment statement are required when using object literal destructuring assignment without a declaration.
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
         ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(course.chapters, chapterId));
@@ -79,6 +141,8 @@ exports.createOrEditGet = async (req, res) => {
             chapterId,
             chapterIndex,
             chapter: chapterRef,
+            prevChapterId,
+            nextChapterId,
 
             availablePositions,
             selectedPosition,
@@ -139,57 +203,6 @@ exports.createOrEditPost = async (req, res) => {
     } catch (err) {
         return res.status(500).json(err.message);
     }
-};
-
-exports.getOneById = async (req, res) => {
-    const { courseId, chapterId } = req.params;
-
-    const course = await courseService.getOneById(courseId);
-    const chapters = course.chapters || [];
-
-    const chapterIndex = chapters.findIndex((x) => x.id === chapterId);
-
-    if (chapterIndex == -1) return res.status(500).send("Capitol negăsit!");
-
-    const chapterRef = chapters[chapterIndex];
-
-    if (chapterRef.description) {
-        chapterRef.descriptionPreview = markdownService.render(chapterRef.description);
-    }
-
-    if (chapterRef.lessonIds) {
-        const allLessonsFromDB = await lessonService.getAllByIds(chapterRef.lessonIds);
-
-        chapterRef.lessonIds.forEach((lessonId) => {
-            const lesson = allLessonsFromDB.find((x) => x._id.toString() == lessonId);
-
-            // TODO: fetch from DB only those fields we really need (e.g. no Theory, only the total number of exercises etc)
-            if (lesson) {
-                const newLesson = {
-                    id: lesson._id.toString(),
-                    name: lesson.name,
-                    exercises: lesson.exercises,
-                    isActive: !!(lesson.exercises?.length || lesson.theory?.text),
-                };
-
-                if (newLesson.isActive) chapterRef.numberOfActiveLessons++;
-
-                chapterRef.lessons = chapterRef.lessons || [];
-                chapterRef.lessons.push(newLesson);
-            }
-        });
-    }
-
-    const data = {
-        courseId,
-        courseCode: course.code,
-        chapter: chapterRef,
-        chapterIndex,
-        canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
-    };
-
-    //res.send(data);
-    res.render("course-chapter/course-chapter", data);
 };
 
 exports.jsonGetOneById = async (req, res) => {
