@@ -3,6 +3,7 @@ const lessonService = require("../services/lesson.service");
 const autz = require("../services/autz.service");
 const arrayHelper = require("../helpers/array.helper");
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
+const markdownService = require("../services/markdown.service");
 
 exports.createOrEditGet = async (req, res) => {
     const { courseId, chapterId } = req.params;
@@ -34,6 +35,10 @@ exports.createOrEditGet = async (req, res) => {
             chapterRef = (course.chapters || []).find((x) => x.id === chapterId);
             if (!chapterRef) return res.status(500).send("Capitol negăsit!");
             chapterIndex = course.chapters.findIndex((x) => x.id === chapterId);
+
+            if (chapterRef.description) {
+                chapterRef.descriptionPreview = markdownService.render(chapterRef.description);
+            }
 
             if (chapterRef.lessonIds) {
                 const allLessonsFromDB = await lessonService.getAllByIds(chapterRef.lessonIds);
@@ -147,6 +152,10 @@ exports.getOneById = async (req, res) => {
     if (chapterIndex == -1) return res.status(500).send("Capitol negăsit!");
 
     const chapterRef = chapters[chapterIndex];
+
+    if (chapterRef.description) {
+        chapterRef.descriptionPreview = markdownService.render(chapterRef.description);
+    }
 
     if (chapterRef.lessonIds) {
         const allLessonsFromDB = await lessonService.getAllByIds(chapterRef.lessonIds);
