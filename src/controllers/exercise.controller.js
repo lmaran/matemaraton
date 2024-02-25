@@ -277,26 +277,9 @@ exports.createPost = async (req, res) => {
 
         if (fileIdsAsArray.length > 0) await fileService.updateSourceIds(fileIdsAsArray, exerciseId);
 
-        // TODO use the "addExerciseToLocation()" method
-        const newExercise = {
-            levelId,
-            id: exerciseId,
-        };
-
-        // Sort exercises by levelId
-        const newExercises = (lesson.exercises || [])
-            .sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId)
-            .filter((x) => x.levelId == levelId);
-
-        arrayHelper.moveOrInsertObjectAtIndex(newExercises, newExercise, "id", position);
-
-        // Remove all exercises within the current level
-        lesson.exercises = (lesson.exercises || []).filter((x) => !(x.levelId == levelId));
-
-        // Add all the new exercises within the current level and sort the result
-        lesson.exercises = (lesson.exercises || []).concat(newExercises).sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId);
-
-        lessonService.updateOne(lesson);
+        // Add the exercise to the new location
+        const { isValid, message } = await addExerciseToLocation(lessonId, levelId, position, exerciseId);
+        if (!isValid) return res.status(500).send(message);
 
         res.redirect(`/exercitii/${exerciseId}/modifica`);
 
@@ -401,8 +384,20 @@ exports.editGet = async (req, res) => {
 };
 
 exports.editPost = async (req, res) => {
-    const { levelId, contestName, exerciseType, sourceName, author, statement, answer, answerOptions, isCorrectAnswerChecks, solution, hints } =
-        req.body;
+    const {
+        levelId,
+        contestName,
+        exerciseType,
+        sourceName,
+        author,
+        statement,
+        answer,
+        answerOptions,
+        isCorrectAnswerChecks,
+        solution,
+        hints,
+        position,
+    } = req.body;
 
     const { exerciseId } = req.body;
 
@@ -419,6 +414,9 @@ exports.editPost = async (req, res) => {
         exercise = await exerciseService.getOneById(exerciseId);
         if (!exercise) return res.status(500).send("Exercițiu negăsit!");
 
+        const lesson = await lessonService.getOneById(exercise.lessonId);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
+
         exercise.statement = statement;
         exercise.solution = solution;
         exercise.answer = answer;
@@ -433,6 +431,10 @@ exports.editPost = async (req, res) => {
         if (hints) exercise.hints = getHintsAsArray(hints);
 
         await exerciseService.updateOne(exercise);
+
+        // Add the exercise to the new location
+        const { isValid, message } = await addExerciseToLocation(exercise.lessonId, levelId, position, exerciseId);
+        if (!isValid) return res.status(500).send(message);
 
         res.redirect(`/exercitii/${exerciseId}/modifica`);
     } catch (err) {
@@ -535,7 +537,7 @@ exports.movePost = async (req, res) => {
         position: positionIdNew,
     } = req.body;
 
-    const redirectUri = `/lectii/${lessonIdNew}/modifica`;
+    const redirectUri = `/lectii/${lessonIdNew}/modifica?view=exercitii`;
 
     try {
         const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
@@ -731,7 +733,7 @@ exports.deleteOneById = async (req, res) => {
         // 3. Delete the exercise itself
         await exerciseService.deleteOneById(exerciseId);
 
-        res.redirect(`/lectii/${lessonId}/modifica`);
+        res.redirect(`/lectii/${lessonId}/modifica?view=exercitii`);
     } catch (err) {
         return res.status(500).json(err.message);
     }
