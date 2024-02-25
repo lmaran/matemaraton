@@ -14,14 +14,16 @@
     </ol>
 </nav>
 
-<h1 class="d-inline-block">Lecția {{inc lessonIndex}}: {{lesson.name}}
-    <span class="hide-on-print">
-        <a href="/lectii/{{prevLessonId}}" class="btn btn-link fs-3 p-0 align-baseline {{#unless prevLessonId}}disabled{{/unless}}"><i class="bi bi-arrow-left-circle"></i></a>
-        <a href="/lectii/{{nextLessonId}}" class="btn btn-link fs-3 p-0 align-baseline {{#unless nextLessonId}}disabled{{/unless}}"><i class="bi bi-arrow-right-circle"></i></a>
-    </span>
-</h1>
+<div class="hide-on-print">
+    <h1 class="d-inline-block">Lecția {{inc lessonIndex}}: {{lesson.name}}
+        <span>
+            <a href="/lectii/{{prevLessonId}}" class="btn btn-link fs-3 p-0 align-baseline {{#unless prevLessonId}}disabled{{/unless}}"><i class="bi bi-arrow-left-circle"></i></a>
+            <a href="/lectii/{{nextLessonId}}" class="btn btn-link fs-3 p-0 align-baseline {{#unless nextLessonId}}disabled{{/unless}}"><i class="bi bi-arrow-right-circle"></i></a>
+        </span>
+    </h1>
+</div>
 
-<div class="text-muted">
+<div class="text-muted hide-on-print">
     {{lesson.description}}
 </div>
 
@@ -43,7 +45,8 @@
 
     <div class="tab-pane show {{#if isTheoryTabActive}}active{{/if}}" id="theory-tab-pane" role="tabpanel" aria-labelledby="theory-tab" tabindex="0">
         <div id="theory-div" class="mt-4">
-        {{{lesson.theory.textPreview}}}
+            <h2 class="hide-on-not-print">{{lesson.name}}</h2>
+            {{{lesson.theory.textPreview}}}
         </div>
     </div>
 
