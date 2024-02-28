@@ -1,0 +1,32 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb pe-2">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri">Cursuri</a></li>
+        <li class="breadcrumb-item"><a href="/sectiuni">Secțiuni</a></li>
+        <li class="breadcrumb-item active">{{section.code}}</li>
+
+        <li title="Editează" class="ms-auto ms-3"><a href="/sectiuni/{{section._id}}/modifica"><i class="bi bi-pencil"></i></a></li>
+    </ol>
+</nav>
+
+<h1 class="d-inline-block">Secțiune: {{section.name}}
+    <span class="hide-on-print">
+        <a href="/sectiuni/{{prevCategoryId}}/modifica" class="btn btn-link fs-3 p-0 align-baseline {{#unless prevCategoryId}}disabled{{/unless}}"><i class="bi bi-arrow-left-circle"></i></a>
+        <a href="/sectiuni/{{nextCategoryId}}/modifica" class="btn btn-link fs-3 p-0 align-baseline {{#unless nextCategoryId}}disabled{{/unless}}"><i class="bi bi-arrow-right-circle"></i></a>
+    </span>
+</h1>
+
+<div class="fw-bold">Descriere:</div>
+<div>{{section.description}}</div>
+
+<h2>Cursuri:</h2>
+<ul class="mt-2">
+    {{#each section.courses}}
+        <li>{{code}}: 
+            {{#if isActive}}
+                <a href="/cursuri/{{_id}}/modifica">{{name}} </a>
+            {{else}}
+                <span class="text-muted">{{name}}</span>
+            {{/if}}
+    {{/each}}
+</ul>

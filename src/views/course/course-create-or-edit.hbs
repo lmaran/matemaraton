@@ -92,7 +92,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-3">
                         <label for="gradeSelect" class="fw-bold">Clasa:</label>
                         <select name="grade" class="form-select" id="gradeSelect">
                             {{#select course.grade}}
@@ -105,7 +105,7 @@
                         </select>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-3">
                         <label for="branchSelect" class="fw-bold">Categoria:</label>
                         <select name="category" class="form-select" id="branchSelect">
                             {{#select course.category}}
@@ -117,6 +117,31 @@
                             {{/select}}
                         </select>
                     </div>
+
+                    <div class="col-md-3">
+                        <label for="sectionSelect" class="fw-bold">Secțiune:</label>
+                        <select name="sectionId" class="form-select" id="sectionSelect">
+                            {{#select sectionId}}
+                            <option value=""></option>
+                            {{#each sections}}
+                            <option value="{{_id}}">{{name}}</option>
+                            {{/each}}
+
+                            {{/select}}
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="positionSelect" class="fw-bold">Poziția în listă:</label>
+                        <select name="position" class="form-select" id="positionSelect">
+                            {{#select selectedPosition}}
+                            {{#each availablePositions}}
+                            <option value="{{index}}">{{name}}</option>
+                            {{/each}}
+                            {{/select}}
+                        </select>
+                    </div>
+
                 </div>
 
                 <div class="row">

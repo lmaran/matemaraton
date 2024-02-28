@@ -11,6 +11,22 @@
 
 <h1>Cursuri</h1>
 
+{{#each sections}}
+    <h2 class="mt-4">{{name}}:</h2>
+    <div class="text-muted">{{description}}</div>
+    <ul class="mt-2">
+        {{#each courses}}
+            <li>{{code}}: 
+                {{#if isActive}}
+                    <a href="/cursuri/{{_id}}">{{name}} </a>
+                {{else}}
+                    <span class="text-muted">{{name}}</span>
+                {{/if}}
+        {{/each}}
+    </ul>
+{{/each}}
+
+Old:
 {{#if generalCourses}}
     <h2 class="mt-4">Evaluare Națională:</h2>
     <div class="text-muted">Aceste cursuri se doresc a fi utile pentru

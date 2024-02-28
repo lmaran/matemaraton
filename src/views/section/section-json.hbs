@@ -1,0 +1,22 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb pe-2">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/">Cursuri</a></li>
+        <li class="breadcrumb-item"><a href="/sectiuni/">Secțiuni</a></li>
+        <li class="breadcrumb-item active">{{sectionCode}}</li>
+
+        <li title="Vizualizează" class="ms-auto ms-3"><a href="/sectiuni/{{sectionId}}"><i class="bi bi-eye"></i></a></li>
+        {{#if canCreateOrEditCourse}}
+        <li title="Editează" class="ms-3"><a href="/sectiuni/{{sectionId}}/modifica"><i class="bi bi-pencil"></i></a></li>
+        {{/if}}
+    </ol>
+</nav>
+
+<h1 class="d-inline-block">Secțiune: {{section.name}}
+    <span class="hide-on-print">
+        <a href="/sectiuni/{{prevSectionId}}/modifica" class="btn btn-link fs-3 p-0 align-baseline {{#unless prevSectionId}}disabled{{/unless}}"><i class="bi bi-arrow-left-circle"></i></a>
+        <a href="/sectiuni/{{nextSectionId}}/modifica" class="btn btn-link fs-3 p-0 align-baseline {{#unless nextSectionId}}disabled{{/unless}}"><i class="bi bi-arrow-right-circle"></i></a>
+    </span>
+</h1>
+
+<pre><code>{{{sectionAsPrettyJson}}}</code></pre>
