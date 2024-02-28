@@ -11,7 +11,32 @@
 
 <h1>Cursuri</h1>
 
+<a href="/sectiuni/adauga" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Adaugă secțiune</a>
 <a href="/cursuri/adauga" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Adaugă curs</a>
+
+{{#each sections}}
+<section>
+    <div class="_h2">
+    {{#if isActive}}
+        <a href="/cursuri/{{_id}}/modifica">{{name}}:</a>
+    {{else}}
+        <span class="h2">{{name}}:</span> <a class="pl-1 text-decoration-none" href="/sectiuni/{{_id}}/modifica">...</a>
+    {{/if}}
+    </div>
+
+    <div class="text-muted">{{description}}</div>
+    <ul class="mt-2">
+        {{#each courses}}
+            <li>{{code}}: 
+                {{#if isActive}}
+                    <a href="/cursuri/{{_id}}/modifica">{{name}} </a>
+                {{else}}
+                    <span class="text-muted">{{name}}</span>
+                {{/if}}
+        {{/each}}
+    </ul>
+</section>
+{{/each}}
 
 {{#if generalCourses}}
     <h2 class="mt-4">Evaluare Națională:</h2>

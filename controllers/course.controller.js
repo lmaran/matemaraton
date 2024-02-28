@@ -2,7 +2,9 @@ const courseService = require("../services/course.service");
 const lessonService = require("../services/lesson.service");
 const autz = require("../services/autz.service");
 const lessonHelper = require("../helpers/lesson.helper");
+const arrayHelper = require("../helpers/array.helper");
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
+const sectionService = require("../services/section.service");
 
 exports.getOneById = async (req, res) => {
     try {
@@ -53,6 +55,15 @@ exports.getOneById = async (req, res) => {
 exports.getAll = async (req, res) => {
     try {
         const courses = await courseService.getAll();
+        const sections = await sectionService.getAll();
+
+        sections.forEach((section) => {
+            section.courses = [];
+            (section.courseIds || []).forEach((courseId) => {
+                const course = courses.find((x) => x._id.toString() == courseId);
+                if (course) section.courses.push(course);
+            });
+        });
 
         const generalCourses = [];
         const localOlympiadCourses = [];
@@ -75,6 +86,7 @@ exports.getAll = async (req, res) => {
             localOlympiadCourses,
             countyOlympiadCourses,
             canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
+            sections,
         };
         //res.send(data);
         res.render("course/courses", data);
@@ -91,6 +103,15 @@ exports.createOrEditListGet = async (req, res) => {
         }
 
         const courses = await courseService.getAll();
+        const sections = await sectionService.getAll();
+
+        sections.forEach((section) => {
+            section.courses = [];
+            (section.courseIds || []).forEach((courseId) => {
+                const course = courses.find((x) => x._id.toString() == courseId);
+                if (course) section.courses.push(course);
+            });
+        });
 
         const generalCourses = [];
         const localOlympiadCourses = [];
@@ -109,6 +130,7 @@ exports.createOrEditListGet = async (req, res) => {
             });
 
         const data = {
+            sections,
             generalCourses,
             localOlympiadCourses,
             countyOlympiadCourses,
@@ -129,6 +151,7 @@ exports.createOrEditGet = async (req, res) => {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
         const { courseId } = req.params;
+        const { sectionId } = req.query; // in editMode we have to extract it from course
 
         const isEditMode = !!courseId;
 
@@ -167,11 +190,15 @@ exports.createOrEditGet = async (req, res) => {
             isCreateMode: !isEditMode,
             gradeAvailableOptions,
             categoryAvailableOptions,
+            sections: await sectionService.getAll(), // TODO: remove it
+            sectionId,
         };
         //let classId;
         if (isEditMode) {
             const course = await courseService.getOneById(courseId);
             if (!course) return res.status(500).send("Curs negăsit!");
+
+            data.sectionId = course.sectionId;
 
             // TODO: refactor (duplicates, see GetOneById or Move)
             const lessonIds = lessonHelper.getAllLessonIdsFromCourse(course);
@@ -202,6 +229,24 @@ exports.createOrEditGet = async (req, res) => {
 
             data.course = course;
         }
+
+        const section = await sectionService.getOneById(data.sectionId);
+        if (section) {
+            let coursesFromDB = [];
+            if (section?.courseIds?.length > 0) coursesFromDB = await courseService.getAllByIds(section.courseIds);
+
+            // In getAvailablePositions method we need this fields: id and name
+            const availableCourses = [];
+            (section.courseIds || []).forEach((courseId) => {
+                const course = coursesFromDB.find((course) => course._id.toString() == courseId);
+                availableCourses.push({ id: course._id.toString(), name: course.name });
+            });
+
+            const { availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(availableCourses, courseId);
+            data.availablePositions = availablePositions;
+            data.selectedPosition = selectedPosition;
+        }
+
         //res.send(data);
         res.render("course/course-create-or-edit", data);
     } catch (err) {
@@ -215,11 +260,11 @@ exports.createOrEditPost = async (req, res) => {
         if (!canCreateOrEditCourse) {
             return res.status(403).send("Lipsă permisiuni!"); // forbidden
         }
-        const { courseId } = req.params;
+        let { courseId } = req.params;
 
         const isEditMode = !!courseId;
 
-        const { id, code, name, description, grade, category, isHidden, isActive } = req.body;
+        const { id, code, name, description, grade, category, sectionId, isHidden, isActive, position } = req.body;
 
         const course = {
             code,
@@ -227,6 +272,7 @@ exports.createOrEditPost = async (req, res) => {
             description,
             grade,
             category,
+            sectionId,
             isHidden,
             isActive,
         };
@@ -252,9 +298,18 @@ exports.createOrEditPost = async (req, res) => {
 
             courseService.updateOne(course);
         } else {
-            const result = await courseService.insertOne(course);
-            course._id = result.insertedId;
+            const courseIdObj = courseService.getObjectId();
+            course._id = courseIdObj;
+            courseId = courseIdObj.toString();
+
+            await courseService.insertOne(course);
         }
+
+        const section = await sectionService.getOneById(sectionId);
+        section.courseIds = section.courseIds || [];
+        arrayHelper.moveOrInsertStringAtIndex(section.courseIds, courseId, position);
+        await sectionService.updateOne(section);
+
         //res.send(course);
         res.redirect("/cursuri/modifica");
     } catch (err) {

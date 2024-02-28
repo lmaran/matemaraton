@@ -1,0 +1,138 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb pe-2">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/modifica">Cursuri</a></li>
+        
+        {{#if isEditMode}}
+        <li class="breadcrumb-item active">{{section.code}}</li>
+        {{/if}}
+        
+        {{#if isEditMode}}
+        <li title="Json" class="ms-auto ms-3"><a href="/sectiuni/{{section._id}}/json"><i class="bi bi-braces"></i></a></li>
+        <li class="ms-3" title="Vizualizează"><a href="/sectiuni/{{section._id}}"><i class="bi bi-eye"></i></a></li>
+        {{/if}}
+    </ol>
+</nav>
+
+<h1 class="d-inline-block">{{#if isEditMode}}Secțiune: {{section.name}}{{else}}Secțiune nouă{{/if}}
+    {{#if isEditMode}}
+    <span class="hide-on-print">
+        <a href="/sectiuni/{{prevSectionId}}/modifica" class="btn btn-link fs-3 p-0 align-baseline {{#unless prevSectionId}}disabled{{/unless}}"><i class="bi bi-arrow-left-circle"></i></a>
+        <a href="/sectiuni/{{nextSectionId}}/modifica" class="btn btn-link fs-3 p-0 align-baseline {{#unless nextSectionId}}disabled{{/unless}}"><i class="bi bi-arrow-right-circle"></i></a>
+    </span>
+    {{/if}}
+</h1>
+
+{{#if isEditMode}}
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link {{#if isCoursesTabActive}}active{{/if}}" id="chapters-tab" aria-current="page" href="/sectiuni/{{section._id}}/modifica">Cursuri</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{#if isGeneralTabActive}}active{{/if}}" id="general-tab"href="/sectiuni/{{section._id}}/modifica?view=general"><i class="bi bi-gear"></i></a>
+    </li>
+</ul>
+{{/if}}
+
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane show {{#if isCoursesTabActive}}active{{/if}}" id="chapters-tab-pane" role="tabpanel" aria-labelledby="chapters-tab" tabindex="0">
+        <section class="mt-4">
+            {{#if isEditMode}}
+
+            <ul class="mt-2">
+                {{#each section.courses}}
+                    <li>{{code}}: 
+                        {{#if isActive}}
+                            <a href="/cursuri/{{_id}}/modifica">{{name}} </a>
+                        {{else}}
+                            <span class="text-muted">{{name}}</span>
+                        {{/if}}
+                {{/each}}
+            </ul>
+
+            <a href="/cursuri/adauga?sectionId={{section._id}}" class="btn btn-primary btn-sm mt-4 mb-4">
+                <i class="bi bi-plus-lg"></i> Adaugă curs</a>
+            {{/if}}
+        </section>
+    </div>
+
+    <div class="tab-pane show {{#if isGeneralTabActive}}active{{/if}}" id="general-tab-pane" role="tabpanel" aria-labelledby="general-tab" tabindex="1">
+        <section class="mt-4">
+            <form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
+
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label for="codeInput" class="fw-bold">Cod:</label>
+                        <input type="text" name="code" class="form-control" id="codeInput" placeholder="" value="{{section.code}}">
+                        <small>
+                            <p class="text-muted mb-0">Ex: EN</p>
+                        </small>
+                    </div>
+
+                    <div class="col-md-9">
+                        <label for="nameInput" class="fw-bold">Nume:</label>
+                        <input type="text" name="name" class="form-control" id="nameInput" placeholder="" value="{{section.name}}">
+                        <small>
+                            <p class="text-muted mb-0">Ex: Evaluare Națională</p>
+                        </small>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-12 description-div">
+                        <label for="description-editor-txt"  class="fw-bold">Descriere:</label>
+
+                        {{!-- close the textarea tag on the same line to get rid of the unintended spaces: https://stackoverflow.com/a/34102261 --}}
+                        <textarea id="description-editor-txt" rows="8" name="description" type="text" 
+                            class="description-input drop-area form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}" placeholder="">{{section.description}}</textarea>
+                        <div class="invalid-feedback">{{errors.description.msg}}</div>
+
+                        <div id="description-preview-div" class="mt-0"
+                            style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
+                            {{{section.descriptionPreview}}}
+                        </div>
+
+                        {{!-- Description menu --}}
+                        <div class="description-menu-div hide-on-print clearfix">
+                            <div class="float-end">
+                                <a id="toggle-description-editor-btn" href="">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <input type="hidden" name="sectionId" value="{{section._id}}" />
+
+                <div class="mt-4">
+                    <div class="col-md-7s offset-md-3s">
+                        <button type="submit" name="saveBtn" class="btn btn-primary btn-sm"><i class="bi bi-save"></i>
+                            Salveaza</button>
+
+                        {{#if isEditMode}}
+                        <button type="submit" formaction="/sectiuni/{{section._id}}/sterge"
+                            name="deleteBtn" class="btn btn-link"
+                            onclick="return confirm('Ești sigur că vrei să ștergi această secțiune?');"><i
+                                class="bi bi-trash-fill"></i>
+                            Șterge</button>
+                        {{/if}}
+                    </div>
+                </div>
+
+            </form>
+        </section>
+    </div>
+</div>
+
+
+{{#section 'script'}}
+<script type="module" src="/js/eventBinders/section-create-or-edit.event-binder.js"></script>
+{{/section}}
+
+
+
+
+
+
+
+

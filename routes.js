@@ -29,6 +29,7 @@ const fileController = require("./controllers/file.controller");
 const enrollmentController = require("./controllers/enrollment.controller");
 const resourcesController = require("./controllers/resources.controller");
 const sheetController = require("./controllers/sheet.controller");
+const sectionController = require("./controllers/section.controller");
 
 // home
 router.get("/", homeController.getHomePage);
@@ -69,6 +70,18 @@ router.get("/fise/:sheetId/modifica", sheetController.updateGet);
 router.post("/fise/:sheetId/modifica", sheetController.updatePost);
 router.post("/fise/:sheetId/sterge", isAuthenticated, sheetController.deleteOneById);
 router.get("/fise/:sheetId/json", sheetController.jsonGetOneById);
+
+// sections
+router.get("/sectiuni", isAuthenticated, sectionController.getAll);
+router.get("/sectiuni/modifica", isAuthenticated, sectionController.createOrEditListGet);
+router.get("/sectiuni/adauga", isAuthenticated, sectionController.createOrEditGet);
+router.post("/sectiuni/adauga", isAuthenticated, sectionController.createOrEditPost);
+router.get("/sectiuni/json", sectionController.jsonGetAll);
+router.get("/sectiuni/:sectionId", isAuthenticated, sectionController.getOneById);
+router.get("/sectiuni/:sectionId/modifica", isAuthenticated, sectionController.createOrEditGet);
+router.post("/sectiuni/:sectionId/modifica", isAuthenticated, sectionController.createOrEditPost);
+router.get("/sectiuni/:sectionId/json", isAuthenticated, sectionController.jsonGetOneById);
+router.post("/sectiuni/:sectionId/sterge", isAuthenticated, sectionController.deleteOneById);
 
 // courses
 router.get("/cursuri", courseController.getAll);
