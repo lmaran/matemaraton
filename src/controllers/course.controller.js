@@ -5,6 +5,7 @@ const lessonHelper = require("../helpers/lesson.helper");
 const arrayHelper = require("../helpers/array.helper");
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
 const sectionService = require("../services/section.service");
+const markdownService = require("../services/markdown.service");
 
 exports.getOneById = async (req, res) => {
     try {
@@ -58,6 +59,10 @@ exports.getAll = async (req, res) => {
         const sections = await sectionService.getAll();
 
         sections.forEach((section) => {
+            if (section.description) {
+                section.descriptionPreview = markdownService.render(section.description);
+            }
+
             section.courses = [];
             (section.courseIds || []).forEach((courseId) => {
                 const course = courses.find((x) => x._id.toString() == courseId);
@@ -106,6 +111,10 @@ exports.createOrEditListGet = async (req, res) => {
         const sections = await sectionService.getAll();
 
         sections.forEach((section) => {
+            if (section.description) {
+                section.descriptionPreview = markdownService.render(section.description);
+            }
+
             section.courses = [];
             (section.courseIds || []).forEach((courseId) => {
                 const course = courses.find((x) => x._id.toString() == courseId);
