@@ -86,14 +86,14 @@ router.get("/sectiuni/:sectionId/available-positions", isAuthenticated, sectionC
 
 // courses
 router.get("/cursuri", courseController.getAll);
-router.get("/cursuri/:courseId/json", isAuthenticated, courseController.jsonGetOneById);
-router.get("/cursuri/:courseId/modifica", isAuthenticated, courseController.createOrEditGet);
-router.post("/cursuri/:courseId/modifica", isAuthenticated, courseController.createOrEditPost);
 router.get("/cursuri/adauga", isAuthenticated, courseController.createOrEditGet);
 router.post("/cursuri/adauga", isAuthenticated, courseController.createOrEditPost);
 router.get("/cursuri/modifica", isAuthenticated, courseController.createOrEditListGet);
 router.get("/cursuri/json", isAuthenticated, courseController.jsonGetAll);
 //router.post("/cursuri/modifica", isAuthenticated, courseController.createOrEditListPost);
+router.get("/cursuri/:courseId/json", isAuthenticated, courseController.jsonGetOneById);
+router.get("/cursuri/:courseId/modifica", isAuthenticated, courseController.createOrEditGet);
+router.post("/cursuri/:courseId/modifica", isAuthenticated, courseController.createOrEditPost);
 router.get("/cursuri/:courseId", courseController.getOneById);
 router.get("/cursuri/:courseId/capitole", isAuthenticated, courseController.getOneById); // only for url access
 router.post("/cursuri/:courseId/sterge", isAuthenticated, courseController.deleteOneById);

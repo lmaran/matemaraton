@@ -265,7 +265,7 @@ exports.createOrEditPost = async (req, res) => {
         }
 
         // Remove the courseId from the old section
-        if (sectionId != sectionIdOld) {
+        if (isEditMode && sectionId != sectionIdOld) {
             const sectionOld = await sectionService.getOneById(sectionIdOld);
             sectionOld.courseIds = (sectionOld.courseIds || []).filter((x) => x != courseId);
             await sectionService.updateOne(sectionOld);
@@ -327,6 +327,12 @@ exports.deleteOneById = async (req, res) => {
         return res.status(403).send("Șterge întâi capitolele!");
     }
 
+    // Remove the courseId from the current section
+    const section = await sectionService.getOneById(course.sectionId);
+    section.courseIds = (section.courseIds || []).filter((x) => x != courseId);
+    await sectionService.updateOne(section);
+
+    // Remove the course from the database
     courseService.deleteOneById(req.body.id);
     res.redirect(`/cursuri/modifica`);
 };
