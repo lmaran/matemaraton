@@ -65,7 +65,7 @@
         <section class="mt-4">
             <form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
 
-                <div class="row">
+                <div class="row mb-3">
                     <div class="col-md-3">
                         <label for="codeInput" class="fw-bold">Cod:</label>
                         <input type="text" name="code" class="form-control" id="codeInput" placeholder="" value="{{course.code}}">
@@ -83,7 +83,7 @@
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row mb-3">
                     <div class="col-md-12">
                         <label for="descriptionInput" class="fw-bold">Descriere:</label>
                         <textarea type="text" name="description" class="form-control" id="descriptionInput"
@@ -91,7 +91,7 @@
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row mb-3">
                     <div class="col-md-3">
                         <label for="gradeSelect" class="fw-bold">Clasa:</label>
                         <select name="grade" class="form-select" id="gradeSelect">
@@ -105,24 +105,12 @@
                         </select>
                     </div>
 
-                    <div class="col-md-3">
-                        <label for="branchSelect" class="fw-bold">Categoria:</label>
-                        <select name="category" class="form-select" id="branchSelect">
-                            {{#select course.category}}
-                            <option value=""></option>
-                            {{#each categoryAvailableOptions}}
-                            <option value="{{value}}">{{text}}</option>
-                            {{/each}}
-
-                            {{/select}}
-                        </select>
-                    </div>
-
+                    {{#if isEditMode}}
                     <div class="col-md-3">
                         <label for="sectionSelect" class="fw-bold">Secțiune:</label>
                         <select name="sectionId" class="form-select" id="sectionSelect">
                             {{#select sectionId}}
-                            <option value=""></option>
+                            {{!-- <option value=""></option> --}}
                             {{#each sections}}
                             <option value="{{_id}}">{{name}}</option>
                             {{/each}}
@@ -130,6 +118,7 @@
                             {{/select}}
                         </select>
                     </div>
+                    {{/if}}
 
                     <div class="col-md-3">
                         <label for="positionSelect" class="fw-bold">Poziția în listă:</label>
@@ -144,7 +133,7 @@
 
                 </div>
 
-                <div class="row">
+                <div class="row mb-3">
                     <div class="col-md-6">
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="isHiddenCheck" name="isHidden" {{#if
@@ -169,7 +158,9 @@
                     </div>
                 </div>
 
-                <input type="hidden" name="id" value="{{course._id}}" />
+                <input id="courseId" type="hidden" name="courseId" value="{{course._id}}" />
+                <input type="hidden" name="sectionIdOld" value="{{course.sectionId}}" />
+                <input type="hidden" name="positionId" value="{{selectedPosition}}" />             
 
                 <div class="mt-4">
                     <div class="col-md-7s offset-md-3s">
@@ -189,6 +180,9 @@
     </div>
 </div>
 
+{{#section 'script'}}
+<script type="module" src="/js/eventBinders/course-create-or-edit.event-binder.js"></script>
+{{/section}}
 
 
 

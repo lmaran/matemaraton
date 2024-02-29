@@ -82,6 +82,7 @@ router.get("/sectiuni/:sectionId/modifica", isAuthenticated, sectionController.c
 router.post("/sectiuni/:sectionId/modifica", isAuthenticated, sectionController.createOrEditPost);
 router.get("/sectiuni/:sectionId/json", isAuthenticated, sectionController.jsonGetOneById);
 router.post("/sectiuni/:sectionId/sterge", isAuthenticated, sectionController.deleteOneById);
+router.get("/sectiuni/:sectionId/available-positions", isAuthenticated, sectionController.getAvailablePositions);
 
 // courses
 router.get("/cursuri", courseController.getAll);

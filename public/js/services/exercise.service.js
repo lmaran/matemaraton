@@ -1,6 +1,6 @@
 import { fetchHelpers } from "../helpers/fetch.helper.js";
 
-export const courseExerciseService = {
+export const exerciseService = {
     getAvailableLessons: async (data) => {
         const { courseId } = data;
         return fetchHelpers.get(`/cursuri/${courseId}/available-lessons`);

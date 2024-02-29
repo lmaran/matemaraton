@@ -5,6 +5,7 @@ const autz = require("../services/autz.service");
 // const lessonHelper = require("../helpers/lesson.helper");
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
 const markdownService = require("../services/markdown.service");
+const arrayHelper = require("../helpers/array.helper");
 
 exports.getOneById = async (req, res) => {
     const { sectionId } = req.params;
@@ -214,4 +215,40 @@ exports.deleteOneById = async (req, res) => {
 
     sectionService.deleteOneById(sectionId);
     res.redirect(`/cursuri/modifica`);
+};
+
+exports.getAvailablePositions = async (req, res) => {
+    const { sectionId } = req.params;
+    const { courseId } = req.query;
+
+    try {
+        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+        if (!canCreateOrEditCourse) {
+            return res.status(403).send("Lipsă permisiuni!"); // forbidden
+        }
+
+        const section = await sectionService.getOneById(sectionId);
+        if (!section) return res.status(500).send("Secțiune negăsită!");
+
+        let coursesFromDB = [];
+        if (section?.courseIds?.length > 0) coursesFromDB = await courseService.getAllByIds(section.courseIds);
+
+        // In getAvailablePositions method we need this fields: id and name
+        const availableCourses = [];
+        (section.courseIds || []).forEach((courseId) => {
+            const course = coursesFromDB.find((course) => course._id.toString() == courseId);
+            availableCourses.push({ id: course._id.toString(), name: course.name });
+        });
+
+        const { availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(availableCourses, courseId);
+
+        const data = {
+            availablePositions,
+            selectedPosition,
+        };
+
+        res.send(data);
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
 };

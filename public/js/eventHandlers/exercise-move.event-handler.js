@@ -1,4 +1,4 @@
-import { courseExerciseService } from "../services/exercise.service.js";
+import { exerciseService } from "../services/exercise.service.js";
 
 export const eventHandlers = {
     setDefaultCourse: async (event) => {
@@ -8,7 +8,7 @@ export const eventHandlers = {
         const lessonSelect = document.getElementById("lessonSelect");
         const positionSelect = document.getElementById("positionSelect");
 
-        const { availableLessons } = await courseExerciseService.getAvailableLessons({ courseId });
+        const { availableLessons } = await exerciseService.getAvailableLessons({ courseId });
 
         // lessonSelect: remove all options
         while (lessonSelect.options.length) lessonSelect.remove(0);
@@ -44,7 +44,7 @@ const setDefaultPosition = async () => {
 
     if (lessonId == "") return;
 
-    const { availablePositions } = await courseExerciseService.getAvailablePositions({ courseId, lessonId, levelId, exerciseId });
+    const { availablePositions } = await exerciseService.getAvailablePositions({ courseId, lessonId, levelId, exerciseId });
 
     // positionSelect: remove all options
     while (positionSelect.options.length) positionSelect.remove(0);

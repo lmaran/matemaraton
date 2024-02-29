@@ -70,26 +70,7 @@ exports.getAll = async (req, res) => {
             });
         });
 
-        const generalCourses = [];
-        const localOlympiadCourses = [];
-        const countyOlympiadCourses = [];
-        courses
-            .filter((x) => !x.isHidden)
-            .sort((a, b) => (a.code > b.code ? 1 : -1))
-            .forEach((course) => {
-                if (course.category === "Evaluare Națională") {
-                    generalCourses.push(course);
-                } else if (course.category === "Olimpiadă, etapa locală") {
-                    localOlympiadCourses.push(course);
-                } else if (course.category === "Olimpiadă, etapa județeană") {
-                    countyOlympiadCourses.push(course);
-                }
-            });
-
         const data = {
-            generalCourses,
-            localOlympiadCourses,
-            countyOlympiadCourses,
             canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
             sections,
         };
@@ -122,27 +103,8 @@ exports.createOrEditListGet = async (req, res) => {
             });
         });
 
-        const generalCourses = [];
-        const localOlympiadCourses = [];
-        const countyOlympiadCourses = [];
-        courses
-            .filter((x) => !x.isHidden)
-            .sort((a, b) => (a.code > b.code ? 1 : -1))
-            .forEach((course) => {
-                if (course.category === "Evaluare Națională") {
-                    generalCourses.push(course);
-                } else if (course.category === "Olimpiadă, etapa locală") {
-                    localOlympiadCourses.push(course);
-                } else if (course.category === "Olimpiadă, etapa județeană") {
-                    countyOlympiadCourses.push(course);
-                }
-            });
-
         const data = {
             sections,
-            generalCourses,
-            localOlympiadCourses,
-            countyOlympiadCourses,
             canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
         };
 
@@ -182,23 +144,12 @@ exports.createOrEditGet = async (req, res) => {
             { text: "Clasa a VIII-a", value: "8" },
         ];
 
-        const categoryAvailableOptions = [
-            { text: "Evaluare Națională", value: "Evaluare Națională" },
-            { text: "Olimpiadă, etapa locală", value: "Olimpiadă, etapa locală" },
-            {
-                text: "Olimpiadă, etapa județeană",
-                value: "Olimpiadă, etapa județeană",
-            },
-            { text: "Altă categorie", value: "Altă categorie" },
-        ];
-
         const data = {
             isChaptersTabActive,
             isGeneralTabActive,
             isEditMode,
             isCreateMode: !isEditMode,
             gradeAvailableOptions,
-            categoryAvailableOptions,
             sections: await sectionService.getAll(), // TODO: remove it
             sectionId,
         };
@@ -273,21 +224,20 @@ exports.createOrEditPost = async (req, res) => {
 
         const isEditMode = !!courseId;
 
-        const { id, code, name, description, grade, category, sectionId, isHidden, isActive, position } = req.body;
+        const { code, name, description, grade, sectionId, isHidden, isActive, position, sectionIdOld } = req.body;
 
         const course = {
             code,
             name,
             description,
             grade,
-            category,
             sectionId,
             isHidden,
             isActive,
         };
 
         if (isEditMode) {
-            course._id = id;
+            course._id = courseId;
 
             if (isHidden === "on") {
                 // If the 'value' attribute was omitted, the default value for the checkbox is 'on' (mozilla.org)
@@ -314,6 +264,14 @@ exports.createOrEditPost = async (req, res) => {
             await courseService.insertOne(course);
         }
 
+        // Remove the courseId from the old section
+        if (sectionId != sectionIdOld) {
+            const sectionOld = await sectionService.getOneById(sectionIdOld);
+            sectionOld.courseIds = (sectionOld.courseIds || []).filter((x) => x != courseId);
+            await sectionService.updateOne(sectionOld);
+        }
+
+        // Add the courseId to the new section, in the selected position
         const section = await sectionService.getOneById(sectionId);
         section.courseIds = section.courseIds || [];
         arrayHelper.moveOrInsertStringAtIndex(section.courseIds, courseId, position);
