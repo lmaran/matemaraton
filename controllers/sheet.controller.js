@@ -198,7 +198,7 @@ exports.createGet = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
-    const userId = req.user._id.toString();
+    const userId = req.user?._id?.toString();
     const { lessonId, name, title, exerciseIdsInput } = req.body;
     let exerciseIds = [];
 

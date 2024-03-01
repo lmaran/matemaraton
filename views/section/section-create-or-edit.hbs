@@ -102,6 +102,19 @@
                     </div>
                 </div>
 
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="isPrivateCheck" name="isPrivate" 
+                            {{#if (or section.isPrivate isCreateMode)}}checked{{/if}}>
+                            <label class="form-check-label fw-bold" for="isPrivateCheck">Privat</label>
+                            <small>
+                                <p class="text-muted mb-0">Doar tu (proprietarul) poți vedea resursele private.</p>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
                 <input type="hidden" name="sectionId" value="{{section._id}}" />
 
                 <div class="mt-4">

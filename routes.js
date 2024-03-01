@@ -72,12 +72,12 @@ router.post("/fise/:sheetId/sterge", isAuthenticated, sheetController.deleteOneB
 router.get("/fise/:sheetId/json", sheetController.jsonGetOneById);
 
 // sections
-router.get("/sectiuni", isAuthenticated, sectionController.getAll);
+router.get("/sectiuni", sectionController.getAll);
 router.get("/sectiuni/modifica", isAuthenticated, sectionController.createOrEditListGet);
 router.get("/sectiuni/adauga", isAuthenticated, sectionController.createOrEditGet);
 router.post("/sectiuni/adauga", isAuthenticated, sectionController.createOrEditPost);
-router.get("/sectiuni/json", sectionController.jsonGetAll);
-router.get("/sectiuni/:sectionId", isAuthenticated, sectionController.getOneById);
+router.get("/sectiuni/json", isAuthenticated, sectionController.jsonGetAll);
+router.get("/sectiuni/:sectionId", sectionController.getOneById);
 router.get("/sectiuni/:sectionId/modifica", isAuthenticated, sectionController.createOrEditGet);
 router.post("/sectiuni/:sectionId/modifica", isAuthenticated, sectionController.createOrEditPost);
 router.get("/sectiuni/:sectionId/json", isAuthenticated, sectionController.jsonGetOneById);

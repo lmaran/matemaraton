@@ -56,7 +56,7 @@ exports.getOneById = async (req, res) => {
 exports.getAll = async (req, res) => {
     try {
         const courses = await courseService.getAll();
-        const sections = await sectionService.getAll();
+        const sections = await sectionService.getAllForUser(req.user);
 
         sections.forEach((section) => {
             if (section.description) {
@@ -206,7 +206,7 @@ exports.createOrEditGet = async (req, res) => {
 };
 
 exports.createOrEditPost = async (req, res) => {
-    const userId = req.user._id.toString();
+    const userId = req.user?._id?.toString();
     try {
         const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
         if (!canCreateOrEditCourse) {

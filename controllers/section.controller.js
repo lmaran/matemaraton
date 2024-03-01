@@ -8,9 +8,11 @@ const markdownService = require("../services/markdown.service");
 const arrayHelper = require("../helpers/array.helper");
 
 exports.getOneById = async (req, res) => {
+    const user = req.user;
     const { sectionId } = req.params;
     try {
-        const section = await sectionService.getOneById(sectionId);
+        const section = await sectionService.getOneByIdForUser(sectionId, user);
+        if (!section) return res.status(500).send("Secțiune negăsită sau lipsă permisiuni!");
 
         // let prevChapterId, nextChapterId;
         // if (chapterIndex > 0) prevChapterId = chapters[chapterIndex - 1]?.id;
@@ -42,7 +44,7 @@ exports.getOneById = async (req, res) => {
 
 exports.getAll = async (req, res) => {
     try {
-        const sections = await sectionService.getAll();
+        const sections = await sectionService.getAllForUser(req.user);
 
         const data = {
             sections,
@@ -155,7 +157,7 @@ exports.createOrEditGet = async (req, res) => {
 };
 
 exports.createOrEditPost = async (req, res) => {
-    const userId = req.user._id.toString();
+    const userId = req.user?._id?.toString();
     try {
         const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
         if (!canCreateOrEditCourse) {
@@ -165,13 +167,20 @@ exports.createOrEditPost = async (req, res) => {
 
         const isEditMode = !!sectionId;
 
-        const { code, name, description } = req.body;
+        const { code, name, description, isPrivate } = req.body;
 
         const section = {
             code,
             name,
             description,
         };
+
+        if (isPrivate === "on") {
+            // If the 'value' attribute was omitted, the default value for the checkbox is 'on' (mozilla.org)
+            section.isPrivate = true;
+        } else {
+            section.isPrivate = false;
+        }
 
         if (isEditMode) {
             section._id = sectionId;

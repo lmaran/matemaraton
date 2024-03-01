@@ -219,8 +219,7 @@ exports.createGet = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
-    const userId = req.user._id.toString();
-
+    const userId = req.user?._id?.toString();
     const {
         lessonId,
         levelId,
@@ -744,7 +743,7 @@ exports.deleteOneById = async (req, res) => {
 
 // TODO: Refactor (remove duplicate code, see LessonTheory)
 exports.uploadFiles = async (req, res) => {
-    const userId = req.user._id.toString();
+    const userId = req.user?._id?.toString();
     const { exerciseId } = req.params;
 
     const containerClient = exerciseBlobService.getContainerClient();

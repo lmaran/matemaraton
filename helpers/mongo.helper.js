@@ -3,6 +3,7 @@
 
 const config = require("../config");
 const mongodb = require("mongodb");
+const { ObjectId } = mongodb;
 
 const MongoClient = mongodb.MongoClient;
 const dbName = config.mongo_dbName;
@@ -45,4 +46,32 @@ exports.getDb = async (specificDbName) => {
 
 exports.getClientAsPromise = () => {
     return _clientAsPromise;
+};
+
+exports.getAuthFilterForOneById = (user, id) => {
+    const idFilter = { _id: new ObjectId(id) };
+
+    if (user) {
+        if (user.isAdmin) {
+            return idFilter;
+        } else {
+            const authFilter = { $or: [{ isPrivate: false }, { ownerId: user._id.toString() }] };
+            return { $and: [authFilter, idFilter] };
+        }
+    } else {
+        const authFilter = { isPrivate: false };
+        return { $and: [authFilter, idFilter] };
+    }
+};
+
+exports.getAuthFilterForAll = (user) => {
+    if (user) {
+        if (user.isAdmin) {
+            return {};
+        } else {
+            return { $or: [{ isPrivate: false }, { ownerId: user._id.toString() }] };
+        }
+    } else {
+        return { isPrivate: false };
+    }
 };
