@@ -92,19 +92,6 @@
                 </div>
 
                 <div class="row mb-3">
-                    <div class="col-md-3">
-                        <label for="gradeSelect" class="fw-bold">Clasa:</label>
-                        <select name="grade" class="form-select" id="gradeSelect">
-                            {{#select course.grade}}
-                            <option value=""></option>
-                            {{#each gradeAvailableOptions}}
-                            <option value="{{value}}">{{text}}</option>
-                            {{/each}}
-
-                            {{/select}}
-                        </select>
-                    </div>
-
                     {{!-- {{#if isEditMode}} --}}
                     <div class="col-md-3">
                         <label for="sectionSelect" class="fw-bold">Secțiune:</label>

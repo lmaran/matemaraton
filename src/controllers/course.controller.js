@@ -136,20 +136,11 @@ exports.createOrEditGet = async (req, res) => {
             isGeneralTabActive = true;
         }
 
-        const gradeAvailableOptions = [
-            { text: "Primar", value: "P" },
-            { text: "Clasa a V-a", value: "5" },
-            { text: "Clasa a VI-a", value: "6" },
-            { text: "Clasa a VII-a", value: "7" },
-            { text: "Clasa a VIII-a", value: "8" },
-        ];
-
         const data = {
             isChaptersTabActive,
             isGeneralTabActive,
             isEditMode,
             isCreateMode: !isEditMode,
-            gradeAvailableOptions,
             sections: await sectionService.getAll(), // TODO: remove it
             sectionId,
         };
@@ -224,13 +215,12 @@ exports.createOrEditPost = async (req, res) => {
 
         const isEditMode = !!courseId;
 
-        const { code, name, description, grade, sectionId, isHidden, isActive, position, sectionIdOld } = req.body;
+        const { code, name, description, sectionId, isHidden, isActive, position, sectionIdOld } = req.body;
 
         const course = {
             code,
             name,
             description,
-            grade,
             sectionId,
             isHidden,
             isActive,

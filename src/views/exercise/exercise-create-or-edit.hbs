@@ -70,7 +70,7 @@
                 
 
                 <div class="float-end">
-                    <span id="edit-menu-statement-span" class="d-none">
+                    <span id="edit-menu-statement-span" class="{{#if isEditMode}}d-none{{/if}}">
                         <span id="upload-file-error-statement-div" class="upload-file-error-div invalid-feedback">Mesaj de eroare</span>
                         <label class="btn btn-light border border-primary btn-xs" for="upload-file-statement-input">
                             <i class="bi bi-card-image"></i>
@@ -214,7 +214,7 @@
                 </div> --}}
 
                 <div class="float-end">
-                    <span id="edit-menu-solution-span" class="d-none">
+                    <span id="edit-menu-solution-span" class="{{#if isEditMode}}d-none{{/if}}">
                         <span id="upload-file-error-solution-div" class="upload-file-error-div invalid-feedback">Mesaj de eroare</span>
                         <label class="btn btn-light border border-primary btn-xs" for="upload-file-solution-input">
                             <i class="bi bi-card-image"></i>
