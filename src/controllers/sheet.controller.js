@@ -198,6 +198,7 @@ exports.createGet = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
+    const userId = req.user._id.toString();
     const { lessonId, name, title, exerciseIdsInput } = req.body;
     let exerciseIds = [];
 
@@ -213,6 +214,7 @@ exports.createPost = async (req, res) => {
             name,
             title,
             exerciseIds,
+            ownerId: userId,
         };
 
         if (lessonId) {

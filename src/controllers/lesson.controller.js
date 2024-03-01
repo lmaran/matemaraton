@@ -176,6 +176,7 @@ exports.createGet = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
+    const userId = req.user._id.toString();
     const { courseId, chapterId, name, description, isHidden, position, theory } = req.body;
 
     let lesson;
@@ -198,11 +199,11 @@ exports.createPost = async (req, res) => {
         lesson = {
             _id: lessonIdObj,
             courseId,
+            name,
+            description,
+            ownerId: userId,
         };
 
-        // Update lesson fields
-        lesson.name = name;
-        lesson.description = description;
         if (theory)
             lesson.theory = {
                 text: theory.trim(),
@@ -388,6 +389,7 @@ exports.deleteOneById = async (req, res) => {
 
 // TODO: Refactor (remove duplicate code, see LessonTheory)
 exports.uploadFiles = async (req, res) => {
+    const userId = req.user._id.toString();
     const { lessonId } = req.params;
 
     const containerClient = lessonBlobService.getContainerClient();
@@ -423,8 +425,9 @@ exports.uploadFiles = async (req, res) => {
                 containerName: "lectii",
                 sourceType: `/lectii`,
                 sourceId: lessonId, // lessonId is defined only in editMode
+                ownerId: userId,
                 createdOn: new Date(),
-                createdBy: { id: req.user._id.toString(), name: `${req.user.firstName} ${req.user.lastName}` },
+                createdBy: { id: userId, name: `${req.user.firstName} ${req.user.lastName}` },
             }));
 
             if (filesToDB.length > 0) await fileService.insertMany(filesToDB);

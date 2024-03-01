@@ -219,6 +219,8 @@ exports.createGet = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
+    const userId = req.user._id.toString();
+
     const {
         lessonId,
         levelId,
@@ -264,6 +266,7 @@ exports.createPost = async (req, res) => {
             author,
             courseId: lesson.courseId,
             lessonId,
+            ownerId: userId,
         };
 
         if (hints) exercise.hints = getHintsAsArray(hints);
@@ -741,6 +744,7 @@ exports.deleteOneById = async (req, res) => {
 
 // TODO: Refactor (remove duplicate code, see LessonTheory)
 exports.uploadFiles = async (req, res) => {
+    const userId = req.user._id.toString();
     const { exerciseId } = req.params;
 
     const containerClient = exerciseBlobService.getContainerClient();
@@ -776,8 +780,9 @@ exports.uploadFiles = async (req, res) => {
                 containerName: "exercises",
                 sourceType: `/exercitii`,
                 sourceId: exerciseId, // exerciseId is defined only in editMode
+                ownerId: userId,
                 createdOn: new Date(),
-                createdBy: { id: req.user._id.toString(), name: `${req.user.firstName} ${req.user.lastName}` },
+                createdBy: { id: userId, name: `${req.user.firstName} ${req.user.lastName}` },
             }));
 
             if (filesToDB.length > 0) await fileService.insertMany(filesToDB);

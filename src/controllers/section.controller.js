@@ -155,6 +155,7 @@ exports.createOrEditGet = async (req, res) => {
 };
 
 exports.createOrEditPost = async (req, res) => {
+    const userId = req.user._id.toString();
     try {
         const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
         if (!canCreateOrEditCourse) {
@@ -177,6 +178,7 @@ exports.createOrEditPost = async (req, res) => {
 
             sectionService.updateOne(section);
         } else {
+            section.ownerId = userId;
             const result = await sectionService.insertOne(section);
             section._id = result.insertedId;
         }
