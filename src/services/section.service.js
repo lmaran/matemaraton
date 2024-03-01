@@ -8,9 +8,21 @@ exports.getAll = async () => {
     return db.collection(collection).find().toArray();
 };
 
+exports.getAllForUser = async (user) => {
+    const db = await mongoHelper.getDb();
+    const filter = mongoHelper.getAuthFilterForAll(user);
+    return db.collection(collection).find(filter).toArray();
+};
+
 exports.getOneById = async (id) => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).findOne({ _id: new ObjectId(id) });
+};
+
+exports.getOneByIdForUser = async (id, user) => {
+    const db = await mongoHelper.getDb();
+    const filter = mongoHelper.getAuthFilterForOneById(user, id);
+    return db.collection(collection).findOne(filter);
 };
 
 exports.updateOne = async (item) => {

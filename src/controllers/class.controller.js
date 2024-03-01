@@ -119,7 +119,7 @@ exports.createOrEditPost = async (req, res) => {
         const removedFields = {};
 
         modifiedFields.modifiedOn = new Date();
-        modifiedFields.modifiedById = req.user._id.toString();
+        modifiedFields.modifiedById = req.user?._id?.toString();
 
         if (cls.level) modifiedFields.level = cls.level;
         else removedFields.level = "";
@@ -139,7 +139,7 @@ exports.createOrEditPost = async (req, res) => {
         classService.updateOne(classId, modifiedFields, removedFields);
     } else {
         modifiedFields.createdOn = new Date();
-        modifiedFields.createdById = req.user._id.toString();
+        modifiedFields.createdById = req.user?._id?.toString();
 
         if (cls.level) modifiedFields.level = cls.level;
         if (cls.position) modifiedFields.position = cls.position;

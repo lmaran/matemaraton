@@ -58,7 +58,7 @@ exports.enrollInClassPost = async (req, res) => {
 
         // dynamic validations
         if (!req.user.isAdmin) {
-            const enrollRequestsByParent = await enrollService.getAllByClassIdAndParentId(req.body.classId, req.user._id);
+            const enrollRequestsByParent = await enrollService.getAllByClassIdAndParentId(req.body.classId, req.user?._id);
             if (enrollRequestsByParent.length > 0) {
                 const validationErrors = [
                     {
@@ -73,7 +73,7 @@ exports.enrollInClassPost = async (req, res) => {
 
         const enroll = {
             classId: req.body.classId,
-            parentId: req.user._id,
+            parentId: req.user?._id,
             studentLastName: req.body.studentLastName,
             studentFirstName: req.body.studentFirstName,
             mathAvgGrade1: req.body.mathAvgGrade1,
@@ -81,7 +81,7 @@ exports.enrollInClassPost = async (req, res) => {
             schoolName: req.body.schoolName,
             observations: req.body.observations,
             createdOn: new Date(),
-            createdBy: req.user._id,
+            createdBy: req.user?._id,
         };
 
         await enrollService.insertOne(enroll);
