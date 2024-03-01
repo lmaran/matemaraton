@@ -206,6 +206,7 @@ exports.createOrEditGet = async (req, res) => {
 };
 
 exports.createOrEditPost = async (req, res) => {
+    const userId = req.user._id.toString();
     try {
         const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
         if (!canCreateOrEditCourse) {
@@ -249,8 +250,9 @@ exports.createOrEditPost = async (req, res) => {
         } else {
             const courseIdObj = courseService.getObjectId();
             course._id = courseIdObj;
-            courseId = courseIdObj.toString();
+            course.ownerId = userId;
 
+            courseId = courseIdObj.toString();
             await courseService.insertOne(course);
         }
 

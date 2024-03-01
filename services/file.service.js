@@ -34,6 +34,7 @@ exports.deleteAllByIds = async (fileIds) => {
 
 exports.insertOne = async (item) => {
     const db = await mongoHelper.getDb();
+    item.createdOn = new Date();
     return db.collection(collection).insertOne(item);
 };
 
