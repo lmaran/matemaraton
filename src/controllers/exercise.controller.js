@@ -984,9 +984,11 @@ const addExerciseToLocation = async (lessonId, levelId, positionId, exerciseId) 
     // Add all the new exercises within the current level and sort the result
     lesson.exercises = (lesson.exercises || []).concat(newExercises).sort((exerciseA, exerciseB) => exerciseA.levelId - exerciseB.levelId);
 
-    const updateResult = await lessonService.updateOne(lesson);
+    await lessonService.updateOne(lesson);
 
-    if (updateResult.modifiedCount != 1) return { isValid: false, message: "Eroare la salvarea în DB!" };
+    //TODO: If no changes, updateResult.modifiedCount return 0 - fix it
+    // const updateResult = await lessonService.updateOne(lesson);
+    // if (updateResult.modifiedCount != 1) return { isValid: false, message: "Eroare la salvarea în DB!" };
 
     return { isValid: true };
 };
