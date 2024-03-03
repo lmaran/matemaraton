@@ -1,21 +1,17 @@
 const katex = require("katex");
 const markdownItCollapsible = require("markdown-it-collapsible");
-const tm = require("markdown-it-texmath");
+const markdownItTexMath = require("markdown-it-texmath");
 const markdownItDiv = require("markdown-it-div");
+const markdownItHighlightJS = require("markdown-it-highlightjs");
 
-const md = require("markdown-it")()
-    .use(markdownItCollapsible)
-    .use(tm, {
-        engine: katex,
-        delimiters: "dollars",
-        katexOptions: {
-            macros: { "\\RR": "\\mathbb{R}", "\\Q": "\\mathbb{Q}" },
-            minRuleThickness: 0.05,
-            fleqn: true,
-            throwOnError: false,
-        },
-    })
-    .use(markdownItDiv);
+const md = require("markdown-it")();
+
+md.use(markdownItCollapsible);
+
+// If you use markdown-it-attrs, make sure to include it after markdown-it-highlightjs if you want inline code highlighting to work:
+// https://github.com/valeriangalliat/markdown-it-highlightjs
+md.use(markdownItHighlightJS, { inline: false });
+md.use(markdownItDiv);
 
 // added "minRuleThickness" option because dividing lines for \frac and \dfrac sometimes disappear (Chrome, zoom 100%)
 // default value is 0.04 (as defined in Latex specs) and seems that Chrome rounds down  sub-pixel lines
@@ -27,12 +23,20 @@ const md = require("markdown-it")()
 // by default, in "displayMode" the text is centered
 // in Latex, there is a package (fleqn) for left align:
 // https://tex.stackexchange.com/questions/28650/how-can-i-use-an-align-environment-flush-left
+md.use(markdownItTexMath, {
+    engine: katex,
+    delimiters: "dollars",
+    katexOptions: {
+        macros: { "\\RR": "\\mathbb{R}", "\\Q": "\\mathbb{Q}" },
+        minRuleThickness: 0.05,
+        fleqn: true,
+        throwOnError: false,
+    },
+});
 
 exports.render = (source) => {
     md.renderer.rules.table_open = function () {
         return '<table class="table2">';
     };
-
-    //console.log(source);
     return md.render(source);
 };
