@@ -12,11 +12,6 @@
     </ol>
 </nav>
 
-<h1 class="d-inline-block">Secțiune: {{section.name}}
-    <span class="hide-on-print">
-        <a href="/sectiuni/{{prevSectionId}}/modifica" class="btn btn-link fs-3 p-0 align-baseline {{#unless prevSectionId}}disabled{{/unless}}"><i class="bi bi-arrow-left-circle"></i></a>
-        <a href="/sectiuni/{{nextSectionId}}/modifica" class="btn btn-link fs-3 p-0 align-baseline {{#unless nextSectionId}}disabled{{/unless}}"><i class="bi bi-arrow-right-circle"></i></a>
-    </span>
-</h1>
+<h1 class="d-inline-block">Secțiune: {{section.name}}</h1>
 
 <pre><code>{{{sectionAsPrettyJson}}}</code></pre>

@@ -14,14 +14,7 @@
     </ol>
 </nav>
 
-<h1 class="d-inline-block">{{#if isEditMode}}Secțiune: {{section.name}}{{else}}Secțiune nouă{{/if}}
-    {{#if isEditMode}}
-    <span class="hide-on-print">
-        <a href="/sectiuni/{{prevSectionId}}/modifica" class="btn btn-link fs-3 p-0 align-baseline {{#unless prevSectionId}}disabled{{/unless}}"><i class="bi bi-arrow-left-circle"></i></a>
-        <a href="/sectiuni/{{nextSectionId}}/modifica" class="btn btn-link fs-3 p-0 align-baseline {{#unless nextSectionId}}disabled{{/unless}}"><i class="bi bi-arrow-right-circle"></i></a>
-    </span>
-    {{/if}}
-</h1>
+<h1 class="d-inline-block">{{#if isEditMode}}Secțiune: {{section.name}}{{else}}Secțiune nouă{{/if}}</h1>
 
 {{#if isEditMode}}
 <ul class="nav nav-tabs">
@@ -38,6 +31,8 @@
     <div class="tab-pane show {{#if isCoursesTabActive}}active{{/if}}" id="chapters-tab-pane" role="tabpanel" aria-labelledby="chapters-tab" tabindex="0">
         <section class="mt-4">
             {{#if isEditMode}}
+
+            <div class="mb-3">{{{section.descriptionPreview}}}</div>
 
             <ul class="mt-2">
                 {{#each section.courses}}

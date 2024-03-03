@@ -37,6 +37,10 @@
         <section class="mt-4">
             {{#if isEditMode}}
 
+            <div class="text-muted mb-3">
+                {{{chapter.descriptionPreview}}}
+            </div>
+
             {{#each chapter.lessons}}
             <div>
                 {{inc @index}}.
