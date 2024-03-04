@@ -30,6 +30,8 @@
         <section class="mt-4">
             {{#if isEditMode}}
 
+            <div class="mb-3 text-muted">{{{course.descriptionPreview}}}</div>
+
             {{#each course.chapters}}
             <div>
                 <strong>{{inc @index}}. {{name}}{{#unless name}}Fără nume{{/unless}}</strong> 
@@ -80,10 +82,26 @@
                 </div>
 
                 <div class="row mb-3">
-                    <div class="col-md-12">
-                        <label for="descriptionInput" class="fw-bold">Descriere:</label>
-                        <textarea type="text" name="description" class="form-control" id="descriptionInput"
-                            placeholder="">{{course.description}}</textarea>
+                    <div class="col-md-12 description-div">
+                        <label for="description-editor-txt"  class="fw-bold">Descriere:</label>
+
+                        {{!-- close the textarea tag on the same line to get rid of the unintended spaces: https://stackoverflow.com/a/34102261 --}}
+                        <textarea id="description-editor-txt" rows="8" name="description" type="text" 
+                            class="description-input drop-area form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}" placeholder="">{{course.description}}</textarea>
+                        <div class="invalid-feedback">{{errors.description.msg}}</div>
+
+                        <div id="description-preview-div" class="mt-0"
+                            style="border: 1px solid #bb815d; padding: 6px 12px; background-color: #fff9f8; min-height:58px">
+                            {{{course.descriptionPreview}}}
+                        </div>
+
+                        {{!-- Description menu --}}
+                        <div class="description-menu-div hide-on-print clearfix">
+                            <div class="float-end">
+                                <a id="toggle-description-editor-btn" href="">{{#if isEditMode}}Editează{{else}}Ascunde{{/if}}</a>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
@@ -166,7 +184,4 @@
 {{#section 'script'}}
 <script type="module" src="/js/eventBinders/course-create-or-edit.event-binder.js"></script>
 {{/section}}
-
-
-
 
