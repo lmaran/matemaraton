@@ -13,6 +13,10 @@ exports.getOneById = async (req, res) => {
         const course = await courseService.getOneById(courseId);
         if (!course) return res.status(500).send("Curs negăsit!");
 
+        if (course.description) {
+            course.descriptionPreview = markdownService.render(course.description);
+        }
+
         // TODO: refactor (duplicates, see createOrEditGet and getCourseChapter)
         const lessonIds = lessonHelper.getAllLessonIdsFromCourse(course);
         const allLessonsFromDB = await lessonService.getAllByIds(lessonIds);
@@ -145,6 +149,10 @@ exports.createOrEditGet = async (req, res) => {
         if (isEditMode) {
             const course = await courseService.getOneById(courseId);
             if (!course) return res.status(500).send("Curs negăsit!");
+
+            if (course.description) {
+                course.descriptionPreview = markdownService.render(course.description);
+            }
 
             data.sectionId = course.sectionId;
 

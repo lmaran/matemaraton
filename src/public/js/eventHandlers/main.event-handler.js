@@ -98,6 +98,10 @@ export const eventHandler = {
         // If the cart is empty, hide the red badge and also some dropdown menu items
         const elements = document.querySelectorAll(".hide-on-empty-cart");
         elements.forEach((x) => x.classList.toggle("d-none", cartItems.length == 0));
+
+        // If the cart is not empty, show the cart element. If we try to use the existing inverse logic (hide-on-empty-cart), then we encounter some flicker
+        const cartLi = document.getElementById("cart-li");
+        cartLi.classList.toggle("d-none", cartItems.length == 0);
     },
 
     clearCart: async () => {

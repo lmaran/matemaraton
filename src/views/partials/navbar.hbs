@@ -47,12 +47,8 @@ if 2 similar sections are used, the last one will override the first one --}}
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
 
                 {{#if @root.user}}
-                <li class="nav-item dropdown">
-                    {{!-- <span id="cart-span" class="position-relative _me-2 text-secondary d-inline-block" data-bs-toggle="dropdown" role="button">
-                        <i class="fs-4 bi bi-bag"></i>
-                        <span id="cart-badge" class="position-absolute top-0 badge rounded-pill bg-danger" style="left:12px"></span>
-                    </span> --}}
-
+                {{!-- We hide it by default in order to avoid flickering --}}
+                <li id="cart-li" class="nav-item dropdown d-none">
                     <a class="nav-link dropdown-toggle d-inline" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                         <span id="cart-span" class="position-relative me-2 d-inline-block">
                             <i class="fs-4 bi bi-bag"></i>
@@ -99,13 +95,5 @@ if 2 similar sections are used, the last one will override the first one --}}
             </ul>
 
         </div>
-
-
-
-        {{!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" style="margin-left:10px">
-            <span class="navbar-toggler-icon"></span>
-        </button> --}}
-
     </div>
 </nav>
