@@ -18,7 +18,6 @@ exports.getOneById = async (req, res) => {
         const allLessonsFromDB = await lessonService.getAllByIds(lessonIds);
 
         (course.chapters || []).forEach((chapter) => {
-            chapter.numberOfActiveLessons = 0;
             chapter.lessons = [];
             if (chapter.lessonIds) {
                 chapter.lessonIds.forEach((lessonId) => {
@@ -31,8 +30,6 @@ exports.getOneById = async (req, res) => {
                             exercises: lesson.exercises,
                             isActive: !!(lesson.exercises?.length || lesson.theory?.text),
                         };
-
-                        if (newLesson.isActive) chapter.numberOfActiveLessons++;
 
                         chapter.lessons.push(newLesson);
                     }
@@ -156,7 +153,6 @@ exports.createOrEditGet = async (req, res) => {
             const allLessonsFromDB = await lessonService.getAllByIds(lessonIds);
 
             (course.chapters || []).forEach((chapter) => {
-                chapter.numberOfActiveLessons = 0;
                 chapter.lessons = [];
                 if (chapter.lessonIds) {
                     chapter.lessonIds.forEach((lessonId) => {
@@ -169,8 +165,6 @@ exports.createOrEditGet = async (req, res) => {
                                 exercises: lesson.exercises,
                                 isActive: !!(lesson.exercises?.length || lesson.theory?.text),
                             };
-
-                            if (newLesson.isActive) chapter.numberOfActiveLessons++;
 
                             chapter.lessons.push(newLesson);
                         }
@@ -298,6 +292,7 @@ exports.jsonGetOneById = async (req, res) => {
     const data = {
         courseId: course._id,
         courseCode: course.code,
+        courseName: course.name,
         courseAsPrettyJson,
         canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
     };

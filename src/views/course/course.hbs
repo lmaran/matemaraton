@@ -10,19 +10,15 @@
     </ol>
 </nav>
 
-<h1>Curs {{course.code}}</h1>
-
-<h3 class=" font-weight-light">{{course.name}}</h3>
+<h1>{{course.name}}</h1>
 
 <div class="h4 font-weight-light">{{course.descriptionPreview}}</div>
 
 {{#each course.chapters}}
 <div>
     <strong>{{inc @index}}. {{name}}{{#unless name}}Fără nume{{/unless}}</strong> 
-    
-    {{#if numberOfActiveLessons }}
-        (<a href="/cursuri/{{@root.course._id}}/capitole/{{id}}">{{ numberOfActiveLessons }}</a>)
-    {{/if}}
+
+    <a class="text-decoration-none" href="/cursuri/{{@root.course._id}}/capitole/{{id}}"><i class="bi bi-arrow-right-square"></i></a>
 
     {{#each lessons}}
         <div class="ps-3">

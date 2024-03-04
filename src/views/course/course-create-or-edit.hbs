@@ -12,7 +12,7 @@
 </nav>
 
 
-<h1>{{#if isEditMode}}Curs {{course.code}}{{else}}Curs nou{{/if}}</h1>
+<h1>{{#if isEditMode}}{{course.name}}{{else}}Curs nou{{/if}}</h1>
 
 {{#if isEditMode}}
 <ul class="nav nav-tabs">
@@ -34,11 +34,7 @@
             <div>
                 <strong>{{inc @index}}. {{name}}{{#unless name}}Fără nume{{/unless}}</strong> 
                 
-                {{#if numberOfActiveLessons }}
-                    (<a href="/cursuri/{{@root.course._id}}/capitole/{{id}}/modifica">{{ numberOfActiveLessons }}</a>)
-                {{else}}
-                    <a class="text-decoration-none" href="/cursuri/{{@root.course._id}}/capitole/{{id}}/modifica">...</a>
-                {{/if}}
+                <a class="text-decoration-none" href="/cursuri/{{@root.course._id}}/capitole/{{id}}/modifica"><i class="bi bi-arrow-right-square"></i></a>
 
                 {{#each lessons}}
                     <div class="ps-3">

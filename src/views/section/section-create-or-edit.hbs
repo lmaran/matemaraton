@@ -14,7 +14,7 @@
     </ol>
 </nav>
 
-<h1 class="d-inline-block">{{#if isEditMode}}Secțiune: {{section.name}}{{else}}Secțiune nouă{{/if}}</h1>
+<h1 class="d-inline-block">{{#if isEditMode}}{{section.name}}{{else}}Secțiune nouă{{/if}}</h1>
 
 {{#if isEditMode}}
 <ul class="nav nav-tabs">
@@ -41,6 +41,7 @@
                             <a href="/cursuri/{{_id}}/modifica">{{name}} </a>
                         {{else}}
                             <span class="text-muted">{{name}}</span>
+                            <a class="pl-1 text-decoration-none" href="/cursuri/{{_id}}/modifica">...</a>
                         {{/if}}
                 {{/each}}
             </ul>
