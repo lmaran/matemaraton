@@ -225,6 +225,7 @@ exports.jsonGetOneById = async (req, res) => {
     const data = {
         courseId,
         courseCode: course.code,
+        chapterName: chapter.name,
         courseChapterAsPrettyJson,
         chapterIndex,
         chapterId: chapter.id,

@@ -19,7 +19,7 @@
     {{else}}
         <span class="h2">{{name}}:</span> 
         <a role="button" class="btn btn-primary btn-xs align-text-bottom" href="/cursuri/adauga?sectionId={{_id}}"><i class="bi bi-plus"></i>Adaugă curs</a>
-        <a class="pl-1 text-decoration-none" href="/sectiuni/{{_id}}/modifica">...</a>
+        <a role="button" class="btn btn-light btn-xs align-text-bottom" href="/sectiuni/{{_id}}/modifica"><i class="bi bi-arrow-right"></i></a>
     {{/if}}
     </div>
 
@@ -30,7 +30,8 @@
                 {{#if isActive}}
                     <a href="/cursuri/{{_id}}/modifica">{{name}} </a>
                 {{else}}
-                    <span class="text-muted">{{name}}</span> <a class="pl-1 text-decoration-none" href="/cursuri/{{_id}}/modifica">...</a>
+                    <span class="text-muted">{{name}}</span> 
+                    <a class="pl-1 text-decoration-none" href="/cursuri/{{_id}}/modifica">...</a>
                 {{/if}}
         {{/each}}
     </ul>

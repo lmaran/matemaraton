@@ -115,6 +115,7 @@ exports.jsonGetOneById = async (req, res) => {
 
             lessonId,
             lessonIndex,
+            lessonName: lesson.name,
 
             lessonAsPrettyJson,
 
