@@ -29,6 +29,7 @@
 
 {{!-- {{toJSON lesson}} --}}
 
+{{#if (or lesson.levelsObj.total lesson.sheets.length)}}
 <ul class="nav nav-tabs hide-on-print">
     <li class="nav-item">
         <a class="nav-link {{#if isTheoryTabActive}}active{{/if}}" href="/lectii/{{lessonId}}">Teorie</a>
@@ -40,6 +41,7 @@
         <a class="nav-link {{#if isSheetsTabActive}}active{{/if}}" href="/lectii/{{lessonId}}?view=fise">Fișe ({{lesson.sheets.length}})</a>
     </li>
 </ul>
+{{/if}}
 
 <div class="tab-content" id="myTabContent">
 

@@ -36,7 +36,7 @@ md.use(markdownItTexMath, {
 
 exports.render = (source) => {
     md.renderer.rules.table_open = function () {
-        return '<table class="table2">';
+        return '<table class="table table-bordered table-sm">';
     };
     return md.render(source);
 };
