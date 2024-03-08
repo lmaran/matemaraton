@@ -43,7 +43,7 @@
                         {{inc @../index}}.{{inc @index}}. 
                         {{#if isActive}}
                             <a class="pl-1" href="/lectii/{{id}}/modifica">{{name}}</a>
-                            <span class="text-muted">({{ exercises.length }}{{#unless exercises.length}}0{{/unless}})</span>
+                            {{#if exercises.length}}<span class="text-muted">({{exercises.length}})</span>{{/if}}
                         {{else}}
                             <span class="text-muted">{{name}}</span>
                             <a class="pl-1 text-decoration-none" href="/lectii/{{id}}/modifica">...</a>
@@ -66,7 +66,7 @@
                 <div class="row mb-3">
                     <div class="col-md-3">
                         <label for="codeInput" class="fw-bold">Cod:</label>
-                        <input type="text" name="code" class="form-control" id="codeInput" placeholder="" value="{{course.code}}">
+                        <input type="text" name="code" class="form-control" id="codeInput" placeholder="" value="{{course.code}}" autofocus>
                         <small>
                             <p class="text-muted mb-0">Ex: M105</p>
                         </small>

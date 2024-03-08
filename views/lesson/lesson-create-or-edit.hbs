@@ -51,7 +51,7 @@
 
                     {{!-- close the textarea tag on the same line to get rid of the unintended spaces: https://stackoverflow.com/a/34102261 --}}
                     <textarea id="theory-editor-txt" rows="8" name="theory" type="text" 
-                        class="theory-input drop-area form-control {{#if errors.lastName}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}" placeholder="">{{lesson.theory.text}}</textarea>
+                        class="theory-input drop-area form-control {{#if errors.theory}}is-invalid {{/if}} {{#if isEditMode}}d-none{{/if}}" placeholder="">{{lesson.theory.text}}</textarea>
                     <div class="invalid-feedback">{{errors.theory.msg}}</div>
 
                     <div id="theory-preview-div" class="mt-0"
@@ -190,7 +190,7 @@
             <div class="row mb-3">
                 <div class="col-md-12">
                     <label for="nameInput" class="fw-bold">Titlul lecției:</label>
-                    <input type="text" name="name" class="form-control" id="nameInput" placeholder=""
+                    <input type="text" name="name" class="form-control" id="nameInput" placeholder="" autofocus
                         value="{{lesson.name}}">
                 </div>
             </div>
