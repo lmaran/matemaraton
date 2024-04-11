@@ -263,7 +263,6 @@ exports.editGet = async (req, res) => {
         if (!course) return res.status(500).send("Curs negăsit!");
 
         const { chapter, chapterIndex, lessonIndex, prevLessonId, nextLessonId } = lessonHelper.getLessonParentInfo(course, lessonId);
-        if (!lesson) return res.status(500).send("Lecție negăsită!");
 
         if (lesson.theory) {
             lesson.theory.textPreview = markdownService.render(lesson.theory.text);
@@ -325,7 +324,7 @@ exports.editGet = async (req, res) => {
 };
 
 exports.editPost = async (req, res) => {
-    const { name, description, isHidden, theory } = req.body;
+    const { name, description, isHidden, position, theory } = req.body;
     const { lessonId } = req.params;
 
     try {
@@ -336,6 +335,11 @@ exports.editPost = async (req, res) => {
 
         const lesson = await lessonService.getOneById(lessonId);
         if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+        const course = await courseService.getOneById(lesson.courseId);
+        if (!course) return res.status(500).send("Curs negăsit!");
+
+        const { chapter } = lessonHelper.getLessonParentInfo(course, lessonId);
 
         // Update lesson fields
         lesson.name = name;
@@ -349,6 +353,9 @@ exports.editPost = async (req, res) => {
             lesson.isHidden = true;
         } else delete lesson.isHidden;
 
+        arrayHelper.moveOrInsertStringAtIndex(chapter.lessonIds, lessonId, position);
+
+        courseService.updateOne(course);
         lessonService.updateOne(lesson);
 
         res.redirect(`/lectii/${lessonId}/modifica`);
