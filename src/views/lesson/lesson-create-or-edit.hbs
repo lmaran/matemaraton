@@ -89,7 +89,9 @@
             <div class="row mt-3">
                 <div class="col-md-6">
                     
-                    <label class="fw-bold {{#if lesson.files.length}}d-none{{/if}}"> Fișiere: </label>
+                    {{#if lesson.files}}
+                    <label class="fw-bold"> Fișiere: </label>
+                    {{/if}}
                     
                     <table id="gallery-tbl" class="table thead-light table-bordered table-hover">
                         <tbody>

@@ -247,7 +247,7 @@ export const uploadFilesHelper = {
 
             // 1. Add image preview in markdownEditor
             if (markdownEditorTxt) {
-                if (markdownEditorTxt.value) markdownEditorTxt.value += "\\\n"; // add the image on a new line
+                if (markdownEditorTxt.value) markdownEditorTxt.value += "\n\n"; // add the image at the end of the file
                 markdownEditorTxt.value += isImage ? `![](${file.url})` : `[${file.name}](${file.url})`;
                 markdownEditorTxt.dispatchEvent(new Event("change"));
             }

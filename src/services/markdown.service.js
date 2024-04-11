@@ -10,7 +10,7 @@ md.use(markdownItCollapsible);
 
 // If you use markdown-it-attrs, make sure to include it after markdown-it-highlightjs if you want inline code highlighting to work:
 // https://github.com/valeriangalliat/markdown-it-highlightjs
-md.use(markdownItHighlightJS, { inline: true });
+md.use(markdownItHighlightJS);
 md.use(markdownItDiv);
 
 // added "minRuleThickness" option because dividing lines for \frac and \dfrac sometimes disappear (Chrome, zoom 100%)
