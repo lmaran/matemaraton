@@ -5,53 +5,11 @@ const statementPreviewDiv = document.getElementById("statement-preview-div");
 const answerPreviewDiv = document.getElementById("answer-preview-div");
 const solutionPreviewDiv = document.getElementById("solution-preview-div");
 
-// let x = 1;
-// const observer = new MutationObserver((mutationRecords) => {
-//     // console.log(mutationRecords); // console.log(the changes)
-//     window.mermaid.run();
-//     console.log(x++);
-//     // observer.disconnect();
-// });
-
-// // observe everything except attributes
-// observer.observe(statementPreviewDiv, {
-//     attributes: false,
-//     childList: true, // observe direct children
-//     subtree: true, // and lower descendants too
-//     // characterDataOldValue: true, // pass old data to callback
-//     // characterData: false,
-// });
-
 export const eventHandlers = {
     getStatementPreview: async (event) => {
         const data = { markdown: event.target.value };
-
-        const res = await markdownService.getRenderedMarkdown(data);
-        // console.log(res);
-        statementPreviewDiv.innerHTML = res;
-
-        const sameStatementPreviewDiv = document.getElementById("statement-preview-div");
-        console.log("Before:");
-        console.log(sameStatementPreviewDiv.innerHTML);
-
-        console.log("Run mermaid!");
-        window.mermaid.run(); // mermaid render in browser, after page load so. If an element is modified after, we have to render it's content again
-
-        console.log("After:");
-        const same2StatementPreviewDiv = document.getElementById("statement-preview-div");
-        console.log(same2StatementPreviewDiv.innerHTML);
-        // setTimeout(function () {
-        //     window.mermaid.run();
-        // }, 0);
-
-        await window.mermaid.run();
-
-        // window.mermaid.run({
-        //     querySelector: ".mermaid",
-        //     postRenderCallback: (id) => {
-        //         console.log(id);
-        //     },
-        // });
+        statementPreviewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
+        window.mermaid.run(); // mermaid render in browser, after page load. If an element is modified after that, we have to render it's content again
     },
     getAnswerPreview: async (event) => {
         const data = { markdown: event.target.value };
@@ -60,6 +18,7 @@ export const eventHandlers = {
     getSolutionPreview: async (event) => {
         const data = { markdown: event.target.value };
         solutionPreviewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
+        window.mermaid.run();
     },
     handleKeyupForAllHints: async (event) => {
         if (event.target && event.target.classList.contains("hint-editor-txt")) {
