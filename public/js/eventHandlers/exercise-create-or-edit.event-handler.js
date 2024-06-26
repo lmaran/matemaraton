@@ -5,11 +5,39 @@ const statementPreviewDiv = document.getElementById("statement-preview-div");
 const answerPreviewDiv = document.getElementById("answer-preview-div");
 const solutionPreviewDiv = document.getElementById("solution-preview-div");
 
+// let x = 1;
+// const observer = new MutationObserver((mutationRecords) => {
+//     // console.log(mutationRecords); // console.log(the changes)
+//     window.mermaid.run();
+//     console.log(x++);
+//     // observer.disconnect();
+// });
+
+// // observe everything except attributes
+// observer.observe(statementPreviewDiv, {
+//     attributes: false,
+//     childList: true, // observe direct children
+//     subtree: true, // and lower descendants too
+//     // characterDataOldValue: true, // pass old data to callback
+//     // characterData: false,
+// });
+
 export const eventHandlers = {
     getStatementPreview: async (event) => {
         const data = { markdown: event.target.value };
+
         statementPreviewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
-        window.mermaid.run(); // mermaid render in browser, after page load so. If an element is modified after, we have to render it's content again
+        // window.mermaid.run(); // mermaid render in browser, after page load so. If an element is modified after, we have to render it's content again
+        // setTimeout(function () {
+        //     window.mermaid.run();
+        // }, 0);
+
+        window.mermaid.run({
+            querySelector: ".mermaid",
+            postRenderCallback: (id) => {
+                console.log(id);
+            },
+        });
     },
     getAnswerPreview: async (event) => {
         const data = { markdown: event.target.value };
