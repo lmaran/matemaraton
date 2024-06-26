@@ -32,12 +32,14 @@ export const eventHandlers = {
         //     window.mermaid.run();
         // }, 0);
 
-        window.mermaid.run({
-            querySelector: ".mermaid",
-            postRenderCallback: (id) => {
-                console.log(id);
-            },
-        });
+        await window.mermaid.run();
+
+        // window.mermaid.run({
+        //     querySelector: ".mermaid",
+        //     postRenderCallback: (id) => {
+        //         console.log(id);
+        //     },
+        // });
     },
     getAnswerPreview: async (event) => {
         const data = { markdown: event.target.value };
