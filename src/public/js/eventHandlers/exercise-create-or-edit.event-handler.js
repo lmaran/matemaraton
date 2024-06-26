@@ -26,8 +26,20 @@ export const eventHandlers = {
     getStatementPreview: async (event) => {
         const data = { markdown: event.target.value };
 
-        statementPreviewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
-        // window.mermaid.run(); // mermaid render in browser, after page load so. If an element is modified after, we have to render it's content again
+        const res = await markdownService.getRenderedMarkdown(data);
+        // console.log(res);
+        statementPreviewDiv.innerHTML = res;
+
+        const sameStatementPreviewDiv = document.getElementById("statement-preview-div");
+        console.log("Before:");
+        console.log(sameStatementPreviewDiv.innerHTML);
+
+        console.log("Run mermaid!");
+        window.mermaid.run(); // mermaid render in browser, after page load so. If an element is modified after, we have to render it's content again
+
+        console.log("After:");
+        const same2StatementPreviewDiv = document.getElementById("statement-preview-div");
+        console.log(same2StatementPreviewDiv.innerHTML);
         // setTimeout(function () {
         //     window.mermaid.run();
         // }, 0);
