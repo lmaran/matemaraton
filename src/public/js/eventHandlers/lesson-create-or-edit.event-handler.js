@@ -24,6 +24,7 @@ export const eventHandlers = {
         const data = { markdown: event.target.value };
         const theoryPreviewDiv = document.getElementById("theory-preview-div");
         theoryPreviewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
+        window.mermaid.run(); // mermaid render in browser, after page load. If an element is modified after that, we have to render it's content again
     },
 
     // TODO refactor (remove duplicate codes, see Exercise)
