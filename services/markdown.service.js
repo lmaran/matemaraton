@@ -3,9 +3,12 @@ const markdownItCollapsible = require("markdown-it-collapsible");
 const markdownItTexMath = require("markdown-it-texmath");
 const markdownItDiv = require("markdown-it-div");
 const markdownItHighlightJS = require("markdown-it-highlightjs");
-
+const mermaid = require("markdown-it-mermaid-plugin");
+const imgSize = require("markdown-it-imsize");
 const md = require("markdown-it")();
 
+md.use(mermaid);
+md.use(imgSize);
 md.use(markdownItCollapsible);
 
 // If you use markdown-it-attrs, make sure to include it after markdown-it-highlightjs if you want inline code highlighting to work:

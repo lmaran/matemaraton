@@ -9,6 +9,7 @@ export const eventHandlers = {
     getStatementPreview: async (event) => {
         const data = { markdown: event.target.value };
         statementPreviewDiv.innerHTML = await markdownService.getRenderedMarkdown(data);
+        window.mermaid.run(); // mermaid render in browser, after page load so. If an element is modified after, we have to render it's content again
     },
     getAnswerPreview: async (event) => {
         const data = { markdown: event.target.value };
