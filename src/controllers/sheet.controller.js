@@ -182,8 +182,8 @@ exports.createGet = async (req, res) => {
             data.lessonId = lessonId;
             data.lessonIndex = lessonIndex;
 
-            data.sheet.name = `TemaX-cls${course.grade}: ${lesson.name}`;
-            data.sheet.title = `#### ${lesson.name}\r\n##### Temă individuală\r\n ${fullUserNameText}[matemaraton.ro](https://matemaraton.ro), ${currentDateStr}`;
+            data.sheet.name = `TemaX: ${lesson.name}`;
+            data.sheet.title = `#### ${lesson.name}\r\n##### Tema X\r\n ${fullUserNameText} MateMaraton, ${currentDateStr}`;
         }
 
         (data.sheet.titlePreview = markdownService.render(data.sheet.title)),

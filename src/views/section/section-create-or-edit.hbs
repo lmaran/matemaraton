@@ -38,7 +38,7 @@
                 {{#each section.courses}}
                     <li>{{code}}: 
                         {{#if isActive}}
-                            <a href="/cursuri/{{_id}}/modifica">{{name}} </a>
+                            <a href="/cursuri/{{_id}}/modifica">{{#if name}}{{name}}{{else}}...{{/if}} </a>
                         {{else}}
                             <span class="text-muted">{{name}}</span>
                             <a class="pl-1 text-decoration-none" href="/cursuri/{{_id}}/modifica">...</a>
