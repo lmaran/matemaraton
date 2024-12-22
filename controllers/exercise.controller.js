@@ -553,7 +553,7 @@ exports.movePost = async (req, res) => {
 
         let isValid, message;
         // Remove the exercise from the old location
-        if (lessonIdNew != lessonIdOld) {
+        if (lessonIdNew != lessonIdOld || levelIdNew != levelIdOld) {
             ({ isValid, message } = await removeExerciseFromLocation(lessonIdOld, exerciseId));
             if (!isValid) return res.status(500).send(message);
         }
