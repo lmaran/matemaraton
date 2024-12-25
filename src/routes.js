@@ -96,6 +96,12 @@ router.get("/cursuri/:courseId/modifica", isAuthenticated, courseController.crea
 router.post("/cursuri/:courseId/modifica", isAuthenticated, courseController.createOrEditPost);
 router.get("/cursuri/:courseId", courseController.getOneById);
 router.get("/cursuri/:courseId/capitole", isAuthenticated, courseController.getOneById); // only for url access
+router.get("/cursuri/:courseId/available-chapters", isAuthenticated, courseController.getAvailableChapters);
+router.get(
+    "/cursuri/:courseId/capitole/:chapterId/lectii/:lessonId/available-chapter-lessons",
+    isAuthenticated,
+    courseController.getAvailableChapterLessons
+);
 router.post("/cursuri/:courseId/sterge", isAuthenticated, courseController.deleteOneById);
 
 // course-chapters
@@ -114,6 +120,8 @@ router.get("/lectii/:lessonId", lessonController.getOneById);
 router.get("/lectii/:lessonId/json", isAuthenticated, lessonController.jsonGetOneById);
 router.get("/lectii/:lessonId/modifica", isAuthenticated, lessonController.editGet);
 router.post("/lectii/:lessonId/modifica", isAuthenticated, lessonController.editPost);
+router.get("/lectii/:lessonId/muta", isAuthenticated, lessonController.moveGet);
+router.post("/lectii/:lessonId/muta", isAuthenticated, lessonController.movePost);
 router.post("/lectii/:lessonId/sterge", isAuthenticated, lessonController.deleteOneById);
 router.post("/lectii/:lessonId/upload-files", isAuthenticated, lessonController.uploadFiles);
 router.delete(`/lectii/fisiere/:fileId`, lessonController.deleteFileById); // delete at create

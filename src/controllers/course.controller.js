@@ -1,6 +1,7 @@
 const courseService = require("../services/course.service");
 const lessonService = require("../services/lesson.service");
 const autz = require("../services/autz.service");
+const courseHelper = require("../helpers/course.helper");
 const lessonHelper = require("../helpers/lesson.helper");
 const arrayHelper = require("../helpers/array.helper");
 const prettyJsonHelper = require("../helpers/pretty-json.helper");
@@ -373,5 +374,62 @@ exports.addLessonsIdsRecursively = (item, result) => {
                 this.addLessonsIdsRecursively(item, result);
             });
         }
+    }
+};
+
+exports.getAvailableChapters = async (req, res) => {
+    const { courseId } = req.params;
+
+    try {
+        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+        if (!canCreateOrEditCourse) {
+            return res.status(403).send("Lipsă permisiuni!"); // forbidden
+        }
+
+        const course = await courseService.getOneById(courseId);
+        if (!course) return res.status(500).send("Curs negăsit!");
+
+        const availableChapters = courseHelper.getAvailableChaptersFromCourse(course);
+
+        const data = {
+            availableChapters,
+        };
+
+        res.send(data);
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
+};
+
+exports.getAvailableChapterLessons = async (req, res) => {
+    const { courseId, chapterId, lessonId } = req.params;
+    let availablePositions, selectedPosition;
+    try {
+        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+        if (!canCreateOrEditCourse) {
+            return res.status(403).send("Lipsă permisiuni!"); // forbidden
+        }
+
+        const course = await courseService.getOneById(courseId);
+        if (!course) return res.status(500).send("Curs negăsit!");
+
+        const chapter = (course.chapters || []).find((x) => x.id == chapterId);
+
+        // TODO: refactor (duplicates, see GetOneById or Move)
+        const lessonIds = lessonHelper.getAllLessonIdsFromChapter(chapter);
+        const lessonsFromDB = await lessonService.getAllByIds(lessonIds);
+
+        const availableLessons = lessonHelper.getAvailableLessonsFromChapter(chapter, lessonsFromDB);
+
+        ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(availableLessons, lessonId));
+
+        const data = {
+            selectedPosition,
+            availablePositions,
+        };
+
+        res.send(data);
+    } catch (err) {
+        return res.status(500).json(err.message);
     }
 };

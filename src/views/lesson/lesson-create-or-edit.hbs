@@ -237,9 +237,10 @@
                     <button type="submit"
                         formaction="/lectii/{{lessonId}}/sterge"
                         name="deleteBtn" class="btn btn-link"
-                        onclick="return confirm('Ești sigur că vrei să ștergi această lecție?');"><i
-                            class="bi bi-trash-fill"></i>
-                        Șterge</button>
+                        onclick="return confirm('Ești sigur că vrei să ștergi această lecție?');">
+                        <i class="bi bi-trash-fill me-1"></i>Șterge</button>
+
+                    <a href="/lectii/{{lessonId}}/muta" class="btn btn-link"><i class="bi bi-arrows-move me-1"></i>Mută</a>
                     {{/if}}
                 </div>
             </div>
