@@ -1,0 +1,78 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb pe-2">
+        <li class="breadcrumb-item"><a href="/">Acasă</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/modifica">Cursuri</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/modifica">{{courseCode}}</a></li>
+        <li class="breadcrumb-item"><a href="/cursuri/{{courseId}}/capitole/{{chapterId}}/modifica">
+                Cap.{{inc chapterIndex}}</a></li>
+        <li class="breadcrumb-item"><a href="/lectii/{{lessonId}}/modifica?view=exercitii">L.{{inc lessonIndex}}</a></li>
+    </ol>
+</nav>
+
+<h1>Mută lecția:</h1>
+<h2>{{lessonName}}</h2>
+
+{{!-- {{toJSON lesson}} --}}
+
+<form method="post" novalidate onsubmit="saveBtn.disabled = true; return true;">
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <label class="fw-bold">Curs:</label>
+            <select id="courseSelect" name="course" class="form-select">
+                {{#select courseId}}
+                {{#each availableCourses}}
+                <option value="{{_id}}">{{name}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <label class="fw-bold">Capitol:</label>
+            <select id="chapterSelect" name="chapter" class="form-select">
+                {{#select chapterId}}
+                {{#each availableChapters}}
+                <option value="{{id}}">{{name}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <label class="fw-bold">Poziția în listă:</label>
+            <select id="positionSelect" name="position" class="form-select">
+                {{#select selectedPosition}}
+                {{#each availablePositions}}
+                <option value="{{index}}">{{name}}</option>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+    </div>
+
+    <input type="hidden" name="courseId" value="{{courseId}}" />
+    <input type="hidden" name="chapterId" value="{{chapterId}}"/>
+    <input type="hidden" name="lessonId" value="{{lessonId}}" id="lessonId"/>
+    <input type="hidden" name="levelId" value="{{levelId}}" />
+    <input type="hidden" name="positionId" value="{{selectedPosition}}" />
+
+    <div class="row mt-5 mb-3">
+        <div class="col-md-7s offset-md-3s">
+            <button type="submit" name="saveBtn" class="btn btn-primary"><i class="bi bi-save"></i>Salveaza</button>
+
+            <a title="Json" class="btn btn-light" 
+            href="/lectii/{{lessonId}}/modifica?courseId={{courseId}}&levelId={{levelId}}#level{{levelId}}" >
+            <i class="bi bi-x"></i>Renunță</a>
+        </div>
+    </div>
+
+</form>
+
+{{#section 'script'}}
+<script type="module" src="/js/eventBinders/lesson-move.event-binder.js"></script>
+{{/section}}

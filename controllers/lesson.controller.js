@@ -6,6 +6,7 @@ const arrayHelper = require("../helpers/array.helper");
 const markdownService = require("../services/markdown.service");
 const exerciseHelper = require("../helpers/exercise.helper");
 const lessonHelper = require("../helpers/lesson.helper");
+const courseHelper = require("../helpers/course.helper");
 const sheetService = require("../services/sheet.service");
 const dateTimeHelper = require("../helpers/date-time.helper");
 const lessonBlobService = require("../services/lesson-blob.service");
@@ -531,6 +532,120 @@ exports.deleteFileById = async (req, res) => {
     }
 };
 
+exports.moveGet = async (req, res) => {
+    const { lessonId } = req.params;
+
+    let availablePositions, selectedPosition;
+
+    try {
+        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+        if (!canCreateOrEditCourse) {
+            return res.status(403).send("Lipsă permisiuni!"); // forbidden
+        }
+
+        const lesson = await lessonService.getOneById(lessonId);
+        if (!lesson) return res.status(500).send("Lecție negăsită!");
+
+        const courseId = lesson.courseId;
+        const course = await courseService.getOneById(courseId);
+        if (!course) return res.status(500).send("Curs negăsit!");
+
+        const { chapter, chapterIndex, lessonIndex } = lessonHelper.getLessonParentInfo(course, lessonId);
+
+        let availableCourses = await courseService.getCoursesNames();
+        availableCourses = availableCourses.map((c) => {
+            c.name = `${c.code}: ${c.name};`;
+            return c;
+        });
+
+        const availableChapters = courseHelper.getAvailableChaptersFromCourse(course);
+
+        // TODO: refactor (duplicates, see GetOneById or Move)
+        const lessonIds = lessonHelper.getAllLessonIdsFromChapter(chapter);
+        const lessonsFromDB = await lessonService.getAllByIds(lessonIds);
+
+        const availableLessons = lessonHelper.getAvailableLessonsFromChapter(chapter, lessonsFromDB);
+
+        ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(availableLessons, lessonId));
+
+        const data = {
+            courseId,
+            courseCode: course.code,
+
+            chapterId: chapter.id,
+            chapterIndex,
+
+            lessonId,
+            lessonIndex,
+            lessonName: lesson.name,
+
+            availablePositions,
+            selectedPosition,
+
+            availableCourses,
+
+            availableChapters,
+
+            canCreateOrEditCourse: await autz.can(req.user, "create-or-edit:course"),
+        };
+
+        // res.send(data);
+        res.render("lesson/lesson-move", data);
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
+};
+
+exports.movePost = async (req, res) => {
+    const {
+        lessonId,
+
+        courseId: courseIdOld,
+        chapterId: chapterIdOld,
+        positionId: positionIdOld,
+
+        course: courseIdNew,
+        chapter: chapterIdNew,
+        position: positionIdNew,
+    } = req.body;
+
+    const redirectUri = `/cursuri/${courseIdOld}/modifica`;
+
+    try {
+        const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
+        if (!canCreateOrEditCourse) {
+            return res.status(403).send("Lipsă permisiuni!"); // forbidden
+        }
+
+        // If nothing has changed, redirect
+        if (courseIdOld == courseIdOld && chapterIdNew == chapterIdOld && positionIdNew == positionIdOld) {
+            return res.redirect(redirectUri);
+        }
+
+        let isValid, message;
+        // Remove the lesson from the old location
+        //if (courseIdNew != courseIdOld || chapterIdNew != chapterIdOld) {
+        ({ isValid, message } = await removeLessonFromLocation(courseIdOld, chapterIdOld, lessonId));
+        if (!isValid) return res.status(500).send(message);
+        //}
+
+        // Add the lesson to the new location
+        ({ isValid, message } = await addLessonToLocation(courseIdNew, chapterIdNew, positionIdNew, lessonId));
+        if (!isValid) return res.status(500).send(message);
+
+        // Update CourseId for lesson
+        if (courseIdOld != courseIdNew) {
+            const lesson = await lessonService.getOneById(lessonId);
+            lesson.courseId = courseIdNew;
+            await lessonService.updateOne(lesson);
+        }
+
+        res.redirect(redirectUri);
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
+};
+
 // Get all unique exercises in a lesson
 const getAllExercisesInLesson = async (lesson) => {
     let allExercises = [];
@@ -601,4 +716,35 @@ const getLevelsObj = (exercisesRef, exercisesFromDb, clear) => {
     });
 
     return levelsObj;
+};
+
+const removeLessonFromLocation = async (courseId, chapterId, lessonId) => {
+    const course = await courseService.getOneById(courseId);
+    if (!course) return { isValid: false, message: "Curs negăsit!" };
+
+    const chapter = (course.chapters || []).find((x) => x.id == chapterId);
+
+    // Remove the lesson from the course and save to DB
+    chapter.lessonIds = (chapter.lessonIds || []).filter((x) => x != lessonId); // remove from array
+    const updateResult = await courseService.updateOne(course);
+
+    if (updateResult.modifiedCount != 1) return { isValid: false, message: "Eroare la ștergerea din DB!" };
+
+    return { isValid: true };
+};
+
+const addLessonToLocation = async (courseId, chapterId, positionId, lessonId) => {
+    const course = await courseService.getOneById(courseId);
+    if (!course) return { isValid: false, message: "Curs negăsit!" };
+
+    const chapter = (course.chapters || []).find((x) => x.id == chapterId);
+    chapter.lessonIds = chapter.lessonIds || [];
+
+    arrayHelper.moveOrInsertStringAtIndex(chapter.lessonIds, lessonId, positionId);
+
+    const updateResult = await courseService.updateOne(course);
+    //TODO: If no changes, updateResult.modifiedCount return 0 - fix it
+    if (updateResult.modifiedCount != 1) return { isValid: false, message: "Eroare la scrierea în DB!" };
+
+    return { isValid: true };
 };
