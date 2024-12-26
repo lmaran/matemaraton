@@ -273,7 +273,7 @@ exports.createOrEditPost = async (req, res) => {
         await sectionService.updateOne(section);
 
         //res.send(course);
-        res.redirect("/cursuri/modifica");
+        res.redirect(`/sectiuni/${sectionId}/modifica`);
     } catch (err) {
         return res.status(500).json(err.message);
     }

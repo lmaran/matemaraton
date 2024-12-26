@@ -223,7 +223,7 @@ exports.createPost = async (req, res) => {
         courseService.updateOne(course);
         lessonService.insertOne(lesson);
 
-        res.redirect(`/lectii/${lessonId}/modifica`);
+        res.redirect(`/cursuri/${courseId}/capitole/${chapterId}/modifica`);
     } catch (err) {
         return res.status(500).json(err.message);
     }
