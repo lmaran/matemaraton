@@ -5,13 +5,13 @@ const collection = "sections";
 
 exports.getAll = async () => {
     const db = await mongoHelper.getDb();
-    return db.collection(collection).find().toArray();
+    return db.collection(collection).find().sort({ position: 1 }).toArray();
 };
 
 exports.getAllForUser = async (user) => {
     const db = await mongoHelper.getDb();
     const filter = mongoHelper.getAuthFilterForAll(user);
-    return db.collection(collection).find(filter).toArray();
+    return db.collection(collection).find(filter).sort({ position: 1 }).toArray();
 };
 
 exports.getOneById = async (id) => {
@@ -40,6 +40,30 @@ exports.insertOne = async (item) => {
 exports.deleteOneById = async (id) => {
     const db = await mongoHelper.getDb();
     return db.collection(collection).deleteOne({ _id: new ObjectId(id) });
+};
+
+exports.increasePositionsBetweenNewAndOld = async (newPosition, oldPosition) => {
+    const db = await mongoHelper.getDb();
+    // Increase positions of documents between new and old positions (useful for update)
+    await db.collection(collection).updateMany({ position: { $gte: newPosition, $lt: oldPosition } }, { $inc: { position: 1 } });
+};
+
+exports.decreasePositionsBetweenOldAndNew = async (oldPosition, newPosition) => {
+    const db = await mongoHelper.getDb();
+    // Decrease positions of documents between old and new positions (useful for update)
+    await db.collection(collection).updateMany({ position: { $gt: oldPosition, $lte: newPosition } }, { $inc: { position: -1 } });
+};
+
+exports.increasePositionsAbovePosition = async (position) => {
+    const db = await mongoHelper.getDb();
+    // Increase positions of documents above a specified position (useful for insert)
+    await db.collection(collection).updateMany({ position: { $gte: position } }, { $inc: { position: 1 } });
+};
+
+exports.decreasePositionsAbovePosition = async (position) => {
+    const db = await mongoHelper.getDb();
+    // Decrease positions of documents above a specified position (useful for delete)
+    await db.collection(collection).updateMany({ position: { $gt: position } }, { $inc: { position: -1 } });
 };
 
 exports.getObjectId = () => new ObjectId();

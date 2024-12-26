@@ -100,6 +100,19 @@
 
                 <div class="row mb-3">
                     <div class="col-md-6">
+                        <label for="positionSelect" class="fw-bold">Poziția în listă:</label>
+                        <select name="position" class="form-select" id="positionSelect">
+                            {{#select selectedPosition}}
+                            {{#each availablePositions}}
+                            <option value="{{index}}">{{name}}</option>
+                            {{/each}}
+                            {{/select}}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="isPrivateCheck" name="isPrivate" 
                             {{#if (or section.isPrivate isCreateMode)}}checked{{/if}}>

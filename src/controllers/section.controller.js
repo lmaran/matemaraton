@@ -104,6 +104,7 @@ exports.jsonGetAll = async (req, res) => {
 };
 
 exports.createOrEditGet = async (req, res) => {
+    let availablePositions, selectedPosition;
     try {
         const canCreateOrEditCourse = await autz.can(req.user, "create-or-edit:course");
         if (!canCreateOrEditCourse) {
@@ -130,6 +131,10 @@ exports.createOrEditGet = async (req, res) => {
             isGeneralTabActive,
         };
 
+        const availableSections = await sectionService.getAll();
+        // For getAvailablePositions helper method we need an "id" field
+        availableSections.forEach((x) => (x.id = x._id.toString()));
+
         if (isEditMode) {
             const section = await sectionService.getOneById(sectionId);
             if (!section) return res.status(500).send("Categorie negăsită!");
@@ -148,8 +153,16 @@ exports.createOrEditGet = async (req, res) => {
             });
 
             data.section = section;
+
+            ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(availableSections, sectionId));
+        } else {
+            ({ availablePositions, selectedPosition } = arrayHelper.getAvailablePositions(availableSections));
         }
-        //res.send(data);
+
+        data.availablePositions = availablePositions;
+        data.selectedPosition = selectedPosition;
+
+        // res.send(data);
         res.render("section/section-create-or-edit", data);
     } catch (err) {
         return res.status(500).json(err.message);
@@ -167,31 +180,45 @@ exports.createOrEditPost = async (req, res) => {
 
         const isEditMode = !!sectionId;
 
-        const { code, name, description, isPrivate } = req.body;
+        const { code, name, description, isPrivate, position } = req.body;
+        const newPosition = parseInt(position) + 1;
 
-        const section = {
-            code,
-            name,
-            description,
-        };
-
-        if (isPrivate === "on") {
-            // If the 'value' attribute was omitted, the default value for the checkbox is 'on' (mozilla.org)
-            section.isPrivate = true;
-        } else {
-            section.isPrivate = false;
+        let section = {},
+            oldPosition;
+        if (isEditMode) {
+            section = await sectionService.getOneById(sectionId);
+            if (!section) {
+                throw new Error("Secțiune negăsită");
+            }
+            oldPosition = section.position;
         }
 
-        if (isEditMode) {
-            section._id = sectionId;
+        section.code = code;
+        section.name = name;
+        section.description = description;
+        section.position = newPosition;
+        section.isPrivate = isPrivate == "on" ? true : false; // If the 'value' attribute was omitted, the default value for the checkbox is 'on' (mozilla.org)
 
-            sectionService.updateOne(section);
+        if (isEditMode) {
+            // Adjust positions of other documents
+            if (oldPosition < newPosition) {
+                // Decrease positions of documents between old and new positions
+                await sectionService.decreasePositionsBetweenOldAndNew(oldPosition, newPosition);
+            } else if (oldPosition > newPosition) {
+                // Increase positions of documents between new and old positions
+                await sectionService.increasePositionsBetweenNewAndOld(newPosition, oldPosition);
+            }
+
+            await sectionService.updateOne(section);
         } else {
+            // Adjust positions of other documents
+            await sectionService.increasePositionsAbovePosition(newPosition);
+
             section.ownerId = userId;
             const result = await sectionService.insertOne(section);
             section._id = result.insertedId;
         }
-        //res.send(course);
+        //res.send(section);
         res.redirect("/cursuri/modifica");
     } catch (err) {
         return res.status(500).json(err.message);
@@ -223,6 +250,13 @@ exports.deleteOneById = async (req, res) => {
     if (!canDelete) {
         return res.status(403).send("Lipsă permisiuni!"); // forbidden
     }
+
+    // Adjust positions of other documents
+    const section = await sectionService.getOneById(sectionId);
+    if (!section) {
+        throw new Error("Secțiune negăsită");
+    }
+    await sectionService.decreasePositionsAbovePosition(section.position);
 
     sectionService.deleteOneById(sectionId);
     res.redirect(`/cursuri/modifica`);
