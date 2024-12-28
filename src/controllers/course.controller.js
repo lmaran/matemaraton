@@ -329,7 +329,7 @@ exports.deleteOneById = async (req, res) => {
     await sectionService.updateOne(section);
 
     // Remove the course from the database
-    courseService.deleteOneById(req.body.id);
+    courseService.deleteOneById(courseId);
     res.redirect(`/cursuri/modifica`);
 };
 
