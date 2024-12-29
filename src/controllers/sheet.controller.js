@@ -38,8 +38,10 @@ exports.getOneById = async (req, res) => {
             sheet.titlePreview = markdownService.render(sheet.title);
         }
 
-        // Add preview
-        exercises.forEach((exercise, idx) => {
+        // Add preview and push to the list
+        sheet.exercises = [];
+        (sheet.exerciseIds || []).forEach((id, idx) => {
+            const exercise = exercises.find((x) => x._id == id);
             const statementNumber = `**Problema ${++idx}.**`;
 
             exerciseHelper.addPreview(exercise, statementNumber, true);
@@ -49,9 +51,8 @@ exports.getOneById = async (req, res) => {
             const comma = authorAndSource1 != "" ? ", " : "";
             exercise.authorAndSource1 = `${authorAndSource1}${comma}E.${exercise.code}`;
             exercise.source2 = source2;
+            sheet.exercises.push(exercise);
         });
-
-        sheet.exercises = exercises;
 
         const data = {
             sheet,
