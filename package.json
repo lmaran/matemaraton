@@ -43,7 +43,7 @@
         "markdown-it-imsize": "^2.0.1",
         "markdown-it-mermaid-plugin": "^0.1.0",
         "markdown-it-texmath": "^1.0.0",
-        "mongodb": "^4.12.1",
+        "mongodb": "^4.17.0",
         "uuid": "^9.0.0",
         "validator": "^13.7.0"
     },
